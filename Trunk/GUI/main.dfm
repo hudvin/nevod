@@ -14,30 +14,13 @@ object FMain: TFMain
   PixelsPerInch = 96
   TextHeight = 13
   object Button1: TButton
-    Left = 120
-    Top = 16
+    Left = 64
+    Top = 24
     Width = 75
     Height = 25
-    Caption = 'Pack'
+    Caption = 'Button1'
     TabOrder = 0
     OnClick = Button1Click
-  end
-  object Button3: TButton
-    Left = 48
-    Top = 128
-    Width = 257
-    Height = 65
-    Caption = 'Button3'
-    TabOrder = 1
-    OnClick = Button3Click
-  end
-  object Edit1: TEdit
-    Left = 112
-    Top = 48
-    Width = 121
-    Height = 21
-    TabOrder = 2
-    Text = 'Edit1'
   end
   object ACon: TADOConnection
     Connected = True
@@ -56,5 +39,11 @@ object FMain: TFMain
     TableName = 'Filters'
     Left = 8
     Top = 40
+  end
+  object IdPOP31: TIdPOP3
+    AutoLogin = True
+    SASLMechanisms = <>
+    Left = 160
+    Top = 112
   end
 end

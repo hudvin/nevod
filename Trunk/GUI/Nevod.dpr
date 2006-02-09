@@ -3,14 +3,12 @@ program Nevod;
 uses
   Forms,
   main in 'main.pas' {FMain},
-  PostReceiver in '..\Threads\PostReceiver.pas',
-  ThreadManager in '..\Threads\ThreadManager.pas',
+  PostReceiver in '..\MailReceiver\PostReceiver.pas',
   Shared in '..\Shared\Shared.pas',
-  Blowfish in '..\Shared\Blowfish.pas',
-  DCPcrypt in '..\Shared\DCPcrypt.pas',
-  SHA1 in '..\Shared\SHA1.pas',
-  Base64 in '..\Shared\Base64.pas',
-  ASFilter in '..\Filter\ASFilter.PAS';
+  Base64 in '..\Crypt\Base64.pas',
+  Blowfish in '..\Crypt\Blowfish.pas',
+  DCPcrypt in '..\Crypt\DCPcrypt.pas',
+  SHA1 in '..\Crypt\SHA1.pas';
 
 {$R *.res}
 
