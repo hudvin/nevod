@@ -36,13 +36,16 @@ uses PostReceiver, Shared;
 
 procedure TFMain.Button1Click(Sender: TObject);
 var
- a:TOBject;
- ms:TFMessage;
+ ms:TPOP3Receiver;
+ acc:AccountParams;
 begin
-a:=TIdPop3.Create;
-ms:=TFMessage.Create;
-ms.LoadFromZFile('c:\zet.txt');
-//TIdPOP3(a).
+acc.AccountName:='qaz';
+acc.Username:='qaz';
+acc.Host:='localhost';
+acc.Password:='qaz';
+acc.Port:=110;
+acc.Id:=1;
+ms:=TPOP3Receiver.Create(acc,ACon,2000,true);
 end;
 
 end.
