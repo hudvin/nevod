@@ -29,6 +29,7 @@ type
     constructor Create(Account: AccountParams; ADOCon: TADOConnection; Timeout:
         Integer; PackMessages: Boolean); virtual;
     destructor Destroy; override;
+    property AccountId : integer read FAccountParams.Id;
   end;
 
   TPOP3Receiver = class(TBaseReceiver)
@@ -95,6 +96,7 @@ begin      //добвить новый класс для добавления идентификаторов
           Ast.ExecProc;
         end;
   Ast.Close;
+  Ast.Free;
 end;
 
 procedure TBaseReceiver.LoadOldMessages;

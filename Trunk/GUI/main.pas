@@ -28,7 +28,7 @@ var
 
 implementation
 
-uses PostReceiver, Shared;
+uses PostReceiver, Shared, ThreadManager;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
@@ -38,14 +38,18 @@ procedure TFMain.Button1Click(Sender: TObject);
 var
  ms:TPOP3Receiver;
  acc:AccountParams;
+ trad:TThreadManager;
 begin
-acc.AccountName:='qaz';
+{acc.AccountName:='qaz';
 acc.Username:='qaz';
 acc.Host:='localhost';
 acc.Password:='qaz';
 acc.Port:=110;
 acc.Id:=1;
 ms:=TPOP3Receiver.Create(acc,ACon,2000,true);
+sleep(7000);
+ms.Free;   }
+trad:=TThreadManager.Create(ACon);
 end;
 
 end.

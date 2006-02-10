@@ -79,10 +79,10 @@ begin
 i:=0;
 while i<PostRecThreads.Count do
   begin
-   if TPostRec(PostRecThreads[i]).Terminated then
+   if TBaseReceiver(PostRecThreads[i]).Terminated then
        begin
-         SetStatus('asFree',TPostRec(PostRecThreads[i]).AParams.Id);
-         TPostRec(PostRecThreads[i]).Free; // вызов деструктора получателя
+         SetStatus('asFree',TBaseReceiver(PostRecThreads[i]).AccountId);
+         TBaseReceiver(PostRecThreads[i]).Free; // вызов деструктора получателя
          PostRecThreads[i]:=nil; // обнуление массива  элементов
         end;
    inc(i);
@@ -137,7 +137,7 @@ while not ast.Eof do
       AParams.Password:=FieldByName('Password').AsString;
       AParams.Port:=FieldByName('Port').AsInteger;
       AParams.Id:=FieldByName('Id').AsInteger;
-      PostRecThreads.Add(TPostRec.Create(AParams,ACon,TimeOut));
+      PostRecThreads.Add(TPOP3Receiver.Create(AParams,ACon,TimeOut,True));   // создавать в зависимости от типа протокола
       SetStatus('asClient',AParams.Id);
       Next;
     end;
@@ -188,11 +188,11 @@ Clean;
 while i<PostRecThreads.Count do
   begin
    try
-   if not TPostRec(PostRecThreads[i]).Terminated then
+   if not TBaseReceiver(PostRecThreads[i]).Terminated then
      PostRecThreads[i]:=nil
        else
         begin
-         TPostRec(PostRecThreads[i]).Free;
+         TBaseReceiver(PostRecThreads[i]).Free;
          PostRecThreads[i]:=nil;
         end;
    except;
@@ -202,5 +202,10 @@ while i<PostRecThreads.Count do
 PostRecThreads.Pack;
 end;
 
+{ использовать приведение типов для использования нескольких
+  различных классов для получения сообщений
+  приводить через базовый класс
+  создать общий класс процедуры для SetStatus и прочее
+}
 
 end.
