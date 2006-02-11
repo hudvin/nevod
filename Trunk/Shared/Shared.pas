@@ -99,6 +99,7 @@ type
   private
     Compressor: TCompressor;
     FBodyType: TBodyType;
+    FCompression: Real;
     FExtensions: TStringList;
     FImageCount: Integer;
     FLinkCount: Integer;
@@ -116,6 +117,7 @@ type
     procedure SaveToZStream(ZStream:TStream);
     procedure Update;
     property BodyType: TBodyType read FBodyType;
+    property Compression: Real read FCompression write FCompression;
     property Extensions: TStringList read FExtensions;
     property ImageCount: Integer read FImageCount;
     property LinkCount: Integer read FLinkCount;
@@ -327,6 +329,7 @@ begin
   FExtensions:=TStringList.Create;
   FExtensions.Sorted := True;
   FExtensions.Duplicates := dupIgnore;
+  FCompression:=0;
   Seacher:=TStringSeacher.Create;
 end;
 
@@ -377,10 +380,13 @@ procedure TFMessage.LoadFromZFile(FileName: String);
 var
   Buffer, UnPacked: TMemoryStream;
 begin
+  // Compression - отношение размера несжатого потока к
+  // размеру сжатого
   Buffer:=TMemoryStream.Create;
   Buffer.LoadFromFile(FileName);
   UnPacked:=TMemoryStream.Create;
   Compressor.DecompressStream(Buffer,UnPacked);
+  Compression:=Unpacked.Size/Buffer.Size;
   LoadFromStream(UnPacked);
   Buffer.Free;
   UnPacked.Free;
@@ -395,6 +401,7 @@ begin
   Buffer.CopyFrom(ZStream,0);
   Compressor.DecompressStream(Buffer,UnPacked);
   LoadFromStream(UnPacked);
+  Compression:=Unpacked.Size/Buffer.Size;
   Buffer.Free;
   UnPacked.Free;
 end;
@@ -408,6 +415,7 @@ begin
   SaveToStream(Buffer);
   Compressor.CompressStream(Buffer,PackedStr);
   PackedStr.SaveToFile(FileName);
+  Compression:=Buffer.Size/PackedStr.Size;
   Buffer.Free;
   PackedStr.Free;
 end;
@@ -423,6 +431,7 @@ begin
   ZStream.CopyFrom(PackedStr,0);
   Buffer.Free;
   PackedStr.Free;
+  Compression:=Buffer.Size/PackedStr.Size;
 end;
 
 procedure TFMessage.Update;

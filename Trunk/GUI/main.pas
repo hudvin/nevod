@@ -101,19 +101,15 @@ var blob:TADOBlobStream;
     I:integer;
 begin
 tab.Open;
-Tab.First;
-for i:=1 to tab.RecordCount do
-begin
-
-tab.RecNo:=i;
+tab.RecNo:=5;
 mess:=TFMessage.Create;
 blob:=TADOBlobStream.Create(TBlobField(tab.Fields[3]),bmRead);
 mess.LoadFromZStream(blob);
-//ShowMessage(IntToStr(blob.Size));
-mess.SaveToFile('c:\'+IntToStr(i)+'.txt');
+mess.SaveToFile('c:\unpacked.txt');
+mess.SaveToZFile('c:\packed.txt');
+Showmessage(FloatToStr(mess.Compression));
 mess.Free;
 blob.Free;
-end;
 end;
 
 end.
