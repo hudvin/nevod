@@ -49,6 +49,7 @@ constructor TBaseReceiver.Create(Account: AccountParams; ADOCon: TADOConnection;
     Timeout: Integer; PackMessages: Boolean);
 begin
   inherited Create(False);
+  FreeOnTerminate:=True;
   FADOCon:=ADOCon;
   FAccountParams:=Account;
   FTimeout:=TimeOut;
@@ -59,8 +60,6 @@ begin
   OldMessagesId:=TADOStoredProc.Create(nil);
   OldMessagesId.Connection:=FADOCon;
   RecMessage:=TFMessage.Create;
-  OldMessagesId:=TADOStoredProc.Create(nil);
-  OldMessagesId.Connection:=FADOCon;
 end;
 
 destructor TBaseReceiver.Destroy;
@@ -70,10 +69,12 @@ begin
   StoredSaver.Free;
   RecMessage.Free;
   OldMessagesId.Free;
+  FADOCon:=nil;
 end;
 
 procedure TBaseReceiver.AddToOldMessagesId(Mess: TFMessage);
 begin
+  CoInitialize(nil);
   with OldMessagesId do
    begin
     ProcedureName:='AddOldMsgId';
@@ -89,12 +90,14 @@ begin
     ExecProc;
     Close;
    end;
+  CoUninitialize;
 end;
 
 function TBaseReceiver.MessageIdExists(MsgId: string): Boolean;
 var
   Flag: Boolean;
 begin
+  CoInitialize(nil);
   Flag:=False;
   with OldMessagesId do
    begin
@@ -108,17 +111,20 @@ begin
     Close;
    end;
   Result:=Flag; //возврашает истину если идентификатор существует в таблице
+  CoUninitialize;
 end;
 
 procedure TBaseReceiver.Run;
 begin
   ReceiveMessages;
+  Terminate;
 end;
 
 procedure TBaseReceiver.SaveMessage(Mess: TFMessage);
 var
   MessStream: TMemoryStream;
 begin
+  CoInitialize(nil);
   MessStream:=TMemoryStream.Create;
   // к сообщению добавить свойство - размер - получать из потока
   // размер сообщения получать от сервера при
@@ -145,11 +151,12 @@ begin
       AddParameter.Name:='Address';
       ParamByName('Address').Value:=Mess.From.Address;
 
-      AddParameter.Name:='MessSize';
-      ParamByName('MessSize').Value:=Mess.Compression;
+      AddParameter.Name:='Compression';
+      ParamByName('Compression').Value:=Mess.Compression;
   end;
   StoredSaver.ExecProc;
   MessStream.Free;
+  CoUninitialize;
 end;
 
 {
@@ -190,7 +197,7 @@ begin
                  begin
                   RecMessage.Clear;
                   POP3Client.Retrieve(i,RecMessage);
-                  POP3Client.Delete(i);
+              //    POP3Client.Delete(i);
                   AddToOldMessagesId(RecMessage);
                   SaveMessage(RecMessage);
                  end
@@ -198,6 +205,7 @@ begin
             end;
          end;
    POP3Client.Disconnect;
+   CoInitialize(nil);
    with OldMessagesId do
     begin
      Parameters.Clear;
@@ -206,13 +214,13 @@ begin
      Parameters.ParamByName('AccountId').Value:=AccountId;
      ExecProc;
     end;
+   CoUninitialize;
    except
      on E:Exception do
       begin
        Log.Add(E.Message,FAccountParams.Id,ltPostReceiver);
       end;
    end;
-  Terminate;
 end;
 
 

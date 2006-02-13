@@ -3,7 +3,7 @@ unit Shared;
 interface
 
 uses
-  Windows,ZLib,TypInfo, Messages, SysUtils, Variants,
+  Windows,ZLib,TypInfo, Messages, SysUtils, Variants,  ComObj,ActiveX,
   Dialogs, StdCtrls, DB, ADODB,IdMessage, Classes,
   IdText,IdMessageParts, StrUtils,IdAttachment,IdZLibCompressorBase,
   DCPcrypt,Blowfish,Base64,IdHash,IdHashMessageDigest;
@@ -429,9 +429,9 @@ begin
   SaveToStream(Buffer);
   Compressor.CompressStream(Buffer,PackedStr);
   ZStream.CopyFrom(PackedStr,0);
+  Compression:=Buffer.Size/PackedStr.Size;
   Buffer.Free;
   PackedStr.Free;
-  Compression:=Buffer.Size/PackedStr.Size;
 end;
 
 procedure TFMessage.Update;
@@ -474,6 +474,7 @@ end;
 
 destructor TLogger.Destroy;
 begin
+  ACon:=nil;
   Ast.Close;
   Ast.Free;
 end;
@@ -483,6 +484,7 @@ begin
   try
    with Ast do
     begin
+      CoInitialize(nil);
       with Parameters do
         begin
           Clear;
@@ -496,9 +498,10 @@ begin
           ParamByName('ErrorType').Value:=GetEnumName(TypeInfo(TLogType), Ord(LogType));
         end;
       ExecProc;
+      CoUninitialize;
     end;
    except
-    on E:Exception do ShowMessage('Cannot add log record !!!' + E.Message);
+     on E:Exception do ShowMessage('Cannot add log record !!!' + E.Message);
    end;
 end;
 
@@ -585,6 +588,7 @@ end;
 
 destructor TSettings.Destroy;
 begin
+  ACon:=nil;
   Ast.Free;
 end;
 

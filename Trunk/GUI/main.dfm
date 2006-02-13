@@ -2,7 +2,7 @@ object FMain: TFMain
   Left = 334
   Top = 239
   Width = 476
-  Height = 457
+  Height = 203
   Caption = 'FMain'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -21,7 +21,6 @@ object FMain: TFMain
     Height = 25
     Caption = 'Button1'
     TabOrder = 0
-    OnClick = Button1Click
   end
   object Button2: TButton
     Left = 216
@@ -41,18 +40,6 @@ object FMain: TFMain
     TabOrder = 2
     OnClick = Button3Click
   end
-  object DBGrid1: TDBGrid
-    Left = 88
-    Top = 152
-    Width = 320
-    Height = 120
-    TabOrder = 3
-    TitleFont.Charset = DEFAULT_CHARSET
-    TitleFont.Color = clWindowText
-    TitleFont.Height = -11
-    TitleFont.Name = 'MS Sans Serif'
-    TitleFont.Style = []
-  end
   object ACon: TADOConnection
     ConnectionString = 
       'Provider=Microsoft.Jet.OLEDB.4.0;User ID=Admin;Data Source=E:\Ne' +
@@ -69,51 +56,5 @@ object FMain: TFMain
     Provider = 'Microsoft.Jet.OLEDB.4.0'
     Left = 8
     Top = 8
-  end
-  object aTab: TADOTable
-    Connection = ACon
-    CursorType = ctStatic
-    TableName = 'Filters'
-    Left = 8
-    Top = 40
-  end
-  object IdPOP31: TIdPOP3
-    AutoLogin = True
-    SASLMechanisms = <>
-    Left = 144
-    Top = 16
-  end
-  object tab: TADOTable
-    Connection = ACon
-    CursorType = ctStatic
-    TableName = 'Messages'
-    Left = 192
-    Top = 152
-    object tabid: TAutoIncField
-      FieldName = 'id'
-      ReadOnly = True
-    end
-    object tabmid: TIntegerField
-      FieldName = 'mid'
-    end
-    object tabdeleted: TBooleanField
-      FieldName = 'deleted'
-    end
-    object tabmessage: TMemoField
-      FieldName = 'message'
-      BlobType = ftMemo
-    end
-    object tabmessId: TWideStringField
-      FieldName = 'messId'
-      Size = 255
-    end
-    object tabAddress: TWideStringField
-      FieldName = 'Address'
-      Size = 255
-    end
-  end
-  object DataSource1: TDataSource
-    Left = 256
-    Top = 112
   end
 end
