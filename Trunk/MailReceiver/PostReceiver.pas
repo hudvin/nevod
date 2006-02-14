@@ -197,7 +197,7 @@ begin
                  begin
                   RecMessage.Clear;
                   POP3Client.Retrieve(i,RecMessage);
-              //    POP3Client.Delete(i);
+                  POP3Client.Delete(i);
                   AddToOldMessagesId(RecMessage);
                   SaveMessage(RecMessage);
                  end
