@@ -2,7 +2,7 @@ unit ThreadManager;
 
 interface
 
-uses
+uses  Exceptions,
    Shared,PostReceiver,SysUtils,TypInfo, Windows,Classes,DateUtils,
    ActiveX,Dialogs, ADODB;
 
@@ -34,6 +34,8 @@ type
 
 
 implementation
+
+uses DB;
 
 {
 ******************************** TThreadManager ********************************
@@ -100,7 +102,7 @@ end;
 
 function TThreadManager.GetActiveThreads: Integer;
 begin
-  Result := FActiveThreads;
+  //  Result := FActiveThreads;
 end;
 
 procedure TThreadManager.SetStatus(Status:TAccountStatus;Id:integer);
@@ -175,7 +177,5 @@ begin
   except
   end;
 end;
-
-
 
 end.

@@ -10,7 +10,9 @@ uses
   Blowfish in '..\Crypt\Blowfish.pas',
   DCPcrypt in '..\Crypt\DCPcrypt.pas',
   SHA1 in '..\Crypt\SHA1.pas',
-  ThreadManager in '..\MailReceiver\ThreadManager.pas';
+  ThreadManager in '..\MailReceiver\ThreadManager.pas',
+  Exceptions in '..\Shared\Exceptions.pas',
+  AccountManager in '..\Shared\AccountManager.pas';
 
 {$R *.res}
 

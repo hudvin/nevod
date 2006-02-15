@@ -21,7 +21,7 @@ const
   WTS_SESSION_REMOTE_CONTROL = 9;
   NOTIFY_FOR_THIS_SESSION = 0;
   NOTIFY_FOR_ALL_SESSIONS = 1;
-
+  CriptKey=' &(5428396(%fGfhhKJHFGHD12_= ';
 type
   TAccountStatus=(asFree,asClient,asServer);
 
@@ -71,6 +71,9 @@ type
     Priority: Integer;
     Subject: string;
   end;
+
+type
+  PAccountParams = ^AccountParams;
 
 type
   TFilterList = class(TList)
@@ -138,6 +141,7 @@ type
   private
     DCP_BF: TDCP_Blowfish;
     FKey: string;
+  protected
     procedure SetKey(const Value: string);
   public
     constructor Create; virtual;

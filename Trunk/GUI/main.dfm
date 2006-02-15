@@ -14,25 +14,25 @@ object FMain: TFMain
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
-  object Button1: TButton
-    Left = 64
-    Top = 24
-    Width = 75
-    Height = 25
-    Caption = 'Button1'
-    TabOrder = 0
-  end
   object Button2: TButton
     Left = 216
     Top = 48
     Width = 105
     Height = 25
     Caption = #1055#1086#1083#1091#1095#1080#1090#1100' '#1087#1086#1095#1090#1091
+    TabOrder = 0
+  end
+  object Button1: TButton
+    Left = 120
+    Top = 80
+    Width = 75
+    Height = 25
+    Caption = 'Button1'
     TabOrder = 1
-    OnClick = Button2Click
+    OnClick = Button1Click
   end
   object Button3: TButton
-    Left = 104
+    Left = 352
     Top = 112
     Width = 75
     Height = 25

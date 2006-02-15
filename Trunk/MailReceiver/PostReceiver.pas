@@ -98,7 +98,7 @@ end;
 
 function TBaseReceiver.GetThreadsCount: Integer;
 begin
-  Result := FThreadsCount;
+//  Result := FThreadsCount;
 end;
 
 function TBaseReceiver.MessageIdExists(MsgId: string): Boolean;
