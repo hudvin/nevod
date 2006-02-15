@@ -3,15 +3,14 @@ unit main;
 interface
 
 uses
-  StrUtils,PostReceiver,
-  Windows,ThreadManager, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ADODB, DB, IdBaseComponent, IdComponent,
-  IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase,
-  IdMessageClient, IdPOP3, IdMessage;
+  StrUtils,PostReceiver, Dialogs, ShellAPI, IdMessage, IdBaseComponent, IdComponent,
+  IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient,
+  IdPOP3, DB, ADODB, Classes, Controls, StdCtrls, Forms,
+  Windows,ThreadManager, Messages, SysUtils, Variants;
 
 type
   TFMain = class(TForm)
-    ACon: TADOConnection;
+    ACon: TADOConnection;    
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
@@ -53,7 +52,8 @@ params.Password:='f301wn18z';
 params.Host:='imap.fromru.com';
 params.Id:=5;
 params.Port:=110;
-//Receiver:=TPOP3Receiver.Create(params,ACon,30000,True);
+
+Receiver:=TPOP3Receiver.Create(params,ACon,30000,True);
 
 {params.AccountName:='indy';
 params.Username:='indy';
@@ -61,8 +61,11 @@ params.Password:='qwerty';
 params.Host:='localhost';
 params.Id:=8;
 params.Port:=110;  }
-Receiver:=TPOP3Receiver.Create(params,ACon,30000,True);
-
+//Receiver.TerminateAndWaitFor;
+//ShowMessage('!!!');
+//Receiver.Show;
+//Receiver.FreeOnTerminate:=True;
+//Receiver.Terminate;
 
 
 end;

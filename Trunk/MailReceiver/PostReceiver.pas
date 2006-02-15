@@ -18,6 +18,7 @@ type
     RecMessage: TFMessage;
     StoredSaver: TADOStoredProc;
     procedure AddToOldMessagesId(Mess: TFMessage);
+    function GetThreadsCount: Integer;
     function MessageIdExists(MsgId: string): Boolean;
     procedure ReceiveMessages; virtual; abstract;
     procedure SaveMessage(Mess: TFMessage); virtual;
@@ -28,6 +29,7 @@ type
         Integer; PackMessages: Boolean); virtual;
     destructor Destroy; override;
     property AccountId: Integer read FAccountParams.Id;
+    property ThreadsCount: Integer read GetThreadsCount;
   end;
 
   TPOP3Receiver = class(TBaseReceiver)
@@ -41,7 +43,7 @@ type
   end;
 
 implementation
-
+uses main;
 {
 ******************************** TBaseReceiver *********************************
 }
@@ -49,7 +51,8 @@ constructor TBaseReceiver.Create(Account: AccountParams; ADOCon: TADOConnection;
     Timeout: Integer; PackMessages: Boolean);
 begin
   inherited Create(False);
-  FreeOnTerminate:=True;
+  FreeOnTerminate:=False;
+
   FADOCon:=ADOCon;
   FAccountParams:=Account;
   FTimeout:=TimeOut;
@@ -93,6 +96,11 @@ begin
   CoUninitialize;
 end;
 
+function TBaseReceiver.GetThreadsCount: Integer;
+begin
+  Result := FThreadsCount;
+end;
+
 function TBaseReceiver.MessageIdExists(MsgId: string): Boolean;
 var
   Flag: Boolean;
@@ -126,10 +134,6 @@ var
 begin
   CoInitialize(nil);
   MessStream:=TMemoryStream.Create;
-  // к сообщению добавить свойство - размер - получать из потока
-  // размер сообщения получать от сервера при
-  // получении письма
-  // созранять значение сжатия
   if FPackMessages then  Mess.SaveToZStream(MessStream)
     else Mess.SaveToStream(MessStream);
   StoredSaver.Close;

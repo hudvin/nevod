@@ -1,6 +1,7 @@
 program Nevod;
 
 uses
+  ExceptionLog,
   Forms,
   main in 'main.pas' {FMain},
   PostReceiver in '..\MailReceiver\PostReceiver.pas',
