@@ -93,14 +93,19 @@ var
   manager:TAccountManager;
   params:AccountParams;
   mb:TAccountList;
+  tb:TDBProvider;
 begin
- manager:=TAccountManager.Create(ACon);
+{ manager:=TAccountManager.Create(ACon);
  params.AccountName:='qwerty';
  params.Host:='localhost';
  params.Port:=1;
  params.Password:='qwerty';
  params.Username:='qwerty';
- manager.ModifyAccount(params);
+ manager.ModifyAccount(params);  }
+
+ tb:=TDBProvider.Create(ACon);
+ ShowMessage(tb.Id2AccountName(5244444));
+
 end;
 
 end.

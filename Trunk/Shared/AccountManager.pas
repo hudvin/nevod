@@ -2,12 +2,15 @@
 
 interface
 
-uses
-  SysUtils, Windows, Messages, Classes, Graphics, Controls, Forms, Dialogs,
+uses   Classes,
+  SysUtils, Windows, Messages,  Graphics, Controls, Forms, Dialogs,
   ADODB,DB,Exceptions,Shared;
 
 type
   TAccountList = class;
+  EListError = class(Exception)
+  end;
+
   TAccountManager = class(TBFCoder)
   private
     FADOCon: TADOConnection;
@@ -25,17 +28,31 @@ type
 
   TAccountList = class(TList)
   private
-    function GetParams(Index: Integer):AccountParams;
+    function GetParams(Index: Integer): AccountParams;
   public
     constructor Create;
     destructor Destroy; override;
     property Account[Index: Integer]: AccountParams read GetParams;
   end;
+
+  TDBProvider = class(TObject)
+  private
+    FADOCon: TADOConnection;
+    StoredProc: TADOStoredProc;
+  public
+    constructor Create(ADOCon:TADOConnection);
+    destructor Destroy; override;
+    function AccountName2Id(AccountName:String): Integer;
+    procedure AddAccount(NewAccount:AccountParams);
+    function Id2AccountName(AccountId:Integer): string;
+  end;
+
 {
 
 удаление и добавление элементов в список
 при вызове деструктора освобождать все элементы
-
+нужно ли давать возможность изменениня аккаунтов ?
+все делать через интерфейс массива учетных записей
 
 }
 
@@ -212,6 +229,9 @@ begin
       end;
 end;
 
+{
+********************************* TAccountList *********************************
+}
 constructor TAccountList.Create;
 begin
   // TODO -cMM: TAccountList.Create default body inserted
@@ -225,10 +245,78 @@ begin
   inherited;
 end;
 
-function TAccountList.GetParams(Index: Integer):AccountParams;
+function TAccountList.GetParams(Index: Integer): AccountParams;
 begin
 
 end;
+
+{
+********************************* TDBProvider **********************************
+}
+constructor TDBProvider.Create(ADOCon:TADOConnection);
+begin
+  inherited Create;
+  FADOCon:=ADOCon;
+  StoredProc:=TADOStoredProc.Create(nil);
+  StoredProc.Connection:=FADOCon;
+
+end;
+
+destructor TDBProvider.Destroy;
+begin
+  inherited Destroy;
+  StoredProc.Free;
+  FADOCon:=nil;
+end;
+
+function TDBProvider.AccountName2Id(AccountName:String): Integer;
+begin
+  {
+    если нет данной записи - возбуждать исключение
+  }
+  with StoredProc  do
+   try
+    Close;
+    Parameters.Clear;
+    ProcedureName:='AccountName2Id';
+    Parameters.AddParameter.Name:='AccountName';
+    Parameters.ParamByName('AccountName').Value:=AccountName;
+    ExecProc;
+    Open;
+    First;
+    if RecordCount=0 then
+      raise EInvalidAccount.Create(' Такого аккаунта не существует ! ')
+     else Result:=Fields[0].AsInteger;
+  finally
+    Close;
+  end;
+end;
+
+procedure TDBProvider.AddAccount(NewAccount:AccountParams);
+begin
+
+end;
+
+function TDBProvider.Id2AccountName(AccountId:Integer): string;
+begin
+  with StoredProc  do
+   try
+    Close;
+    Parameters.Clear;
+    ProcedureName:='Id2AccountName';
+    Parameters.AddParameter.Name:='AccountId';
+    Parameters.ParamByName('AccountId').Value:=AccountId;
+    ExecProc;
+    Open;
+    First;
+    if RecordCount=0 then
+      raise EInvalidAccount.Create(' Такого аккаунта не существует ! ')
+     else Result:=Fields[0].AsString;
+  finally
+    Close;
+  end;
+end;
+
 
 
 {
