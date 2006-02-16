@@ -7,6 +7,7 @@ uses
   ADODB,DB,Exceptions,Shared;
 
 type
+  TAccountList = class;
   TAccountManager = class(TBFCoder)
   private
     FADOCon: TADOConnection;
@@ -22,6 +23,21 @@ type
     procedure ModifyAccount(Account: AccountParams); overload;
   end;
 
+  TAccountList = class(TList)
+  private
+    function GetParams(Index: Integer):AccountParams;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    property Account[Index: Integer]: AccountParams read GetParams;
+  end;
+{
+
+удаление и добавление элементов в список
+при вызове деструктора освобождать все элементы
+
+
+}
 
 implementation
 
@@ -156,7 +172,7 @@ begin
 
   проверка на копию аккаунта -
     если id копии не совпадает с id редактируемой записи
-     (выборка по одинаковому имени) аккаунта - значит дубликат 
+     (выборка по одинаковому имени) аккаунта - значит дубликат
 
   }
 
@@ -196,6 +212,25 @@ begin
       end;
 end;
 
+constructor TAccountList.Create;
+begin
+  // TODO -cMM: TAccountList.Create default body inserted
+
+  inherited;
+end;
+
+destructor TAccountList.Destroy;
+begin
+  // TODO -cMM: TAccountList.Destroy default body inserted
+  inherited;
+end;
+
+function TAccountList.GetParams(Index: Integer):AccountParams;
+begin
+
+end;
+
+
 {
 перегруженный функции
  - удаление записи
@@ -205,8 +240,19 @@ end;
 - обшее обращение - если не указан id, получать из
 таблицы по имени
 
+отельные методы для проверки наличия аккаунта в таблице
+вызывать исключения только в одном месте
+
+ функции для преобразования id2AccountName
+                             AccountName2Id
+
+ функция для модификации и добавления учетных записей объединить в одну кучу
+    (в зависимости от типа действия изменять проверку и имя процедуры)
+
 при удалении учетной записи нужно удалять поток
 для управления всей приблудой написать надкласс
+
+
 
 }
 

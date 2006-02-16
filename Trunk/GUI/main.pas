@@ -92,6 +92,7 @@ procedure TFMain.Button1Click(Sender: TObject);
 var
   manager:TAccountManager;
   params:AccountParams;
+  mb:TAccountList;
 begin
  manager:=TAccountManager.Create(ACon);
  params.AccountName:='qwerty';
