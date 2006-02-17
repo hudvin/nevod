@@ -16,7 +16,9 @@ type
     FADOCon: TADOConnection;
     StoredProc: TADOStoredProc;
     function AccountNameExists(AccountName: string): Boolean;
+    function GetAccounts(Index: Integer): AccountParams;
     function GetIdByAccountName(AccountName: string): Integer;
+    procedure SetAccounts(Index: Integer; const Value: AccountParams);
   public
     constructor Create(ADOCon: TADOConnection);
     destructor Destroy; override;
@@ -24,6 +26,8 @@ type
     procedure DeleteAccount(AccountId: Integer); overload;
     procedure DeleteAccount(AccountName: string); overload;
     procedure ModifyAccount(Account: AccountParams); overload;
+    property Accounts[Index: Integer]: AccountParams read GetAccounts write
+        SetAccounts;
   end;
 
   TAccountList = class(TList)
@@ -160,6 +164,13 @@ begin
   DeleteAccount(GetIdByAccountName(AccountName));
 end;
 
+function TAccountManager.GetAccounts(Index: Integer): AccountParams;
+begin
+  // TODO -cMM: TAccountManager.GetAccounts default body inserted
+ // Result := ;
+ 
+end;
+
 function TAccountManager.GetIdByAccountName(AccountName: string): Integer;
 var
   LStoredProc: TADOStoredProc;
@@ -227,6 +238,12 @@ begin
        ExecProc;
        Close;
       end;
+end;
+
+procedure TAccountManager.SetAccounts(Index: Integer; const Value:
+    AccountParams);
+begin
+  // TODO -cMM: TAccountManager.SetAccounts default body inserted
 end;
 
 {

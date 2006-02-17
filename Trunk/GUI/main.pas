@@ -102,7 +102,7 @@ begin
  params.Password:='qwerty';
  params.Username:='qwerty';
  manager.ModifyAccount(params);  }
-
+ Caption:= manager.Accounts[0].AccountName;
  tb:=TDBProvider.Create(ACon);
  ShowMessage(tb.Id2AccountName(5244444));
 
