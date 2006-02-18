@@ -12,6 +12,7 @@ type
   TFMain = class(TForm)
     ACon: TADOConnection;
     Button1: TButton;
+    ADODataSet1: TADODataSet;
     procedure Button1Click(Sender: TObject);
   private
     { Private declarations }
@@ -35,17 +36,14 @@ uses  Shared, AccountManager, Exceptions;
 
 procedure TFMain.Button1Click(Sender: TObject);
 var
-  nmb:TAccounter;
-  Account:TAccount;
-  manager:TAccountManager;
+  nmb:TAccountManager;
+  Account:AccountParams;
 begin
-  Showmessage('');
-  manager:=TAccountManager.Create(ACon);
-  manager.ClassName;
-  manager.Free;
-
- // nmb:=TAccounter.Create(ACon);
- // nmb.Free;
+  nmb:=TAccountManager.Create(ACon);
+  Account:=nmb.AccountById[5];
+  nmb.CheckParams(Account,True);
+  nmb.Free;
+  ShowMessage(Account.AccountName);
 
 end;
 

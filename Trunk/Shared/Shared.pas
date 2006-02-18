@@ -55,7 +55,7 @@ type
   end;
 
 type
-  AccountParams = record
+  AccountParams = packed record
     AccountName: string;
     Username: string;
     Host: string;
@@ -149,7 +149,7 @@ type
     property Key: string read FKey write SetKey;
   public
     constructor Create; virtual;
-    destructor Destroy; virtual;
+    destructor Destroy;override;
   end;
 
   TSettings = class(TObject)

@@ -39,4 +39,9 @@ object FMain: TFMain
     Left = 8
     Top = 8
   end
+  object ADODataSet1: TADODataSet
+    Parameters = <>
+    Left = 88
+    Top = 80
+  end
 end
