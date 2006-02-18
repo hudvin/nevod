@@ -112,7 +112,7 @@ procedure XorBlock(I1, I2, O1: PByteArray; Len: longint);
 implementation
 {$IFDEF CFORM}
 uses
-  Base64,sha1;
+  Base64,SHA1;
 
 type
   TDCP_defaulthash= TDCP_sha1;

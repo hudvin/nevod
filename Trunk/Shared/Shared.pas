@@ -142,14 +142,14 @@ type
     DCP_BF: TDCP_Blowfish;
     FKey: string;
   protected
-    procedure SetKey(const Value: string);
-  public
-    constructor Create; virtual;
-    destructor Destroy; virtual;
     function Crypt(InputString:string): string;
     function DeCrypt(OutPutString:string): string;
     function Hash(InputString:string): string;
+    procedure SetKey(const Value: string);
     property Key: string read FKey write SetKey;
+  public
+    constructor Create; virtual;
+    destructor Destroy; virtual;
   end;
 
   TSettings = class(TObject)

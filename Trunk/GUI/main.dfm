@@ -1,8 +1,8 @@
 object FMain: TFMain
   Left = 191
   Top = 257
-  Width = 476
-  Height = 203
+  Width = 292
+  Height = 163
   Caption = 'FMain'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -11,34 +11,16 @@ object FMain: TFMain
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
-  object Button2: TButton
-    Left = 216
-    Top = 48
-    Width = 105
-    Height = 25
-    Caption = #1055#1086#1083#1091#1095#1080#1090#1100' '#1087#1086#1095#1090#1091
-    TabOrder = 0
-  end
   object Button1: TButton
-    Left = 120
-    Top = 80
+    Left = 88
+    Top = 24
     Width = 75
     Height = 25
     Caption = 'Button1'
-    TabOrder = 1
+    TabOrder = 0
     OnClick = Button1Click
-  end
-  object Button3: TButton
-    Left = 352
-    Top = 112
-    Width = 75
-    Height = 25
-    Caption = 'Button3'
-    TabOrder = 2
-    OnClick = Button3Click
   end
   object ACon: TADOConnection
     ConnectionString = 
@@ -56,28 +38,5 @@ object FMain: TFMain
     Provider = 'Microsoft.Jet.OLEDB.4.0'
     Left = 8
     Top = 8
-  end
-  object pop: TIdPOP3
-    AutoLogin = True
-    Host = 'localhost'
-    Username = 'indy'
-    Password = 'qwerty'
-    SASLMechanisms = <>
-    Left = 224
-    Top = 88
-  end
-  object mess: TIdMessage
-    AttachmentEncoding = 'UUE'
-    BccList = <>
-    CCList = <>
-    Encoding = meDefault
-    FromList = <
-      item
-      end>
-    Recipients = <>
-    ReplyTo = <>
-    ConvertPreamble = True
-    Left = 248
-    Top = 96
   end
 end
