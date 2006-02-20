@@ -129,7 +129,7 @@ end;
 
 procedure TThreadManager.StartAllThreads;
 var
-  AParams: AccountParams;
+  AParams: TAccountParams;
 begin
     CoInitialize(nil);
     CanExecute:=True;

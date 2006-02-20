@@ -21,7 +21,7 @@ const
   WTS_SESSION_REMOTE_CONTROL = 9;
   NOTIFY_FOR_THIS_SESSION = 0;
   NOTIFY_FOR_ALL_SESSIONS = 1;
-  CriptKey=' &(5428396(%fGfhhKJHFGHD12_= ';
+  CriptKey=' &(5428396%:?(__*:?:(_(%fGfhhKJHFGHD12_= ';
 type
   TAccountStatus=(asFree,asClient,asServer);
 
@@ -55,13 +55,14 @@ type
   end;
 
 type
-  AccountParams = packed record
+  TAccountParams = packed record
     AccountName: string;
     Username: string;
     Host: string;
     Password: string;
     Port: Integer;
     Id: Integer;
+    Status:TAccountStatus;
   end;
 
 type
@@ -73,7 +74,7 @@ type
   end;
 
 type
-  PAccountParams = ^AccountParams;
+  PAccountParams = ^TAccountParams;
 
 type
   TFilterList = class(TList)

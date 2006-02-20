@@ -10,9 +10,8 @@ uses
 
 type
   TFMain = class(TForm)
-    ACon: TADOConnection;
+    acon: TADOConnection;
     Button1: TButton;
-    ADODataSet1: TADODataSet;
     procedure Button1Click(Sender: TObject);
   private
     { Private declarations }
@@ -37,14 +36,18 @@ uses  Shared, AccountManager, Exceptions;
 procedure TFMain.Button1Click(Sender: TObject);
 var
   nmb:TAccountManager;
-  Account:AccountParams;
+  Account:TAccountParams;
 begin
   nmb:=TAccountManager.Create(ACon);
-  Account:=nmb.AccountById[5];
-  nmb.CheckParams(Account,True);
+  Account.AccountName:='Nevilon';
+  Account.Username:='nevilon';
+  Account.Host:='pop3.nevilon.com';
+  Account.Port:=110;
+  Account.Password:='vdsgdgfdhgdhgd45';
+ // nmb.AddAccount(Account);
+  nmb.DeleteAccount(6);
+ // Showmessage(nmb.Items[0].Username);
   nmb.Free;
-  ShowMessage(Account.AccountName);
-
 end;
 
 end.

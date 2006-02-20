@@ -9,7 +9,7 @@ uses   Shared,
 type
   TBaseReceiver = class(TIdThread)
   private
-    FAccountParams: AccountParams;
+    FAccountParams:TAccountParams;
     FADOCon: TADOConnection;
     FPackMessages: Boolean;
     FTimeout: Integer;
@@ -25,7 +25,7 @@ type
   protected
     procedure Run; override;
   public
-    constructor Create(Account: AccountParams; ADOCon: TADOConnection; Timeout:
+    constructor Create(Account: TAccountParams; ADOCon: TADOConnection; Timeout:
         Integer; PackMessages: Boolean); virtual;
     destructor Destroy; override;
     property AccountId: Integer read FAccountParams.Id;
@@ -37,7 +37,7 @@ type
     POP3Client: TIdPOP3;
     procedure ReceiveMessages; override;
   public
-    constructor Create(Account: AccountParams; ADOCon: TADOConnection; Timeout:
+    constructor Create(Account: TAccountParams; ADOCon: TADOConnection; Timeout:
         Integer; PackMessages: Boolean);
     destructor Destroy; override;
   end;
@@ -47,7 +47,7 @@ uses main;
 {
 ******************************** TBaseReceiver *********************************
 }
-constructor TBaseReceiver.Create(Account: AccountParams; ADOCon: TADOConnection;
+constructor TBaseReceiver.Create(Account: TAccountParams; ADOCon: TADOConnection;
     Timeout: Integer; PackMessages: Boolean);
 begin
   inherited Create(False);
@@ -166,7 +166,7 @@ end;
 {
 ******************************** TPOP3Receiver *********************************
 }
-constructor TPOP3Receiver.Create(Account: AccountParams; ADOCon: TADOConnection;
+constructor TPOP3Receiver.Create(Account: TAccountParams; ADOCon: TADOConnection;
     Timeout: Integer; PackMessages: Boolean);
 begin
   inherited Create(Account,ADOCon,Timeout,PackMessages);

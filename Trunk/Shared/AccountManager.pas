@@ -1,56 +1,32 @@
- unit AccountManager;
+unit AccountManager;
 
 interface
 
-uses   Classes,
+uses   Classes,  TypInfo,
   SysUtils, Windows, Messages,  Graphics, Controls, Forms, Dialogs,
   ADODB,DB,Exceptions,Shared;
 
 type
-  TAccount = class(TPersistent)
+  TAccountManager = class(TBFCoder)
   private
-    FAccountId: Integer;
-    FAccountName: string;
-    FHost: string;
-    FPassword: string;
-    FPort: Integer;
-    FStatus: TAccountStatus;
-    FUsername: string;
-  public
-    constructor Create; virtual;
-    destructor Destroy; override;
-    property AccountId: Integer read FAccountId;
-    property AccountName: string read FAccountName write FAccountName;
-    property Host: string read FHost write FHost;
-    property Password: string read FPassword write FPassword;
-    property Port: Integer read FPort write FPort;
-    property Status: TAccountStatus read FStatus write FStatus;
-    property Username: string read FUsername write FUsername;
-  end;
-
-  TAccountManager = class
-  private
-    AccountTable: TADOStoredProc;
-    FAccount: TAccount;
+    AccountTable: TADOTable;
     FADOCon: TADOConnection;
-    DBProc: TADODataSet;
-    function GetAccountById(AccountId: Integer): AccountParams;
-    function GetAccountByName(AccountName:String): TAccount;
-    function GetAccounts(Index: Integer): TAccount;
+    DBProc: TADOQuery;
+    function GetAccountById(AccountId:integer): TAccountParams;
+    function GetItems(Index: Integer): TAccountParams;
     function GetCount: Integer;
-    procedure SetAccountById(AccountId: Integer; const Value: AccountParams);
-    procedure SetAccountByName(AccountName:String; const Value: TAccount);
-    procedure SetAccounts(Index: Integer; const Value: TAccount);
+    procedure SetAccountById(AccountId:integer; Value: TAccountParams);
+    procedure SetItems(Index: Integer; const Value: TAccountParams);
   protected
   public
     constructor Create(ADOCon:TADOConnection); virtual;
-    destructor Destroy; virtual;
-    function CheckParams(Account:AccountParams;NewAccount:boolean=False): Boolean;
-    property AccountById[Index: Integer]: AccountParams read GetAccountById write
-        SetAccountById;
-    property AccountByName[AccountName:String]: TAccount read GetAccountByName
-        write SetAccountByName;
-    property Accounts[Index: Integer]: TAccount read GetAccounts write SetAccounts;
+    destructor Destroy; override;
+    procedure AddAccount(NewAccount:TAccountParams);
+    function CheckParams(Account:TAccountParams;NewAccount:boolean=False): Boolean;
+    procedure DeleteAccount(AccountId:Integer);
+    property AccountById[AccountId:integer]: TAccountParams read GetAccountById
+        write SetAccountById;
+    property Items[Index: Integer]: TAccountParams read GetItems write SetItems;
     property Count: Integer read GetCount;
   end;
 
@@ -58,18 +34,14 @@ implementation
 
 constructor TAccountManager.Create(ADOCon:TADOConnection);
 begin
-
+  inherited Create;
   FADOCon:=ADOCon;
-  FAccount:=TAccount.Create;
-  AccountTable:=TADOStoredProc.Create(nil);
+  AccountTable:=TADOTable.Create(nil);
   AccountTable.Connection:=FADOCon;
-  AccountTable.ProcedureName:='GetAccountList';
-  DBProc:=TADODataSet.Create(nil);
+  AccountTable.TableName:='Accounts';
+  DBProc:=TADOQuery.Create(nil);
   DBProc.Connection:=FADOCon;
-//  AccountTable.ExecProc;
- // SetKey(Shared.CriptKey);
-
-
+  SetKey(Shared.CriptKey);
 end;
 
 destructor TAccountManager.Destroy;
@@ -77,13 +49,32 @@ begin
   inherited Destroy ;
   AccountTable.Free;
   DBProc.Free;
-  FAccount.Free;
   FADOCon:=nil;
 end;
 
-function TAccountManager.CheckParams(Account:AccountParams;
+procedure TAccountManager.AddAccount(NewAccount:TAccountParams);
+begin
+  if CheckParams(NewAccount,True) then
+   with DBProc.Parameters do
+    try
+     DBProc.SQL.Text:=' INSERT INTO Accounts (AccountName,Username,Pass,Host,Port) '+
+                      'VALUES(:AccountName,:Username,:Pass,:Host,:Port)';
+     ParamByName('AccountName').Value:=NewAccount.AccountName;
+     ParamByName('Username').Value:=NewAccount.Username;
+     ParamByName('Pass').Value:=Crypt(NewAccount.Password);
+     ParamByName('Host').Value:=NewAccount.Host;
+     ParamByName('Port').Value:=NewAccount.Port;
+     DBProc.ExecSQL;
+    except
+     on e: Exception
+      do Raise EDBerror.Create(' Cannot Add new Account ');
+    end;
+end;
+
+function TAccountManager.CheckParams(Account:TAccountParams;
     NewAccount:boolean=False): Boolean;
 begin
+  Result:=False;
   if Trim(Account.AccountName)='' then
     Raise EInvalidAccountParams.Create('Incorrect AccountName');
   if Trim(Account.Username)='' then
@@ -96,115 +87,173 @@ begin
   with DBProc  do
    begin
     if NewAccount then   // если новая учетная запись
-     begin
-      CommandType:=cmdText;
-      CommandText :='SELECT COUNT(Id) FROM Accounts ' +
+     begin       // искать аккаунт с данным именем - в виде подзапроса
+      SQL.Text :='SELECT COUNT(Id) FROM Accounts ' +
                     ' WHERE AccountName=:AccountName';
       Parameters.ParamByName('AccountName').Value:=Account.AccountName;
       Open;
       if Fields[0].AsInteger>0 then
-       raise EInvalidAccountParams.Create('Account Exists');
-      Close;
-   end
+       begin
+        Close;
+        raise EInvalidAccountParams.Create('Account Exists');
+       end;
+     end
     else  // если  модифицируется старая запись
      begin
        // проверить есть ли записи с таким именем но другим id
-      CommandType:=cmdText;
-      CommandText :='SELECT COUNT(Id) FROM Accounts ' +
+      SQL.Text :='SELECT COUNT(Id) FROM Accounts ' +
                     ' WHERE AccountName=:AccountName AND Id<>:AccountId ';
       Parameters.ParamByName('AccountName').Value:=Account.AccountName;
+      Parameters.ParamByName('AccountId').Value:=Account.Id;
       Open;
-      if Fields[0].AsInteger>0 then
-       raise EInvalidAccountParams.Create('Account Exists');
-      Close;
+      if Fields[0].AsInteger>1 then
+       begin
+        Close;
+        raise EInvalidAccountParams.Create('Account with this name Already Exists');
+       end;
      end;
    end;
-
+  Result:=True;
 end;
 
-function TAccountManager.GetAccountById(AccountId: Integer): AccountParams;
-var
-  Flag:boolean;
+procedure TAccountManager.DeleteAccount(AccountId:Integer);
 begin
- Flag:=False;
- with AccountTable  do
-  begin
-   Close;
-   ExecProc;
-   Open;
-   while (NOT Eof) AND (NOT Flag) do
-      if FieldByName('Id').AsInteger=AccountId  then
+  with DBProc do
+   begin
+    SQL.Text:='SELECT COUNT(Id) FROM Accounts WHERE Id=:AccountId ';
+    Parameters.ParamByName('AccountId').Value:=AccountId;
+    ExecSQL;
+    Open;
+    if Fields[0].AsInteger=0  then    // если нет такого id в таблице
+     begin
+      Close;
+      Raise EInvalidAccount.Create(' No such Account ');
+     end
+    else
+     begin
+      Close;
+      SQL.Text:='DELETE FROM Accounts WHERE Id=:AccountId';
+      Parameters.ParamByName('AccountId').Value:=AccountId;
+      ExecSQL;
+     end;
+   end;
+end;
+
+function TAccountManager.GetAccountById(AccountId:integer): TAccountParams;
+begin
+ with DBProc  do
+   begin
+      SQL.Text :=' SELECT * FROM Accounts WHERE Id=:AccountId' ;
+      Parameters.ParamByName('AccountId').Value:=AccountId;
+      ExecSQL;
+      Open;
+      if  RecordCount=0 then
        begin
-         Flag:=True;
+        Close;
+        raise EInvalidAccount.Create('No Such Account !');
+       end
+      else
+       try
+        Result.Id:=AccountId;
+        Result.AccountName:=FieldByName('AccountName').AsString;
+        Result.Username:=FieldByName('Username').AsString;
+        Result.Password:=DeCrypt(FieldByName('Pass').AsString);
+        Result.Host:=FieldByName('Host').AsString;
+        Result.Port:=FieldByName('Port').AsInteger;
+        Result.Status:=TAccountStatus(GetEnumValue(TypeInfo(TAccountStatus),FieldByName('Status').AsString));
+       except
+        on e: Exception do
+         begin
+          Close;
+          Raise ECorreptedAccount.Create('Account Corrupted');
+         end;
+       end;
+   end;
+end;
 
-         Result.Id:=AccountId;
-         result.AccountName:=FieldByName('AccountName').AsString;
-       end else Next;
-   if not Flag then raise EInvalidAccount.Create('No Such Account !');
-   Close;
+
+
+function TAccountManager.GetItems(Index: Integer): TAccountParams;
+begin
+ with AccountTable do
+  begin
+    Open;
+    Requery();
+    if (Index>RecordCount) or (Index<1) then
+     begin
+      Close;
+      Raise EInvalidAccount.Create(' No Such Account ');
+     end;
+    try
+     RecNo:=Index;
+     Result.Id:=FieldByName('Id').AsInteger;
+     Result.AccountName:=FieldByName('AccountName').AsString;
+     Result.Username:=FieldByName('Username').AsString;
+     Result.Password:=DeCrypt(FieldByName('Pass').AsString);
+     Result.Host:=FieldByName('Host').AsString;
+     Result.Port:=FieldByName('Port').AsInteger;
+     Result.Status:=TAccountStatus(GetEnumValue(TypeInfo(TAccountStatus),FieldByName('Status').AsString));
+    except
+     on e: Exception do
+      begin
+       Close;
+       Raise ECorreptedAccount.Create('Account Corrupted');
+      end;
+    end;
   end;
-end;
-
-function TAccountManager.GetAccountByName(AccountName:String): TAccount;
-begin
-  // TODO -cMM: TAccounter.GetAccountByName default body inserted
-//  Result := ;
-end;
-
-function TAccountManager.GetAccounts(Index: Integer): TAccount;
-begin
-  // TODO -cMM: TAccounter.GetAccounts default body inserted
-  {
-
-  проверять, существует ли данный акаунт
-  если все нормально - расшифровывать пароль
-
-  }
- // Result := ;
 end;
 
 function TAccountManager.GetCount: Integer;
 begin
-  // TODO -cMM: TAccounter.GetCount default body inserted
- // Result := ;
+ with DBProc do
+  begin
+    SQL.Text:='SELECT COUNT (Id) FROM Accounts ';
+    ExecSQL;
+    Open;
+    Result:=Fields[0].AsInteger;
+    Close;
+  end;
 end;
 
-procedure TAccountManager.SetAccountById(AccountId: Integer; const Value:
-    AccountParams);
+procedure TAccountManager.SetAccountById(AccountId:integer; Value:
+    TAccountParams);
 begin
-  {
-  если учетной записи не существует - выдать исключение
-  если есть учетная запись
-    проверить нет ли другой записи с таким же именем, но с другим идентфикатором
-
-  проверить подходят ли данные по значениям
-    идентифицировать по идентфикатору
-    написать отдельную функцию  для проверки на копии и на допустимость данных
-
-
-  }
+ if CheckParams(Value) then
+  with DBProc.Parameters  do
+   begin
+      DBProc.SQL.Text :='UPDATE Accounts SET  AccountName=:AccountName, Username=:Username,'+
+                    'Pass=:Pass,Host=:Host,Port=:Port WHERE Id=:AccountId ';
+      ParamByName('AccountName').Value:=Value.AccountName;
+      ParamByName('Username').Value:=Value.Username;
+      ParamByName('Pass').Value:=Crypt(Value.Password);
+      ParamByName('Host').Value:=Value.Host;
+      ParamByName('Port').Value:=value.Port;
+      ParamByName('AccountId').Value:=Value.Id;
+      DBProc.ExecSQL;
+   end;
 end;
 
-procedure TAccountManager.SetAccountByName(AccountName:String; const Value:
-    TAccount);
+procedure TAccountManager.SetItems(Index: Integer; const Value: TAccountParams);
 begin
-  // TODO -cMM: TAccounter.SetAccountByName default body inserted
 end;
 
-procedure TAccountManager.SetAccounts(Index: Integer; const Value: TAccount);
-begin
-  Showmessage('bvcbc');
-end;
+{
 
-constructor TAccount.Create;
-begin
- inherited Create;
-end;
+модификация по порядковому номеру
 
-destructor TAccount.Destroy;
-begin
- inherited Destroy;
-end;
-
+}
 
 end.
+
+ {
+
+
+ 
+
+ функции для изменения статуса
+   преобразования id  в имя учетной записи
+   аутентификации сервера
+   написать функции для блокирования доступа через критические секции
+   обновлять таблицу при  каждом запросе 
+ }
+

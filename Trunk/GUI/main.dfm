@@ -22,7 +22,7 @@ object FMain: TFMain
     TabOrder = 0
     OnClick = Button1Click
   end
-  object ACon: TADOConnection
+  object acon: TADOConnection
     ConnectionString = 
       'Provider=Microsoft.Jet.OLEDB.4.0;User ID=Admin;Data Source=..\DB' +
       '\messages.mdb;Mode=Share Deny None;Extended Properties="";Persis' +
@@ -38,10 +38,5 @@ object FMain: TFMain
     Provider = 'Microsoft.Jet.OLEDB.4.0'
     Left = 8
     Top = 8
-  end
-  object ADODataSet1: TADODataSet
-    Parameters = <>
-    Left = 88
-    Top = 80
   end
 end
