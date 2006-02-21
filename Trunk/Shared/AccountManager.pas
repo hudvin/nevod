@@ -16,17 +16,22 @@ type
     function GetItems(Index: Integer): TAccountParams;
     function GetCount: Integer;
     procedure SetAccountById(AccountId:integer; Value: TAccountParams);
-    procedure SetItems(Index: Integer; const Value: TAccountParams);
   protected
+    function AccountIdExists(AccountId:integer): Boolean;
+    function AccountName2Id(AccountName:String): Integer;
+    function AccountNameExists(AccountName:String): Boolean;
+    function Id2AccountName(AccountId:integer): string;
   public
     constructor Create(ADOCon:TADOConnection); virtual;
     destructor Destroy; override;
     procedure AddAccount(NewAccount:TAccountParams);
     function CheckParams(Account:TAccountParams;NewAccount:boolean=False): Boolean;
+    function CheckStatus(Status:TAccountStatus): Boolean;
     procedure DeleteAccount(AccountId:Integer);
+    procedure UpdateAccountTable;
     property AccountById[AccountId:integer]: TAccountParams read GetAccountById
         write SetAccountById;
-    property Items[Index: Integer]: TAccountParams read GetItems write SetItems;
+    property Items[Index: Integer]: TAccountParams read GetItems;
     property Count: Integer read GetCount;
   end;
 
@@ -52,11 +57,56 @@ begin
   FADOCon:=nil;
 end;
 
+function TAccountManager.AccountIdExists(AccountId:integer): Boolean;
+begin
+ if AccountId<0 then
+    Raise EInvalidAccountParams.Create(' Invalid AccountId ');
+  with DBProc do
+   begin
+    SQL.Text:='SELECT COUNT(Id) FROM Accounts WHEHE Id=:AccountId';
+    Parameters.ParamByName('AccountId').Value:=AccountId;
+    ExecSQL;
+    Open;
+    if Fields[0].AsInteger>0 then Result:=True else Result:=False;
+    Close;
+   end;
+end;
+
+function TAccountManager.AccountName2Id(AccountName:String): Integer;
+begin
+ if AccountNameExists(AccountName) then
+  with DBProc  do
+   begin
+    SQl.Text:='SELECT Id FROM Accounts WHERE AccountName=:AccountName';
+    Parameters.ParamByName('AccountName').Value:=AccountName;
+    ExecSQL;
+    Open;
+    Result:=Fields[0].AsInteger;
+    Close;
+   end
+ else Result:=-1;
+end;
+
+function TAccountManager.AccountNameExists(AccountName:String): Boolean;
+begin
+ if Trim(AccountName)='' then
+    Raise EInvalidAccountParams.Create(' Invalid AccountName ');
+  with DBProc do
+   begin
+    SQL.Text:='SELECT COUNT(Id) FROM Accounts WHEHE AccountName=:AccountName';
+    Parameters.ParamByName('AccountName').Value:=AccountName;
+    ExecSQL;
+    Open;
+    if Fields[0].AsInteger>0 then Result:=True else Result:=False;
+    Close;
+   end;
+end;
+
 procedure TAccountManager.AddAccount(NewAccount:TAccountParams);
 begin
   if CheckParams(NewAccount,True) then
    with DBProc.Parameters do
-    try
+    begin
      DBProc.SQL.Text:=' INSERT INTO Accounts (AccountName,Username,Pass,Host,Port) '+
                       'VALUES(:AccountName,:Username,:Pass,:Host,:Port)';
      ParamByName('AccountName').Value:=NewAccount.AccountName;
@@ -65,9 +115,6 @@ begin
      ParamByName('Host').Value:=NewAccount.Host;
      ParamByName('Port').Value:=NewAccount.Port;
      DBProc.ExecSQL;
-    except
-     on e: Exception
-      do Raise EDBerror.Create(' Cannot Add new Account ');
     end;
 end;
 
@@ -114,6 +161,13 @@ begin
      end;
    end;
   Result:=True;
+end;
+
+function TAccountManager.CheckStatus(Status:TAccountStatus): Boolean;
+begin
+  {
+  привести к текстовому типу и сделать запрос к таблице
+  }
 end;
 
 procedure TAccountManager.DeleteAccount(AccountId:Integer);
@@ -215,6 +269,21 @@ begin
   end;
 end;
 
+function TAccountManager.Id2AccountName(AccountId:integer): string;
+begin
+  if AccountIdExists(AccountId) then
+   with DBProc  do
+    begin
+      SQl.Text:='SELECT AccountName FROM Accounts WHERE Id=:AccountId';
+      Parameters.ParamByName('AccountId').Value:=AccountId;
+      ExecSQL;
+      Open;
+      Result:=Fields[0].AsString;
+      Close;
+    end
+   else Result:='';
+end;
+
 procedure TAccountManager.SetAccountById(AccountId:integer; Value:
     TAccountParams);
 begin
@@ -233,27 +302,21 @@ begin
    end;
 end;
 
-procedure TAccountManager.SetItems(Index: Integer; const Value: TAccountParams);
+procedure TAccountManager.UpdateAccountTable;
 begin
+  if NOT  AccountTable.Active then   AccountTable.Open;
+  AccountTable.Requery();
 end;
 
 {
 
-модификация по порядковому номеру
+не использовать многие проверки - откуда возьмутся левые данные
+основные интерфейсы
+ список аккаунтов - только на чтение
+ преобразования
+ 
 
 }
 
 end.
-
- {
-
-
- 
-
- функции для изменения статуса
-   преобразования id  в имя учетной записи
-   аутентификации сервера
-   написать функции для блокирования доступа через критические секции
-   обновлять таблицу при  каждом запросе 
- }
 

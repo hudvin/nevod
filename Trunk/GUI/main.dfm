@@ -1,9 +1,10 @@
 object FMain: TFMain
-  Left = 191
-  Top = 257
-  Width = 292
-  Height = 163
+  Left = 378
+  Top = 153
+  BorderStyle = bsSingle
   Caption = 'FMain'
+  ClientHeight = 129
+  ClientWidth = 284
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
