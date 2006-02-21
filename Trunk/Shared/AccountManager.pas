@@ -2,9 +2,8 @@ unit AccountManager;
 
 interface
 
-uses   Classes,  TypInfo,
-  SysUtils, Windows, Messages,  Graphics, Controls, Forms, Dialogs,
-  ADODB,DB,Exceptions,Shared;
+uses
+  TypInfo, SysUtils,  ADODB,DB,Exceptions,Shared;
 
 type
   TAccountManager = class(TBFCoder)
@@ -26,8 +25,9 @@ type
     destructor Destroy; override;
     procedure AddAccount(NewAccount:TAccountParams);
     function CheckParams(Account:TAccountParams;NewAccount:boolean=False): Boolean;
-    function CheckStatus(Status:TAccountStatus): Boolean;
+    function CheckStatus(Status:TAccountStatus;AccountId:Integer): Boolean;
     procedure DeleteAccount(AccountId:Integer);
+    procedure SetStatus(AccountId:integer;AccountStatus:TAccountStatus);
     procedure UpdateAccountTable;
     property AccountById[AccountId:integer]: TAccountParams read GetAccountById
         write SetAccountById;
@@ -59,8 +59,6 @@ end;
 
 function TAccountManager.AccountIdExists(AccountId:integer): Boolean;
 begin
- if AccountId<0 then
-    Raise EInvalidAccountParams.Create(' Invalid AccountId ');
   with DBProc do
    begin
     SQL.Text:='SELECT COUNT(Id) FROM Accounts WHEHE Id=:AccountId';
@@ -89,8 +87,6 @@ end;
 
 function TAccountManager.AccountNameExists(AccountName:String): Boolean;
 begin
- if Trim(AccountName)='' then
-    Raise EInvalidAccountParams.Create(' Invalid AccountName ');
   with DBProc do
    begin
     SQL.Text:='SELECT COUNT(Id) FROM Accounts WHEHE AccountName=:AccountName';
@@ -163,11 +159,20 @@ begin
   Result:=True;
 end;
 
-function TAccountManager.CheckStatus(Status:TAccountStatus): Boolean;
+function TAccountManager.CheckStatus(Status:TAccountStatus;AccountId:Integer):
+    Boolean;
 begin
-  {
-  привести к текстовому типу и сделать запрос к таблице
-  }
+ with DBProc do
+  begin
+    SQL.Text:='SELECT COUNT(Id) FROM Accounts WHERE Id=:AccountId AND Status=:Status ';
+    Parameters.ParamByName('AccountId').Value:=AccountId;
+    Parameters.ParamByName('Status').Value:=GetEnumName(TypeInfo(TAccountStatus), Ord(Status));
+    ExecSQL;
+    Open;
+    if Fields[0].AsInteger>0 then Result:=true
+     else Result:=False;
+    Close;
+  end;
 end;
 
 procedure TAccountManager.DeleteAccount(AccountId:Integer);
@@ -302,21 +307,24 @@ begin
    end;
 end;
 
+procedure TAccountManager.SetStatus(AccountId:integer;
+    AccountStatus:TAccountStatus);
+begin
+  with DBProc do
+   begin
+    SQL.Text:='UPDATE Accounts SET Status=:AccountStatus WHERE Id=:AccountId';
+    Parameters.ParamByName('AccountStatus').Value:=GetEnumName(TypeInfo(TAccountStatus), Ord(AccountStatus));
+    Parameters.ParamByName('AccountId').Value:=AccountId;
+    ExecSQL;
+   end;
+end;
+
 procedure TAccountManager.UpdateAccountTable;
 begin
   if NOT  AccountTable.Active then   AccountTable.Open;
   AccountTable.Requery();
 end;
 
-{
-
-не использовать многие проверки - откуда возьмутся левые данные
-основные интерфейсы
- список аккаунтов - только на чтение
- преобразования
- 
-
-}
 
 end.
 

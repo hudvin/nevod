@@ -12,7 +12,7 @@ type
   EUnknownError = class(Exception);
   ECorreptedAccount=class(Exception);
   EDBerror = class(Exception);
-
+  EInvalidSettingName=class(Exception);
 implementation
 
 

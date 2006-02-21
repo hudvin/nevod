@@ -11,7 +11,8 @@ uses
   ThreadManager in '..\MailReceiver\ThreadManager.pas',
   Exceptions in '..\Shared\Exceptions.pas',
   AccountManager in '..\Shared\AccountManager.pas',
-  SHA1 in '..\Crypt\SHA1.pas';
+  SHA1 in '..\Crypt\SHA1.pas',
+  Settings in '..\Shared\Settings.pas';
 
 {$R *.res}
 

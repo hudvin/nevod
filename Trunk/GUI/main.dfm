@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 378
-  Top = 153
+  Left = 318
+  Top = 136
   BorderStyle = bsSingle
   Caption = 'FMain'
   ClientHeight = 129
@@ -22,6 +22,15 @@ object FMain: TFMain
     Caption = 'Button1'
     TabOrder = 0
     OnClick = Button1Click
+  end
+  object Button2: TButton
+    Left = 64
+    Top = 64
+    Width = 129
+    Height = 33
+    Caption = 'Button2'
+    TabOrder = 1
+    OnClick = Button2Click
   end
   object acon: TADOConnection
     ConnectionString = 
