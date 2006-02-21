@@ -22,6 +22,7 @@ const
   NOTIFY_FOR_THIS_SESSION = 0;
   NOTIFY_FOR_ALL_SESSIONS = 1;
   CriptKey=' &(5428396%:?(__*:?:(_(%fGfhhKJHFGHD12_= ';
+  MutexName='{94FA4497-A317-4C45-9B57-A0558F8221D7}';
 type
   TAccountStatus=(asFree,asClient,asServer);
 

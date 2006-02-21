@@ -2,9 +2,8 @@ unit ThreadManager;
 
 interface
 
-uses  Exceptions,
-   Shared,PostReceiver,SysUtils,TypInfo, Windows,Classes,DateUtils,
-   ActiveX,Dialogs, ADODB;
+uses  Exceptions, Settings,   Shared,PostReceiver,
+SysUtils,TypInfo, Windows,Classes,DateUtils,Dialogs, ADODB;
 
 
 type
@@ -15,16 +14,17 @@ type
     ClientTimeout: Integer;
     Commands: TADOStoredProc;
     FADOCon: TADOConnection;
+    Mutex: THandle;
+    FSettings: TPostSettings;
     PostReceivers: TList;
     RunStep: Integer;
     Settings: TSettings;
     SleepTime: Integer;
     procedure Clean;
     function GetActiveThreads: Integer;
-    procedure SetStatus(Status:TAccountStatus;Id:integer);
     procedure UpdateSettings;
   public
-    constructor Create(ADOCon: TADOConnection);
+    constructor Create(ADOCon: TADOConnection;PostSettings:TPostSettings);
     destructor Destroy; override;
     procedure Execute; override;
     procedure StartAllThreads;
@@ -40,9 +40,12 @@ uses DB;
 {
 ******************************** TThreadManager ********************************
 }
-constructor TThreadManager.Create(ADOCon: TADOConnection);
+constructor TThreadManager.Create(ADOCon: TADOConnection;
+    PostSettings:TPostSettings);
 begin
   inherited Create(False);
+  FSettings:=PostSettings;
+  Mutex:=CreateMutex(nil,False,MutexName);
   PostReceivers:=TList.Create;
   FADOCon:=ADOCon;
   Settings:=TSettings.Create(FADOCon);
@@ -70,11 +73,10 @@ begin
     begin
      if TBaseReceiver(PostReceivers[i]).Terminated then
          begin
-           SetStatus(asFree,TBaseReceiver(PostReceivers[i]).AccountId);
-       //    FreeAndNil(); проверить можно ли использовать
+         //  SetStatus(asFree,TBaseReceiver(PostReceivers[i]).AccountId);
            TBaseReceiver(PostReceivers[i]).Free; // вызов деструктора получателя
            PostReceivers[i]:=nil; // обнуление массива  элементов
-          end;
+         end;
      inc(i);
     end;
   PostReceivers.Pack;
@@ -87,8 +89,9 @@ begin
   Counter:=RunStep;
   while not Terminated do
    begin
-    UpdateSettings;
+    UpdateSettings; // обновлять параметры менеджера
     Counter:=Counter+SleepTime; // время, через которое ищутся остановленные потоки
+    // захват мьютекса добавлять время после захвата мьютекса
     Clean(); // удаление остановленных потоков
     if Counter>=RunStep  then
      begin
@@ -96,7 +99,8 @@ begin
       Counter:=0;
      end;
     sleep(SleepTime);
-  end;
+    // освобождение мьютекса
+   end;
   Terminate;
 end;
 
@@ -105,33 +109,10 @@ begin
   //  Result := FActiveThreads;
 end;
 
-procedure TThreadManager.SetStatus(Status:TAccountStatus;Id:integer);
-begin
-  // использовать приведние типов к текстовому виду
-  CoInitialize(nil);
-  with Commands do
-   begin
-    Parameters.Clear;
-    ProcedureName:='SetStatusById';
-    with Parameters do
-     begin
-      Clear;
-      AddParameter.Name:='status';
-      ParamByName('status').Value:=GetEnumName(TypeInfo(TAccountStatus), Ord(Status));
-
-      AddParameter.Name:='id';
-      ParamByName('id').Value:=Id;
-     end;
-    ExecProc;
-   end;
-  CoUninitialize;
-end;
-
 procedure TThreadManager.StartAllThreads;
 var
   AParams: TAccountParams;
 begin
-    CoInitialize(nil);
     CanExecute:=True;
     with Accounts do
      begin
@@ -150,13 +131,12 @@ begin
           Port:=FieldByName('Port').AsInteger;
           Id:=FieldByName('Id').AsInteger;
           PostReceivers.Add(TPOP3Receiver.Create(AParams,FADOCon,ClientTimeout,True));   // создавать в зависимости от типа протокола
-          SetStatus(asClient,AParams.Id);   // создать объект для служебных целей
+       //   SetStatus(asClient,AParams.Id);   // создать объект для служебных целей
           Next;
          end;
        end;
       Close;
      end;
-  CoUninitialize;
 end;
 
 procedure TThreadManager.StartThread(AccountId: Integer);
@@ -164,18 +144,10 @@ begin
 end;
 
 procedure TThreadManager.UpdateSettings;
-var
-  tmp_ClientTimeout, tmp_RunStep, tmp_SleepTime: Integer;
 begin
-  try
-   tmp_ClientTimeout:=StrToInt(Settings.GetValue('ClientTimeout'));// время ожидания сервера
-   tmp_RunStep:=StrToInt(Settings.GetValue('RunStep')); // промежуток проверки почты
-   tmp_SleepTime:=StrToInt(Settings.GetValue('SleepTime'));   // шаг удаления потоков
-   ClientTimeout:=tmp_ClientTimeout;
-   RunStep:=tmp_RunStep;
-   SleepTime:=tmp_SleepTime;
-  except
-  end;
+ ClientTimeout:=StrToInt(FSettings.Setting['ClientTimeout']);
+ RunStep:=StrToInt(FSettings.Setting['RunStep']);
+ SleepTime:=StrToInt(FSettings.Setting['SleepTime']);
 end;
 
 end.

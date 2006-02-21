@@ -12,7 +12,8 @@ uses
   Exceptions in '..\Shared\Exceptions.pas',
   AccountManager in '..\Shared\AccountManager.pas',
   SHA1 in '..\Crypt\SHA1.pas',
-  Settings in '..\Shared\Settings.pas';
+  Settings in '..\Shared\Settings.pas',
+  PostManager in '..\Shared\PostManager.pas';
 
 {$R *.res}
 

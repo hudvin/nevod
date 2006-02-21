@@ -2,7 +2,7 @@ unit Settings;
 
 interface
 uses
-    ADODB,DB;
+    ADODB,DB,Exceptions;
 
 type
   TPostSettings = class
@@ -22,7 +22,6 @@ type
 
 implementation
 
-uses Exceptions;
 
 constructor TPostSettings.Create(ADOCon:TADOConnection);
 begin

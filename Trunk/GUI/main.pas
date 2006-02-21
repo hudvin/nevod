@@ -2,7 +2,7 @@ unit main;
 
 interface
 
-uses
+uses  idGlobal,
   StrUtils,PostReceiver, Dialogs, ShellAPI, IdMessage, IdBaseComponent, IdComponent,
   IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient,
   IdPOP3, DB, ADODB, Classes, Controls, StdCtrls, Forms,  IniFiles,
@@ -56,17 +56,20 @@ end;
 procedure TFMain.Button2Click(Sender: TObject);
 var sList:THashedStringList;
     ps:TPostSettings;
+    h1,h2:THandle;
 begin
- ps:=TPostSettings.Create(acon);
- ps.Setting['RunStep']:='500000';
- ShowMessage(ps.Setting['RunStep']);
-{
- sList:=THashedStringList.Create;
- sList.Add('qwertry');
- sList.Values['qwerty']:='zzz';
- Showmessage(sList.Values['qwerty']);
+//  ShowMessage(SysErrorMessage(GetLastError));
+ h1:=CreateMutex(nil,False,MutexName);
+//  ShowMessage(SysErrorMessage(GetLastError));
+ h2:=CreateMutex(nil,False,MutexName);
+ if WaitForSingleObject(h2,INFINITE)=WAIT_OBJECT_0 then
+   sleep(5000);
+ ReleaseMutex(h2);
 
-}
+ ShowMessage(SysErrorMessage(GetLastError));
+ if h2=0
+   then ShowMessage('Fuck');
+
 
 end;
 
