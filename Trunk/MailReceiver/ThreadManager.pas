@@ -30,15 +30,15 @@ type
     procedure Execute; override;
     procedure StartAllThreads(Intro:boolean=True);
     procedure StartThread(AccountId: Integer;Single:Boolean=False);
-    procedure StopAllThreads;
-    procedure StopThread;
+    procedure StopAllThreads(Soft:boolean=False);
+    procedure StopThread(Item: Integer);
     property ActiveThreads: Integer read GetActiveThreads;
   end;
 
 
 implementation
 
-uses DB;
+uses DB, StrUtils;
 
 {
 ******************************** TThreadManager ********************************
@@ -162,16 +162,40 @@ begin
   end;
 end;
 
-procedure TThreadManager.StopAllThreads;
+procedure TThreadManager.StopAllThreads(Soft:boolean=False);
+var
+ i:integer;
 begin
- {
+ if NOT Soft then
+   FCanExecute:=False;
+ WaitForSingleObject(Mutex,INFINITE);
+  Clean;
+  for i :=0  to PostReceivers.Count-1  do
+   begin
 
- }
+   end;
+
+  {
+  очистить потоки
+  удалить все активные - вызват функцию
+  }
+ ReleaseMutex(Mutex);
+
+  {
+  если м€гка€ остановка - просто остановить все потоки
+  если нет - выставить CanExecute:=False
+  }
 end;
 
-procedure TThreadManager.StopThread;
+procedure TThreadManager.StopThread(Item: Integer);  // удаление по индексу
 begin
-  // TODO -cMM: TThreadManager.StopThread default body inserted
+ if not TBaseReceiver(PostReceivers[Item]).Terminated then
+  PostReceivers[Item]:=nil
+   else
+    begin
+     TBaseReceiver(PostReceivers[Item]).Free;
+     PostReceivers[Item]:=nil;
+    end;
 end;
 
 procedure TThreadManager.UpdateSettings;
