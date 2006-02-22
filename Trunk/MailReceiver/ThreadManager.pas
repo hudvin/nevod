@@ -3,16 +3,16 @@ unit ThreadManager;
 interface
 
 uses  Exceptions, Settings,   Shared,PostReceiver,
-SysUtils,TypInfo, Windows,Classes,DateUtils,Dialogs, ADODB;
+SysUtils,TypInfo, Windows,Classes,DateUtils,Dialogs, ADODB, AccountManager;
 
 
 type
   TThreadManager = class(TThread)
   private
     Accounts: TADOStoredProc;
-    CanExecute: Boolean;
+    FCanExecute: Boolean;
     ClientTimeout: Integer;
-    Commands: TADOStoredProc;
+    FAccountManager: TAccountManager;
     FADOCon: TADOConnection;
     Mutex: THandle;
     FSettings: TPostSettings;
@@ -24,11 +24,14 @@ type
     function GetActiveThreads: Integer;
     procedure UpdateSettings;
   public
-    constructor Create(ADOCon: TADOConnection;PostSettings:TPostSettings);
+    constructor Create(ADOCon: TADOConnection;PostSettings:TPostSettings;
+        AccountManager:TAccountManager;CanExecute:Boolean=True);
     destructor Destroy; override;
     procedure Execute; override;
-    procedure StartAllThreads;
-    procedure StartThread(AccountId: Integer);
+    procedure StartAllThreads(Intro:boolean=True);
+    procedure StartThread(AccountId: Integer;Single:Boolean=False);
+    procedure StopAllThreads;
+    procedure StopThread;
     property ActiveThreads: Integer read GetActiveThreads;
   end;
 
@@ -41,27 +44,26 @@ uses DB;
 ******************************** TThreadManager ********************************
 }
 constructor TThreadManager.Create(ADOCon: TADOConnection;
-    PostSettings:TPostSettings);
+    PostSettings:TPostSettings; AccountManager:TAccountManager;
+    CanExecute:Boolean=True);
 begin
   inherited Create(False);
   FSettings:=PostSettings;
   Mutex:=CreateMutex(nil,False,MutexName);
+  FAccountManager:=AccountManager;
   PostReceivers:=TList.Create;
   FADOCon:=ADOCon;
-  Settings:=TSettings.Create(FADOCon);
-  Commands:=TADOStoredProc.Create(nil);
-  Commands.Connection:=FADOCon;
-  Accounts:=TADOStoredProc.Create(nil);
-  Accounts.Connection:=FADOCon;
-  Accounts.ProcedureName:='SetStatusToFree';
-  Accounts.ExecProc;
-  CanExecute:=True;
+  FCanExecute:=CanExecute;
   UpdateSettings;
 end;
 
 destructor TThreadManager.Destroy;
 begin
   inherited Destroy;
+  CloseHandle(Mutex);
+  FADOCon:=nil;
+  FSettings := nil;
+  FAccountManager:=nil;
 end;
 
 procedure TThreadManager.Clean;
@@ -73,7 +75,7 @@ begin
     begin
      if TBaseReceiver(PostReceivers[i]).Terminated then
          begin
-         //  SetStatus(asFree,TBaseReceiver(PostReceivers[i]).AccountId);
+           FAccountManager.SetStatus(TBaseReceiver(PostReceivers[i]).AccountId,asFree);
            TBaseReceiver(PostReceivers[i]).Free; // вызов деструктора получателя
            PostReceivers[i]:=nil; // обнуление массива  элементов
          end;
@@ -89,58 +91,87 @@ begin
   Counter:=RunStep;
   while not Terminated do
    begin
-    UpdateSettings; // обновлять параметры менеджера
-    Counter:=Counter+SleepTime; // время, через которое ищутся остановленные потоки
-    // захват мьютекса добавлять время после захвата мьютекса
-    Clean(); // удаление остановленных потоков
-    if Counter>=RunStep  then
+    Counter:=Counter+SleepTime;
+    WaitForSingleObject(Mutex,SleepTime) ;
+    UpdateSettings;
+    Clean();
+    if (Counter>=RunStep) and (FCanExecute) then
      begin
       StartAllThreads; // запуск потоков для получения
       Counter:=0;
      end;
     sleep(SleepTime);
-    // освобождение мьютекса
+    ReleaseMutex(Mutex);
    end;
   Terminate;
 end;
 
 function TThreadManager.GetActiveThreads: Integer;
 begin
-  //  Result := FActiveThreads;
+  WaitForSingleObject(Mutex,INFINITE);
+    Clean();
+    Result:=PostReceivers.Count;
+  ReleaseMutex(Mutex);
 end;
 
-procedure TThreadManager.StartAllThreads;
+procedure TThreadManager.StartAllThreads(Intro:boolean=True);
 var
   AParams: TAccountParams;
+  i:integer;
 begin
-    CanExecute:=True;
-    with Accounts do
-     begin
-      ProcedureName:='GetFreeAccountList';
-      ExecProc;
-      Open;
-      First;
-      while not Eof do
-       begin
-        with AParams do
-         begin
-          AccountName:=FieldByName('AccountName').AsString;
-          Username:=FieldByName('Username').AsString;
-          Host:=FieldByName('Host').AsString;
-          Password:=FieldByName('Password').AsString;
-          Port:=FieldByName('Port').AsInteger;
-          Id:=FieldByName('Id').AsInteger;
-          PostReceivers.Add(TPOP3Receiver.Create(AParams,FADOCon,ClientTimeout,True));   // создавать в зависимости от типа протокола
-       //   SetStatus(asClient,AParams.Id);   // создать объект для служебных целей
-          Next;
-         end;
-       end;
-      Close;
-     end;
+ {
+
+ если запускаются из класса - запускать сразу
+  если снаружи - ждать мьютекс
+
+ }
+ if Intro then   // если запуск из класса
+  begin
+   FCanExecute:=True;
+   for i :=1  to FAccountManager.Count  do
+    if FAccountManager.Items[i].Status=asFree
+     then StartThread(FAccountManager.Items[i].Id);
+  end
+ else  // если запуск из надкласса или интерфейса
+  begin
+   WaitForSingleObject(Mutex,INFINITE);
+    FCanExecute:=True;
+    for i :=1  to FAccountManager.Count  do
+     if FAccountManager.Items[i].Status=asFree
+      then StartThread(FAccountManager.Items[i].Id);
+   ReleaseMutex(Mutex);
+  end;
 end;
 
-procedure TThreadManager.StartThread(AccountId: Integer);
+procedure TThreadManager.StartThread(AccountId: Integer;Single:Boolean=False);
+var
+ AParams:TAccountParams;
 begin
+ AParams:=FAccountManager.AccountById[AccountId];
+ if Single then  // если запуск одиночного потока
+  begin
+   WaitForSingleObject(Mutex,INFINITE);
+    FAccountManager.SetStatus(AccountId,asClient);
+    PostReceivers.Add(TPOP3Receiver.Create(AParams,FADOCon,ClientTimeout,True));
+   ReleaseMutex(Mutex);
+  end
+ else // если запуск происходит из процедуры StartAllThreads - мьютекс захвачен
+  begin
+   FAccountManager.SetStatus(AccountId,asClient);
+   PostReceivers.Add(TPOP3Receiver.Create(AParams,FADOCon,ClientTimeout,True));
+  end;
+end;
+
+procedure TThreadManager.StopAllThreads;
+begin
+ {
+
+ }
+end;
+
+procedure TThreadManager.StopThread;
+begin
+  // TODO -cMM: TThreadManager.StopThread default body inserted
 end;
 
 procedure TThreadManager.UpdateSettings;
@@ -149,5 +180,19 @@ begin
  RunStep:=StrToInt(FSettings.Setting['RunStep']);
  SleepTime:=StrToInt(FSettings.Setting['SleepTime']);
 end;
+
+{
+
+все действия в отдельный функциях
+
+функции для остановки всех потоков
+для остановки одного потока
+ в каждой процедуре захватывать мьютекс
+ поток получения останавливать сразу - в UI сделать запрос
+ свойство с количеством активных потоков
+ возможность остановки потоков полностью или только в текущем цикле
+  в любом случае захватывать мьютекс
+ передавать в констркукторе - запускать ли потоки сразу
+}
 
 end.

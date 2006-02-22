@@ -29,7 +29,7 @@ var
   trod:TThreadManager;
 implementation
 
-uses  Shared, AccountManager, Exceptions, Settings;
+uses  Shared, AccountManager, Exceptions, Settings, PostManager;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
@@ -54,23 +54,23 @@ begin
 end;
 
 procedure TFMain.Button2Click(Sender: TObject);
-var sList:THashedStringList;
-    ps:TPostSettings;
-    h1,h2:THandle;
+var
+  am:TAccountManager;
+  Params:TAccountParams;
+  post:TPostManager;
 begin
-//  ShowMessage(SysErrorMessage(GetLastError));
- h1:=CreateMutex(nil,False,MutexName);
-//  ShowMessage(SysErrorMessage(GetLastError));
- h2:=CreateMutex(nil,False,MutexName);
- if WaitForSingleObject(h2,INFINITE)=WAIT_OBJECT_0 then
-   sleep(5000);
- ReleaseMutex(h2);
+  post:=TPostManager.Create(ACon);
+  sleep(10000);
+  post.StartAllThreads;
+ {Params.AccountName:='qax';
+ Params.Username:='qax';
+ Params.Host:='localhost';
+ Params.Password:='qax';
+ Params.Port:=110;
 
- ShowMessage(SysErrorMessage(GetLastError));
- if h2=0
-   then ShowMessage('Fuck');
-
-
+ am:=TAccountManager.Create(ACon);
+ am.AddAccount(Params);
+}
 end;
 
 end.

@@ -44,6 +44,7 @@ begin
   AccountTable:=TADOTable.Create(nil);
   AccountTable.Connection:=FADOCon;
   AccountTable.TableName:='Accounts';
+  UpdateAccountTable;
   DBProc:=TADOQuery.Create(nil);
   DBProc.Connection:=FADOCon;
   SetKey(Shared.CriptKey);
@@ -111,6 +112,7 @@ begin
      ParamByName('Host').Value:=NewAccount.Host;
      ParamByName('Port').Value:=NewAccount.Port;
      DBProc.ExecSQL;
+     UpdateAccountTable;
     end;
 end;
 
@@ -194,6 +196,7 @@ begin
       SQL.Text:='DELETE FROM Accounts WHERE Id=:AccountId';
       Parameters.ParamByName('AccountId').Value:=AccountId;
       ExecSQL;
+      UpdateAccountTable;
      end;
    end;
 end;
