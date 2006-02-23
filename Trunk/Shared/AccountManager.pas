@@ -17,16 +17,16 @@ type
     procedure SetAccountById(AccountId:integer; Value: TAccountParams);
   protected
     function AccountIdExists(AccountId:integer): Boolean;
-    function AccountName2Id(AccountName:String): Integer;
     function AccountNameExists(AccountName:String): Boolean;
-    function Id2AccountName(AccountId:integer): string;
   public
     constructor Create(ADOCon:TADOConnection); virtual;
     destructor Destroy; override;
+    function AccountName2Id(AccountName:String): Integer;
     procedure AddAccount(NewAccount:TAccountParams);
     function CheckParams(Account:TAccountParams;NewAccount:boolean=False): Boolean;
     function CheckStatus(Status:TAccountStatus;AccountId:Integer): Boolean;
     procedure DeleteAccount(AccountId:Integer);
+    function Id2AccountName(AccountId:integer): string;
     procedure SetStatus(AccountId:integer;AccountStatus:TAccountStatus);
     procedure UpdateAccountTable;
     property AccountById[AccountId:integer]: TAccountParams read GetAccountById
@@ -90,7 +90,7 @@ function TAccountManager.AccountNameExists(AccountName:String): Boolean;
 begin
   with DBProc do
    begin
-    SQL.Text:='SELECT COUNT(Id) FROM Accounts WHEHE AccountName=:AccountName';
+    SQL.Text:='SELECT COUNT(Id) FROM Accounts WHERE AccountName=:AccountName';
     Parameters.ParamByName('AccountName').Value:=AccountName;
     ExecSQL;
     Open;
@@ -328,6 +328,14 @@ begin
   AccountTable.Requery();
 end;
 
+{
+
+функция для проверки доступа
+ если нет аккаунта - asNone
+ если свободен - вернуть
+ получение параметров по имени пользователя
+
+}
 
 end.
 

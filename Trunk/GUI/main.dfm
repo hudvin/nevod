@@ -42,6 +42,15 @@ object FMain: TFMain
     TabOrder = 2
     OnClick = Button3Click
   end
+  object Button4: TButton
+    Left = 72
+    Top = 200
+    Width = 75
+    Height = 25
+    Caption = 'Button4'
+    TabOrder = 3
+    OnClick = Button4Click
+  end
   object acon: TADOConnection
     ConnectionString = 
       'Provider=Microsoft.Jet.OLEDB.4.0;User ID=Admin;Data Source=..\DB' +
@@ -58,5 +67,32 @@ object FMain: TFMain
     Provider = 'Microsoft.Jet.OLEDB.4.0'
     Left = 8
     Top = 8
+  end
+  object pop: TIdPOP3Server
+    Bindings = <
+      item
+        IP = '127.0.0.1'
+        Port = 110
+      end>
+    CommandHandlers = <>
+    ExceptionReply.Code = '-ERR'
+    ExceptionReply.Text.Strings = (
+      'Unknown Internal Error')
+    Greeting.Code = '+OK'
+    Greeting.Text.Strings = (
+      'Welcome to Indy POP3 Server')
+    HelpReply.Code = '+OK'
+    HelpReply.Text.Strings = (
+      'Help follows')
+    MaxConnectionReply.Code = '-ERR'
+    MaxConnectionReply.Text.Strings = (
+      'Too many connections. Try again later.')
+    ReplyTexts = <>
+    ReplyUnknownCommand.Code = '-ERR'
+    ReplyUnknownCommand.Text.Strings = (
+      'Sorry, Unknown Command')
+    CheckUser = popCheckUser
+    Left = 136
+    Top = 136
   end
 end

@@ -13,7 +13,8 @@ uses
   AccountManager in '..\Shared\AccountManager.pas',
   SHA1 in '..\Crypt\SHA1.pas',
   Settings in '..\Shared\Settings.pas',
-  PostManager in '..\Shared\PostManager.pas';
+  PostManager in '..\Shared\PostManager.pas',
+  POPServer in '..\POP3Server\POPServer.pas';
 
 {$R *.res}
 

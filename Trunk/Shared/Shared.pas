@@ -3,7 +3,7 @@ unit Shared;
 interface
 
 uses
-  Windows,ZLib,TypInfo, Messages, SysUtils, Variants,  ComObj,ActiveX,
+  Windows,WinSock, ZLib,TypInfo, Messages, SysUtils, Variants,  ComObj,ActiveX,
   Dialogs, StdCtrls, DB, ADODB,IdMessage, Classes,
   IdText,IdMessageParts, StrUtils,IdAttachment,IdZLibCompressorBase,
   DCPcrypt,Blowfish,Base64,IdHash,IdHashMessageDigest;
@@ -171,7 +171,7 @@ procedure Register;
 function RegisterSessionNotification(Wnd: HWND; dwFlags: DWORD): Boolean;
 function UnRegisterSessionNotification(Wnd: HWND): Boolean;
 function GetCurrentSessionID: Integer;
-
+function GetLocalIP: String;
 implementation
 
 procedure Register;
@@ -704,5 +704,21 @@ begin
   end;
 end;
 
+function GetLocalIP: String;
+const WSVer = $101;
+var
+  wsaData: TWSAData;
+  P: PHostEnt;
+  Buf: array [0..127] of Char;
+begin
+  Result := '';
+  if WSAStartup(WSVer, wsaData) = 0 then begin
+    if GetHostName(@Buf, 128) = 0 then begin
+      P := GetHostByName(@Buf);
+      if P <> nil then Result := iNet_ntoa(PInAddr(p^.h_addr_list^)^);
+    end;
+    WSACleanup;
+  end;
+end;
 
 end.

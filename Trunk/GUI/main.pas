@@ -2,11 +2,12 @@ unit main;
 
 interface
 
-uses  idGlobal, PostManager, DB, ADODB, Classes, Controls, 
+uses  idGlobal,WinSock, PostManager, DB, ADODB, Classes, Controls, 
   StrUtils,PostReceiver, Dialogs, ShellAPI, IdMessage, IdBaseComponent, IdComponent,
   IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient,
-  Forms,  IniFiles,
-  Windows,ThreadManager, Messages, SysUtils, Variants, StdCtrls;
+  Forms,  IniFiles, IdContext, POPServer,
+  Windows,ThreadManager, Messages, SysUtils, Variants, StdCtrls,
+  IdCustomTCPServer, IdTCPServer, IdCmdTCPServer, IdPOP3Server;
 
 type
   TFMain = class(TForm)
@@ -14,10 +15,15 @@ type
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
+    pop: TIdPOP3Server;
+    Button4: TButton;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Button3Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
+    procedure popCheckUser(AThread: TIdContext;
+      LThread: TIdPOP3ServerContext);
   private
     { Private declarations }
   public
@@ -31,13 +37,14 @@ var
   Receiver:TPOP3Receiver;
   trod:TThreadManager;
   post:TPostManager;
+  pop:TPOPServer;
 implementation
 
-uses  Shared, AccountManager, Exceptions, Settings ;
+uses  Shared, AccountManager, Exceptions, Settings , IdIOHandler,
+  IdIOHandlerSocket, Math;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
-
 
 procedure TFMain.Button1Click(Sender: TObject);
 var
@@ -63,7 +70,7 @@ var
   Params:TAccountParams;
 
 begin
-  
+
   post.StartAllThreads;
  {Params.AccountName:='qax';
  Params.Username:='qax';
@@ -78,12 +85,25 @@ end;
 
 procedure TFMain.FormCreate(Sender: TObject);
 begin
-post:=TPostManager.Create(ACon);
+ post:=TPostManager.Create(ACon);
 end;
 
 procedure TFMain.Button3Click(Sender: TObject);
 begin
  post.StopAllThreads;
+end;
+
+procedure TFMain.Button4Click(Sender: TObject);
+begin
+// ShowMessage(GetLocalIP);
+//Caption:= IntToStr(IfThen(True,10,20)));
+end;
+
+procedure TFMain.popCheckUser(AThread: TIdContext;
+  LThread: TIdPOP3ServerContext);
+begin
+ //Caption:=LThread.Connection.Socket.Binding.IP;
+  Caption:=AThread.Connection.Socket.Host;
 end;
 
 end.

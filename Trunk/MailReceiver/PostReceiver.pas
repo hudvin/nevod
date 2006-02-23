@@ -209,7 +209,7 @@ begin
             end;
          end;
    POP3Client.Disconnect;
-   CoInitialize(nil);
+ //  CoInitialize(nil);
    with OldMessagesId do
     begin
      Parameters.Clear;
@@ -218,7 +218,7 @@ begin
      Parameters.ParamByName('AccountId').Value:=AccountId;
      ExecProc;
     end;
-   CoUninitialize;
+  // CoUninitialize;
    except
      on E:Exception do
       begin

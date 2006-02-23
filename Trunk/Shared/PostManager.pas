@@ -2,7 +2,7 @@ unit PostManager;
 
 interface
 uses
-   Windows,Shared, ADODB,DB,Settings, ThreadManager, AccountManager;
+   Windows,Shared,POPServer, ADODB,DB,Settings, ThreadManager, AccountManager;
 
 type
   TPostManager = class
@@ -11,6 +11,7 @@ type
     FADOCommand: TADOCommand;
     Mutex: THandle;
     FADOCon: TADOConnection;
+    POP3Server: TPOPserver;
     PostSettings: TPostSettings;
     ThreadManager: TThreadManager;
     procedure UpdateAccounts;
@@ -35,15 +36,18 @@ begin
  ThreadManager:=TThreadManager.Create(FADOCon,PostSettings,AccountManager,False); // запуск в пассивном состоянии
  FADOCommand:=TADOCommand.Create(nil);
  FADOCommand.Connection:=FADOCon;
+ POP3Server:=TPOPServer.Create(FADOCon,PostSettings,AccountManager);
  UpdateAccounts;
 end;
 
 destructor TPostManager.Destroy;
 begin
-  FADOCon:=nil;
-  PostSettings.Free;
+  StopAllThreads();
+  FADOCommand.Free;
   ThreadManager.Free;
   AccountManager.Free;
+  PostSettings.Free;
+  FADOCon:=nil;
   CloseHandle(Mutex);
 end;
 
@@ -72,18 +76,5 @@ begin
  FADOCommand.CommandText:=' UPDATE Accounts SET Status='+''''+'asFree'+'''';
  FADOCommand.Execute;
 end;
-
-{
- обнуление всех аккаунтов перед запуском
- методы для
-  запуска сервера
-  останова сервера
-  запуска потоков
-  остановки потоков
-  остановки фильтрации
-  запуска потока
-  останова потока
-  полный останов получения или только текущего прохода
-}
 
 end.
