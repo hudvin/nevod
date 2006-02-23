@@ -31,7 +31,7 @@ type
     procedure StartAllThreads(Intro:boolean=True);
     procedure StartThread(AccountId: Integer;Single:Boolean=False);
     procedure StopAllThreads(Soft:boolean=False);
-    procedure StopThread(Item: Integer);
+    procedure StopThread(AccountId: Integer); overload;
     property ActiveThreads: Integer read GetActiveThreads;
   end;
 
@@ -59,6 +59,7 @@ end;
 
 destructor TThreadManager.Destroy;
 begin
+  StopAllThreads();
   inherited Destroy;
   CloseHandle(Mutex);
   FADOCon:=nil;
@@ -171,14 +172,16 @@ begin
  WaitForSingleObject(Mutex,INFINITE);
   Clean;
   for i :=0  to PostReceivers.Count-1  do
-   begin
-
-   end;
-
-  {
-  очистить потоки
-  удалить все активные - вызват функцию
-  }
+    if not TBaseReceiver(PostReceivers[i]).Terminated then
+     begin
+      TBaseReceiver(PostReceivers[i]).Free;
+      PostReceivers[i]:=nil;
+     end
+    else
+     begin
+    //  TBaseReceiver(PostReceivers[i]).Free;
+      PostReceivers[i]:=nil;
+     end;
  ReleaseMutex(Mutex);
 
   {
@@ -187,15 +190,24 @@ begin
   }
 end;
 
-procedure TThreadManager.StopThread(Item: Integer);  // удаление по индексу
+procedure TThreadManager.StopThread(AccountId: Integer);
+var
+ i:integer;
 begin
- if not TBaseReceiver(PostReceivers[Item]).Terminated then
-  PostReceivers[Item]:=nil
-   else
-    begin
-     TBaseReceiver(PostReceivers[Item]).Free;
-     PostReceivers[Item]:=nil;
-    end;
+ WaitForSingleObject(Mutex,INFINITE);
+  for i :=0  to PostReceivers.Count-1 do
+   if TBaseReceiver(PostReceivers[i]).AccountId=AccountId then
+    if not TBaseReceiver(PostReceivers[i]).Terminated then
+     begin
+      TBaseReceiver(PostReceivers[i]).Free;
+      PostReceivers[i]:=nil;
+     end
+    else
+     begin
+      //TBaseReceiver(PostReceivers[i]).Free;
+      PostReceivers[i]:=nil;
+     end;
+ ReleaseMutex(Mutex);
 end;
 
 procedure TThreadManager.UpdateSettings;
@@ -204,19 +216,5 @@ begin
  RunStep:=StrToInt(FSettings.Setting['RunStep']);
  SleepTime:=StrToInt(FSettings.Setting['SleepTime']);
 end;
-
-{
-
-все действия в отдельный функциях
-
-функции для остановки всех потоков
-для остановки одного потока
- в каждой процедуре захватывать мьютекс
- поток получения останавливать сразу - в UI сделать запрос
- свойство с количеством активных потоков
- возможность остановки потоков полностью или только в текущем цикле
-  в любом случае захватывать мьютекс
- передавать в констркукторе - запускать ли потоки сразу
-}
 
 end.

@@ -17,8 +17,11 @@ type
   protected
   public
     constructor Create(ADOCon:TADOConnection);
-    destructor Destroy;
+    destructor Destroy; override;
     procedure StartAllThreads;
+    procedure StartThread(AccountId:Integer);
+    procedure StopAllThreads(Soft:boolean=False);
+    procedure StopThread(AccountId:Integer);
   end;
 
 implementation
@@ -47,6 +50,21 @@ end;
 procedure TPostManager.StartAllThreads;
 begin
   Threadmanager.StartAllThreads(False);
+end;
+
+procedure TPostManager.StartThread(AccountId:Integer);
+begin
+  ThreadManager.StartThread(AccountId,True);
+end;
+
+procedure TPostManager.StopAllThreads(Soft:boolean=False);
+begin
+  ThreadManager.StopAllThreads(Soft);
+end;
+
+procedure TPostManager.StopThread(AccountId:Integer);
+begin
+ ThreadManager.StopThread(AccountId);
 end;
 
 procedure TPostManager.UpdateAccounts;

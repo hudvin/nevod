@@ -2,19 +2,22 @@ unit main;
 
 interface
 
-uses  idGlobal,
+uses  idGlobal, PostManager, DB, ADODB, Classes, Controls, 
   StrUtils,PostReceiver, Dialogs, ShellAPI, IdMessage, IdBaseComponent, IdComponent,
   IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient,
-  IdPOP3, DB, ADODB, Classes, Controls, StdCtrls, Forms,  IniFiles,
-  Windows,ThreadManager, Messages, SysUtils, Variants;
+  Forms,  IniFiles,
+  Windows,ThreadManager, Messages, SysUtils, Variants, StdCtrls;
 
 type
   TFMain = class(TForm)
     acon: TADOConnection;
     Button1: TButton;
     Button2: TButton;
+    Button3: TButton;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -27,9 +30,10 @@ var
   FMain: TFMain;
   Receiver:TPOP3Receiver;
   trod:TThreadManager;
+  post:TPostManager;
 implementation
 
-uses  Shared, AccountManager, Exceptions, Settings, PostManager;
+uses  Shared, AccountManager, Exceptions, Settings ;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
@@ -57,10 +61,9 @@ procedure TFMain.Button2Click(Sender: TObject);
 var
   am:TAccountManager;
   Params:TAccountParams;
-  post:TPostManager;
+
 begin
-  post:=TPostManager.Create(ACon);
-  sleep(10000);
+  
   post.StartAllThreads;
  {Params.AccountName:='qax';
  Params.Username:='qax';
@@ -71,6 +74,16 @@ begin
  am:=TAccountManager.Create(ACon);
  am.AddAccount(Params);
 }
+end;
+
+procedure TFMain.FormCreate(Sender: TObject);
+begin
+post:=TPostManager.Create(ACon);
+end;
+
+procedure TFMain.Button3Click(Sender: TObject);
+begin
+ post.StopAllThreads;
 end;
 
 end.

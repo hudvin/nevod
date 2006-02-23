@@ -3,7 +3,7 @@ object FMain: TFMain
   Top = 136
   BorderStyle = bsSingle
   Caption = 'FMain'
-  ClientHeight = 129
+  ClientHeight = 273
   ClientWidth = 284
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -12,6 +12,7 @@ object FMain: TFMain
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object Button1: TButton
@@ -24,13 +25,22 @@ object FMain: TFMain
     OnClick = Button1Click
   end
   object Button2: TButton
-    Left = 64
-    Top = 64
+    Left = 32
+    Top = 56
     Width = 129
     Height = 33
-    Caption = 'Button2'
+    Caption = 'Start'
     TabOrder = 1
     OnClick = Button2Click
+  end
+  object Button3: TButton
+    Left = 40
+    Top = 112
+    Width = 137
+    Height = 25
+    Caption = 'StopAllThreads'
+    TabOrder = 2
+    OnClick = Button3Click
   end
   object acon: TADOConnection
     ConnectionString = 
