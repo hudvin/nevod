@@ -12,11 +12,11 @@ type
     Mutex: THandle;
     FADOCon: TADOConnection;
     POP3Server: TPOPserver;
-    PostSettings: TPostSettings;
     ThreadManager: TThreadManager;
     procedure UpdateAccounts;
   protected
   public
+    PostSettings: TPostSettings;
     constructor Create(ADOCon:TADOConnection);
     destructor Destroy; override;
     procedure StartAllThreads;

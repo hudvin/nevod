@@ -1,9 +1,9 @@
 object FMain: TFMain
-  Left = 318
-  Top = 136
+  Left = 316
+  Top = 218
   BorderStyle = bsSingle
   Caption = 'FMain'
-  ClientHeight = 273
+  ClientHeight = 291
   ClientWidth = 284
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -42,14 +42,14 @@ object FMain: TFMain
     TabOrder = 2
     OnClick = Button3Click
   end
-  object Button4: TButton
-    Left = 72
-    Top = 200
-    Width = 75
-    Height = 25
-    Caption = 'Button4'
+  object Memo1: TMemo
+    Left = 24
+    Top = 176
+    Width = 185
+    Height = 89
+    Lines.Strings = (
+      'Memo1')
     TabOrder = 3
-    OnClick = Button4Click
   end
   object acon: TADOConnection
     ConnectionString = 
@@ -74,6 +74,7 @@ object FMain: TFMain
         IP = '127.0.0.1'
         Port = 110
       end>
+    OnDisconnect = popDisconnect
     CommandHandlers = <>
     ExceptionReply.Code = '-ERR'
     ExceptionReply.Text.Strings = (
@@ -92,6 +93,7 @@ object FMain: TFMain
     ReplyUnknownCommand.Text.Strings = (
       'Sorry, Unknown Command')
     CheckUser = popCheckUser
+    OnQUIT = popQUIT
     Left = 136
     Top = 136
   end

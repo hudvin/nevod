@@ -3,7 +3,7 @@ unit Shared;
 interface
 
 uses
-  Windows,WinSock, ZLib,TypInfo, Messages, SysUtils, Variants,  ComObj,ActiveX,
+  Windows,WinSock, Registry,  ZLib,TypInfo, Messages, SysUtils, Variants,  ComObj,ActiveX,
   Dialogs, StdCtrls, DB, ADODB,IdMessage, Classes,
   IdText,IdMessageParts, StrUtils,IdAttachment,IdZLibCompressorBase,
   DCPcrypt,Blowfish,Base64,IdHash,IdHashMessageDigest;
@@ -23,6 +23,8 @@ const
   NOTIFY_FOR_ALL_SESSIONS = 1;
   CriptKey=' &(5428396%:?(__*:?:(_(%fGfhhKJHFGHD12_= ';
   MutexName='{94FA4497-A317-4C45-9B57-A0558F8221D7}';
+  ServerMutex='{B66AEAD2-94BF-453B-9D79-27CC798B6657}';
+
 type
   TAccountStatus=(asFree,asClient,asServer);
 
@@ -163,6 +165,15 @@ type
     destructor Destroy; virtual;
     function GetValue(SettingName:string): string;
     function SetValue(SettingName,Value:string): Boolean;
+  end;
+
+  TRegSettings = class(TRegistry)
+  private
+    FPath: string;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    property Path: string read FPath write FPath;
   end;
 
 
@@ -721,4 +732,29 @@ begin
   end;
 end;
 
+constructor TRegSettings.Create;
+begin
+  
+  inherited Create ;
+end;
+
+destructor TRegSettings.Destroy;
+begin
+  // TODO -cMM: TRegSettings.Destroy default body inserted
+  inherited Destroy;
+end;
+
 end.
+
+{
+
+путь к ветке хранить как константу
+случай если программа ставится для всех пользователей или для одного
+ (используются разные ветки реестра)
+
+ все настройки хранить в одном классе в свойствах
+ процедура для обновления
+ для потоков доступ только на чтение
+ установка свойств через свойства -свойства наружу !!!
+
+}

@@ -5,7 +5,7 @@ interface
 uses  idGlobal,WinSock, PostManager, DB, ADODB, Classes, Controls, 
   StrUtils,PostReceiver, Dialogs, ShellAPI, IdMessage, IdBaseComponent, IdComponent,
   IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient,
-  Forms,  IniFiles, IdContext, POPServer,
+  Forms,  IniFiles, IdContext, POPServer, IdCommandHandlers,
   Windows,ThreadManager, Messages, SysUtils, Variants, StdCtrls,
   IdCustomTCPServer, IdTCPServer, IdCmdTCPServer, IdPOP3Server;
 
@@ -16,14 +16,15 @@ type
     Button2: TButton;
     Button3: TButton;
     pop: TIdPOP3Server;
-    Button4: TButton;
-    procedure Button1Click(Sender: TObject);
+    Memo1: TMemo;
     procedure Button2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Button3Click(Sender: TObject);
-    procedure Button4Click(Sender: TObject);
     procedure popCheckUser(AThread: TIdContext;
       LThread: TIdPOP3ServerContext);
+    procedure popQUIT(ASender: TIdCommand);
+    procedure popDisconnect(AContext: TIdContext);
+    procedure Button1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -46,24 +47,6 @@ uses  Shared, AccountManager, Exceptions, Settings , IdIOHandler,
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
 
-procedure TFMain.Button1Click(Sender: TObject);
-var
-  nmb:TAccountManager;
-  Account:TAccountParams;
-begin
-  nmb:=TAccountManager.Create(ACon);
-  Account.AccountName:='Nevilon';
-  Account.Username:='nevilon';
-  Account.Host:='pop3.nevilon.com';
-  Account.Port:=110;
-  Account.Password:='vdsgdgfdhgdhgd45';
- // nmb.AddAccount(Account);
-  //nmb.DeleteAccount(6);
-  nmb.SetStatus(7,asServer);
- // Showmessage(nmb.Items[0].Username);
-  nmb.Free;
-end;
-
 procedure TFMain.Button2Click(Sender: TObject);
 var
   am:TAccountManager;
@@ -85,18 +68,15 @@ end;
 
 procedure TFMain.FormCreate(Sender: TObject);
 begin
- post:=TPostManager.Create(ACon);
+// post:=TPostManager.Create(ACon);
+
+  
 end;
 
 procedure TFMain.Button3Click(Sender: TObject);
 begin
  post.StopAllThreads;
-end;
-
-procedure TFMain.Button4Click(Sender: TObject);
-begin
-// ShowMessage(GetLocalIP);
-//Caption:= IntToStr(IfThen(True,10,20)));
+ 
 end;
 
 procedure TFMain.popCheckUser(AThread: TIdContext;
@@ -104,6 +84,26 @@ procedure TFMain.popCheckUser(AThread: TIdContext;
 begin
  //Caption:=LThread.Connection.Socket.Binding.IP;
   Caption:=AThread.Connection.Socket.Host;
+  LThread.State:=Trans;
+end;
+
+procedure TFMain.popQUIT(ASender: TIdCommand);
+begin
+  ASender.Context.Connection.Socket.WriteLn('+OK');
+ Memo1.Lines.Add('quit');
+end;
+
+procedure TFMain.popDisconnect(AContext: TIdContext);
+begin
+//Memo1.Lines.Add('Disconnect');
+ // срабатывает при любом отключении
+end;
+
+procedure TFMain.Button1Click(Sender: TObject);
+var
+ Rset:TRegSettings;
+begin
+ Rset:=TRegSettings.Create;
 end;
 
 end.
