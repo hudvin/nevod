@@ -56,13 +56,11 @@ end;
 procedure TFMain.FormCreate(Sender: TObject);
 begin
  post:=TPostManager.Create(ACon);
-
-  
 end;
 
 procedure TFMain.Button3Click(Sender: TObject);
 begin
- post.StopAllThreads(False);
+ post.StopAllThreads;
 end;
 
 procedure TFMain.FormClose(Sender: TObject; var Action: TCloseAction);

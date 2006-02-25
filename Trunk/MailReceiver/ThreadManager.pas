@@ -19,7 +19,6 @@ type
     procedure Clean;
     function GetActiveThreads: Integer;
     procedure SetCheckInterval(const Value: Integer);
-    procedure UpdateSettings;
   public
     constructor Create(ADOCon: TADOConnection; AccountManager:TAccountManager;
         CanExecute:Boolean=True);
@@ -35,7 +34,6 @@ type
 
 
 implementation
-uses main;
 
 {
 ******************************** TThreadManager ********************************
@@ -49,16 +47,15 @@ begin
   PostReceivers:=TList.Create;
   FADOCon:=ADOCon;
   FCanExecute:=CanExecute;
-  UpdateSettings;
 end;
 
 destructor TThreadManager.Destroy;
 begin
   StopAllThreads();
-  inherited Destroy;
   CloseHandle(Mutex);
   FADOCon:=nil;
   FAccountManager:=nil;
+  inherited Destroy;
 end;
 
 procedure TThreadManager.Clean;
@@ -68,16 +65,13 @@ begin
   i:=0;
   while i<PostReceivers.Count do
     begin
-     try
-     if TBaseReceiver(PostReceivers[i]).Terminated then
+   //  if TPOP3Receiver(PostReceivers[i]).Terminated then
+      if  TBaseReceiver(PostReceivers[i]).Terminated then
          begin
            FAccountManager.SetStatus(TBaseReceiver(PostReceivers[i]).AccountId,asFree);
            TBaseReceiver(PostReceivers[i]).Free; // вызов деструктора получателя
            PostReceivers[i]:=nil; // обнуление массива  элементов
          end;
-     except
-       main.FMain.Caption:='ошибка';
-     end;
      inc(i);
     end;
   PostReceivers.Pack;
@@ -90,18 +84,19 @@ begin
   Counter:=CheckInterval;
   while not Terminated do
    begin
-    Counter:=Counter+WaitTime;
-    WaitForSingleObject(Mutex,WaitTime) ;
-    UpdateSettings;
-    Clean();
-    if (Counter>=CheckInterval) and (FCanExecute) then
-     begin
-      StartAllThreads; // запуск потоков для получения
-      Counter:=0;
-     end;
-    ReleaseMutex(Mutex); 
-    sleep(WaitTime);
-
+   if FCanExecute then
+    begin
+     Counter:=Counter+WaitTime;
+     WaitForSingleObject(Mutex,WaitTime) ;
+     Clean();
+     if (Counter>=CheckInterval) then
+      begin
+       StartAllThreads; // запуск потоков для получения
+       Counter:=0;
+      end;
+     ReleaseMutex(Mutex);
+    end;
+   sleep(WaitTime);
    end;
   Terminate;
 end;
@@ -179,16 +174,20 @@ begin
  WaitForSingleObject(Mutex,INFINITE);
   Clean;
   for i :=0  to PostReceivers.Count-1  do
-    if not TBaseReceiver(PostReceivers[i]).Terminated then
+   // if  TPOP3Receiver(PostReceivers[i]).Terminated then
      begin
-      TBaseReceiver(PostReceivers[i]).Free;
+     {
+      если остановлен - освободить ресурсы и установить статус
+     }
+      FAccountManager.SetStatus(TBaseReceiver(PostReceivers[i]).AccountId,asFree);
+      TPOP3Receiver(PostReceivers[i]).Free;
       PostReceivers[i]:=nil;
-     end
-    else
-     begin
-    //  TBaseReceiver(PostReceivers[i]).Free;
-      PostReceivers[i]:=nil;
-     end;
+     end ;
+   // else
+  //   begin
+  //    TBaseReceiver(PostReceivers[i]).Free;
+  //    PostReceivers[i]:=nil;
+  //   end;
  ReleaseMutex(Mutex);
 
   {
@@ -217,12 +216,7 @@ begin
  ReleaseMutex(Mutex);
 end;
 
-procedure TThreadManager.UpdateSettings;
-begin
-{ 
- RunStep:=StrToInt(FSettings.Setting['RunStep']);
- SleepTime:=StrToInt(FSettings.Setting['SleepTime']);
-}
- end;
+
+
 
 end.

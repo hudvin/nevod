@@ -1,4 +1,4 @@
-unit PostManager;
+ unit PostManager;
 
 interface
 uses
@@ -48,14 +48,14 @@ begin
  ThreadManager.CheckInterval:=StrToInt(Setting['CheckInterval']);
 
 
- POP3Server:=TPOPServer.Create(FADOCon,AccountManager);
- POP3Server.ServerPort:=StrToInt(Setting['ServerPort']);
+// POP3Server:=TPOPServer.Create(FADOCon,AccountManager);
+// POP3Server.ServerPort:=StrToInt(Setting['ServerPort']);
  UpdateAccounts;
 end;
 
 destructor TPostManager.Destroy;
 begin
-  POP3Server.Free;
+ // POP3Server.Free;
   StopAllThreads();
   ThreadManager.Free;
   AccountManager.Free;
@@ -93,7 +93,7 @@ begin
  if Value<>FServerPort then
   begin
     Setting['ServerPort']:=IntToStr(Value);
-    POP3Server.ServerPort:=Value;
+ //   POP3Server.ServerPort:=Value;
   end;
 end;
 

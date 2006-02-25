@@ -18,7 +18,6 @@ type
     RecMessage: TFMessage;
     StoredSaver: TADOStoredProc;
     procedure AddToOldMessagesId(Mess: TFMessage);
-    function GetThreadsCount: Integer;
     function MessageIdExists(MsgId: string): Boolean;
     procedure ReceiveMessages; virtual; abstract;
     procedure SaveMessage(Mess: TFMessage); virtual;
@@ -29,7 +28,6 @@ type
         PackMessages: Boolean); virtual;
     destructor Destroy; override;
     property AccountId: Integer read FAccountParams.Id;
-    property ThreadsCount: Integer read GetThreadsCount;
   end;
 
   TPOP3Receiver = class(TBaseReceiver)
@@ -93,11 +91,6 @@ begin
     Close;
    end;
   CoUninitialize;
-end;
-
-function TBaseReceiver.GetThreadsCount: Integer;
-begin
-//  Result := FThreadsCount;
 end;
 
 function TBaseReceiver.MessageIdExists(MsgId: string): Boolean;
@@ -169,6 +162,7 @@ constructor TPOP3Receiver.Create(Account: TAccountParams; ADOCon:
     TADOConnection;  PackMessages: Boolean);
 begin
   inherited Create(Account,ADOCon,PackMessages);
+  FreeOnTerminate:=False;
   POP3Client:=TIdPOP3.Create(nil);
 end;
 
