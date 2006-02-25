@@ -212,9 +212,10 @@ end;
 
 procedure TThreadManager.UpdateSettings;
 begin
- ClientTimeout:=StrToInt(FSettings.Setting['ClientTimeout']);
+{ ClientTimeout:=StrToInt(FSettings.Setting['ClientTimeout']);
  RunStep:=StrToInt(FSettings.Setting['RunStep']);
  SleepTime:=StrToInt(FSettings.Setting['SleepTime']);
-end;
+}
+ end;
 
 end.

@@ -76,7 +76,6 @@ end;
 procedure TFMain.Button3Click(Sender: TObject);
 begin
  post.StopAllThreads;
- 
 end;
 
 procedure TFMain.popCheckUser(AThread: TIdContext;

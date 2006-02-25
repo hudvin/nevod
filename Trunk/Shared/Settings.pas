@@ -7,15 +7,19 @@ uses
 type
   TPostSettings = class
   private
+    FServerPort: Integer;
     function GetSetting(SettingName:String): string;
+    procedure SetServerPort(const Value: Integer);
     procedure SetSetting(SettingName:String; const Value: string);
+    property Setting[SettingName:String]: string read GetSetting write SetSetting;
   protected
     FADOCon: TADOConnection;
     SettingsProc: TADOQuery;
   public
     constructor Create(ADOCon:TADOConnection);
     destructor Destroy; override;
-    property Setting[Name:String]: string read GetSetting write SetSetting;
+    property ServerPort: Integer read FServerPort write SetServerPort;
+
   end;
 
 
@@ -59,6 +63,14 @@ begin
   end;
 end;
 
+procedure TPostSettings.SetServerPort(const Value: Integer);
+begin
+  if FServerPort <> Value then
+  begin
+    FServerPort := Value;
+  end;
+end;
+
 procedure TPostSettings.SetSetting(SettingName:String; const Value: string);
 begin
  with SettingsProc do
@@ -95,6 +107,11 @@ end.
  свойство для записи данных в таблицу (с проверкой или без)
  процедура для обновления 
 
+данные в базу грузить через процедуру
 
+
+при прямом чтении данные получать из поля  свойства
+при записи - писать данные в таблицу через Settings
+при обновлении - читать через Settings и присваивать данные полям
 
 }

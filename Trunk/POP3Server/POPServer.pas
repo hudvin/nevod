@@ -33,7 +33,7 @@ begin
 with pop do
  begin
  // WaitForSingleObject(Mutex,INFINITE);
-   DefaultPort:=StrToInt(FSettings.Setting['ServerPort']);
+ //  DefaultPort:=StrToInt(FSettings.Setting['ServerPort']);
    CheckUser:=CheckAccount;
 //  ReleaseMutex(Mutex); 
   { OnLIST:=LIST;
