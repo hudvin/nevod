@@ -25,8 +25,8 @@ type
   protected
     procedure Run; override;
   public
-    constructor Create(Account: TAccountParams; ADOCon: TADOConnection; Timeout:
-        Integer; PackMessages: Boolean); virtual;
+    constructor Create(Account: TAccountParams; ADOCon: TADOConnection;
+        PackMessages: Boolean); virtual;
     destructor Destroy; override;
     property AccountId: Integer read FAccountParams.Id;
     property ThreadsCount: Integer read GetThreadsCount;
@@ -37,8 +37,8 @@ type
     POP3Client: TIdPOP3;
     procedure ReceiveMessages; override;
   public
-    constructor Create(Account: TAccountParams; ADOCon: TADOConnection; Timeout:
-        Integer; PackMessages: Boolean);
+    constructor Create(Account: TAccountParams; ADOCon: TADOConnection;
+        PackMessages: Boolean);
     destructor Destroy; override;
   end;
 
@@ -47,15 +47,14 @@ uses main;
 {
 ******************************** TBaseReceiver *********************************
 }
-constructor TBaseReceiver.Create(Account: TAccountParams; ADOCon: TADOConnection;
-    Timeout: Integer; PackMessages: Boolean);
+constructor TBaseReceiver.Create(Account: TAccountParams; ADOCon:
+    TADOConnection; PackMessages: Boolean);
 begin
   inherited Create(False);
   FreeOnTerminate:=False;
 
   FADOCon:=ADOCon;
   FAccountParams:=Account;
-  FTimeout:=TimeOut;
   FPackMessages:=PackMessages;
   Log:=TLogger.Create(FADOCon);
   StoredSaver:=TADOStoredProc.Create(nil);
@@ -166,10 +165,10 @@ end;
 {
 ******************************** TPOP3Receiver *********************************
 }
-constructor TPOP3Receiver.Create(Account: TAccountParams; ADOCon: TADOConnection;
-    Timeout: Integer; PackMessages: Boolean);
+constructor TPOP3Receiver.Create(Account: TAccountParams; ADOCon:
+    TADOConnection;  PackMessages: Boolean);
 begin
-  inherited Create(Account,ADOCon,Timeout,PackMessages);
+  inherited Create(Account,ADOCon,PackMessages);
   POP3Client:=TIdPOP3.Create(nil);
 end;
 
@@ -188,6 +187,7 @@ begin
   POP3Client.Port:=FAccountParams.Port;
   POP3Client.Username:=FAccountParams.Username;
   POP3Client.Password:=FAccountParams.Password;
+  POP3Client.ConnectTimeout:=FAccountParams.Timeout;
   try
    POP3Client.Connect;
    MessCount:=POP3Client.CheckMessages;

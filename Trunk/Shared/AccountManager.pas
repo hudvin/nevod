@@ -104,13 +104,14 @@ begin
   if CheckParams(NewAccount,True) then
    with DBProc.Parameters do
     begin
-     DBProc.SQL.Text:=' INSERT INTO Accounts (AccountName,Username,Pass,Host,Port) '+
-                      'VALUES(:AccountName,:Username,:Pass,:Host,:Port)';
+     DBProc.SQL.Text:=' INSERT INTO Accounts (AccountName,Username,Pass,Host,Port,Timeout) '+
+                      'VALUES(:AccountName,:Username,:Pass,:Host,:Port,:Timeout)';
      ParamByName('AccountName').Value:=NewAccount.AccountName;
      ParamByName('Username').Value:=NewAccount.Username;
      ParamByName('Pass').Value:=Crypt(NewAccount.Password);
      ParamByName('Host').Value:=NewAccount.Host;
      ParamByName('Port').Value:=NewAccount.Port;
+     ParamByName('Timeout').Value:=NewAccount.Timeout;
      DBProc.ExecSQL;
      UpdateAccountTable;
     end;
@@ -128,6 +129,9 @@ begin
     Raise EInvalidAccountParams.Create('Incorrect Host');
   if (Account.Port<1) or (Account.Port>65536) then
     Raise EInvalidAccountParams.Create('Incorrect Port');
+  if (Account.Timeout<0) then
+    Raise EInvalidAccountParams.Create(' Incorrect Timeout ');
+
 
   with DBProc  do
    begin
@@ -222,6 +226,7 @@ begin
         Result.Password:=DeCrypt(FieldByName('Pass').AsString);
         Result.Host:=FieldByName('Host').AsString;
         Result.Port:=FieldByName('Port').AsInteger;
+        Result.Timeout:=FieldByName('Timeout').AsInteger;
         Result.Status:=TAccountStatus(GetEnumValue(TypeInfo(TAccountStatus),FieldByName('Status').AsString));
        except
         on e: Exception do
@@ -254,6 +259,7 @@ begin
      Result.Password:=DeCrypt(FieldByName('Pass').AsString);
      Result.Host:=FieldByName('Host').AsString;
      Result.Port:=FieldByName('Port').AsInteger;
+     Result.Timeout:=FieldByName('Timeout').AsInteger;
      Result.Status:=TAccountStatus(GetEnumValue(TypeInfo(TAccountStatus),FieldByName('Status').AsString));
     except
      on e: Exception do
@@ -299,12 +305,13 @@ begin
   with DBProc.Parameters  do
    begin
       DBProc.SQL.Text :='UPDATE Accounts SET  AccountName=:AccountName, Username=:Username,'+
-                    'Pass=:Pass,Host=:Host,Port=:Port WHERE Id=:AccountId ';
+                    'Pass=:Pass,Host=:Host,Port=:Port,Timeout=:Timeout WHERE Id=:AccountId ';
       ParamByName('AccountName').Value:=Value.AccountName;
       ParamByName('Username').Value:=Value.Username;
       ParamByName('Pass').Value:=Crypt(Value.Password);
       ParamByName('Host').Value:=Value.Host;
       ParamByName('Port').Value:=value.Port;
+      ParamByName('Timeout').Value:=value.Timeout;
       ParamByName('AccountId').Value:=Value.Id;
       DBProc.ExecSQL;
    end;

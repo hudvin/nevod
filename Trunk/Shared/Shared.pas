@@ -24,7 +24,7 @@ const
   CriptKey=' &(5428396%:?(__*:?:(_(%fGfhhKJHFGHD12_= ';
   MutexName='{94FA4497-A317-4C45-9B57-A0558F8221D7}';
   ServerMutex='{B66AEAD2-94BF-453B-9D79-27CC798B6657}';
-
+  WaitTime=1000;
 type
   TAccountStatus=(asFree,asClient,asServer);
 
@@ -66,6 +66,7 @@ type
     Port: Integer;
     Id: Integer;
     Status:TAccountStatus;
+    Timeout: Integer;
   end;
 
 type
@@ -165,15 +166,6 @@ type
     destructor Destroy; virtual;
     function GetValue(SettingName:string): string;
     function SetValue(SettingName,Value:string): Boolean;
-  end;
-
-  TRegSettings = class(TRegistry)
-  private
-    FPath: string;
-  public
-    constructor Create;
-    destructor Destroy; override;
-    property Path: string read FPath write FPath;
   end;
 
 
@@ -730,18 +722,6 @@ begin
     end;
     WSACleanup;
   end;
-end;
-
-constructor TRegSettings.Create;
-begin
-  
-  inherited Create ;
-end;
-
-destructor TRegSettings.Destroy;
-begin
-  // TODO -cMM: TRegSettings.Destroy default body inserted
-  inherited Destroy;
 end;
 
 end.

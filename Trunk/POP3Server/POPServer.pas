@@ -6,49 +6,47 @@ uses Shared,Windows,Dialogs, Messages, SysUtils,IdContext, StdCtrls, ADODB, IdBa
 
 type
  TPOPServer=class
-  public
-   constructor Create(ADOCon:TADOConnection;Settings:TPostSettings;
-       AccountManager:TAccountManager);
-   destructor  Destroy(); override;
   private
    FAccountManager: TAccountManager;
    FADOCon: TADOConnection;
-   FSettings: TPostSettings;
+   FServerPort: Integer;
    Mutex: THandle;
    pop:TIdPOP3Server;
    procedure CheckAccount(AThread: TIdContext;LThread: TIdPOP3ServerContext);
+   procedure SetServerPort(const Value: Integer);
+ public
+   constructor Create(ADOCon:TADOConnection; AccountManager:TAccountManager);
+   destructor  Destroy(); override;
+   property ServerPort: Integer read FServerPort write SetServerPort;
 end;
 
 implementation
 
-constructor TPOPServer.Create(ADOCon:TADOConnection;Settings:TPostSettings;
+constructor TPOPServer.Create(ADOCon:TADOConnection;
     AccountManager:TAccountManager);
 begin
  Mutex:=CreateMutex(nil,False,MutexName);
  FADOCon:=ADOCon;
  FAccountManager:=AccountManager;
- FSettings:=Settings;
  pop:=TIdPOP3Server.Create(nil);
+ with pop do
+  begin
+   // defaultPort:=210;
+    CheckUser:=CheckAccount;
 
-with pop do
- begin
- // WaitForSingleObject(Mutex,INFINITE);
- //  DefaultPort:=StrToInt(FSettings.Setting['ServerPort']);
-   CheckUser:=CheckAccount;
-//  ReleaseMutex(Mutex); 
   { OnLIST:=LIST;
    OnSTAT:=STAT;
    OnRETR:=RETR;
    OnDELE:=DELE;
    OnQUIT:=QUIT;
-   OnDisconnect:=Disconnect;
-   Active:=true; }
+   OnDisconnect:=Disconnect; }
+   Active:=true;
  end;
-   pop.Active:=True;
 end;
 
 destructor TPOPServer.Destroy();
 begin
+ pop.Active:=False;
  pop.Free;
  FADOCon:=nil;
  CloseHandle(Mutex);
@@ -62,7 +60,6 @@ var
     id:integer;
 begin
  WaitForSingleObject(Mutex,INFINITE);
-  ShowMessage('dd');
   Password:=LThread.Password;
   Username:=LThread.Username;
   Id:=FAccountManager.AccountName2Id(Username);
@@ -82,33 +79,27 @@ begin
           LThread.Connection.Tag:=AParams.Id;
           LThread.State:=Trans;
         end;
+     else
+       LThread.Connection.Tag:=-1;
      end;    // case
   end;
  ReleaseMutex(Mutex);
 end;
 
-{
+procedure TPOPServer.SetServerPort(const Value: Integer);
+begin
+  if FServerPort <> Value then
+   try
+    POP.Active:=False;
+    FServerPort := Value;
+    POP.DefaultPort:=FServerPort;
+    pop.Active:=True;
+   except
+    on e: Exception do
+      ShowMessage(E.Message);
+   end;
+end;
 
-хранить спискок хостов, с которыми разрешено соединения
-разрешать только localhost
-
-жестко задавать интервал поиска удаленных потоков
-                 порт сервера (использовать совй !!! )
-
-для хранения настроек использовать наследников от базового класса
-
-хранить количество активных потоков сервера
- увеличивать с помошью внутреннего мьютекса
-
-
-  класс для хранения настроек
-    или хранить в реестре !
-
-
-  создавать ключи инсталлятором в реестре !!!  
-  ставить мьютекс на подключение, разрыв и отключение
-
-}
 
 
 end.

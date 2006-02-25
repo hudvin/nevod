@@ -2,7 +2,7 @@ unit ThreadManager;
 
 interface
 
-uses  Exceptions, Settings,   Shared,PostReceiver,
+uses  Exceptions, DB, StrUtils,   Shared,PostReceiver,
 SysUtils,TypInfo, Windows,Classes,DateUtils,Dialogs, ADODB, AccountManager;
 
 
@@ -11,21 +11,18 @@ type
   private
     Accounts: TADOStoredProc;
     FCanExecute: Boolean;
-    ClientTimeout: Integer;
     FAccountManager: TAccountManager;
     FADOCon: TADOConnection;
+    FCheckInterval: Integer;
     Mutex: THandle;
-    FSettings: TPostSettings;
     PostReceivers: TList;
-    RunStep: Integer;
-    Settings: TSettings;
-    SleepTime: Integer;
     procedure Clean;
     function GetActiveThreads: Integer;
+    procedure SetCheckInterval(const Value: Integer);
     procedure UpdateSettings;
   public
-    constructor Create(ADOCon: TADOConnection;PostSettings:TPostSettings;
-        AccountManager:TAccountManager;CanExecute:Boolean=True);
+    constructor Create(ADOCon: TADOConnection; AccountManager:TAccountManager;
+        CanExecute:Boolean=True);
     destructor Destroy; override;
     procedure Execute; override;
     procedure StartAllThreads(Intro:boolean=True);
@@ -33,22 +30,20 @@ type
     procedure StopAllThreads(Soft:boolean=False);
     procedure StopThread(AccountId: Integer); overload;
     property ActiveThreads: Integer read GetActiveThreads;
+    property CheckInterval: Integer read FCheckInterval write SetCheckInterval;
   end;
 
 
 implementation
-
-uses DB, StrUtils;
+uses main;
 
 {
 ******************************** TThreadManager ********************************
 }
 constructor TThreadManager.Create(ADOCon: TADOConnection;
-    PostSettings:TPostSettings; AccountManager:TAccountManager;
-    CanExecute:Boolean=True);
+    AccountManager:TAccountManager;CanExecute:Boolean=True);
 begin
   inherited Create(False);
-  FSettings:=PostSettings;
   Mutex:=CreateMutex(nil,False,MutexName);
   FAccountManager:=AccountManager;
   PostReceivers:=TList.Create;
@@ -63,7 +58,6 @@ begin
   inherited Destroy;
   CloseHandle(Mutex);
   FADOCon:=nil;
-  FSettings := nil;
   FAccountManager:=nil;
 end;
 
@@ -74,12 +68,16 @@ begin
   i:=0;
   while i<PostReceivers.Count do
     begin
+     try
      if TBaseReceiver(PostReceivers[i]).Terminated then
          begin
            FAccountManager.SetStatus(TBaseReceiver(PostReceivers[i]).AccountId,asFree);
            TBaseReceiver(PostReceivers[i]).Free; // вызов деструктора получателя
            PostReceivers[i]:=nil; // обнуление массива  элементов
          end;
+     except
+       main.FMain.Caption:='ошибка';
+     end;
      inc(i);
     end;
   PostReceivers.Pack;
@@ -89,20 +87,21 @@ procedure TThreadManager.Execute;
 var
   Counter: Integer;
 begin
-  Counter:=RunStep;
+  Counter:=CheckInterval;
   while not Terminated do
    begin
-    Counter:=Counter+SleepTime;
-    WaitForSingleObject(Mutex,SleepTime) ;
+    Counter:=Counter+WaitTime;
+    WaitForSingleObject(Mutex,WaitTime) ;
     UpdateSettings;
     Clean();
-    if (Counter>=RunStep) and (FCanExecute) then
+    if (Counter>=CheckInterval) and (FCanExecute) then
      begin
       StartAllThreads; // запуск потоков для получения
       Counter:=0;
      end;
-    sleep(SleepTime);
-    ReleaseMutex(Mutex);
+    ReleaseMutex(Mutex); 
+    sleep(WaitTime);
+
    end;
   Terminate;
 end;
@@ -115,17 +114,25 @@ begin
   ReleaseMutex(Mutex);
 end;
 
+procedure TThreadManager.SetCheckInterval(const Value: Integer);
+var
+ Buff:boolean;
+begin
+  if FCheckInterval <> Value then
+  begin
+    Buff:=FCanExecute;
+    if  Buff then FCanExecute:=False;
+    FCheckInterval := Value;
+    if Buff then
+       FCanExecute:=True;
+  end;
+end;
+
 procedure TThreadManager.StartAllThreads(Intro:boolean=True);
 var
   AParams: TAccountParams;
   i:integer;
 begin
- {
-
- если запускаются из класса - запускать сразу
-  если снаружи - ждать мьютекс
-
- }
  if Intro then   // если запуск из класса
   begin
    FCanExecute:=True;
@@ -153,13 +160,13 @@ begin
   begin
    WaitForSingleObject(Mutex,INFINITE);
     FAccountManager.SetStatus(AccountId,asClient);
-    PostReceivers.Add(TPOP3Receiver.Create(AParams,FADOCon,ClientTimeout,True));
+    PostReceivers.Add(TPOP3Receiver.Create(AParams,FADOCon,True));
    ReleaseMutex(Mutex);
   end
  else // если запуск происходит из процедуры StartAllThreads - мьютекс захвачен
   begin
    FAccountManager.SetStatus(AccountId,asClient);
-   PostReceivers.Add(TPOP3Receiver.Create(AParams,FADOCon,ClientTimeout,True));
+   PostReceivers.Add(TPOP3Receiver.Create(AParams,FADOCon,True));
   end;
 end;
 
@@ -212,7 +219,7 @@ end;
 
 procedure TThreadManager.UpdateSettings;
 begin
-{ ClientTimeout:=StrToInt(FSettings.Setting['ClientTimeout']);
+{ 
  RunStep:=StrToInt(FSettings.Setting['RunStep']);
  SleepTime:=StrToInt(FSettings.Setting['SleepTime']);
 }

@@ -12,6 +12,7 @@ object FMain: TFMain
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  OnClose = FormClose
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
@@ -22,7 +23,6 @@ object FMain: TFMain
     Height = 25
     Caption = 'Button1'
     TabOrder = 0
-    OnClick = Button1Click
   end
   object Button2: TButton
     Left = 32
@@ -42,15 +42,6 @@ object FMain: TFMain
     TabOrder = 2
     OnClick = Button3Click
   end
-  object Memo1: TMemo
-    Left = 24
-    Top = 176
-    Width = 185
-    Height = 89
-    Lines.Strings = (
-      'Memo1')
-    TabOrder = 3
-  end
   object acon: TADOConnection
     ConnectionString = 
       'Provider=Microsoft.Jet.OLEDB.4.0;User ID=Admin;Data Source=..\DB' +
@@ -67,34 +58,5 @@ object FMain: TFMain
     Provider = 'Microsoft.Jet.OLEDB.4.0'
     Left = 8
     Top = 8
-  end
-  object pop: TIdPOP3Server
-    Bindings = <
-      item
-        IP = '127.0.0.1'
-        Port = 110
-      end>
-    OnDisconnect = popDisconnect
-    CommandHandlers = <>
-    ExceptionReply.Code = '-ERR'
-    ExceptionReply.Text.Strings = (
-      'Unknown Internal Error')
-    Greeting.Code = '+OK'
-    Greeting.Text.Strings = (
-      'Welcome to Indy POP3 Server')
-    HelpReply.Code = '+OK'
-    HelpReply.Text.Strings = (
-      'Help follows')
-    MaxConnectionReply.Code = '-ERR'
-    MaxConnectionReply.Text.Strings = (
-      'Too many connections. Try again later.')
-    ReplyTexts = <>
-    ReplyUnknownCommand.Code = '-ERR'
-    ReplyUnknownCommand.Text.Strings = (
-      'Sorry, Unknown Command')
-    CheckUser = popCheckUser
-    OnQUIT = popQUIT
-    Left = 136
-    Top = 136
   end
 end
