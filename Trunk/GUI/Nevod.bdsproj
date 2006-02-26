@@ -5,11 +5,7 @@
       <Option Name="Personality">Delphi.Personality</Option>
       <Option Name="ProjectType">VCLApplication</Option>
       <Option Name="Version">1.0</Option>
-<<<<<<< .mine
       <Option Name="GUID">{595D84D3-DB07-4102-82E8-0928A06DD1E3}</Option>
-=======
-      <Option Name="GUID">{CFB3B471-66F1-478F-BE81-86F103846C15}</Option>
->>>>>>> .r28
     </Option>
   </PersonalityInfo>
   <Delphi.Personality>

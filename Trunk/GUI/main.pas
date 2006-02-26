@@ -42,7 +42,7 @@ end;
 
 procedure TFMain.Button3Click(Sender: TObject);
 begin
- post.StopAllThreads;
+ post.StopAllThreads(False);
 end;
 
 procedure TFMain.FormClose(Sender: TObject; var Action: TCloseAction);
