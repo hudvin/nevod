@@ -2,10 +2,8 @@ unit main;
 
 interface
 
-uses  idGlobal,WinSock, PostManager, DB, ADODB, Classes, Controls, 
-  StrUtils,PostReceiver, Dialogs, ShellAPI, IdMessage, IdBaseComponent, IdComponent,
-  IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient,
-  Forms,  IniFiles, IdContext, POPServer, IdCommandHandlers,
+uses  Forms, PostManager, DB, ADODB, Classes, Controls, 
+  StrUtils,PostReceiver, Dialogs, 
   Windows,ThreadManager, Messages, SysUtils, Variants, StdCtrls,
    IdTCPServer, IdCmdTCPServer, IdPOP3Server;
 
@@ -37,22 +35,6 @@ implementation
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
 
-procedure TFMain.Button2Click(Sender: TObject);
-
-begin
-
-  post.StartAllThreads;
- {Params.AccountName:='qax';
- Params.Username:='qax';
- Params.Host:='localhost';
- Params.Password:='qax';
- Params.Port:=110;
-
- am:=TAccountManager.Create(ACon);
- am.AddAccount(Params);
-}
-end;
-
 procedure TFMain.FormCreate(Sender: TObject);
 begin
  post:=TPostManager.Create(ACon);
@@ -65,7 +47,12 @@ end;
 
 procedure TFMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
- post.Free;
+post.Free;
+end;
+
+procedure TFMain.Button2Click(Sender: TObject);
+begin
+ post.StartAllThreads;
 end;
 
 end.

@@ -24,7 +24,7 @@ const
   CriptKey=' &(5428396%:?(__*:?:(_(%fGfhhKJHFGHD12_= ';
   MutexName='{94FA4497-A317-4C45-9B57-A0558F8221D7}';
   ServerMutex='{B66AEAD2-94BF-453B-9D79-27CC798B6657}';
-  WaitTime=1000;
+  WaitTime=1000;      // время между проверками состояний
 type
   TAccountStatus=(asFree,asClient,asServer);
 
@@ -166,6 +166,12 @@ type
     destructor Destroy; virtual;
     function GetValue(SettingName:string): string;
     function SetValue(SettingName,Value:string): Boolean;
+  end;
+
+  TPOP3Procs = class
+  public
+    constructor Create(AccountId:Integer;ADOCon:TADOConnection);
+    destructor Destroy; override;
   end;
 
 
@@ -722,6 +728,17 @@ begin
     end;
     WSACleanup;
   end;
+end;
+
+constructor TPOP3Procs.Create(AccountId:Integer;ADOCon:TADOConnection);
+begin
+  // TODO -cMM: TPOP3Procs.Create default body inserted
+end;
+
+destructor TPOP3Procs.Destroy;
+begin
+  // TODO -cMM: TPOP3Procs.Destroy default body inserted
+  inherited;
 end;
 
 end.

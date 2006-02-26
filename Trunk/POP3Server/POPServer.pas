@@ -9,29 +9,32 @@ type
   private
    FAccountManager: TAccountManager;
    FADOCon: TADOConnection;
-   FServerPort: Integer;
+   FDefaultPort: Integer;
    Mutex: THandle;
    pop:TIdPOP3Server;
    procedure CheckAccount(AThread: TIdContext;LThread: TIdPOP3ServerContext);
-   procedure SetServerPort(const Value: Integer);
+   procedure Disconnect(AContext: TIdContext);
+   procedure SetDefaultPort(const Value: Integer);
  public
-   constructor Create(ADOCon:TADOConnection; AccountManager:TAccountManager);
+   constructor Create(ADOCon:TADOConnection; AccountManager:TAccountManager;
+       ServerPort:integer);
    destructor  Destroy(); override;
-   property ServerPort: Integer read FServerPort write SetServerPort;
+   property DefaultPort: Integer read FDefaultPort write SetDefaultPort;
 end;
 
 implementation
 
 constructor TPOPServer.Create(ADOCon:TADOConnection;
-    AccountManager:TAccountManager);
+    AccountManager:TAccountManager;ServerPort:integer);
 begin
  Mutex:=CreateMutex(nil,False,MutexName);
  FADOCon:=ADOCon;
+ FDefaultPort:=ServerPort;
  FAccountManager:=AccountManager;
  pop:=TIdPOP3Server.Create(nil);
+ pop.DefaultPort:=DefaultPort;
  with pop do
   begin
-   // defaultPort:=210;
     CheckUser:=CheckAccount;
 
   { OnLIST:=LIST;
@@ -86,13 +89,64 @@ begin
  ReleaseMutex(Mutex);
 end;
 
-procedure TPOPServer.SetServerPort(const Value: Integer);
+procedure TPOPServer.Disconnect(AContext: TIdContext);
+var
+    id:integer;
+    ast:TADOStoredProc;
 begin
-  if FServerPort <> Value then
+//id:=AThread.Connection.Tag;
+
+{
+
+как лучше модифицировать данные ?
+если tag равен 0 или  -1
+ ничего не делать
+
+если не равно 0
+ разотметить сообщения на удаление
+ изменить статус учетной записи
+
+ снимать отметку Удаленные в процедуру проверки пароля
+
+ создать динамический массив с классом для работы с сообшениями
+ создать массив с указателями на tadoquery и id аккаунта
+ при аутентификации добавлять при разрыве удалять !
+  класс с tadoquery и id  аккаунта
+  TList c возможностью поиска
+  использовать защищенный список     TThreadList
+
+}
+
+{ if id<>0 then
+  begin
+   ast:=TADOStoredProc.Create(nil);
+   ast.Connection:=ACon;
+   ast.ProcedureName:='UnDeleteCheckedMessages';
+   ast.Parameters.AddParameter.Name:='id';
+   ast.Parameters.ParamByName('id').Value:=id;
+   ast.ExecProc;
+   ast.Close;
+
+  ast.Parameters.Clear;
+  ast.ProcedureName:='setStatusById';
+  ast.Parameters.AddParameter.Name:='status';
+  ast.Parameters.ParamByName('status').Value:='fmFree';
+  ast.Parameters.AddParameter.Name:='id';
+  ast.Parameters.ParamByName('id').Value:=id;
+  ast.ExecProc;
+  ast.Close;
+
+  ast.Free;
+ end; }
+end;
+
+procedure TPOPServer.SetDefaultPort(const Value: Integer);
+begin
+  if FDefaultPort <> Value then
    try
     POP.Active:=False;
-    FServerPort := Value;
-    POP.DefaultPort:=FServerPort;
+    FDefaultPort := Value;
+    POP.DefaultPort:=FDefaultPort;
     pop.Active:=True;
    except
     on e: Exception do

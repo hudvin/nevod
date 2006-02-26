@@ -46,10 +46,14 @@ begin
  AccountManager:=TAccountManager.Create(FADOCon);
  ThreadManager:=TThreadManager.Create(FADOCon,AccountManager,False); // запуск в пассивном состоянии
  ThreadManager.CheckInterval:=StrToInt(Setting['CheckInterval']);
+<<<<<<< .mine
+ POP3Server:=TPOPServer.Create(FADOCon,AccountManager,StrToInt(Setting['ServerPort']));
+=======
 
 
 // POP3Server:=TPOPServer.Create(FADOCon,AccountManager);
 // POP3Server.ServerPort:=StrToInt(Setting['ServerPort']);
+>>>>>>> .r28
  UpdateAccounts;
 end;
 
@@ -93,7 +97,11 @@ begin
  if Value<>FServerPort then
   begin
     Setting['ServerPort']:=IntToStr(Value);
+<<<<<<< .mine
+    POP3Server.DefaultPort:=Value;
+=======
  //   POP3Server.ServerPort:=Value;
+>>>>>>> .r28
   end;
 end;
 
@@ -147,6 +155,9 @@ begin
  FADOCommand.CommandText:=' UPDATE Accounts SET Status='+''''+'asFree'+'''';
  FADOCommand.Execute;
 end;
+ {
+ в базе хранить uid сообшений !
 
+ }
 end.
 

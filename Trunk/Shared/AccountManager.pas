@@ -245,6 +245,7 @@ begin
  with AccountTable do
   begin
     Open;
+    First;
     Requery();
     if (Index>RecordCount) or (Index<1) then
      begin
@@ -334,15 +335,6 @@ begin
   if NOT  AccountTable.Active then   AccountTable.Open;
   AccountTable.Requery();
 end;
-
-{
-
-функция для проверки доступа
- если нет аккаунта - asNone
- если свободен - вернуть
- получение параметров по имени пользователя
-
-}
 
 end.
 
