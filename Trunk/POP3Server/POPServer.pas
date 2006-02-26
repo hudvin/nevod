@@ -40,7 +40,11 @@ begin
  FAccountManager:=AccountManager;
  pop:=TIdPOP3Server.Create(nil);
  ProcsRepositary:=TSQLProcs.Create;
- ProcsRepositary.AddQuery();
+ { добавления запросов в хранилище }
+ ProcsRepositary.AddQuery('DELETE FROM Messages WHERE mid=:AccountId','QuitCommand');
+ ProcsRepositary.AddQuery('UPDATE Messages SET Deleted=False WHERE mid=:AccountId','UnCheckDeleted');
+
+
  pop.DefaultPort:=DefaultPort;
  with pop do
   begin
@@ -62,6 +66,7 @@ begin
  pop.Active:=False;
  pop.Free;
  ContextProcs.Free;
+ ProcsRepositary.Free;
  FADOCon:=nil;
  CloseHandle(Mutex);
 end;
@@ -88,7 +93,7 @@ begin
           FAccountManager.SetStatus(AParams.Id,asServer);
           ContextProcs.AddContext(AParams.Id);
           Proc:=ContextProcs.GetContext(AParams.Id).MessProc;
-          Proc.SQL.Text:='UPDATE Messages SET Deleted=False WHERE mid=' + ''''+IntToStr(AParams.Id)+'''';
+          ProcsRepositary.Fill(Proc,'UnCheckDeleted',[Id]);
           Proc.ExecSQL;
           LThread.Connection.Tag:=AParams.Id;
           LThread.State:=Trans;
@@ -131,9 +136,7 @@ var
 begin
   AccountId:=ASender.Context.Connection.Tag;
   Proc:=ContextProcs.GetContext(AccountId).MessProc;
-  Proc.SQL.Text:='DELETE FROM Messages WHERE mid=:AccountId';
-  Proc.Parameters.Items[0].Value:=AccountId;
- // Proc.Parameters.ParamByName('AccountId').Value:=AccountId;
+  ProcsRepositary.Fill(Proc,'QuitCommand',[AccountId]);
   Proc.ExecSQL;
   Proc:=nil;
 end;
@@ -147,15 +150,7 @@ begin
   Proc:=ContextProcs.GetContext(AccountId).MessProc;
 
  // получить количество сообщений и их общий объем
- {
-
- хранить общее количество сообщений и их размер
- в класс -
-   процедура для команд
-   таблица сообщений
-
- }
- ASender.Reply.SetReply(OK, '1 40');
+// ASender.Reply.SetReply(OK, '1 40');
 end; 
 
 procedure TPOPServer.SetDefaultPort(const Value: Integer);
