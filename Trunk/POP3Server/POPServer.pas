@@ -3,7 +3,7 @@ unit POPServer;
 interface
 uses
     Shared,Windows,Dialogs, Messages, SysUtils,IdContext, StdCtrls,
-     ADODB, IdBaseComponent, IdComponent, Math,
+     ADODB, IdBaseComponent, IdComponent, Math, IdCommandHandlers,
      IdTCPServer, IdPOP3Server, Settings, AccountManager;
 
 type
@@ -15,7 +15,10 @@ type
    FDefaultPort: Integer;
    Mutex: THandle;
    pop:TIdPOP3Server;
+   ProcsRepositary: TSQLProcs;
    procedure CheckAccount(AThread: TIdContext;LThread: TIdPOP3ServerContext);
+   procedure QUIT(ASender: TIdCommand);
+   procedure STAT(ASender: TIdCommand);
    procedure Disconnect(AContext: TIdContext);
    procedure SetDefaultPort(const Value: Integer);
  public
@@ -36,16 +39,19 @@ begin
  FDefaultPort:=ServerPort;
  FAccountManager:=AccountManager;
  pop:=TIdPOP3Server.Create(nil);
+ ProcsRepositary:=TSQLProcs.Create;
+ ProcsRepositary.AddQuery();
  pop.DefaultPort:=DefaultPort;
  with pop do
   begin
     CheckUser:=CheckAccount;
     OnDisconnect:=Disconnect;
+    OnQUIT:=QUIT;
   { OnLIST:=LIST;
    OnSTAT:=STAT;
    OnRETR:=RETR;
    OnDELE:=DELE;
-   OnQUIT:=QUIT;
+
     }
    Active:=true;
  end;
@@ -118,6 +124,40 @@ begin
    end;
 end;
 
+procedure TPOPServer.QUIT(ASender: TIdCommand);
+var
+    AccountId:integer;
+    Proc:TADOQuery;
+begin
+  AccountId:=ASender.Context.Connection.Tag;
+  Proc:=ContextProcs.GetContext(AccountId).MessProc;
+  Proc.SQL.Text:='DELETE FROM Messages WHERE mid=:AccountId';
+  Proc.Parameters.Items[0].Value:=AccountId;
+ // Proc.Parameters.ParamByName('AccountId').Value:=AccountId;
+  Proc.ExecSQL;
+  Proc:=nil;
+end;
+
+procedure TPOPServer.STAT(ASender: TIdCommand);
+var
+ AccountId:integer;
+ Proc:TADOQuery;
+begin
+  AccountId:=ASender.Context.Connection.Tag;
+  Proc:=ContextProcs.GetContext(AccountId).MessProc;
+
+ // получить количество сообщений и их общий объем
+ {
+
+ хранить общее количество сообщений и их размер
+ в класс -
+   процедура для команд
+   таблица сообщений
+
+ }
+ ASender.Reply.SetReply(OK, '1 40');
+end; 
+
 procedure TPOPServer.SetDefaultPort(const Value: Integer);
 begin
   if FDefaultPort <> Value then
@@ -132,6 +172,10 @@ begin
    end;
 end;
 
+
+{
+ создать хеш - массив с запросами
+}
 
 
 end.

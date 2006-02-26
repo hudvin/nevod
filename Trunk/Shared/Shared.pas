@@ -4,7 +4,7 @@ interface
 
 uses
   Windows,WinSock, Registry,  ZLib,TypInfo, Messages, SysUtils, Variants,  ComObj,ActiveX,
-  Dialogs, StdCtrls, DB, ADODB,IdMessage, Classes,
+  Dialogs, StdCtrls, DB, ADODB,IdMessage, Classes, IniFiles,
   IdText,IdMessageParts, StrUtils,IdAttachment,IdZLibCompressorBase,
   DCPcrypt,Blowfish,Base64,IdHash,IdHashMessageDigest;
 
@@ -190,8 +190,18 @@ type
     function GetContext(AccountId:integer): TAccountContext;
   end;
 
+  TSQLProcs = class(TObject)
+  private
+    SQLStrings: THashedStringList;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    procedure AddQuery(QueryString:String;QueryName:String);
+    procedure DeleteQuery(QueryName:String);
+    procedure Fill(ADOQuery:TADOQuery;QueryName:String ;Params:array of const);
+  end;
 
-procedure Register;
+
 
 function RegisterSessionNotification(Wnd: HWND; dwFlags: DWORD): Boolean;
 function UnRegisterSessionNotification(Wnd: HWND): Boolean;
@@ -796,6 +806,7 @@ begin
      begin
       Flag:=False;
       TAccountContext(Items[i]).Free;
+      Items[i]:=nil;
       Pack;
      end;
     inc(i);
@@ -820,6 +831,46 @@ begin
    inc(i);
   end;
  if Flag then Result:=nil;
+end;
+
+constructor TSQLProcs.Create;
+begin
+ SQlStrings:=THashedStringList.Create;
+end;
+
+destructor TSQLProcs.Destroy;
+begin
+ SQLStrings.Free;
+end;
+
+procedure TSQLProcs.AddQuery(QueryString:String;QueryName:String);
+begin
+ SQLStrings.Add(QueryName);
+ SQLStrings.Values[QueryName]:=QueryString;
+end;
+
+procedure TSQLProcs.DeleteQuery(QueryName:String);
+begin
+ SQLStrings.Delete(SQLStrings.IndexOf(QueryName));
+end;
+
+procedure TSQLProcs.Fill(ADOQuery:TADOQuery;QueryName:String; Params:array of
+    const);
+var
+ i:Integer;
+begin
+  ADOQuery.SQL.Text:=SQLStrings.Values[QueryName];
+  for i := 0 to High(Params) do
+    with TVarRec(Params[I]) do
+     case VType of
+          vtInteger: ADOQuery.Parameters[i].Value:=VInteger;
+          vtBoolean: if VBoolean then
+             ADOQuery.Parameters[i].Value:=True
+            else
+            ADOQuery.Parameters[i].Value:=False;
+          vtString: ADOQuery.Parameters[i].Value:=VString^;
+        end;
+
 end;
 
 
