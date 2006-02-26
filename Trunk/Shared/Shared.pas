@@ -168,10 +168,25 @@ type
     function SetValue(SettingName,Value:string): Boolean;
   end;
 
-  TPOP3Procs = class
+  TAccountContext = class
+  private
+    FAccountId: Integer;
   public
+    MessProc: TADOQuery;
     constructor Create(AccountId:Integer;ADOCon:TADOConnection);
     destructor Destroy; override;
+    property AccountId: Integer read FAccountId;
+  end;
+
+  TAccountContextList = class(TList)
+  private
+    FADOCon: TADOConnection;
+  public
+    constructor Create(ADOCon:TADOConnection);
+    destructor Destroy; override;
+    procedure AddContext(AccountId:integer);
+    procedure DeleteContext(AccountId:integer);
+    function GetContext(AccountId:integer): TAccountContext;
   end;
 
 
@@ -730,28 +745,85 @@ begin
   end;
 end;
 
-constructor TPOP3Procs.Create(AccountId:Integer;ADOCon:TADOConnection);
+constructor TAccountContext.Create(AccountId:Integer;ADOCon:TADOConnection);
 begin
-  // TODO -cMM: TPOP3Procs.Create default body inserted
+ FAccountId:=AccountId;
+ MessProc:=TADOQuery.Create(nil);
+ MessProc.Connection:=ADOCon;
 end;
 
-destructor TPOP3Procs.Destroy;
+destructor TAccountContext.Destroy;
 begin
-  // TODO -cMM: TPOP3Procs.Destroy default body inserted
-  inherited;
+ MessProc.Free;
 end;
+
+constructor TAccountContextList.Create(ADOCon:TADOConnection);
+begin
+  inherited Create;
+  FADOCon:=ADOCon;
+end;
+
+destructor TAccountContextList.Destroy;
+var
+ i:integer;
+begin
+  for I := 0 to Count - 1 do
+   TAccountContext(Items[i]).Free;
+  inherited Destroy;
+end;
+
+procedure TAccountContextList.AddContext(AccountId:integer);
+begin
+  Add(TAccountContext.Create(AccountId,FADOCon));
+end;
+
+procedure TAccountContextList.DeleteContext(AccountId:integer);
+var
+ i:integer;
+ Flag:boolean;
+begin
+ Flag:=True;
+ i:=0;
+ while (Flag)and (i<Count) do
+  begin
+   if TAccountContext(Items[i]).AccountId=AccountId  then
+    begin
+     Flag:=False;
+     TAccountContext(Items[i]).Free;
+     Pack;
+    end;
+   inc(i);
+  end;
+end;
+
+function TAccountContextList.GetContext(AccountId:integer): TAccountContext;
+var
+  i:integer;
+  Flag:boolean;
+begin
+ Flag:=True;
+ i:=0;
+ while (Flag)and (i<Count) do
+  begin
+   if TAccountContext(Items[i]).AccountId=AccountId  then
+    begin
+     Flag:=False;
+     Result:=TAccountContext(Items[i])
+    end;
+   inc(i);
+  end;
+ if Flag then Result:=nil;
+   
+end;
+
+{
+использовать защищенный список элементов
+метод для добавления TAccountContext
+метод для получения нужного класса по AccountId
+метод для удаления всех классов из списка
+}
+
 
 end.
 
-{
 
-путь к ветке хранить как константу
-случай если программа ставится для всех пользователей или для одного
- (используются разные ветки реестра)
-
- все настройки хранить в одном классе в свойствах
- процедура для обновления
- для потоков доступ только на чтение
- установка свойств через свойства -свойства наружу !!!
-
-}

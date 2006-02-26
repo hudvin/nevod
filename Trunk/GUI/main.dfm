@@ -42,6 +42,15 @@ object FMain: TFMain
     TabOrder = 2
     OnClick = Button3Click
   end
+  object Button4: TButton
+    Left = 96
+    Top = 216
+    Width = 75
+    Height = 25
+    Caption = 'Button4'
+    TabOrder = 3
+    OnClick = Button4Click
+  end
   object acon: TADOConnection
     ConnectionString = 
       'Provider=Microsoft.Jet.OLEDB.4.0;User ID=Admin;Data Source=..\DB' +
