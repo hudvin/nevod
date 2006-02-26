@@ -17,7 +17,6 @@ type
     procedure FormCreate(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure Button4Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -29,7 +28,6 @@ type
 var
   FMain: TFMain;
   post:TPostManager;
-  ls:TAccountContextList;
 implementation
 
 
@@ -40,7 +38,6 @@ implementation
 procedure TFMain.FormCreate(Sender: TObject);
 begin
  post:=TPostManager.Create(ACon);
- ls:=TAccountContextList.Create(ACon);
 end;
 
 procedure TFMain.Button3Click(Sender: TObject);
@@ -50,22 +47,12 @@ end;
 
 procedure TFMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-post.Free;
+ post.Free;
 end;
 
 procedure TFMain.Button2Click(Sender: TObject);
 begin
  post.StartAllThreads;
-end;
-
-procedure TFMain.Button4Click(Sender: TObject);
- var ts:TAccountContext;
-begin
- ls.AddContext(10);
-// ShowMessage (IntToStr(ls.GetContext(10).AccountId));
- ts:=ls.GetContext(10);
- ls.Free;
- Showmessage(IntToStr(ts.AccountId));
 end;
 
 end.

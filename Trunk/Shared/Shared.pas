@@ -180,6 +180,7 @@ type
 
   TAccountContextList = class(TList)
   private
+    CS: RTL_CRITICAL_SECTION;
     FADOCon: TADOConnection;
   public
     constructor Create(ADOCon:TADOConnection);
@@ -760,6 +761,7 @@ end;
 constructor TAccountContextList.Create(ADOCon:TADOConnection);
 begin
   inherited Create;
+  InitializeCriticalSection(CS);
   FADOCon:=ADOCon;
 end;
 
@@ -769,12 +771,15 @@ var
 begin
   for I := 0 to Count - 1 do
    TAccountContext(Items[i]).Free;
+  DeleteCriticalSection(CS);
   inherited Destroy;
 end;
 
 procedure TAccountContextList.AddContext(AccountId:integer);
 begin
-  Add(TAccountContext.Create(AccountId,FADOCon));
+  EnterCriticalSection(CS);
+   Add(TAccountContext.Create(AccountId,FADOCon));
+  LeaveCriticalSection(CS);
 end;
 
 procedure TAccountContextList.DeleteContext(AccountId:integer);
@@ -784,16 +789,18 @@ var
 begin
  Flag:=True;
  i:=0;
- while (Flag)and (i<Count) do
-  begin
-   if TAccountContext(Items[i]).AccountId=AccountId  then
-    begin
-     Flag:=False;
-     TAccountContext(Items[i]).Free;
-     Pack;
-    end;
-   inc(i);
-  end;
+ EnterCriticalSection(CS);
+  while (Flag)and (i<Count) do
+   begin
+    if TAccountContext(Items[i]).AccountId=AccountId  then
+     begin
+      Flag:=False;
+      TAccountContext(Items[i]).Free;
+      Pack;
+     end;
+    inc(i);
+   end;
+ LeaveCriticalSection(CS);
 end;
 
 function TAccountContextList.GetContext(AccountId:integer): TAccountContext;
@@ -808,20 +815,12 @@ begin
    if TAccountContext(Items[i]).AccountId=AccountId  then
     begin
      Flag:=False;
-     Result:=TAccountContext(Items[i])
+     Result:=TAccountContext(Items[i]);
     end;
    inc(i);
   end;
  if Flag then Result:=nil;
-   
 end;
-
-{
-использовать защищенный список элементов
-метод для добавления TAccountContext
-метод для получения нужного класса по AccountId
-метод для удаления всех классов из списка
-}
 
 
 end.
