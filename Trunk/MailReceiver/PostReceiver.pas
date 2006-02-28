@@ -16,12 +16,12 @@ type
     Log: TLogger;
     OldMessagesId: TADOStoredProc;
     RecMessage: TFMessage;
-    StoredSaver: TADOStoredProc;
+    Saver: TADOQuery;
     procedure AddToOldMessagesId(Mess: TFMessage);
     function GetThreadsCount: Integer;
     function MessageIdExists(MsgId: string): Boolean;
     procedure ReceiveMessages; virtual; abstract;
-    procedure SaveMessage(Mess: TFMessage); virtual;
+    procedure SaveMessage(Mess: TFMessage;MessSize:integer); virtual;
   protected
     procedure Run; override;
   public
@@ -57,8 +57,8 @@ begin
   FAccountParams:=Account;
   FPackMessages:=PackMessages;
   Log:=TLogger.Create(FADOCon);
-  StoredSaver:=TADOStoredProc.Create(nil);
-  StoredSaver.Connection:=FADOCon;
+  Saver:=TADOQuery.Create(nil);
+  Saver.Connection:=FADOCon;
   OldMessagesId:=TADOStoredProc.Create(nil);
   OldMessagesId.Connection:=FADOCon;
   RecMessage:=TFMessage.Create;
@@ -68,7 +68,7 @@ destructor TBaseReceiver.Destroy;
 begin
   inherited Destroy;
   Log.Free;
-  StoredSaver.Free;
+  Saver.Free;
   RecMessage.Free;
   OldMessagesId.Free;
   FADOCon:=nil;
@@ -127,41 +127,28 @@ begin
   Terminate;
 end;
 
-procedure TBaseReceiver.SaveMessage(Mess: TFMessage);
+procedure TBaseReceiver.SaveMessage(Mess: TFMessage;MessSize:integer);
 var
   MessStream: TMemoryStream;
 begin
   CoInitialize(nil);
-  {
-  сохранять размер исходного соообщения
-  использовать прямой запрос и tadoquery
-  }
   MessStream:=TMemoryStream.Create;
-  if FPackMessages then  Mess.SaveToZStream(MessStream)
+  if FPackMessages then    Mess.SaveToZStream(MessStream)
     else Mess.SaveToStream(MessStream);
-  StoredSaver.Close;
-  StoredSaver.Parameters.Clear;
-  StoredSaver.ProcedureName:='SaveMessage';
-  with   StoredSaver.Parameters do
+  Saver.Close;
+  Saver.SQL.Text:='INSERT INTO messages (mid, message,messId,Address,CompressionLevel,MessSize)'+
+                  ' VALUES (:mid,:message,:messId,:Address,:CompressionLevel,:MessSize)';
+  Saver.Parameters.ParseSQL(Saver.sql.text,true);
+  with   Saver.Parameters do
     begin
-      Clear;
-
-      AddParameter.Name:='mid';
       ParamByName('mid').Value:=FAccountParams.Id;
-
-      AddParameter.Name:='Message';
       ParamByName('Message').LoadFromStream(MessStream,ftMemo);
-
-      AddParameter.Name:='messId';
       ParamByName('messId').Value:=Mess.MsgId;
-
-      AddParameter.Name:='Address';
       ParamByName('Address').Value:=Mess.From.Address;
-
-      AddParameter.Name:='Compression';
-      ParamByName('Compression').Value:=Mess.Compression;
+      ParamByName('CompressionLevel').Value:=Mess.Compression;
+      ParamByName('MessSize').Value:=MessSize;
   end;
-  StoredSaver.ExecProc;
+  Saver.ExecSQL;
   MessStream.Free;
   CoUninitialize;
 end;
@@ -186,6 +173,7 @@ end;
 procedure TPOP3Receiver.ReceiveMessages;
 var
   i, MessCount: Integer;
+  MessSize:Integer;
 begin
   POP3Client.Host:=FAccountParams.Host;
   POP3Client.Port:=FAccountParams.Port;
@@ -205,9 +193,10 @@ begin
                  begin
                   RecMessage.Clear;
                   POP3Client.Retrieve(i,RecMessage);
+                  MessSize:=POP3Client.RetrieveMsgSize(i);
                   POP3Client.Delete(i);
                   AddToOldMessagesId(RecMessage);
-                  SaveMessage(RecMessage);
+                  SaveMessage(RecMessage,MessSize);
                  end
                  else   POP3Client.Delete(i);
             end;

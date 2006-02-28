@@ -17,6 +17,7 @@ type
     Button3: TButton;
     Button4: TButton;
     IdPOP3Server1: TIdPOP3Server;
+    ADOQuery1: TADOQuery;
     procedure Button2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Button3Click(Sender: TObject);

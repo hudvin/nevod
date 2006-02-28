@@ -64,6 +64,7 @@ object FMain: TFMain
       't=False;Jet OLEDB:Compact Without Replica Repair=False;Jet OLEDB' +
       ':SFP=False'
     LoginPrompt = False
+    Mode = cmShareDenyNone
     Provider = 'Microsoft.Jet.OLEDB.4.0'
     Left = 8
     Top = 8
@@ -89,5 +90,32 @@ object FMain: TFMain
       'Sorry, Unknown Command')
     Left = 136
     Top = 152
+  end
+  object ADOQuery1: TADOQuery
+    Connection = acon
+    Parameters = <
+      item
+        Name = '[mid]'
+        Attributes = [paNullable]
+        DataType = ftWideString
+        NumericScale = 255
+        Precision = 255
+        Size = 510
+        Value = '12'
+      end
+      item
+        Name = '[messages]'
+        Attributes = [paNullable]
+        DataType = ftWideString
+        NumericScale = 255
+        Precision = 255
+        Size = 510
+        Value = 'hhf'
+      end>
+    SQL.Strings = (
+      'INSERT INTO messages ( mid, message)  '
+      'VALUES                           ( [mid], [messages]) '#9)
+    Left = 216
+    Top = 120
   end
 end
