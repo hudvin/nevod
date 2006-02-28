@@ -4,8 +4,10 @@ interface
 
 uses
       Forms, PostManager, DB, ADODB, Classes, Controls,
-      StrUtils,PostReceiver, Dialogs, Shared,IniFiles,
-      Windows,ThreadManager, Messages, SysUtils, Variants, StdCtrls;
+      StrUtils,PostReceiver, Dialogs, Shared,IniFiles,AccountManager,
+      Windows,ThreadManager, Messages, SysUtils, Variants, StdCtrls,
+  IdBaseComponent, IdComponent, IdCustomTCPServer, IdTCPServer,
+  IdCmdTCPServer, IdExplicitTLSClientServerBase, IdPOP3Server;
 
 type
   TFMain = class(TForm)
@@ -14,6 +16,7 @@ type
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
+    IdPOP3Server1: TIdPOP3Server;
     procedure Button2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Button3Click(Sender: TObject);
@@ -59,12 +62,18 @@ end;
 
 procedure TFMain.Button4Click(Sender: TObject);
 var
- st:THashedStringList;
+ st:TAccountManager;
+ ap:TAccountParams;
 begin
- st:=THashedStringList.Create;
- st.Add('qwerty');
- st.Values['qwerty']:='nevod';
- ShowMessage(st.Values['qwerty']);
+ st:=TAccountManager.Create(ACon);
+  ap.AccountName:='test';
+  ap.Username:='test';
+  ap.Host:='localhost';
+  ap.Password:='qaz';
+  ap.Port:=110;
+  ap.Timeout:=60000;
+
+ st.AddAccount(ap);
 end;
 
 end.

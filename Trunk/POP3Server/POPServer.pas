@@ -15,8 +15,8 @@ type
    FDefaultPort: Integer;
    Mutex: THandle;
    pop:TIdPOP3Server;
-   ProcsRepositary: TSQLProcs;
    procedure CheckAccount(AThread: TIdContext;LThread: TIdPOP3ServerContext);
+   procedure Connect(AContext: TIdContext);
    procedure QUIT(ASender: TIdCommand);
    procedure STAT(ASender: TIdCommand);
    procedure Disconnect(AContext: TIdContext);
@@ -30,6 +30,8 @@ end;
 
 implementation
 
+uses IdCustomTCPServer;
+
 constructor TPOPServer.Create(ADOCon:TADOConnection;
     AccountManager:TAccountManager;ServerPort:integer);
 begin
@@ -39,17 +41,13 @@ begin
  FDefaultPort:=ServerPort;
  FAccountManager:=AccountManager;
  pop:=TIdPOP3Server.Create(nil);
- ProcsRepositary:=TSQLProcs.Create;
- { добавления запросов в хранилище }
- ProcsRepositary.AddQuery('DELETE FROM Messages WHERE mid=:AccountId','QuitCommand');
- ProcsRepositary.AddQuery('UPDATE Messages SET Deleted=False WHERE mid=:AccountId','UnCheckDeleted');
-
 
  pop.DefaultPort:=DefaultPort;
  with pop do
   begin
     CheckUser:=CheckAccount;
     OnDisconnect:=Disconnect;
+    OnConnect:=Connect;
     OnQUIT:=QUIT;
   { OnLIST:=LIST;
    OnSTAT:=STAT;
@@ -66,7 +64,6 @@ begin
  pop.Active:=False;
  pop.Free;
  ContextProcs.Free;
- ProcsRepositary.Free;
  FADOCon:=nil;
  CloseHandle(Mutex);
 end;
@@ -88,26 +85,36 @@ begin
    AParams:=FAccountManager.AccountById[Id];
    if AParams.Password=Password then
      case AParams.Status of    //
-       asFree:
+       asFree:                // ящик свободен
         begin
           FAccountManager.SetStatus(AParams.Id,asServer);
           ContextProcs.AddContext(AParams.Id);
           Proc:=ContextProcs.GetContext(AParams.Id).MessProc;
-          ProcsRepositary.Fill(Proc,'UnCheckDeleted',[Id]);
-          Proc.ExecSQL;
+          Proc.SQL.Text:='UPDATE Messages SET Deleted=False WHERE mid=:AccountId AND Deleted=TRUE';
+           {
+           обновление статуса сообщений, если соединение было разорвано
+           }
+          Proc.Parameters.ParamByName('AccountId').Value:=AParams.Id;
+          Proc.ExecSQL;                                                      
           LThread.Connection.Tag:=AParams.Id;
           LThread.State:=Trans;
         end;
-       asClient:
+       asClient:  // выполняется получение новой почты
         begin
-          LThread.Connection.Tag:=AParams.Id;
+         // LThread.Connection.Tag:=AParams.Id;
+          LThread.Connection.Tag:=0;
           LThread.State:=Trans;
         end;
      else
-       LThread.Connection.Tag:=-1;
+       LThread.Connection.Tag:=-1;  // доступ запрещен
      end;    // case
   end;
  ReleaseMutex(Mutex);
+end;
+
+procedure TPOPServer.Connect(AContext: TIdContext);
+begin
+ AContext.Connection.Tag:=-1;
 end;
 
 
@@ -115,6 +122,7 @@ procedure TPOPServer.Disconnect(AContext: TIdContext);
 var
     AccountId:integer;
 begin
+ // если -1 - ничего не делать - клиент просто отключился или доступ запрещен
  AccountId:=AContext.Connection.Tag;
  if AccountId>0 then
   begin
@@ -134,11 +142,18 @@ var
     AccountId:integer;
     Proc:TADOQuery;
 begin
+ {
+ если id  равен 0 - ничего не делать
+ }
   AccountId:=ASender.Context.Connection.Tag;
-  Proc:=ContextProcs.GetContext(AccountId).MessProc;
-  ProcsRepositary.Fill(Proc,'QuitCommand',[AccountId]);
-  Proc.ExecSQL;
-  Proc:=nil;
+  if AccountId>0 then
+   begin
+    Proc:=ContextProcs.GetContext(AccountId).MessProc;
+    Proc.SQL.Text:='DELETE FROM Messages WHERE mid=:AccountId AND Deleted=TRUE';
+    Proc.Parameters.ParamByName('AccountId').Value:=AccountId;
+    Proc.ExecSQL;
+    Proc:=nil;
+   end; 
 end;
 
 procedure TPOPServer.STAT(ASender: TIdCommand);
@@ -169,7 +184,15 @@ end;
 
 
 {
+ удалять сообщения при аутентификации
+ при подключении выставлять тэг в -1
  создать хеш - массив с запросами
+ в таблице хранить реальный размер сообшений
+ все строки запросов хранить в самих процедурах !!!
+ событие Disconnect вызывается в любом случае
+ сообшения удалять сразу в событии Quit,  если ID потока не равен 0
+  и выставлять поток в 0
+ в Disconnect удалять сообщения если ID  потока не не равне 0 или -1
 }
 
 

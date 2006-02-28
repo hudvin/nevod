@@ -68,4 +68,26 @@ object FMain: TFMain
     Left = 8
     Top = 8
   end
+  object IdPOP3Server1: TIdPOP3Server
+    Bindings = <>
+    CommandHandlers = <>
+    ExceptionReply.Code = '-ERR'
+    ExceptionReply.Text.Strings = (
+      'Unknown Internal Error')
+    Greeting.Code = '+OK'
+    Greeting.Text.Strings = (
+      'Welcome to Indy POP3 Server')
+    HelpReply.Code = '+OK'
+    HelpReply.Text.Strings = (
+      'Help follows')
+    MaxConnectionReply.Code = '-ERR'
+    MaxConnectionReply.Text.Strings = (
+      'Too many connections. Try again later.')
+    ReplyTexts = <>
+    ReplyUnknownCommand.Code = '-ERR'
+    ReplyUnknownCommand.Text.Strings = (
+      'Sorry, Unknown Command')
+    Left = 136
+    Top = 152
+  end
 end

@@ -132,6 +132,10 @@ var
   MessStream: TMemoryStream;
 begin
   CoInitialize(nil);
+  {
+  сохранять размер исходного соообщения
+  использовать прямой запрос и tadoquery
+  }
   MessStream:=TMemoryStream.Create;
   if FPackMessages then  Mess.SaveToZStream(MessStream)
     else Mess.SaveToStream(MessStream);
