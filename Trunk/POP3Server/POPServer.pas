@@ -20,6 +20,7 @@ type
    procedure QUIT(ASender: TIdCommand);
    procedure STAT(ASender: TIdCommand);
    procedure Disconnect(AContext: TIdContext);
+   procedure LIST(ASender: TIdCommand; AMessageNum: Integer);
    procedure SetDefaultPort(const Value: Integer);
  public
    constructor Create(ADOCon:TADOConnection; AccountManager:TAccountManager;
@@ -30,7 +31,7 @@ end;
 
 implementation
 
-uses IdCustomTCPServer;
+uses IdCustomTCPServer, DB;
 
 constructor TPOPServer.Create(ADOCon:TADOConnection;
     AccountManager:TAccountManager;ServerPort:integer);
@@ -49,8 +50,10 @@ begin
     OnDisconnect:=Disconnect;
     OnConnect:=Connect;
     OnQUIT:=QUIT;
-  { OnLIST:=LIST;
-   OnSTAT:=STAT;
+    OnSTAT:=STAT;
+    OnLIST:=LIST;
+  {
+
    OnRETR:=RETR;
    OnDELE:=DELE;
 
@@ -137,6 +140,107 @@ begin
    end;
 end;
 
+procedure TPOPServer.LIST(ASender: TIdCommand; AMessageNum: Integer);
+var
+    AccountId,MessCount:integer;
+    Proc:TADOQuery;
+    Flag:boolean;
+
+begin
+ AccountId:=ASender.Context.Connection.Tag;
+ if AccountId=0 then   // если статус asClient
+   if AMessageNum=-1 then  ASender.Reply.SetReply(OK, '0 0')
+    else ASender.Reply.SetReply(ERR, 'No such message')
+  else // если получение разрешено
+   begin
+    Proc:=ContextProcs.GetContext(AccountId).MessProc;
+    Proc.SQL.Text:='SELECT MessSize FROM messages WHERE mid=:AccountId AND Deleted=False ';
+    Proc. Parameters.ParamByName('AccountId').Value:=AccountId;
+    Proc. ExecSQL;
+    Proc. Open;
+    MessCount:=Proc.RecordCount;
+    Proc.Close;
+    if AMessageNum=-1 then          // вывести весь список сообщений или указать что ящик пуст
+      if MessCount=0 then          // если ящик пустой
+        begin
+         ASender.Reply.SetReply(OK, '0 0');
+         ASender.Response.Add('.');
+        end
+       else // если сообщения есть - выполнить запрос и вывести данные о сообщении
+        begin
+         Proc. Open;
+         Proc.First;
+         while not Proc.EOF do
+           begin
+            ASender.Response.Add(IntToStr(Proc.RecNo)+ ' ' +IntToStr(Proc.Fields[0].AsInteger));
+            Proc.Next;
+           end;
+        end;
+    if AMessageNum>0 then
+     begin
+       Proc.Open;
+       if (AMessageNum<=Proc.RecordCount) and (AMessageNum>0) then
+        begin
+         Proc.RecNo:=AMessageNum;
+         ASender.Reply.SetReply(OK,IntToStr(Proc.RecNo)+ ' ' +IntToStr(Proc.Fields[0].AsInteger));
+        end
+         else ASender.Reply.SetReply(ERR, 'No such message');
+         
+     end;
+        
+    {
+    если нет сообщения с таким номером
+    если сообщение есть
+    если нет параметров   (-1)  вывод всех сообщений если они есть
+
+    }
+
+   end;
+
+    
+   
+
+
+{ if AccountId=0 then
+  if AMessageNum=-1 then
+    ASender.Reply.SetReply(OK, '0 0')
+   else ASender.Reply.SetReply(ERR, ' No such messages ');
+ if AccountId>0 then
+  begin
+   Proc:=ContextProcs.GetContext(AccountId).MessProc;
+   Proc:=ContextProcs.GetContext(AccountId).MessProc;
+   Proc.SQL.Text:='SELECT COUNT(Id) FROM messages WHERE mid=:AccountId AND Deleted=False ';
+   Proc. Parameters.ParamByName('AccountId').Value:=AccountId;
+   Proc. ExecSQL;
+   Proc. Open;
+   MessCount:=Proc.Fields[0].AsInteger;
+   Proc.Close;
+   if AMessageNum=-1 then  // вывести весь список сообщений
+    begin
+
+
+    end;
+  end;  }
+
+{  if AccountId>0 then
+   begin
+    Proc:=ContextProcs.GetContext(AccountId).MessProc;
+    Proc.SQL.Text:='SELECT COUNT(Id) FROM messages WHERE mid=:AccountId AND Deleted=False ';
+    Proc. Parameters.ParamByName('AccountId').Value:=AccountId;
+    Proc. ExecSQL;
+    Proc. Open;
+    MessCount:=Proc.Fields[0].AsInteger;
+    Proc.Close;
+   end;
+ // else
+
+
+
+ {
+ если  id не равен 0 получить данные 
+ }
+end;
+
 procedure TPOPServer.QUIT(ASender: TIdCommand);
 var
     AccountId:integer;
@@ -160,13 +264,36 @@ procedure TPOPServer.STAT(ASender: TIdCommand);
 var
  AccountId:integer;
  Proc:TADOQuery;
+ MessCount,MessSize:Integer;
 begin
   AccountId:=ASender.Context.Connection.Tag;
-  Proc:=ContextProcs.GetContext(AccountId).MessProc;
+  if AccountId>0 then
+   with Proc do
+     begin
+      // получение количества сообщений
+      Proc:=ContextProcs.GetContext(AccountId).MessProc;
+      SQL.Text:='SELECT COUNT(Id) FROM messages WHERE mid=:AccountId AND Deleted=False ';
+      Parameters.ParamByName('AccountId').Value:=AccountId;
+      ExecSQL;
+      Open;
+      MessCount:=Fields[0].AsInteger;
+      Close;
+      // получение объема сообщений
+      SQL.Text:='SELECT SUM(MessSize) FROM messages WHERE mid=:AccountId AND Deleted=False ';
+      Parameters.ParamByName('AccountId').Value:=AccountId;
+      ExecSQL;
+      Open;
+      MessSize:=Fields[0].AsInteger;
+
+      ASender.Reply.SetReply(OK,IntToStr(MessCount)+ ' '+ IntToStr(MessSize));
+
+     end
+  else ASender.Reply.SetReply(OK, '0 0');
+    
 
  // получить количество сообщений и их общий объем
 // ASender.Reply.SetReply(OK, '1 40');
-end; 
+end;
 
 procedure TPOPServer.SetDefaultPort(const Value: Integer);
 begin
