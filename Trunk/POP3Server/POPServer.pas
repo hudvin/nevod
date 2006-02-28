@@ -26,6 +26,7 @@ type
    constructor Create(ADOCon:TADOConnection; AccountManager:TAccountManager;
        ServerPort:integer);
    destructor  Destroy(); override;
+   procedure DELE(ASender: TIdCommand; AMessageNum: Integer);
    property DefaultPort: Integer read FDefaultPort write SetDefaultPort;
 end;
 
@@ -52,10 +53,11 @@ begin
     OnQUIT:=QUIT;
     OnSTAT:=STAT;
     OnLIST:=LIST;
+    OnDELE:=DELE;
   {
 
    OnRETR:=RETR;
-   OnDELE:=DELE;
+   
 
     }
    Active:=true;
@@ -80,6 +82,7 @@ var
     Proc:TADOQuery;
 begin
  WaitForSingleObject(Mutex,INFINITE);
+ // нафига тут мьтекс ?
   Password:=LThread.Password;
   Username:=LThread.Username;
   Id:=FAccountManager.AccountName2Id(Username);
@@ -119,6 +122,40 @@ procedure TPOPServer.Connect(AContext: TIdContext);
 begin
  AContext.Connection.Tag:=-1;
 end;
+
+procedure TPOPServer.DELE(ASender: TIdCommand; AMessageNum: Integer);
+var
+    AccountId,MessCount:integer;
+    Proc:TADOQuery;
+    Flag:boolean;
+
+begin
+ AccountId:=ASender.Context.Connection.Tag;
+ if AccountId=0 then   // если статус asClient
+  ASender.Reply.SetReply(ERR, ' No such message ! ');
+ if AccountId>0 then
+  begin
+   Proc:=ContextProcs.GetContext(AccountId).MessProc;
+   Proc.SQL.Text:='SELECT * FROM messages WHERE mid=:AccountId  ';
+   Proc. Parameters.ParamByName('AccountId').Value:=AccountId;
+   Proc. ExecSQL;
+   Proc. Open;
+   if AMessageNum>Proc.RecordCount then  ASender.Reply.SetReply(ERR, 'No such message')
+    else
+     begin
+      Proc.RecNo:=AMessageNum;
+      if not Proc.FieldByName('deleted').AsBoolean then
+        begin
+         Proc.Edit;
+         Proc.FieldByName('deleted').AsBoolean:=true;
+         Proc.Post;
+         ASender.Reply.SetReply(OK, 'Message deleted');
+        end
+         else    ASender.Reply.SetReply(ERR,'No such message');
+     end;
+  end;
+end;
+
 
 
 procedure TPOPServer.Disconnect(AContext: TIdContext);
@@ -185,60 +222,8 @@ begin
          ASender.Reply.SetReply(OK,IntToStr(Proc.RecNo)+ ' ' +IntToStr(Proc.Fields[0].AsInteger));
         end
          else ASender.Reply.SetReply(ERR, 'No such message');
-         
      end;
-        
-    {
-    если нет сообщения с таким номером
-    если сообщение есть
-    если нет параметров   (-1)  вывод всех сообщений если они есть
-
-    }
-
    end;
-
-    
-   
-
-
-{ if AccountId=0 then
-  if AMessageNum=-1 then
-    ASender.Reply.SetReply(OK, '0 0')
-   else ASender.Reply.SetReply(ERR, ' No such messages ');
- if AccountId>0 then
-  begin
-   Proc:=ContextProcs.GetContext(AccountId).MessProc;
-   Proc:=ContextProcs.GetContext(AccountId).MessProc;
-   Proc.SQL.Text:='SELECT COUNT(Id) FROM messages WHERE mid=:AccountId AND Deleted=False ';
-   Proc. Parameters.ParamByName('AccountId').Value:=AccountId;
-   Proc. ExecSQL;
-   Proc. Open;
-   MessCount:=Proc.Fields[0].AsInteger;
-   Proc.Close;
-   if AMessageNum=-1 then  // вывести весь список сообщений
-    begin
-
-
-    end;
-  end;  }
-
-{  if AccountId>0 then
-   begin
-    Proc:=ContextProcs.GetContext(AccountId).MessProc;
-    Proc.SQL.Text:='SELECT COUNT(Id) FROM messages WHERE mid=:AccountId AND Deleted=False ';
-    Proc. Parameters.ParamByName('AccountId').Value:=AccountId;
-    Proc. ExecSQL;
-    Proc. Open;
-    MessCount:=Proc.Fields[0].AsInteger;
-    Proc.Close;
-   end;
- // else
-
-
-
- {
- если  id не равен 0 получить данные 
- }
 end;
 
 procedure TPOPServer.QUIT(ASender: TIdCommand);
@@ -289,10 +274,6 @@ begin
 
      end
   else ASender.Reply.SetReply(OK, '0 0');
-    
-
- // получить количество сообщений и их общий объем
-// ASender.Reply.SetReply(OK, '1 40');
 end;
 
 procedure TPOPServer.SetDefaultPort(const Value: Integer);
@@ -308,19 +289,5 @@ begin
       ShowMessage(E.Message);
    end;
 end;
-
-
-{
- удалять сообщения при аутентификации
- при подключении выставлять тэг в -1
- создать хеш - массив с запросами
- в таблице хранить реальный размер сообшений
- все строки запросов хранить в самих процедурах !!!
- событие Disconnect вызывается в любом случае
- сообшения удалять сразу в событии Quit,  если ID потока не равен 0
-  и выставлять поток в 0
- в Disconnect удалять сообщения если ID  потока не не равне 0 или -1
-}
-
 
 end.
