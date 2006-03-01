@@ -130,20 +130,27 @@ end;
 procedure TBaseReceiver.SaveMessage(Mess: TFMessage;MessSize:integer);
 var
   MessStream: TMemoryStream;
+  rs:String;
+  ms:TMemoryStream;
 begin
   CoInitialize(nil);
   MessStream:=TMemoryStream.Create;
   if FPackMessages then    Mess.SaveToZStream(MessStream)
     else Mess.SaveToStream(MessStream);
   Saver.Close;
+
+
+ main.FMain.Caption:=IntToStr(MessStream.Size);
   Saver.SQL.Text:='INSERT INTO messages (mid, message,messId,Address,CompressionLevel,MessSize)'+
                   ' VALUES (:mid,:message,:messId,:Address,:CompressionLevel,:MessSize)';
   Saver.Parameters.ParseSQL(Saver.sql.text,true);
   with   Saver.Parameters do
     begin
       ParamByName('mid').Value:=FAccountParams.Id;
-      ParamByName('Message').LoadFromStream(MessStream,ftMemo);
+      ParamByName('Message').LoadFromStream(MessStream,ftBlob);   // писать отдельно !!!
       ParamByName('messId').Value:=Mess.MsgId;
+
+      
       ParamByName('Address').Value:=Mess.From.Address;
       ParamByName('CompressionLevel').Value:=Mess.Compression;
       ParamByName('MessSize').Value:=MessSize;

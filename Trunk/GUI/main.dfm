@@ -91,31 +91,38 @@ object FMain: TFMain
     Left = 136
     Top = 152
   end
-  object ADOQuery1: TADOQuery
+  object tab: TADOTable
     Connection = acon
-    Parameters = <
-      item
-        Name = '[mid]'
-        Attributes = [paNullable]
-        DataType = ftWideString
-        NumericScale = 255
-        Precision = 255
-        Size = 510
-        Value = '12'
-      end
-      item
-        Name = '[messages]'
-        Attributes = [paNullable]
-        DataType = ftWideString
-        NumericScale = 255
-        Precision = 255
-        Size = 510
-        Value = 'hhf'
-      end>
-    SQL.Strings = (
-      'INSERT INTO messages ( mid, message)  '
-      'VALUES                           ( [mid], [messages]) '#9)
-    Left = 216
-    Top = 120
+    TableName = 'Messages'
+    Left = 232
+    Top = 160
+    object tabid: TAutoIncField
+      FieldName = 'id'
+      ReadOnly = True
+    end
+    object tabmid: TIntegerField
+      FieldName = 'mid'
+    end
+    object tabdeleted: TBooleanField
+      FieldName = 'deleted'
+    end
+    object tabmessage: TMemoField
+      FieldName = 'message'
+      BlobType = ftMemo
+    end
+    object tabmessId: TWideStringField
+      FieldName = 'messId'
+      Size = 255
+    end
+    object tabAddress: TWideStringField
+      FieldName = 'Address'
+      Size = 255
+    end
+    object tabCompressionLevel: TFloatField
+      FieldName = 'CompressionLevel'
+    end
+    object tabMessSize: TIntegerField
+      FieldName = 'MessSize'
+    end
   end
 end

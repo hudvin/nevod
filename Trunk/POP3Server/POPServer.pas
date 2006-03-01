@@ -2,9 +2,9 @@ unit POPServer;
 
 interface
 uses
-    Shared,Windows,Dialogs, Messages, SysUtils,IdContext, StdCtrls,
+    Shared,Windows,Dialogs,Classes, Messages, SysUtils,IdContext, StdCtrls,
      ADODB, IdBaseComponent, IdComponent, Math, IdCommandHandlers,
-     IdTCPServer, IdPOP3Server, Settings, AccountManager;
+     IdTCPServer, IdPOP3Server, Settings, AccountManager,DBTables;
 
 type
  TPOPServer=class
@@ -27,6 +27,7 @@ type
        ServerPort:integer);
    destructor  Destroy(); override;
    procedure DELE(ASender: TIdCommand; AMessageNum: Integer);
+   procedure RETR(ASender: TIdCommand; AMessageNum: Integer);
    property DefaultPort: Integer read FDefaultPort write SetDefaultPort;
 end;
 
@@ -54,12 +55,7 @@ begin
     OnSTAT:=STAT;
     OnLIST:=LIST;
     OnDELE:=DELE;
-  {
-
-   OnRETR:=RETR;
-   
-
-    }
+    OnRETR:=RETR;
    Active:=true;
  end;
 end;
@@ -82,7 +78,7 @@ var
     Proc:TADOQuery;
 begin
  WaitForSingleObject(Mutex,INFINITE);
- // нафига тут мьтекс ?
+ // нафига тут мьютекс ?
   Password:=LThread.Password;
   Username:=LThread.Username;
   Id:=FAccountManager.AccountName2Id(Username);
@@ -136,7 +132,7 @@ begin
  if AccountId>0 then
   begin
    Proc:=ContextProcs.GetContext(AccountId).MessProc;
-   Proc.SQL.Text:='SELECT * FROM messages WHERE mid=:AccountId  ';
+   Proc.SQL.Text:='SELECT * FROM messages WHERE mid=:AccountId  '; // не делать выборку всех полей
    Proc. Parameters.ParamByName('AccountId').Value:=AccountId;
    Proc. ExecSQL;
    Proc. Open;
@@ -245,6 +241,51 @@ begin
    end; 
 end;
 
+procedure TPOPServer.RETR(ASender: TIdCommand; AMessageNum: Integer);
+var
+   AccountId:integer;
+   Proc:TADOQuery;
+   MessCount,MessSize:Integer;
+   UnPacker:TCompressor;
+   blob: TMemoryStream;
+   MessStream:TMemoryStream;
+   mess:TFMessage;
+begin
+ AccountId:=ASender.Context.Connection.Tag;
+ if AccountId=0
+  then  ASender.Reply.SetReply(ERR, 'No such message')
+   else
+    begin
+     Proc:=ContextProcs.GetContext(AccountId).MessProc;
+     Proc.SQL.Text:='SELECT * FROM messages WHERE mid=:AccountId AND Deleted=False ';
+     Proc. Parameters.ParamByName('AccountId').Value:=AccountId;
+     Proc. ExecSQL;
+     Proc. Open;
+     if AMessageNum>Proc.RecordCount
+      then ASender.Reply.SetReply(ERR, 'No such message')
+      else
+       begin
+        Proc.RecNo:=AMessageNum;
+//        blob := TBlobStream.Create(Proc.FieldByName('message') as TBlobField, bmRead);
+        blob:=TMemoryStream.Create;
+        mess:=TFMessage.Create;
+
+        (Proc.fieldbyname('message') as TBlobField).SaveToStream(blob);
+        MessStream:=TMemoryStream.Create;
+        blob.SaveToFile('c:\zipped.txt'); 
+        mess.LoadFromZStream(blob);
+
+        ASender.Response.LoadFromStream(MessStream);
+
+        blob.Free;
+        MessStream.Free;
+
+        mess.Free;
+       end;
+     Proc.Close;
+   end;
+end;
+
 procedure TPOPServer.STAT(ASender: TIdCommand);
 var
  AccountId:integer;
@@ -291,3 +332,8 @@ begin
 end;
 
 end.
+
+{
+неправильно указывается размер сообщения
+
+}
