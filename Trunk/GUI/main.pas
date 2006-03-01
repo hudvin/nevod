@@ -26,6 +26,7 @@ type
     tabAddress: TWideStringField;
     tabCompressionLevel: TFloatField;
     tabMessSize: TIntegerField;
+    Memo1: TMemo;
     procedure Button2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Button3Click(Sender: TObject);
@@ -78,24 +79,30 @@ var
  comp:TCompressor;
  bs:TADOBlobStream;
 begin
- { tab.Open;
+
+
+  inp:=TMemoryStream.Create;
+  tab.Open;
   tab.RecNo:=1;
-  bs:=tADOBlobStream.Create(TBLobField(tab.FieldByName('Message')),bmRead);
+//  bs:=tADOBlobStream.Create(TBLobField(tab.FieldByName('Message')),bmRead);
  // bs.Position:=0;
  // bs.SaveToFile('c:\blob.txt');
-  Showmessage(IntToStr(bs.Size));
+
+  TBlobField(tab.FieldByName('Message')).SaveToStream(inp);
+
+  Showmessage(IntToStr(inp.Size));
 
   comp:=TCompressor.Create;
 
 
 
-  inp:=TMemoryStream.Create;
-  inp.LoadFromStream(bs);
+  
+ // inp.LoadFromStream(bs);
 
   outp:=TMemoryStream.Create;
 
   comp.DecompressStream(inp,outp);
-  outp.SaveToFile('c:\unzipped.txt');  }
+  outp.SaveToFile('c:\unzipped.txt');
 
 
 { st:=TAccountManager.Create(ACon);
