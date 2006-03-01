@@ -3,9 +3,9 @@ unit main;
 interface
 
 uses
-      Forms, PostManager, DB, ADODB, Classes, Controls, dbtables,
-      StrUtils,PostReceiver, Dialogs, Shared,IniFiles,AccountManager,
-      Windows,ThreadManager, Messages, SysUtils, Variants, StdCtrls,
+  Forms, PostManager, DB, ADODB, Classes, Controls, dbtables,
+  StrUtils,PostReceiver, Dialogs, Shared,IniFiles,AccountManager,
+  Windows,ThreadManager, Messages, SysUtils, Variants, StdCtrls,
   IdBaseComponent, IdComponent, IdCustomTCPServer, IdTCPServer,
   IdCmdTCPServer, IdExplicitTLSClientServerBase, IdPOP3Server;
 
@@ -96,7 +96,7 @@ begin
 
 
 
-  
+
  // inp.LoadFromStream(bs);
 
   outp:=TMemoryStream.Create;

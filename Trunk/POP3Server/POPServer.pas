@@ -246,10 +246,8 @@ var
    AccountId:integer;
    Proc:TADOQuery;
    MessCount,MessSize:Integer;
-   UnPacker:TCompressor;
-   blob: TMemoryStream;
-   MessStream:TMemoryStream;
-   mess:TFMessage;
+   MessStream,outp:TMemoryStream;
+   comp:TCompressor;
 begin
  AccountId:=ASender.Context.Connection.Tag;
  if AccountId=0
@@ -266,21 +264,22 @@ begin
       else
        begin
         Proc.RecNo:=AMessageNum;
-//        blob := TBlobStream.Create(Proc.FieldByName('message') as TBlobField, bmRead);
-        blob:=TMemoryStream.Create;
-        mess:=TFMessage.Create;
 
-        (Proc.fieldbyname('message') as TBlobField).SaveToStream(blob);
+        {получить поток из поля распаковать и вывести}
         MessStream:=TMemoryStream.Create;
-        blob.SaveToFile('c:\zipped.txt'); 
-        mess.LoadFromZStream(blob);
+        outp:=TMemoryStream.Create;
+        comp:=TCompressor.Create;
+        TBlobField(Proc.FieldByName('Message')).SaveToStream(MessStream);
+        comp.DecompressStream(MessStream,outp);
 
-        ASender.Response.LoadFromStream(MessStream);
 
-        blob.Free;
+        ASender.Response.LoadFromStream(outp);
+
+
+        outp.Free;
+        comp.Free;
         MessStream.Free;
 
-        mess.Free;
        end;
      Proc.Close;
    end;
