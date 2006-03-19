@@ -12,54 +12,8 @@ object FMain: TFMain
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  OnClose = FormClose
-  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object Button1: TButton
-    Left = 88
-    Top = 24
-    Width = 75
-    Height = 25
-    Caption = 'Button1'
-    TabOrder = 0
-  end
-  object Button2: TButton
-    Left = 32
-    Top = 56
-    Width = 129
-    Height = 33
-    Caption = 'Start'
-    TabOrder = 1
-    OnClick = Button2Click
-  end
-  object Button3: TButton
-    Left = 40
-    Top = 112
-    Width = 137
-    Height = 25
-    Caption = 'StopAllThreads'
-    TabOrder = 2
-    OnClick = Button3Click
-  end
-  object Button4: TButton
-    Left = 96
-    Top = 216
-    Width = 75
-    Height = 25
-    Caption = 'Button4'
-    TabOrder = 3
-    OnClick = Button4Click
-  end
-  object Memo1: TMemo
-    Left = 272
-    Top = 24
-    Width = 185
-    Height = 209
-    Lines.Strings = (
-      'Memo1')
-    TabOrder = 4
-  end
   object acon: TADOConnection
     ConnectionString = 
       'Provider=Microsoft.Jet.OLEDB.4.0;User ID=Admin;Data Source=..\DB' +
@@ -77,61 +31,5 @@ object FMain: TFMain
     Provider = 'Microsoft.Jet.OLEDB.4.0'
     Left = 8
     Top = 8
-  end
-  object IdPOP3Server1: TIdPOP3Server
-    Bindings = <>
-    CommandHandlers = <>
-    ExceptionReply.Code = '-ERR'
-    ExceptionReply.Text.Strings = (
-      'Unknown Internal Error')
-    Greeting.Code = '+OK'
-    Greeting.Text.Strings = (
-      'Welcome to Indy POP3 Server')
-    HelpReply.Code = '+OK'
-    HelpReply.Text.Strings = (
-      'Help follows')
-    MaxConnectionReply.Code = '-ERR'
-    MaxConnectionReply.Text.Strings = (
-      'Too many connections. Try again later.')
-    ReplyTexts = <>
-    ReplyUnknownCommand.Code = '-ERR'
-    ReplyUnknownCommand.Text.Strings = (
-      'Sorry, Unknown Command')
-    Left = 136
-    Top = 152
-  end
-  object tab: TADOTable
-    Connection = acon
-    TableName = 'Messages'
-    Left = 232
-    Top = 160
-    object tabid: TAutoIncField
-      FieldName = 'id'
-      ReadOnly = True
-    end
-    object tabmid: TIntegerField
-      FieldName = 'mid'
-    end
-    object tabdeleted: TBooleanField
-      FieldName = 'deleted'
-    end
-    object tabmessage: TMemoField
-      FieldName = 'message'
-      BlobType = ftMemo
-    end
-    object tabmessId: TWideStringField
-      FieldName = 'messId'
-      Size = 255
-    end
-    object tabAddress: TWideStringField
-      FieldName = 'Address'
-      Size = 255
-    end
-    object tabCompressionLevel: TFloatField
-      FieldName = 'CompressionLevel'
-    end
-    object tabMessSize: TIntegerField
-      FieldName = 'MessSize'
-    end
   end
 end

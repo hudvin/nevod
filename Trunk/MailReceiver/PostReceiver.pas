@@ -140,10 +140,6 @@ begin
     else  Mess.SaveToStream(MessStream);
   Saver.Close;
 
-
-  main.FMain.Memo1.Lines.Add(IntToStr(MessStream.Size));
-
-
   Saver.SQL.Text:='INSERT INTO messages (mid, message,messId,Address,CompressionLevel,MessSize)'+
                   ' VALUES (:mid,:message,:messId,:Address,:CompressionLevel,:MessSize)';
   Saver.Parameters.ParseSQL(Saver.sql.text,true);

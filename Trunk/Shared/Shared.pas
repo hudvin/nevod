@@ -259,7 +259,7 @@ begin
         begin
          PatPos := BMSearch(PatPos + 1, Length(SearchString),Text, sTable);
          inc(Count);
-      end;
+        end;
       FreeMem(sTable);
       Result:=count;
     end
