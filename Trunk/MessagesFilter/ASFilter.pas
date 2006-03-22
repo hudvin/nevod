@@ -132,10 +132,6 @@ var
  StrExp,MessText,KeyWord,SQL:String;
  i:Integer;
  Flag:boolean;
-
- email,mask,FilterName,Reason:String;
- res:boolean;
- Count:integer;
 begin
  Flag:=True;
  MessText:='';
@@ -165,25 +161,13 @@ begin
          Open;
          if Fields[0].AsInteger>0 then Flag:=False;
         end;
-      Until (not Exp.ExecNext)and (Flag);
+      Until (not Exp.ExecNext)and (not Flag);
     if NOT Flag then   // найдено в таблице
      Result.FilterType:=ftStamp;
    finally
     Exp.Free;
    end;
-
   end;
-
- 
-
- {
-  выделить текст из сообщени€ и записать во внутреннюю переменную
-  через регул€рное выражение найти все штампы - при нахождении искать в таблице
-  если есть - выход из цикла
-
- }
-
-
 end;
 
 end.

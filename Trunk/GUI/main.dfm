@@ -42,6 +42,7 @@ object FMain: TFMain
     OnClick = Button3Click
   end
   object acon: TADOConnection
+    Connected = True
     ConnectionString = 
       'Provider=Microsoft.Jet.OLEDB.4.0;User ID=Admin;Data Source=..\DB' +
       '\messages.mdb;Mode=Share Deny None;Extended Properties="";Persis' +
@@ -58,5 +59,17 @@ object FMain: TFMain
     Provider = 'Microsoft.Jet.OLEDB.4.0'
     Left = 8
     Top = 8
+  end
+  object tab: TADOTable
+    Active = True
+    Connection = acon
+    CursorType = ctStatic
+    TableName = 'Messages'
+    Left = 32
+    Top = 48
+  end
+  object RDSConnection1: TRDSConnection
+    Left = 344
+    Top = 208
   end
 end

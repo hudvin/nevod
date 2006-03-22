@@ -15,6 +15,8 @@ type
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
+    tab: TADOTable;
+    RDSConnection1: TRDSConnection;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
@@ -44,8 +46,8 @@ var
  mess:TFMessage;
 begin
  mess:=TFMessage.Create;
- mess.Sender.Address:='neiroman@gmail.com';
- mess.Body.LoadFromFile('c:\mess.html');
+// mess.Sender.Address:='neiroman@gmail.com';
+ mess.LoadFromFile('c:\mess.txt');
  st:=TNevodStamp.Create(ACon,ftStamp);
  dt:=st.AnalyzeMessage(mess);
  if dt.FilterType=ftStamp then ShowMessage('!');
@@ -80,13 +82,15 @@ begin
 end;
 
 procedure TFMain.Button3Click(Sender: TObject);
+var
+ blob:TADOBlobStream;
+ ms:TFMessage;
 begin
- ShowMessage(copy('"f  adsfadafa"',2,length('"f  adsfadafa"')-2));
+ ms:=TFMessage.Create;
+ tab.Open;
+ tab.RecNo:=1;
+ blob:=TADOBlobStream.Create(TBlobField(tab.FieldByName('message')),bmRead);
+ ms.LoadFromZStream(blob);
+ ms.SaveToFile('c:\mess.txt');
 end;
-
 end.
-
-{
-
-добавить методы для почтового менеджера
-}
