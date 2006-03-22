@@ -14,7 +14,9 @@ uses
   SHA1 in '..\Crypt\SHA1.pas',
   Settings in '..\Shared\Settings.pas',
   PostManager in '..\Shared\PostManager.pas',
-  POPServer in '..\POP3Server\POPServer.pas';
+  POPServer in '..\POP3Server\POPServer.pas',
+  ASFilter in '..\MessagesFilter\ASFilter.pas',
+  RegExpr in '..\Libs\RegExpr.pas';
 
 {$R *.res}
 

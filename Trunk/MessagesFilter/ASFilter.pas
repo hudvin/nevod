@@ -1,309 +1,190 @@
 unit ASFilter;
 
 interface
-
-uses  Shared,
-  SysUtils, Windows,DB,TypInfo, ADODB, Messages, Classes, Graphics, Controls,
-  Forms, Dialogs;
-
+uses
+   Windows,SysUtils,Classes, Shared, ADODB,DB,Typinfo,RegExpr,IdText;
 type
- TBaseFilter = class (TObject)
- private
-  ACon: TADOConnection;
-  FFilterProcedure: string;
-  FilterTable: TADOStoredProc;
-  FParams: TFilterParams;
-  procedure LoadFilterTable; virtual; abstract;
-  procedure SetFilterProcedure(Value: string);
- public
-  constructor Create(ADOCon:TADOConnection;FilterParams:TFilterParams); virtual;
-  destructor Destroy; override;
-  function AnalyzeMessage(Mess:TFMessage): Boolean; virtual; abstract;
-  property FilterProcedure: string read FFilterProcedure write 
-          SetFilterProcedure;
-  property Params: TFilterParams read FParams write FParams;
- end;
- 
- TExtensionsFilter = class (TBaseFilter)
- private
-  procedure LoadFilterTable; override;
- public
-  constructor Create(ADOCon:TADOConnection;FilterParams:TFilterParams); virtual;
-  destructor Destroy; override;
-  function AnalyzeMessage(Mess:TFMessage): Boolean; override;
- end;
- 
- TSenderFilter = class (TBaseFilter)
- private
-  function CheckEmail(Email:String): Boolean;
-  function GetDomain(Email:String): string;
-  procedure LoadFilterTable; override;
- public
-  constructor Create(ADOCon:TADOConnection;FilterParams:TFilterParams); virtual;
-  destructor Destroy; override;
-  function AnalyzeMessage(Mess:TFMessage): Boolean; override;
- end;
- 
- TASFilter = class (TObject)
- private
-  ACon: TADOConnection;
-  FAccountId: Integer;
-  FiltersList: TFilterList;
-  MessagesList: TADOStoredProc;
-  function GetFilterParams(FilterTable:TADOStoredProc): TFilterParams;
-  procedure LoadFiltersList; virtual;
-  procedure LoadMessagesList; virtual;
-  procedure SetAccountId(Value: Integer);
- public
-  constructor Create(ADOCon:TADOConnection;AccountId:integer); virtual;
-  destructor Destroy; override;
-  property AccountId: Integer read FAccountId write SetAccountId;
- end;
- 
+  TBaseFilter = class
+  private
+    FFilterType: TFilterType;
+    FMarkAs: string;
+    Proc: TADOQuery;
+  public
+    constructor Create(ADOCon:TADOConnection;Filter:TFilterType); virtual;
+    destructor Destroy; override;
+    function AnalyzeMessage(Mess:TFMessage): TFilterResult; virtual; abstract;
+    procedure MarkMessage; virtual;
+    property FilterType: TFilterType read FFilterType;
+    property MarkAs: string read FMarkAs write FMarkAs;
+  end;
 
+  TSenderFilter = class(TBaseFilter)
+  public
+    constructor Create(ADOCon:TADOConnection;Filter:TFilterType); override;
+    destructor Destroy; override;
+    function AnalyzeMessage(Mess:TFMessage): TFilterResult; virtual;
+  end;
+
+  TNevodStamp = class(TBaseFilter)
+  public
+    constructor Create(ADOCon:TADOConnection;Filter:TFilterType); override;
+    destructor Destroy; override;
+    function AnalyzeMessage(Mess:TFMessage): TFilterResult; override;
+  end;
 
 implementation
 
-
-{
-********************************* TBaseFilter **********************************
-}
-constructor TBaseFilter.Create(ADOCon:TADOConnection;
-        FilterParams:TFilterParams);
+constructor TBaseFilter.Create(ADOCon:TADOConnection;Filter:TFilterType);
 begin
- inherited Create;
- ACon:=ADOCon;
- Params:=FilterParams;
- FilterTable:=TADOStoredProc.Create(nil);
- FilterTable.Connection:=ACon;
+  FFilterType:=Filter;
+  Proc:=TADOQuery.Create(nil);
+  Proc.Connection:=ADOCon;
 end;
 
 destructor TBaseFilter.Destroy;
 begin
- inherited Destroy;
- FilterTable.Free;
+  Proc.Free;
 end;
 
-procedure TBaseFilter.SetFilterProcedure(Value: string);
+
+procedure TBaseFilter.MarkMessage;
 begin
- if FFilterProcedure <> Value then
- begin
-   FFilterProcedure := Value;
- end;
 end;
 
-{
-****************************** TExtensionsFilter *******************************
-}
-constructor TExtensionsFilter.Create(ADOCon:TADOConnection;
-        FilterParams:TFilterParams);
+constructor TSenderFilter.Create(ADOCon:TADOConnection;Filter:TFilterType);
 begin
- inherited Create(ADOCon,FilterParams);
- LoadFilterTable();
-end;
-
-destructor TExtensionsFilter.Destroy;
-begin
- inherited Destroy;
-end;
-
-function TExtensionsFilter.AnalyzeMessage(Mess:TFMessage): Boolean;
-var
- Flag: Boolean;
-begin
- Flag:=False;
- FilterTable.Open;
- FilterTable.First;
- while (NOT FilterTable.Eof) AND (NOT Flag) do
-     if Mess.ExtensionExists(Trim(Filtertable.Fields[0].AsString))
-       then Flag:=True else FilterTable.Next;
- FilterTable.Close;
- Result:=Flag;
-end;
-
-procedure TExtensionsFilter.LoadFilterTable;
-begin
- FFilterProcedure:='GetStructFilterTable';
- if FilterTable.Active then FilterTable.Close;
- with FilterTable do
-  begin
-   ProcedureName:=FFilterProcedure;
-   Parameters.Clear;
-   Parameters.AddParameter.Name:='FilterName';
-   Parameters.ParamByName('FilterName').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FParams.FilterType));
-   ExecProc;
-  end;
-end;
-
-{
-******************************** TSenderFilter *********************************
-}
-constructor TSenderFilter.Create(ADOCon:TADOConnection;
-        FilterParams:TFilterParams);
-begin
- inherited Create(ADOCon,FilterParams);
- LoadFilterTable();
+  inherited Create(ADOCon,Filter);
 end;
 
 destructor TSenderFilter.Destroy;
 begin
- inherited Destroy;
+  inherited;
 end;
 
-function TSenderFilter.AnalyzeMessage(Mess:TFMessage): Boolean;
+function TSenderFilter.AnalyzeMessage(Mess:TFMessage): TFilterResult;
 var
- Flag: Boolean;
- domain, Email: string;
- IsDomain: Boolean;
+ email,mask,FilterName,Reason:String;
+ res:boolean;
+ Count:integer;
 begin
- {
-   проверить на примере, правильно ли расставлены условия
- }
- Email:=Trim(Mess.From.Address);
- if Length(Email)=0 then
+ Res:=False;
+ Reason:='';
+ email:=Mess.Sender.Address;
+ mask:='*'+Copy(email,pos('@',email),Length(email)-pos('@',email)+1);    // маска в виде *@domain.com
+ FilterName:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
+ with Proc do
   begin
-   Result:=False;
-   Exit;
-  end else
-  begin
-  Flag:=False;
-  FilterTable.Open;
-  FilterTable.First;
-  while (NOT FilterTable.Eof) AND (NOT Flag) do
-     if Pos('@',Filtertable.Fields[0].AsString)<>0    // если в поле - адрес
-        then
-          if Email=Trim(Filtertable.Fields[0].AsString)
-            then Flag:=True
-            else
-               if GetDomain(Email)=Trim(Filtertable.Fields[0].AsString) then Result:=True
-        else FilterTable.Next;
-
-  FilterTable.Close;
-  Result:=Flag;
-  end;
-end;
-
-function TSenderFilter.CheckEmail(Email:String): Boolean;
-var
- P: Integer;
- User, Domain: string;
- i: Integer;
-begin
- Result:= False;
- Email:= Trim(AnsiLowerCase(Email));
- P:= Pos('@', Email);
- if P = 0 then
-   Exit;
- User := Copy(Email, 1, P - 1);
- Domain := Copy(Email, P + 1, Length(Email) - P);
- for i := 1 to Length(User) do
-   if not (User[i] in ['a'..'z', '0'..'9', '.', '-', '_']) then
-     Exit else Result:=true;
-end;
-
-function TSenderFilter.GetDomain(Email:String): string;
-begin
-end;
-
-procedure TSenderFilter.LoadFilterTable;
-begin
- FFilterProcedure:='GetStructFilterTable';
- if FilterTable.Active then FilterTable.Close;
- with FilterTable do
-  begin
-   ProcedureName:=FFilterProcedure;
+   Close;
    Parameters.Clear;
-   Parameters.AddParameter.Name:='FilterName';
-   Parameters.ParamByName('FilterName').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FParams.FilterType));
-   ExecProc;
-  end;
-end;
-
-{
-********************************** TASFilter ***********************************
-}
-constructor TASFilter.Create(ADOCon:TADOConnection;AccountId:integer);
-begin
- inherited Create;
- FAccountId:=AccountId;
- ACon:=ADOCon;
- MessagesList:=TADOStoredProc.Create(nil);
- MessagesList.Connection:=ACon;
- LoadMessagesList;
- FiltersList:=TFilterList.Create;
- LoadFiltersList;
-end;
-
-destructor TASFilter.Destroy;
-var
- i: Integer;
-begin
- inherited Destroy;
- for i:=0 to FiltersList.Count-1 do
-   FiltersList.DestroyItem(i);
- FiltersList.Free;
- MessagesList.Free;
-end;
-
-function TASFilter.GetFilterParams(FilterTable:TADOStoredProc): TFilterParams;
-var
- Res: TFilterParams;
-begin
- Res.AccountId:=FAccountId;
- Res.FilterType:=TFilterType(GetEnumValue(TypeInfo(TFilterType),FilterTable.FieldByName('type').AsString));
- Res.Priority:=FilterTable.FieldByName('Priority').AsInteger;
- Res.Subject:=FilterTable.FieldByName('Subject').AsString;
- Result:=Res;
-end;
-
-procedure TASFilter.LoadFiltersList;
-var
- FilterType: TFilterType;
- Ast: TADOStoredProc;
-begin
- Ast:=TADOStoredProc.Create(nil);
- Ast.Connection:=ACon;
- with Ast do
-  begin
-   if Active then Close;
-   Parameters.Clear;
-   ProcedureName:='GetActiveFilterList';
-   ExecProc;
+   SQL.Text:='SELECT COUNT(Id) FROM FilterList WHERE mid=(SELECT id FROM Filters WHERE '+
+             ' type=:FilterType) AND FValue=:email AND Active=True';
+   Parameters.ParamByName('FilterType').Value:=FilterName;
+   Parameters.ParamByName('email').Value:=email;
+   ExecSQL;
    Open;
-   while NOT Eof do
-    begin
-     FilterType:=TFilterType(GetEnumValue(TypeInfo(TFilterType),FieldByName('type').AsString));
-     case FilterType of
-      ftBExt,ftWExt:
-        FiltersList.Add(TExtensionsFilter.Create(ACon,GetFilterParams(Ast)));
-      ftBEMail,ftWEmail:
-        FiltersList.Add(TSenderFilter.Create(ACon,GetFilterParams(Ast)));
+   Count:=Proc.Fields[0].AsInteger;
+   Close;
+   if Count>0  then  Res:=True
+    else
+     begin
+      SQL.Text:='SELECT COUNT(Id) FROM FilterList WHERE mid=(SELECT id FROM Filters WHERE '+
+             ' type=:FilterType) AND FValue=:mask';
+      Parameters.ParamByName('FilterType').Value:=FilterName;
+      Parameters.ParamByName('mask').Value:=mask;
+      ExecSQL;
+      Open;
+      Count:=Proc.Fields[0].AsInteger;
+      Close;
+      if Count>0 then Res:=True;
      end;
-     Next;
-    end;
   end;
- Ast.Close;
- Ast.Free;
+ if Res then  // значит есть в таблице
+   {если причина не указана - использовать стандартную - устанавливать при добавлении}
+   with Proc do
+    begin
+     Close;
+     SQL.Text:='SELECT Reason FROM Filters WHERE type=:FilterType';
+     Parameters.ParamByName('FilterType').Value:=FilterName;
+     ExecSQL;
+     Open;
+     Reason:=Fields[0].AsString;
+     Result.FilterType:=FilterType;
+     Result.Reason:=Reason;
+    end
+ else
+  Result.FilterType:=ftNone;
+
 end;
 
-procedure TASFilter.LoadMessagesList;
+constructor TNevodStamp.Create(ADOCon:TADOConnection;Filter:TFilterType);
 begin
- with MessagesList do
+  inherited Create(ADOCon,Filter);
+end;
+
+destructor TNevodStamp.Destroy;
+begin
+  inherited;
+end;
+
+function TNevodStamp.AnalyzeMessage(Mess:TFMessage): TFilterResult;
+var
+ Exp:TRegExpr;
+ StrExp,MessText,KeyWord,SQL:String;
+ i:Integer;
+ Flag:boolean;
+
+ email,mask,FilterName,Reason:String;
+ res:boolean;
+ Count:integer;
+begin
+ Flag:=True;
+ MessText:='';
+ Result.Reason:='';
+ Result.FilterType:=ftNone;
+ for i:=0 to Mess.MessageParts.Count-1 do
+  if Mess.MessageParts.Items[i] is TIdText then MessText:=MessText+(Mess.MessageParts[i] as TIdText).Body.Text;
+
+ if MessText<>'' then
   begin
-   ProcedureName:='CreateMessageList';
-   Parameters.AddParameter.Name:='AccountId';
-   Parameters.ParamByName('AccountId').Value:=AccountId;
-   ExecProc;
+   try
+    StrExp:='(?s)(?i)(&lt;|<)\s*(&nbsp;\s*)*Nevod\s*(&nbsp;\s*)*AntiSpam\s*(&nbsp;\s*)*:(\s*)(&nbsp;\s*)*';
+    StrExp:=StrExp+'(".*"|'+''''+'.*'+''''+')\s*(&nbsp;\s*)*(&gt;|>)';
+    SQL:='SELECT COUNT(Id) FROM Stamps WHERE FValue=:Stamp AND Active=True';
+    Proc.SQL.Text:=SQL;
+    Exp:=TRegExpr.Create;
+    Exp.ModifierG:=False;
+    Exp.Expression:=StrExp;
+    if Exp.Exec (MessText) then
+      Repeat
+       KeyWord:=copy(Exp.Match [7],2,length(Exp.Match [7])-2);
+       with Proc do
+        begin
+         Close;
+         Parameters.ParamByName('Stamp').Value:=KeyWord;
+         ExecSQL;
+         Open;
+         if Fields[0].AsInteger>0 then Flag:=False;
+        end;
+      Until (not Exp.ExecNext)and (Flag);
+    if NOT Flag then   // найдено в таблице
+     Result.FilterType:=ftStamp;
+   finally
+    Exp.Free;
+   end;
+
   end;
-end;
 
-procedure TASFilter.SetAccountId(Value: Integer);
-begin
- if FAccountId <> Value then
- begin
- FAccountId := Value;
- end;
-end;
+ 
 
+ {
+  выделить текст из сообщения и записать во внутреннюю переменную
+  через регулярное выражение найти все штампы - при нахождении искать в таблице
+  если есть - выход из цикла
+
+ }
+
+
+end;
 
 end.
+

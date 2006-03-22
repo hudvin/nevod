@@ -32,7 +32,7 @@ type
   TLogType=(ltPOP3Server,ltPostReceiver);
 
 type
-  TFilterType=(ftBEMail,ftWEmail,ftBExt,ftWExt,ftBURL,ftWURL,ftBWord,ftWWord,ftNone);
+  TFilterType=(ftBlackEmail,ftWhiteEmail,ftStamp,ftBExt,ftWExt,ftBURL,ftWURL,ftBWord,ftWWord,ftNone);
 
 type
   TBodyType=(btText,btHtml);  // тип тела сообщения
@@ -52,9 +52,9 @@ type
   PBMTable = ^TBMTable;
 
 type
-  TDirectResult = record
+  TFilterResult = record
     FilterType: TFilterType;
-    Subject: string;
+    Reason: string;
   end;
 
 type
@@ -147,14 +147,14 @@ type
     DCP_BF: TDCP_Blowfish;
     FKey: string;
   protected
-    function Crypt(InputString:string): string;
-    function DeCrypt(OutPutString:string): string;
     function Hash(InputString:string): string;
     procedure SetKey(const Value: string);
-    property Key: string read FKey write SetKey;
   public
     constructor Create; virtual;
     destructor Destroy;override;
+    function Crypt(InputString:string): string;
+    function DeCrypt(OutPutString:string): string;
+    property Key: string read FKey write SetKey;
   end;
 
   TSettings = class(TObject)
