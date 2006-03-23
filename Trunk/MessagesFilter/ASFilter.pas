@@ -144,7 +144,7 @@ begin
   begin
    try
     StrExp:='(?s)(?i)(&lt;|<)\s*(&nbsp;\s*)*Nevod\s*(&nbsp;\s*)*AntiSpam\s*(&nbsp;\s*)*:(\s*)(&nbsp;\s*)*';
-    StrExp:=StrExp+'(".*"|'+''''+'.*'+''''+')\s*(&nbsp;\s*)*(&gt;|>)';
+    StrExp:=StrExp+'("(.*)"|'+''''+'(.*)'+''''+')\s*(&nbsp;\s*)*(&gt;|>)';
     SQL:='SELECT COUNT(Id) FROM Stamps WHERE FValue=:Stamp AND Active=True';
     Proc.SQL.Text:=SQL;
     Exp:=TRegExpr.Create;
@@ -152,7 +152,8 @@ begin
     Exp.Expression:=StrExp;
     if Exp.Exec (MessText) then
       Repeat
-       KeyWord:=copy(Exp.Match [7],2,length(Exp.Match [7])-2);
+       if Exp.Match[8]<>'' then KeyWord:=Exp.Match[8]
+        else KeyWord:=Exp.Match[9];         
        with Proc do
         begin
          Close;

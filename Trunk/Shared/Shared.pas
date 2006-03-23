@@ -106,14 +106,14 @@ type
   TFMessage = class(TIdMessage)
   private
     Compressor: TCompressor;
-    FBodyType: TBodyType;
     FCompression: Real;
     FExtensions: TStringList;
     FImageCount: Integer;
     FLinkCount: Integer;
-    FMessageText: string;
     Seacher: TStringSeacher;
+    function GetBodyType: TBodyType;
     function GetFileExtension(FileName:string): string;
+    function GetMessageText: string;
   public
     constructor Create;
     destructor Destroy; override;
@@ -124,12 +124,12 @@ type
     procedure SaveToZFile(FileName: String);
     procedure SaveToZStream(ZStream:TStream);
     procedure Update;
-    property BodyType: TBodyType read FBodyType;
+    property BodyType: TBodyType read GetBodyType;
     property Compression: Real read FCompression write FCompression;
     property Extensions: TStringList read FExtensions;
     property ImageCount: Integer read FImageCount;
     property LinkCount: Integer read FLinkCount;
-    property MessageText: string read FMessageText;
+    property MessageText: string read GetMessageText;
   end;
 
   TLogger = class(TObject)
@@ -396,15 +396,45 @@ var
 begin
   counter:=0;
   Flag:=False;
-  case  SearchType of
+ { case  SearchType of
     stSubject :
         Counter:=Seacher.Find(SearchString,Subject);
     stBody    :
         Counter:=Seacher.Find(SearchString,FMessageText);
     stBoth    :
         Counter:=Seacher.Find(SearchString,FMessageText)+Seacher.Find(SearchString,Subject);
-   end;
+   end; }
   Result:=Counter;
+end;
+
+function TFMessage.GetBodyType: TBodyType;
+var
+ Flag:Boolean;
+ i:integer;
+begin
+ Flag:=True;
+ i:=0;
+ if ContentType='text/plain' then Result:=btText
+  else
+   begin
+    while (Flag) and (i<MessageParts.Count) do
+     if MessageParts[i].ContentType='text/plain' then
+      begin
+       Flag:=False;
+       Result:=btText;
+      end
+     else
+       if MessageParts[i].ContentType='text/html' then
+        begin
+         Flag:=False;
+         Result:=btText;
+        end
+       else
+        inc(i);
+    if Flag then Result:=btText;
+      
+   end;
+
 end;
 
 function TFMessage.GetFileExtension(FileName:string): string;
@@ -415,6 +445,14 @@ begin
   Buff:=ReverseString(Buff);
   Buff:=Copy(Buff,0,Pos('.',Buff)-1);
   Result:=ReverseString(Buff);
+end;
+
+function TFMessage.GetMessageText: string;
+var
+ i:integer;
+begin
+ for i:=0 to MessageParts.Count-1 do
+  if MessageParts.Items[i] is TIdText then Result:=Result+(MessageParts[i] as TIdText).Body.Text;
 end;
 
 procedure TFMessage.LoadFromZFile(FileName: String);
@@ -483,22 +521,22 @@ begin
   // текст сообщения
   for i:=0 to MessageParts.Count-1 do
     if MessageParts.Items[i] is TIdText then Res:=Res+(MessageParts[i] as TIdText).Body.Text;
-  FMessageText:=Res;
+//  FMessageText:=Res;
   // массив расширений приложенных файлов - дубликаты удалять
   FExtensions.Clear;
   for i:=0 to MessageParts.Count-1 do
         if MessageParts.Items[i] is TIdAttachment then
            FExtensions.Add(GetFileExtension(TIdAttachment(MessageParts.Items[i]).FileName));
   // тип сообщения
-  if Seacher.Find('<html',FMessageText)>0 then FBodyType:=btHtml
-     else FBodyType:=btText;
+ // if Seacher.Find('<html',FMessageText)>0 then FBodyType:=btHtml
+  //   else FBodyType:=btText;
   // количество изображений
-  if FBodyType=btHtml then FImageCount:=Seacher.Find('src',FMessageText)
-     else FImageCount:=0;
+//  if FBodyType=btHtml then FImageCount:=Seacher.Find('src',FMessageText)
+ //    else FImageCount:=0;
   FLinkCount:=0;
   // количество ссылок
-  if FBodyType=btHtml then FLinkCount:=Seacher.Find(' href',MessageText);
-  if FBodyType=btText then FLinkCount:=(Seacher.Find(' www.',MessageText)+Seacher.Find('http://',MessageText));
+//  if FBodyType=btHtml then FLinkCount:=Seacher.Find(' href',MessageText);
+ // if FBodyType=btText then FLinkCount:=(Seacher.Find(' www.',MessageText)+Seacher.Find('http://',MessageText));
 
 end;
 

@@ -48,6 +48,9 @@ begin
  mess:=TFMessage.Create;
 // mess.Sender.Address:='neiroman@gmail.com';
  mess.LoadFromFile('c:\mess.txt');
+// if mess.BodyType=btText then ShowMessage('Text')
+//  else Showmessage('html');
+ ShowMessage(Mess.MessageText);
  st:=TNevodStamp.Create(ACon,ftStamp);
  dt:=st.AnalyzeMessage(mess);
  if dt.FilterType=ftStamp then ShowMessage('!');
@@ -65,7 +68,7 @@ begin
  inp.LoadFromFile('c:\mess.html');
  exp:=TRegExpr.Create;
  str:='(?s)(?i)(&lt;|<)\s*(&nbsp;\s*)*Nevod\s*(&nbsp;\s*)*AntiSpam\s*(&nbsp;\s*)*:(\s*)(&nbsp;\s*)*';
- str:=str+'(".*"|'+''''+'.*'+''''+')\s*(&nbsp;\s*)*(&gt;|>)';
+ str:=str+'("(.*)"|'+''''+'(.*)'+''''+')\s*(&nbsp;\s*)*(&gt;|>)';
 // ShowMessage(str);
  exp.ModifierG:=False;
  exp.Expression:=str;
@@ -76,7 +79,7 @@ begin
  if exp.Exec (inp.Text) then
       REPEAT
   //     Res := Res + exp.Match [0] + ',';
-         Res := Res + exp.Match [7] + ',';
+         Res := Res + exp.Match [9];
       UNTIL not exp.ExecNext; 
  ShowMessage(res);
 end;
@@ -86,11 +89,29 @@ var
  blob:TADOBlobStream;
  ms:TFMessage;
 begin
+ ShowMessage(IntToStr(pos(' @ ','fff@fg')));
  ms:=TFMessage.Create;
  tab.Open;
- tab.RecNo:=1;
- blob:=TADOBlobStream.Create(TBlobField(tab.FieldByName('message')),bmRead);
- ms.LoadFromZStream(blob);
- ms.SaveToFile('c:\mess.txt');
+ while not tab.Eof do
+ begin
+  blob:=TADOBlobStream.Create(TBlobField(tab.FieldByName('message')),bmRead);
+  ms.LoadFromZStream(blob);
+  if ms.BodyType=btText then ShowMessage('Text')
+   else Showmessage('html');
+  blob.Free;
+  tab.Next;
+ end;    // while
+ //tab.RecNo:=1;
+
+// ms.SaveToFile('c:\mess.txt');
 end;
 end.
+
+ {
+ создать свойство с типом содержимого
+  если верхний не равен mixed - обработать и присвоить нужный тип
+   иначе
+    обойти все части пока не попадется тип text или html
+
+
+ }
