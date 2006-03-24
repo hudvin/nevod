@@ -25,8 +25,12 @@ const
   MutexName='{94FA4497-A317-4C45-9B57-A0558F8221D7}';
   ServerMutex='{B66AEAD2-94BF-453B-9D79-27CC798B6657}';
   WaitTime=1000;      // время между проверками состояний
+  
 type
   TAccountStatus=(asFree,asClient,asServer);
+
+type
+  TSignalForm=(sfSingle,sfPart,sfBoth);
 
 type
   TLogType=(ltPOP3Server,ltPostReceiver);
@@ -37,11 +41,9 @@ type
 type
   TBodyType=(btText,btHtml);  // тип тела сообщения
 
-type
-  TSubFilterType=(sfStruct,sfContext);  // подтип фильтра
 
 type
-  TWordLocation=(wlAnywhere,wlSubject,wlBody);
+  TSignalLocation=(slAnywhere,slSubject,slBody);
 
 type
   TSearchType=(stSubject,stBody,stBoth);

@@ -17,6 +17,7 @@ type
     Button3: TButton;
     tab: TADOTable;
     RDSConnection1: TRDSConnection;
+    Button4: TButton;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
@@ -41,7 +42,7 @@ uses RegExpr;
 
 procedure TFMain.Button1Click(Sender: TObject);
 var
- st:TNevodStamp;
+ st:TStampFilter;
  dt:TFilterResult;
  mess:TFMessage;
 begin
@@ -51,7 +52,7 @@ begin
 // if mess.BodyType=btText then ShowMessage('Text')
 //  else Showmessage('html');
  ShowMessage(Mess.MessageText);
- st:=TNevodStamp.Create(ACon,ftStamp);
+ st:=TStampFilter.Create(ACon,ftStamp);
  dt:=st.AnalyzeMessage(mess);
  if dt.FilterType=ftStamp then ShowMessage('!');
    
@@ -65,23 +66,28 @@ var
  inp:TStringList;
 begin
  inp:=TStringList.Create;
- inp.LoadFromFile('c:\mess.html');
+ inp.LoadFromFile('c:\sys_hotkey.html');
  exp:=TRegExpr.Create;
- str:='(?s)(?i)(&lt;|<)\s*(&nbsp;\s*)*Nevod\s*(&nbsp;\s*)*AntiSpam\s*(&nbsp;\s*)*:(\s*)(&nbsp;\s*)*';
- str:=str+'("(.*)"|'+''''+'(.*)'+''''+')\s*(&nbsp;\s*)*(&gt;|>)';
-// ShowMessage(str);
+ str:='<.*>';
  exp.ModifierG:=False;
  exp.Expression:=str;
- exp.Exec(inp.Text);
-// Res := exp.Substitute ('$7');
+ res:=exp.Replace(Inp.Text,'',True);
+//ShowMessage (exp.Replace(Inp.Text,'',True));
+ exp.Expression:='\s{2,}';
+ShowMessage (exp.Replace(res,' ',True));
+ {
 
+ удалять все теги из текста
 
- if exp.Exec (inp.Text) then
+ }
+{ exp.Exec(inp.Text);
+ if exp.Exec (Inp.Text) then
       REPEAT
-  //     Res := Res + exp.Match [0] + ',';
-         Res := Res + exp.Match [9];
-      UNTIL not exp.ExecNext; 
+       Res := Res + exp.Match [0];
+      UNTIL not exp.ExecNext;   }
  ShowMessage(res);
+ Inp.Text:=res;
+ Inp.SaveToFile('c:\inp.txt');
 end;
 
 procedure TFMain.Button3Click(Sender: TObject);

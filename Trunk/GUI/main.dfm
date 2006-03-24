@@ -41,6 +41,14 @@ object FMain: TFMain
     TabOrder = 2
     OnClick = Button3Click
   end
+  object Button4: TButton
+    Left = 312
+    Top = 216
+    Width = 105
+    Height = 57
+    Caption = 'Button4'
+    TabOrder = 3
+  end
   object acon: TADOConnection
     Connected = True
     ConnectionString = 
@@ -69,7 +77,7 @@ object FMain: TFMain
     Top = 48
   end
   object RDSConnection1: TRDSConnection
-    Left = 344
-    Top = 208
+    Left = 208
+    Top = 160
   end
 end

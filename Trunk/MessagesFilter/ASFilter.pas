@@ -25,9 +25,22 @@ type
     function AnalyzeMessage(Mess:TFMessage): TFilterResult; virtual;
   end;
 
-  TNevodStamp = class(TBaseFilter)
+  TStampFilter = class(TBaseFilter)
   public
     constructor Create(ADOCon:TADOConnection;Filter:TFilterType); override;
+    destructor Destroy; override;
+    function AnalyzeMessage(Mess:TFMessage): TFilterResult; override;
+  end;
+
+  TSignalFilter = class(TBaseFilter)
+  private
+    Exp: TRegExpr;
+    FSignalLocation: TSignalLocation;
+    function FindString(InpText:String;SubString:string;TextType:TBodyType;
+        SignalForm:TSignalForm): Boolean;
+  public
+    constructor Create(ADOCon:TADOConnection;Filter:TFilterType;
+        SignalLocation:TSignalLocation); overload;
     destructor Destroy; override;
     function AnalyzeMessage(Mess:TFMessage): TFilterResult; override;
   end;
@@ -76,7 +89,7 @@ begin
   begin
    Close;
    Parameters.Clear;
-   SQL.Text:='SELECT COUNT(Id) FROM FilterList WHERE mid=(SELECT id FROM Filters WHERE '+
+   SQL.Text:='SELECT COUNT(Id) FROM SenderFilter WHERE mid=(SELECT id FROM Filters WHERE '+
              ' type=:FilterType) AND FValue=:email AND Active=True';
    Parameters.ParamByName('FilterType').Value:=FilterName;
    Parameters.ParamByName('email').Value:=email;
@@ -87,7 +100,7 @@ begin
    if Count>0  then  Res:=True
     else
      begin
-      SQL.Text:='SELECT COUNT(Id) FROM FilterList WHERE mid=(SELECT id FROM Filters WHERE '+
+      SQL.Text:='SELECT COUNT(Id) FROM SenderFilter WHERE mid=(SELECT id FROM Filters WHERE '+
              ' type=:FilterType) AND FValue=:mask';
       Parameters.ParamByName('FilterType').Value:=FilterName;
       Parameters.ParamByName('mask').Value:=mask;
@@ -116,17 +129,17 @@ begin
 
 end;
 
-constructor TNevodStamp.Create(ADOCon:TADOConnection;Filter:TFilterType);
+constructor TStampFilter.Create(ADOCon:TADOConnection;Filter:TFilterType);
 begin
   inherited Create(ADOCon,Filter);
 end;
 
-destructor TNevodStamp.Destroy;
+destructor TStampFilter.Destroy;
 begin
   inherited;
 end;
 
-function TNevodStamp.AnalyzeMessage(Mess:TFMessage): TFilterResult;
+function TStampFilter.AnalyzeMessage(Mess:TFMessage): TFilterResult;
 var
  Exp:TRegExpr;
  StrExp,MessText,KeyWord,SQL:String;
@@ -143,11 +156,11 @@ begin
  if MessText<>'' then
   begin
    try
+    Exp:=TRegExpr.Create;
     StrExp:='(?s)(?i)(&lt;|<)\s*(&nbsp;\s*)*Nevod\s*(&nbsp;\s*)*AntiSpam\s*(&nbsp;\s*)*:(\s*)(&nbsp;\s*)*';
     StrExp:=StrExp+'("(.*)"|'+''''+'(.*)'+''''+')\s*(&nbsp;\s*)*(&gt;|>)';
-    SQL:='SELECT COUNT(Id) FROM Stamps WHERE FValue=:Stamp AND Active=True';
+    SQL:='SELECT COUNT(Id) FROM StampFilter WHERE FValue=:Stamp AND Active=True';
     Proc.SQL.Text:=SQL;
-    Exp:=TRegExpr.Create;
     Exp.ModifierG:=False;
     Exp.Expression:=StrExp;
     if Exp.Exec (MessText) then
@@ -171,5 +184,130 @@ begin
   end;
 end;
 
+constructor TSignalFilter.Create(ADOCon:TADOConnection;Filter:TFilterType;
+    SignalLocation:TSignalLocation);
+begin
+  inherited Create(ADOCon,Filter);
+  FSignalLocation:=SignalLocation;
+  Exp:=TRegExpr.Create;
+end;
+
+destructor TSignalFilter.Destroy;
+begin
+  Exp.Free;
+  inherited;
+end;
+
+function TSignalFilter.AnalyzeMessage(Mess:TFMessage): TFilterResult;
+ function GetRowText(MessageText:String):String;
+ var buff:String;
+ begin
+  buff:=MessageText;
+  with Exp  do
+   begin
+    ModifierG:=False;
+    Expression:='<.*>';
+    buff:=Replace(buff,'',True); // удаление всех тегов
+    Expression:='\s{2,}';     // удаление лишних пробелов
+    buff:=Replace(buff,' ',True);
+   end;
+  Result:=buff;
+ end;
+
+var
+ SQLProc,RowText:String;
+ Flag:Boolean;
+begin
+ if Mess.BodyType=btHtml then
+  RowText:=GetRowText(Mess.MessageText) // получение текста сообщения без тегов и лишних пробелов
+ else RowText:=Mess.MessageText;
+ Proc.Close;
+ case FSignalLocation of  // по каким полям сообщения должен производится поиск
+  slAnywhere:
+   begin
+    SQLProc:= 'SELECT FValue,Location,Decsription,SignalForm FROM SignalFilter '+
+              ' (WHERE Active=TRUE) AND (Location=:Location_1 OR Location=:Location_2 OR Location=:Location_3)';
+    Proc.SQL.Text:=SQLProc;
+    Proc.Parameters.ParamByName('Location_1').Value:='slSubject';
+    Proc.Parameters.ParamByName('Location_2').Value:='slAnyWhere';
+    Proc.Parameters.ParamByName('Location_3').Value:='slBody';
+   end;
+  slBody:
+   begin
+    SQLProc:= 'SELECT FValue,Location,Decsription,SignalForm FROM SignalFilter '+
+              ' (WHERE Active=TRUE) AND (Location=:Location_1 OR Location=:Location_2)';
+    Proc.SQL.Text:=SQLProc;
+    Proc.Parameters.ParamByName('Location_1').Value:='slAnyWhere';
+    Proc.Parameters.ParamByName('Location_2').Value:='slBody';
+   end;
+  slSubject:
+   begin
+    SQLProc:= 'SELECT FValue,Location,Decsription,SignalForm FROM SignalFilter '+
+              ' (WHERE Active=TRUE) AND (Location=:Location_1 OR Location=:Location_2)';
+    Proc.SQL.Text:=SQLProc;
+    Proc.Parameters.ParamByName('Location_1').Value:='slAnyWhere';
+    Proc.Parameters.ParamByName('Location_2').Value:='slSubject';
+   end;
+ end;
+
+ with Proc do
+  begin
+   ExecSQL;
+   Open;
+   First;
+   Flag:=True;
+   while (not Proc.Eof) and (Flag) do
+    begin
+     try
+      case TSignalLocation(GetEnumValue(TypeInfo(TSignalLocation),FieldByName('Location').AsString)) of    //
+       slAnywhere:;   // давать два запроса 
+       slSubject: ;
+       slBody:    ;
+      end;
+     except
+     end;
+
+    end;
+  end;
+end;
+
+function TSignalFilter.FindString(InpText:String;SubString:string;
+    TextType:TBodyType; SignalForm:TSignalForm): Boolean;
+begin
+ {
+  InpText - строка, в которой будет произовдится поиск
+  SubString - слово,которое будет искаться
+  TextType - какой тип имеет входной текст (html или простой текст)
+  SignalForm - в какой форме искать слово (одиночное слово, в составе другого слова, оба варианта)
+
+ }
+
+ {
+  text
+   одиночное слово (?s)(?i)(\s+|^)inter(\s+|$)
+   в начале другого слова (?s)(?i)(\A|\s)(Destroy)(\Z|\w*[^\s])
+   (\A|\w*)(Destroy)(\Z|\w*)   - тип (в составе слова или одиночно ) определять по карманам
+  если html - выделить простой текст и далее искать как обычно
+ }
+
+ if TextType=btHtml then Exp.Expression:='(?s)(?i)>(.*?)<'
+  else Exp.Expression:='(?s)(?i)(\s+|^)receive(\s+|$)';
+
+ {
+ разные выражение для поиска в простом тексте и html
+ искать с помощью регулярных выражений
+
+
+ }
+end;
+
+{
+   описвние сигнального фильтра
+   передавать в конструкторе, какие части сообшения просматривать
+   при создании внутреннего массива слов учитывать место поиска
+   если сообщение в черном списке - делать пометку
+   использовать структурный массив
+
+}
 end.
 
