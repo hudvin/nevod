@@ -48,6 +48,7 @@ object FMain: TFMain
     Height = 57
     Caption = 'Button4'
     TabOrder = 3
+    OnClick = Button4Click
   end
   object acon: TADOConnection
     Connected = True

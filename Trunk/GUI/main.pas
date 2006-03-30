@@ -2,12 +2,12 @@ unit main;
 
 interface
 
-uses
-  Forms, PostManager,ASFilter, DB, ADODB, Classes, Controls, dbtables,
+uses  PerlRegEx,Forms,  AsFilter,
   StrUtils,PostReceiver, Dialogs, Shared,IniFiles,AccountManager,
   Windows,ThreadManager, Messages, SysUtils, Variants, StdCtrls,
   IdBaseComponent, IdComponent, IdCustomTCPServer, IdTCPServer,
-  IdCmdTCPServer, IdExplicitTLSClientServerBase, IdPOP3Server, IdMessage;
+  IdCmdTCPServer, IdExplicitTLSClientServerBase, IdPOP3Server, IdMessage,
+  ADODB, DB, Classes, Controls;
 
 type
   TFMain = class(TForm)
@@ -21,6 +21,7 @@ type
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -111,6 +112,25 @@ begin
 
 // ms.SaveToFile('c:\mess.txt');
 end;
+procedure TFMain.Button4Click(Sender: TObject);
+var
+	Regex: TPerlRegEx;
+begin
+Regex := TPerlRegEx.Create(nil);
+Regex.RegEx := '(?m)(?i)(\s*)nei(.*?)@gmail(\.)com(\s+|$)';
+Regex.Subject := 'nEiroman-admin@gmail.com nei@gmail.com ‡‡‡Ù˚‡‡‚˚ Ï˚Ù:(*  neiromantic@gmail.com';
+if Regex.Match then
+	repeat
+    ShowMessage(Regex.MatchedExpression);
+		// matched text: Regex.MatchedExpression;
+		// match start: Regex.MatchedExpressionOffset;
+		// match length: Regex.MatchedExpressionLength;
+		// backreference n text: Regex.SubExpressions[n];
+		// backreference n start: Regex.SubExpressionOffsets[n];
+		// backreference n length: Regex.SubExpressionLengths[n];
+	until not Regex.MatchAgain;
+end;
+
 end.
 
  {
