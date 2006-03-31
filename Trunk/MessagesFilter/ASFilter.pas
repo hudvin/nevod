@@ -1,14 +1,15 @@
 unit ASFilter;
 
 interface
-uses
-   Windows,SysUtils,Classes, Shared, ADODB,DB,Typinfo,RegExpr,IdText;
+uses  Dialogs,  masks,
+   Windows,SysUtils,Classes, Shared, ADODB,DB,Typinfo,RegExpr,IdText,PerlRegEx;
 type
   TBaseFilter = class
   private
     FFilterType: TFilterType;
     FMarkAs: string;
     Proc: TADOQuery;
+    function GetReason(FilterType:TFilterType): string;
   public
     constructor Create(ADOCon:TADOConnection;Filter:TFilterType); virtual;
     destructor Destroy; override;
@@ -19,6 +20,8 @@ type
   end;
 
   TSenderFilter = class(TBaseFilter)
+  private
+    Exp: TPerlRegEx;
   public
     constructor Create(ADOCon:TADOConnection;Filter:TFilterType); override;
     destructor Destroy; override;
@@ -26,6 +29,8 @@ type
   end;
 
   TStampFilter = class(TBaseFilter)
+  private
+    Exp: TPerlRegEx;
   public
     constructor Create(ADOCon:TADOConnection;Filter:TFilterType); override;
     destructor Destroy; override;
@@ -59,6 +64,20 @@ begin
   Proc.Free;
 end;
 
+function TBaseFilter.GetReason(FilterType:TFilterType): string;
+begin
+ with Proc do
+  begin
+   Close;
+   SQL.Text:='SELECT Reason FROM Filters WHERE type=:FilterType';
+   Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
+   ExecSQL;
+   Open;
+   Result:=Fields[0].AsString;
+   Close;
+  end; 
+end;
+
 
 procedure TBaseFilter.MarkMessage;
 begin
@@ -67,132 +86,91 @@ end;
 constructor TSenderFilter.Create(ADOCon:TADOConnection;Filter:TFilterType);
 begin
   inherited Create(ADOCon,Filter);
+  Exp:=TPerlRegEx.Create(nil);
 end;
 
 destructor TSenderFilter.Destroy;
 begin
+  Exp.Free;
   inherited;
 end;
 
 function TSenderFilter.AnalyzeMessage(Mess:TFMessage): TFilterResult;
 var
- email,mask,FilterName,Reason:String;
- res:boolean;
- Count:integer;
+ email,Reason:String;
+ Res:boolean;
+ sender,mask:String;
 begin
- {
-  сделать выборку всех адресов из таблицы
-  пройти в цикле
-   для каждого адреса собирать строку выражения
-   проверять на на совпадение адрес в сообщении с помощью сге
-    нерированного шаблона
-
-
- }
-
-
- Res:=False;
- Reason:='';
- email:=Mess.Sender.Address;
- mask:='*'+Copy(email,pos('@',email),Length(email)-pos('@',email)+1);    // маска в виде *@domain.com
- FilterName:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
- with Proc do
-  begin
-   Close;
-   Parameters.Clear;
-   SQL.Text:='SELECT COUNT(Id) FROM SenderFilter WHERE mid=(SELECT id FROM Filters WHERE '+
-             ' type=:FilterType) AND FValue=:email AND Active=True';
-   Parameters.ParamByName('FilterType').Value:=FilterName;
-   Parameters.ParamByName('email').Value:=email;
-   ExecSQL;
-   Open;
-   Count:=Proc.Fields[0].AsInteger;
-   Close;
-   if Count>0  then  Res:=True
-    else
+  Res:=False;
+  Sender:=Mess.Sender.Address;
+  with Proc do
+   begin
+    SQL.Text:='SELECT FVAlue FROM SenderFilter WHERE Active=TRUE';
+    ExecSQL;
+    Open;
+    First;
+    while (not Res) and (not Eof) do
+      if MatchesMask(sender,FieldByName('FValue').AsString) then Res:=True
+       else Next;
+    if Res then  // значит есть в таблице
      begin
-      SQL.Text:='SELECT COUNT(Id) FROM SenderFilter WHERE mid=(SELECT id FROM Filters WHERE '+
-             ' type=:FilterType) AND FValue=:mask';
-      Parameters.ParamByName('FilterType').Value:=FilterName;
-      Parameters.ParamByName('mask').Value:=mask;
-      ExecSQL;
-      Open;
-      Count:=Proc.Fields[0].AsInteger;
-      Close;
-      if Count>0 then Res:=True;
-     end;
-  end;
- if Res then  // значит есть в таблице
-   {если причина не указана - использовать стандартную - устанавливать при добавлении}
-   with Proc do
-    begin
-     Close;
-     SQL.Text:='SELECT Reason FROM Filters WHERE type=:FilterType';
-     Parameters.ParamByName('FilterType').Value:=FilterName;
-     ExecSQL;
-     Open;
-     Reason:=Fields[0].AsString;
-     Result.FilterType:=FilterType;
-     Result.Reason:=Reason;
-    end
- else
-  Result.FilterType:=ftNone;
-
+      Result.FilterType:=FilterType;
+      Result.Reason:=GetReason(FilterType);
+     end
+    else
+     Result.FilterType:=ftNone;
+   end;
 end;
 
 constructor TStampFilter.Create(ADOCon:TADOConnection;Filter:TFilterType);
 begin
   inherited Create(ADOCon,Filter);
+  Exp:=TPerlRegEx.Create(nil);
 end;
 
 destructor TStampFilter.Destroy;
 begin
+  Exp.Free;
   inherited;
 end;
 
 function TStampFilter.AnalyzeMessage(Mess:TFMessage): TFilterResult;
 var
- Exp:TRegExpr;
- StrExp,MessText,KeyWord,SQL:String;
- i:Integer;
+ StrExp:String;
  Flag:boolean;
 begin
- Flag:=True;
- MessText:='';
- Result.Reason:='';
- Result.FilterType:=ftNone;
- for i:=0 to Mess.MessageParts.Count-1 do
-  if Mess.MessageParts.Items[i] is TIdText then MessText:=MessText+(Mess.MessageParts[i] as TIdText).Body.Text;
 
- if MessText<>'' then
+ if Mess.MessageText<>'' then
   begin
-   try
-    Exp:=TRegExpr.Create;
-    StrExp:='(?s)(?i)(&lt;|<)\s*(&nbsp;\s*)*Nevod\s*(&nbsp;\s*)*AntiSpam\s*(&nbsp;\s*)*:(\s*)(&nbsp;\s*)*';
-    StrExp:=StrExp+'("(.*)"|'+''''+'(.*)'+''''+')\s*(&nbsp;\s*)*(&gt;|>)';
-    SQL:='SELECT COUNT(Id) FROM StampFilter WHERE FValue=:Stamp AND Active=True';
-    Proc.SQL.Text:=SQL;
-    Exp.ModifierG:=False;
-    Exp.Expression:=StrExp;
-    if Exp.Exec (MessText) then
-      Repeat
-       if Exp.Match[8]<>'' then KeyWord:=Exp.Match[8]
-        else KeyWord:=Exp.Match[9];         
-       with Proc do
-        begin
-         Close;
-         Parameters.ParamByName('Stamp').Value:=KeyWord;
-         ExecSQL;
-         Open;
-         if Fields[0].AsInteger>0 then Flag:=False;
-        end;
-      Until (not Exp.ExecNext)and (not Flag);
-    if NOT Flag then   // найдено в таблице
-     Result.FilterType:=ftStamp;
-   finally
-    Exp.Free;
-   end;
+   StrExp:='(?s)(?i)(&lt;|<)(\s*(&nbsp;)*\s*)*Nevod(\s*(&nbsp;)*\s*)*AntiSpam(\s*(&nbsp;)*\s*)*:(\s*(&nbsp;)*\s*)';
+   StrExp:=StrExp+'("(\w+)"|'+''''+'(\w+)'+''''+')(\s*(&nbsp;)*\s*)*(&gt;|>)';
+   Exp.RegEx :=StrExp;
+   Exp.Subject := Mess.MessageText;
+   Proc.SQL.Text:='SELECT COUNT(Id) FROM StampFilter WHERE FValue=:Stamp AND Active=True';
+   Flag:=True;
+   if Exp.Match then
+    repeat
+     with Proc do
+      begin
+       Close;
+       Parameters.ParamByName('Stamp').Value:=Exp.SubExpressions[12];
+       ExecSQL;
+       Open;
+       if Fields[0].AsInteger>0 then Flag:=False;
+       Close;
+      end;
+    until (not Exp.MatchAgain)and (not Flag);
   end;
+
+  if not Flag  then   // в сообщении обнаружен штамп
+   begin
+    Result.FilterType:=FilterType;
+    Result.Reason:=GetReason(FilterType);
+
+   end;
+
+
+
 end;
 
 constructor TSignalFilter.Create(ADOCon:TADOConnection;Filter:TFilterType;
@@ -312,13 +290,14 @@ begin
  }
 end;
 
+
+end.
+
+
+
 {
-   описвние сигнального фильтра
-   передавать в конструкторе, какие части сообшения просматривать
-   при создании внутреннего массива слов учитывать место поиска
-   если сообщение в черном списке - делать пометку
-   использовать структурный массив
+
+свойство фильтра типа должно устанавливаться само при вызове конструктора
 
 }
-end.
 

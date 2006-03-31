@@ -24,7 +24,7 @@ object FMain: TFMain
     OnClick = Button1Click
   end
   object Button2: TButton
-    Left = 168
+    Left = 176
     Top = 56
     Width = 289
     Height = 81
@@ -42,10 +42,10 @@ object FMain: TFMain
     OnClick = Button3Click
   end
   object Button4: TButton
-    Left = 312
-    Top = 216
-    Width = 105
-    Height = 57
+    Left = 288
+    Top = 168
+    Width = 121
+    Height = 105
     Caption = 'Button4'
     TabOrder = 3
     OnClick = Button4Click

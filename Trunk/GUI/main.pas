@@ -2,7 +2,7 @@ unit main;
 
 interface
 
-uses  PerlRegEx,Forms,  AsFilter,
+uses  PerlRegEx,Forms,  AsFilter, masks,
   StrUtils,PostReceiver, Dialogs, Shared,IniFiles,AccountManager,
   Windows,ThreadManager, Messages, SysUtils, Variants, StdCtrls,
   IdBaseComponent, IdComponent, IdCustomTCPServer, IdTCPServer,
@@ -34,7 +34,7 @@ var
   FMain: TFMain;
 implementation
 
-uses RegExpr;
+uses RegExpr, StrMask;
 
 
 
@@ -43,21 +43,17 @@ uses RegExpr;
 
 procedure TFMain.Button1Click(Sender: TObject);
 var
- st:TStampFilter;
- dt:TFilterResult;
+ st:TSenderFilter;
  mess:TFMessage;
+ dt:TFilterType;
+
 begin
  mess:=TFMessage.Create;
-// mess.Sender.Address:='neiroman@gmail.com';
- mess.LoadFromFile('c:\mess.txt');
-// if mess.BodyType=btText then ShowMessage('Text')
-//  else Showmessage('html');
- ShowMessage(Mess.MessageText);
- st:=TStampFilter.Create(ACon,ftStamp);
- dt:=st.AnalyzeMessage(mess);
- if dt.FilterType=ftStamp then ShowMessage('!');
-   
- st.Free;
+ mess.Sender.Address:='neiroman@gmail.com';
+ dt:=ftWhiteEmail;
+ st:=TSenderFilter.Create(ACon,dt);
+ ShowMessage(st.AnalyzeMessage(mess).Reason) ;
+
 end;
 
 procedure TFMain.Button2Click(Sender: TObject);
@@ -110,34 +106,22 @@ begin
  end;    // while
  //tab.RecNo:=1;
 
-// ms.SaveToFile('c:\mess.txt');
+ ms.SaveToFile('c:\mess.txt');
 end;
 procedure TFMain.Button4Click(Sender: TObject);
 var
-	Regex: TPerlRegEx;
+ st:TStampFilter;
+ mess:TFMessage;
+ dt:TFilterType;
+
 begin
-Regex := TPerlRegEx.Create(nil);
-Regex.RegEx := '(?m)(?i)(\s*)nei(.*?)@gmail(\.)com(\s+|$)';
-Regex.Subject := 'nEiroman-admin@gmail.com nei@gmail.com ааафыаавы мыф:(*  neiromantic@gmail.com';
-if Regex.Match then
-	repeat
-    ShowMessage(Regex.MatchedExpression);
-		// matched text: Regex.MatchedExpression;
-		// match start: Regex.MatchedExpressionOffset;
-		// match length: Regex.MatchedExpressionLength;
-		// backreference n text: Regex.SubExpressions[n];
-		// backreference n start: Regex.SubExpressionOffsets[n];
-		// backreference n length: Regex.SubExpressionLengths[n];
-	until not Regex.MatchAgain;
+ mess:=TFMessage.Create;
+ mess.LoadFromFile('c:\mess.txt');
+ //mess.Sender.Address:='neiroman@gmail.com';
+ dt:=ftStamp;
+ st:=TStampFilter.Create(ACon,dt);
+ ShowMessage(st.AnalyzeMessage(mess).Reason) ;
+
 end;
 
 end.
-
- {
- создать свойство с типом содержимого
-  если верхний не равен mixed - обработать и присвоить нужный тип
-   иначе
-    обойти все части пока не попадется тип text или html
-
-
- }

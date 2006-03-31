@@ -16,7 +16,8 @@ uses
   PostManager in '..\Shared\PostManager.pas',
   POPServer in '..\POP3Server\POPServer.pas',
   ASFilter in '..\MessagesFilter\ASFilter.pas',
-  RegExpr in '..\Libs\RegExpr.pas';
+  RegExpr in '..\Libs\RegExpr.pas',
+  StrMask in 'StrMask.pas';
 
 {$R *.res}
 
