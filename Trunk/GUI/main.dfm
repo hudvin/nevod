@@ -33,8 +33,8 @@ object FMain: TFMain
     OnClick = Button2Click
   end
   object Button3: TButton
-    Left = 88
-    Top = 208
+    Left = 376
+    Top = 160
     Width = 75
     Height = 25
     Caption = 'Button3'
@@ -49,6 +49,32 @@ object FMain: TFMain
     Caption = 'Button4'
     TabOrder = 3
     OnClick = Button4Click
+  end
+  object Button5: TButton
+    Left = 24
+    Top = 0
+    Width = 153
+    Height = 65
+    Caption = 'Button5'
+    TabOrder = 4
+    OnClick = Button5Click
+  end
+  object Edit1: TEdit
+    Left = 208
+    Top = 24
+    Width = 121
+    Height = 21
+    TabOrder = 5
+    Text = 'Edit1'
+  end
+  object Button6: TButton
+    Left = 112
+    Top = 240
+    Width = 75
+    Height = 25
+    Caption = 'Button6'
+    TabOrder = 6
+    OnClick = Button6Click
   end
   object acon: TADOConnection
     Connected = True

@@ -18,10 +18,15 @@ type
     tab: TADOTable;
     RDSConnection1: TRDSConnection;
     Button4: TButton;
+    Button5: TButton;
+    Edit1: TEdit;
+    Button6: TButton;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
+    procedure Button5Click(Sender: TObject);
+    procedure Button6Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -110,7 +115,7 @@ begin
 end;
 procedure TFMain.Button4Click(Sender: TObject);
 var
- st:TStampFilter;
+ st:TSignalFilter;
  mess:TFMessage;
  dt:TFilterType;
 
@@ -118,10 +123,60 @@ begin
  mess:=TFMessage.Create;
  mess.LoadFromFile('c:\mess.txt');
  //mess.Sender.Address:='neiroman@gmail.com';
- dt:=ftStamp;
- st:=TStampFilter.Create(ACon,dt);
+ dt:=ftBlackWord;
+ st:=TSignalFilter.Create(Acon,dt,slBody);
  ShowMessage(st.AnalyzeMessage(mess).Reason) ;
 
+end;
+
+procedure TFMain.Button5Click(Sender: TObject);
+var inpString,buff,symbols:String;
+    i:Integer;
+begin
+ {
+ запрет на ввод некоторых символов (?)
+ если слово без спецсимволов вначале - оно одиночное
+  или смотреть по карманам (?)
+ }
+ inpString:='*qwerty';
+
+ symbols:='.[]\$^()';
+ buff:='';
+ for I := 1 to Length(inpString) do  // экранирование спецсимволов
+  begin
+    if pos(inpString[i],symbols)<>0
+     then buff:=buff+'\'+inpString[i]
+      else buff:=buff+InpString[i];
+  end;
+
+  inpString:='';
+  for I := 1 to Length(buff) do   // замена * и ? на поисковые кмбинации
+  begin
+    if  buff[i]='*'
+     then inpString:=InpString+'.*' else
+      if  buff[i]='?'
+        then inpString:=InpString+'.'
+         else InpString:=InpString + buff[i];
+  end;
+
+ ShowMessage(InpString[Length(InpString)]);
+ Edit1.Text:=InpString;
+
+end;
+
+{
+
+везде экранировать спецсимволы !!!
+
+}
+
+procedure TFMain.Button6Click(Sender: TObject);
+var reg:TRegExp;
+begin
+ reg:=TRegExp.Create(nil);
+ reg.ShieldingSubject:='q*ty';
+ ShowMessage(reg.Subject);
+ Edit1.Text:=reg.Subject;
 end;
 
 end.

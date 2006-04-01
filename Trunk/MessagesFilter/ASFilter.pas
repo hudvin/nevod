@@ -39,10 +39,10 @@ type
 
   TSignalFilter = class(TBaseFilter)
   private
-    Exp: TRegExpr;
+    Exp: TPerlRegEx;
     FSignalLocation: TSignalLocation;
-    function FindString(InpText:String;SubString:string;TextType:TBodyType;
-        SignalForm:TSignalForm): Boolean;
+    function FindString(InpText:String;SubString:string;SignalForm:TSignalForm):
+        Boolean;
   public
     constructor Create(ADOCon:TADOConnection;Filter:TFilterType;
         SignalLocation:TSignalLocation); overload;
@@ -153,7 +153,7 @@ begin
      with Proc do
       begin
        Close;
-       Parameters.ParamByName('Stamp').Value:=Exp.SubExpressions[12];
+       Parameters.ParamByName('Stamp').Value:=Trim(Exp.SubExpressions[12]);
        ExecSQL;
        Open;
        if Fields[0].AsInteger>0 then Flag:=False;
@@ -166,11 +166,7 @@ begin
    begin
     Result.FilterType:=FilterType;
     Result.Reason:=GetReason(FilterType);
-
    end;
-
-
-
 end;
 
 constructor TSignalFilter.Create(ADOCon:TADOConnection;Filter:TFilterType;
@@ -178,7 +174,7 @@ constructor TSignalFilter.Create(ADOCon:TADOConnection;Filter:TFilterType;
 begin
   inherited Create(ADOCon,Filter);
   FSignalLocation:=SignalLocation;
-  Exp:=TRegExpr.Create;
+  Exp:=TPerlRegEx.Create(nil);
 end;
 
 destructor TSignalFilter.Destroy;
@@ -194,11 +190,20 @@ function TSignalFilter.AnalyzeMessage(Mess:TFMessage): TFilterResult;
   buff:=MessageText;
   with Exp  do
    begin
-    ModifierG:=False;
-    Expression:='<.*>';
-    buff:=Replace(buff,'',True); // удаление всех тегов
-    Expression:='\s{2,}';     // удаление лишних пробелов
-    buff:=Replace(buff,' ',True);
+    RegEx:='<.*>';     // удаление тегов
+    Options:=[preUnGreedy];
+    Subject :=buff;
+    Replacement := '';
+    ReplaceAll;
+    buff:=Subject;
+
+
+    RegEx:='\s{2,}';     // удаление лишних пробелов
+    Options:=[preUnGreedy];
+    Subject :=buff;
+    Replacement := '';
+    ReplaceAll;
+    buff:=Subject;
    end;
   Result:=buff;
  end;
@@ -215,7 +220,7 @@ begin
   slAnywhere:
    begin
     SQLProc:= 'SELECT FValue,Location,Decsription,SignalForm FROM SignalFilter '+
-              ' (WHERE Active=TRUE) AND (Location=:Location_1 OR Location=:Location_2 OR Location=:Location_3)';
+              ' WHERE (Active=TRUE) AND (Location=:Location_1 OR Location=:Location_2 OR Location=:Location_3)';
     Proc.SQL.Text:=SQLProc;
     Proc.Parameters.ParamByName('Location_1').Value:='slSubject';
     Proc.Parameters.ParamByName('Location_2').Value:='slAnyWhere';
@@ -223,8 +228,8 @@ begin
    end;
   slBody:
    begin
-    SQLProc:= 'SELECT FValue,Location,Decsription,SignalForm FROM SignalFilter '+
-              ' (WHERE Active=TRUE) AND (Location=:Location_1 OR Location=:Location_2)';
+    SQLProc:= 'SELECT FValue,Location,Description,SignalForm FROM SignalFilter '+
+              ' WHERE (Active=TRUE) AND (Location=:Location_1 OR Location=:Location_2)';
     Proc.SQL.Text:=SQLProc;
     Proc.Parameters.ParamByName('Location_1').Value:='slAnyWhere';
     Proc.Parameters.ParamByName('Location_2').Value:='slBody';
@@ -232,14 +237,14 @@ begin
   slSubject:
    begin
     SQLProc:= 'SELECT FValue,Location,Decsription,SignalForm FROM SignalFilter '+
-              ' (WHERE Active=TRUE) AND (Location=:Location_1 OR Location=:Location_2)';
+              ' WHERE (Active=TRUE) AND (Location=:Location_1 OR Location=:Location_2)';
     Proc.SQL.Text:=SQLProc;
     Proc.Parameters.ParamByName('Location_1').Value:='slAnyWhere';
     Proc.Parameters.ParamByName('Location_2').Value:='slSubject';
    end;
  end;
 
- with Proc do
+ with Proc do    // поиск слов из таблицы в сообщении
   begin
    ExecSQL;
    Open;
@@ -249,46 +254,51 @@ begin
     begin
      try
       case TSignalLocation(GetEnumValue(TypeInfo(TSignalLocation),FieldByName('Location').AsString)) of    //
-       slAnywhere:;   // давать два запроса 
+       slAnywhere:;   // давать два запроса
        slSubject: ;
-       slBody:    ;
+       slBody:
+        if FindString(RowText,Proc.FieldByName('FValue').AsString,sfSingle)
+         then ShowMessage('!!!')  ;    // вызов поиска, передача тела сообщения
       end;
      except
      end;
-
+     Proc.Next;
     end;
   end;
 end;
 
 function TSignalFilter.FindString(InpText:String;SubString:string;
-    TextType:TBodyType; SignalForm:TSignalForm): Boolean;
+    SignalForm:TSignalForm): Boolean;
+var
+ CanExit:boolean;
+ Res:integer;
 begin
- {
-  InpText - строка, в которой будет произовдится поиск
-  SubString - слово,которое будет искаться
-  TextType - какой тип имеет входной текст (html или простой текст)
-  SignalForm - в какой форме искать слово (одиночное слово, в составе другого слова, оба варианта)
+ // проверять все вхождения
+ Res:=-1;
+ Exp.Subject:=InpText;
+ Exp.RegEx:='(?s)(?i)(\A|\w*)('+SubString+')(\Z|\w*)';
+ if Exp.Match then
+  repeat
+   case SignalForm of
+    sfSingle:     // одиночное слово
+     if ((Length(Exp.SubExpressions[1])= 0)  AND (Length(Exp.SubExpressions[3])=0))
+      then   Res:=1 else Res:=0;
+    sfPart:  // начало либо конец слова
+     if ((Length(Exp.SubExpressions[1])= 0)  AND (Length(Exp.SubExpressions[3])>0))  OR
+        ((Length(Exp.SubExpressions[3])= 0)  AND (Length(Exp.SubExpressions[1])>0))
+        then   Res:=1 else Res:=0;
 
- }
+    sfBoth:  //   в середине слова
+    if ((Length(Exp.SubExpressions[1])> 0)  AND (Length(Exp.SubExpressions[3])>0))
+      then   Res:=1 else Res:=0;
+   end;
+  until (not Exp.MatchAgain)or (Res=-1);
 
- {
-  text
-   одиночное слово (?s)(?i)(\s+|^)inter(\s+|$)
-   в начале другого слова (?s)(?i)(\A|\s)(Destroy)(\Z|\w*[^\s])
-   (\A|\w*)(Destroy)(\Z|\w*)   - тип (в составе слова или одиночно ) определять по карманам
-  если html - выделить простой текст и далее искать как обычно
- }
-
- if TextType=btHtml then Exp.Expression:='(?s)(?i)>(.*?)<'
-  else Exp.Expression:='(?s)(?i)(\s+|^)receive(\s+|$)';
-
- {
- разные выражение для поиска в простом тексте и html
- искать с помощью регулярных выражений
-
-
- }
+  if ((Res=-1) or (Res=0)) then Result:=False
+   else Result:=True;
 end;
+
+
 
 
 end.

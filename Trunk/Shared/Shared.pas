@@ -2,7 +2,7 @@ unit Shared;
 
 interface
 
-uses
+uses  PerlRegEx,
   Windows,WinSock, Registry,  ZLib,TypInfo, Messages, SysUtils, Variants,  ComObj,ActiveX,
   Dialogs, StdCtrls, DB, ADODB,IdMessage, Classes, IniFiles,
   IdText,IdMessageParts, StrUtils,IdAttachment,IdZLibCompressorBase,
@@ -36,7 +36,7 @@ type
   TLogType=(ltPOP3Server,ltPostReceiver);
 
 type
-  TFilterType=(ftBlackEmail,ftWhiteEmail,ftStamp,ftBExt,ftWExt,ftBURL,ftWURL,ftBWord,ftWWord,ftNone);
+  TFilterType=(ftBlackEmail,ftWhiteEmail,ftStamp,ftBExt,ftWExt,ftBURL,ftWURL,ftBlackWord,ftWhiteWord,ftNone);
 
 type
   TBodyType=(btText,btHtml);  // тип тела сообщения
@@ -201,6 +201,17 @@ type
     procedure AddQuery(QueryString:String;QueryName:String);
     procedure DeleteQuery(QueryName:String);
     procedure Fill(ADOQuery:TADOQuery;QueryName:String ;Params:array of const);
+  end;
+
+  TRegExp = class(TPerlRegEx)
+  { при присвоении текста для обработки -экранирование спецсимволов }
+  private
+    FShieldingSubject: string;
+    function GetShieldingSubject: string;
+    procedure SetShieldingSubject(const Value: string);
+  public
+    property ShieldingSubject: string read GetShieldingSubject write
+        SetShieldingSubject;
   end;
 
 
@@ -910,6 +921,45 @@ begin
             ADOQuery.Parameters[i].Value:=False;
           vtString: ADOQuery.Parameters[i].Value:=VString^;
         end;
+
+end;
+
+function TRegExp.GetShieldingSubject: string;
+begin
+ Result:=FShieldingSubject;
+end;
+
+procedure TRegExp.SetShieldingSubject(const Value: string);
+var inpString,buff,symbols:String;
+    i:Integer;
+begin
+ FShieldingSubject:=Value;
+ inpString:=Value;
+ Symbols:='.[]\$^()';
+ buff:='';
+ for I := 1 to Length(inpString) do  // экранирование спецсимволов
+  begin
+    if pos(inpString[i],symbols)<>0
+     then buff:=buff+'\'+inpString[i]
+      else buff:=buff+InpString[i];
+  end;
+
+  inpString:='';
+  for I := 1 to Length(buff) do   // замена * и ? на поисковые кмбинации
+  begin
+    if  buff[i]='*'
+     then inpString:=InpString+'.*' else
+      if  buff[i]='?'
+        then inpString:=InpString+'.'
+         else InpString:=InpString + buff[i];
+  end;
+ if (InpString[1]<>'.') AND (InpString[1]<>'.') then   // проверка в начале
+  inpString:='\b'+InpString;
+
+ if (InpString[Length(InpString)]<>'.') AND (InpString[Length(InpString)]<>'*') then   // проверка в конце
+  inpString:=InpString+'\b';
+
+  Subject:=InpString;
 
 end;
 
