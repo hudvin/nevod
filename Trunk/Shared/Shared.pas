@@ -33,7 +33,7 @@ type
   TLogType=(ltPOP3Server,ltPostReceiver);
 
 type
-  TFilterType=(ftBlackEmail,ftWhiteEmail,ftStamp,ftBlackWord,ftWhiteWord,ftNone);
+  TFilterType=(ftBlackEmail,ftWhiteEmail,ftStamp,ftBlackWord,ftWhiteWord,ftImageFilter,ftLinkFilter);
 
 type
   TBodyType=(btText,btHtml);  // тип тела сообщения

@@ -7,16 +7,16 @@ type
   TBaseFilter = class
   private
     FFilterType: TFilterType;
-    FMarkAs: string;
+    FReason: string;
     Proc: TADOQuery;
     function GetReason(FilterType:TFilterType): string;
   public
     constructor Create(ADOCon:TADOConnection;Filter:TFilterType); virtual;
     destructor Destroy; override;
-    function AnalyzeMessage(Mess:TFMessage): TFilterResult; virtual; abstract;
+    function AnalyzeMessage(Mess:TFMessage): Boolean; virtual; abstract;
     procedure MarkMessage; virtual;
     property FilterType: TFilterType read FFilterType;
-    property MarkAs: string read FMarkAs write FMarkAs;
+    property Reason: string read FReason;
   end;
 
   TSenderFilter = class(TBaseFilter)
@@ -25,7 +25,7 @@ type
   public
     constructor Create(ADOCon:TADOConnection;Filter:TFilterType); override;
     destructor Destroy; override;
-    function AnalyzeMessage(Mess:TFMessage): TFilterResult; virtual;
+    function AnalyzeMessage(Mess:TFMessage): Boolean; virtual;
   end;
 
   TStampFilter = class(TBaseFilter)
@@ -34,7 +34,7 @@ type
   public
     constructor Create(ADOCon:TADOConnection;Filter:TFilterType); override;
     destructor Destroy; override;
-    function AnalyzeMessage(Mess:TFMessage): TFilterResult; override;
+    function AnalyzeMessage(Mess:TFMessage): Boolean; override;
   end;
 
   TSignalFilter = class(TBaseFilter)
@@ -46,7 +46,25 @@ type
     constructor Create(ADOCon:TADOConnection;Filter:TFilterType;
         SignalLocation:TSignalLocation); overload;
     destructor Destroy; override;
-    function AnalyzeMessage(Mess:TFMessage): TFilterResult; override;
+    function AnalyzeMessage(Mess:TFMessage): Boolean; override;
+  end;
+
+  TImageFilter = class(TBaseFilter)
+  private
+    Exp: TRegExp;
+    MaxImg: Integer;
+  public
+    constructor Create(ADOCon:TADOConnection;Filter:TFilterType); override;
+    function AnalyzeMessage(Mess:TFMessage): Boolean; override;
+  end;
+
+  TLinkFilter = class(TBaseFilter)
+  private
+    Exp: TRegExp;
+    MaxLinks: Integer;
+  public
+    constructor Create(ADOCon:TADOConnection;Filter:TFilterType); override;
+    function AnalyzeMessage(Mess:TFMessage): Boolean; override;
   end;
 
 implementation
@@ -95,11 +113,10 @@ begin
   inherited;
 end;
 
-function TSenderFilter.AnalyzeMessage(Mess:TFMessage): TFilterResult;
+function TSenderFilter.AnalyzeMessage(Mess:TFMessage): Boolean;
 var
- email,Reason:String;
  Res:boolean;
- sender,mask:String;
+ sender:String;
 begin
   Res:=False;
   Sender:=Mess.Sender.Address;
@@ -121,11 +138,14 @@ begin
      end;
     if Res then  // значит есть в таблице
      begin
-      Result.FilterType:=FilterType;
-      Result.Reason:=GetReason(FilterType);
+      Result:=True;
+      FReason:=GetReason(FilterType);
      end
     else
-     Result.FilterType:=ftNone;
+     begin
+      Result:=False;
+      FReason:='';
+     end;
    end;
 end;
 
@@ -141,7 +161,7 @@ begin
   inherited;
 end;
 
-function TStampFilter.AnalyzeMessage(Mess:TFMessage): TFilterResult;
+function TStampFilter.AnalyzeMessage(Mess:TFMessage): Boolean;
 var
  StrExp:String;
  Flag:boolean;
@@ -171,9 +191,14 @@ begin
 
   if not Flag  then   // в сообщении обнаружен штамп
    begin
-    Result.FilterType:=FilterType;
-    Result.Reason:=GetReason(FilterType);
-   end;
+    Result:=True;
+    FReason:=GetReason(FilterType);
+   end
+    else
+     begin
+      Result:=False;
+      FReason:='';
+     end;
 end;
 
 constructor TSignalFilter.Create(ADOCon:TADOConnection;Filter:TFilterType;
@@ -190,7 +215,7 @@ begin
   inherited;
 end;
 
-function TSignalFilter.AnalyzeMessage(Mess:TFMessage): TFilterResult;
+function TSignalFilter.AnalyzeMessage(Mess:TFMessage): Boolean;
  function GetRowText(MessageText:String):String;
  var buff:String;
  begin
@@ -216,7 +241,7 @@ function TSignalFilter.AnalyzeMessage(Mess:TFMessage): TFilterResult;
  end;
 
 var
- SQLProc,RowText,FType:String;
+ RowText,FType:String;
  Flag:Boolean;
 begin
 if Mess.BodyType=btHtml then
@@ -278,6 +303,17 @@ if Mess.BodyType=btHtml then
      Proc.Next;
     end;
   end;
+ if Flag then
+  begin
+   Result:=True;
+   FReason:=GetReason(FFilterType);
+  end
+  else
+   begin
+    Result:=False;
+    FReason:='';
+   end;
+
 end;
 
 function TSignalFilter.FindString(InpText:String;SubString:string): Boolean;
@@ -289,6 +325,103 @@ begin
 
 end;
 
+constructor TImageFilter.Create(ADOCon:TADOConnection;Filter:TFilterType);
+begin
+  inherited Create(ADOCon,Filter);
+  Exp:=TRegExp.Create(nil);
+  with Proc do
+  begin
+   Close;
+   SQL.Text:='SELECT Var FROM Settings WHERE Name='+'''' +'MaxImg'+'''';
+   Active:=True;
+   MaxImg:=Fields[0].AsInteger;
+   Close;
+  end;
+end;
+
+function TImageFilter.AnalyzeMessage(Mess:TFMessage): Boolean;
+var
+ i:integer;
+ Flag:boolean;
+begin
+  {
+
+  возвращает количество ссылок на изображения в сообещении
+  максимальное количество изображений хранить в таблице
+  в конструкторе - класс для получения настроек
+  или получать при вызове конструктора
+  использовать регулярные выражения
+  }
+  if Mess.MessageText<>'' then
+   begin
+   i:=0;
+   Flag:=True;
+   Exp.RegEx:='<\w*img';
+  // Exp.Subject:='<img sr=> <img>  <img srcgf>   fvsdfs'; // убрать нафиг - только для проверки
+   Exp.Subject:=Mess.MessageText;
+   if Exp.Match then
+    repeat
+     inc(i);
+     if (i>MaxImg)
+       then Flag:=False;
+    until (not Exp.MatchAgain)or (not Flag);
+   if not Flag then    // количество  превышено
+    begin
+     Result:=True;
+     FReason:=GetReason(FFilterType);
+    end
+   else  // количество не превышено
+    begin
+     Result:=False;
+     FReason:='';
+    end;
+   end;
+end;
+
+constructor TLinkFilter.Create(ADOCon:TADOConnection;Filter:TFilterType);
+begin
+  inherited Create(ADOCon,Filter);
+  Exp:=TRegExp.Create(nil);
+  with Proc do
+  begin
+   Close;
+   SQL.Text:='SELECT Var FROM Settings WHERE Name='+'''' +'MaxLinks'+'''';
+   Active:=True;
+   MaxLinks:=Fields[0].AsInteger;
+   Close;
+  end;
+end;
+
+function TLinkFilter.AnalyzeMessage(Mess:TFMessage): Boolean;
+var
+ i:integer;
+ Flag:boolean;
+begin
+  if Mess.MessageText<>'' then
+   begin
+   i:=0;
+   Flag:=True;
+   Exp.RegEx:='<\s*a\s*href';  // проверить, насколько правильно
+   Exp.Subject:=Mess.MessageText;
+   if Exp.Match then
+    repeat
+     inc(i);
+     if (i>MaxLinks)
+       then Flag:=False;
+    until (not Exp.MatchAgain)or (not Flag);
+   if not Flag then    // количество  превышено
+    begin
+     Result:=True;
+     FReason:=GetReason(FFilterType);
+    end
+   else  // количество не превышено
+    begin
+     Result:=False;
+     FReason:='';
+    end;
+   end;
+end;
+
 
 end.
 
@@ -297,6 +430,6 @@ end.
 {
 
 свойство фильтра типа должно устанавливаться само при вызове конструктора
-
+в Exp можно передавать строки с произвольными символами
 }
 

@@ -3,7 +3,7 @@ object FMain: TFMain
   Top = 155
   BorderStyle = bsSingle
   Caption = 'FMain'
-  ClientHeight = 156
+  ClientHeight = 199
   ClientWidth = 503
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -24,13 +24,31 @@ object FMain: TFMain
     OnClick = Button1Click
   end
   object Button4: TButton
-    Left = 232
-    Top = 24
+    Left = 208
+    Top = -8
     Width = 121
     Height = 105
     Caption = 'Button4'
     TabOrder = 1
     OnClick = Button4Click
+  end
+  object Button2: TButton
+    Left = 96
+    Top = 24
+    Width = 75
+    Height = 25
+    Caption = 'Button2'
+    TabOrder = 2
+    OnClick = Button2Click
+  end
+  object Button3: TButton
+    Left = 96
+    Top = 136
+    Width = 75
+    Height = 25
+    Caption = 'Button3'
+    TabOrder = 3
+    OnClick = Button3Click
   end
   object acon: TADOConnection
     Connected = True

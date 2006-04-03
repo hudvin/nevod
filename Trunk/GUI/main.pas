@@ -14,8 +14,12 @@ type
     acon: TADOConnection;
     Button1: TButton;
     Button4: TButton;
+    Button2: TButton;
+    Button3: TButton;
     procedure Button1Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -46,8 +50,9 @@ begin
  mess.Sender.Address:='neiroman@gmail.com';
  dt:=ftWhiteEmail;
  st:=TSenderFilter.Create(ACon,dt);
- ShowMessage(st.AnalyzeMessage(mess).Reason) ;
-
+ //ShowMessage(st.AnalyzeMessage(mess).Reason) ;
+ if st.AnalyzeMessage(Mess)
+  then ShowMessage(st.Reason);
 end;
 
 procedure TFMain.Button4Click(Sender: TObject);
@@ -62,12 +67,38 @@ begin
  //mess.Sender.Address:='neiroman@gmail.com';
  dt:=ftBlackWord;
  st:=TSignalFilter.Create(Acon,dt,slBody);
- ShowMessage(st.AnalyzeMessage(mess).Reason) ;
-
+// ShowMessage(st.AnalyzeMessage(mess).Reason) ;
+ if st.AnalyzeMessage(Mess) then ShowMessage(st.Reason);
+   
 
 
 end;
 
+{
 
+ каждый фильтр возвращает True/False
+ в свойство Reason записывается причина
+
+}
+
+procedure TFMain.Button2Click(Sender: TObject);
+var it:TImageFilter;
+    mess:TFMessage;
+begin
+ it:=TImageFilter.Create(ACon,ftImagefilter);
+ Mess:=TFMessage.Create;
+ it.AnalyzeMessage(Mess);
+ ShowMessage(it.Reason);
+end;
+
+procedure TFMain.Button3Click(Sender: TObject);
+var exp:TPerlRegEx;
+begin
+ exp:=TPerlRegEx.Create(nil);
+ exp.Subject:='< href> <a href> ';
+ exp.RegEx:='<\s*a\s*href';
+ if exp.Match then ShowMessage('Найдено');
+   
+end;
 
 end.
