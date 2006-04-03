@@ -21,7 +21,7 @@ type
 
   TSenderFilter = class(TBaseFilter)
   private
-    Exp: TPerlRegEx;
+    Exp: TRegExp;
   public
     constructor Create(ADOCon:TADOConnection;Filter:TFilterType); override;
     destructor Destroy; override;
@@ -30,7 +30,7 @@ type
 
   TStampFilter = class(TBaseFilter)
   private
-    Exp: TPerlRegEx;
+    Exp: TRegExp;
   public
     constructor Create(ADOCon:TADOConnection;Filter:TFilterType); override;
     destructor Destroy; override;
@@ -39,10 +39,9 @@ type
 
   TSignalFilter = class(TBaseFilter)
   private
-    Exp: TPerlRegEx;
+    Exp: TRegExp;
     FSignalLocation: TSignalLocation;
-    function FindString(InpText:String;SubString:string;SignalForm:TSignalForm):
-        Boolean;
+    function FindString(InpText:String;SubString:string): Boolean;
   public
     constructor Create(ADOCon:TADOConnection;Filter:TFilterType;
         SignalLocation:TSignalLocation); overload;
@@ -51,6 +50,7 @@ type
   end;
 
 implementation
+uses main;
 
 constructor TBaseFilter.Create(ADOCon:TADOConnection;Filter:TFilterType);
 begin
@@ -86,7 +86,7 @@ end;
 constructor TSenderFilter.Create(ADOCon:TADOConnection;Filter:TFilterType);
 begin
   inherited Create(ADOCon,Filter);
-  Exp:=TPerlRegEx.Create(nil);
+  Exp:=TRegExp.Create(nil);
 end;
 
 destructor TSenderFilter.Destroy;
@@ -104,14 +104,21 @@ begin
   Res:=False;
   Sender:=Mess.Sender.Address;
   with Proc do
-   begin
-    SQL.Text:='SELECT FVAlue FROM SenderFilter WHERE Active=TRUE';
+   begin       // делать выбоку по типу фильтра
+    SQL.Text:='SELECT FVAlue FROM SenderFilter WHERE (Active=TRUE) AND '+
+     ' (mid=(SELECT id FROM Filters WHERE type=:FilterType) ) ' ;
+    Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
     ExecSQL;
     Open;
     First;
     while (not Res) and (not Eof) do
-      if MatchesMask(sender,FieldByName('FValue').AsString) then Res:=True
+     begin
+      Exp.Options:=[preCaseLess];
+      Exp.ShieldingExp:=FieldByName('FValue').AsString; // сырая маска получателся
+      Exp.Subject:=Sender;
+      if Exp.Match then Res:=True
        else Next;
+     end;
     if Res then  // значит есть в таблице
      begin
       Result.FilterType:=FilterType;
@@ -125,7 +132,7 @@ end;
 constructor TStampFilter.Create(ADOCon:TADOConnection;Filter:TFilterType);
 begin
   inherited Create(ADOCon,Filter);
-  Exp:=TPerlRegEx.Create(nil);
+  Exp:=TRegExp.Create(nil);
 end;
 
 destructor TStampFilter.Destroy;
@@ -174,7 +181,7 @@ constructor TSignalFilter.Create(ADOCon:TADOConnection;Filter:TFilterType;
 begin
   inherited Create(ADOCon,Filter);
   FSignalLocation:=SignalLocation;
-  Exp:=TPerlRegEx.Create(nil);
+  Exp:=TRegExp.Create(nil);
 end;
 
 destructor TSignalFilter.Destroy;
@@ -209,18 +216,19 @@ function TSignalFilter.AnalyzeMessage(Mess:TFMessage): TFilterResult;
  end;
 
 var
- SQLProc,RowText:String;
+ SQLProc,RowText,FType:String;
  Flag:Boolean;
 begin
- if Mess.BodyType=btHtml then
+if Mess.BodyType=btHtml then
   RowText:=GetRowText(Mess.MessageText) // получение текста сообщения без тегов и лишних пробелов
  else RowText:=Mess.MessageText;
  Proc.Close;
- case FSignalLocation of  // по каким полям сообщения должен производится поиск
+{ case FSignalLocation of  // по каким полям сообщения должен производится поиск
   slAnywhere:
    begin
-    SQLProc:= 'SELECT FValue,Location,Decsription,SignalForm FROM SignalFilter '+
-              ' WHERE (Active=TRUE) AND (Location=:Location_1 OR Location=:Location_2 OR Location=:Location_3)';
+    SQLProc:= 'SELECT FValue,Location,Decsription FROM SignalFilter'+
+              ' WHERE (Active=TRUE) AND (Location=:Location_1 OR Location=:Location_2 OR Location=:Location_3)'+
+               ' AND (mid=(SELECT id FROM Filters WHERE type=:FilterType))';
     Proc.SQL.Text:=SQLProc;
     Proc.Parameters.ParamByName('Location_1').Value:='slSubject';
     Proc.Parameters.ParamByName('Location_2').Value:='slAnyWhere';
@@ -228,36 +236,51 @@ begin
    end;
   slBody:
    begin
-    SQLProc:= 'SELECT FValue,Location,Description,SignalForm FROM SignalFilter '+
-              ' WHERE (Active=TRUE) AND (Location=:Location_1 OR Location=:Location_2)';
+    SQLProc:= 'SELECT FValue,Location,Description FROM SignalFilter '+
+              ' WHERE (Active=TRUE) AND (Location=:Location_1 OR Location=:Location_2)'+
+                'AND (mid=(SELECT id FROM Filters WHERE type=:FilterType))';
     Proc.SQL.Text:=SQLProc;
     Proc.Parameters.ParamByName('Location_1').Value:='slAnyWhere';
     Proc.Parameters.ParamByName('Location_2').Value:='slBody';
    end;
   slSubject:
    begin
-    SQLProc:= 'SELECT FValue,Location,Decsription,SignalForm FROM SignalFilter '+
-              ' WHERE (Active=TRUE) AND (Location=:Location_1 OR Location=:Location_2)';
+    SQLProc:= 'SELECT FValue,Location,Decsription FROM SignalFilter '+
+              ' WHERE (Active=TRUE) AND (Location=:Location_1 OR Location=:Location_2)'+
+                 ' AND (mid=(SELECT id FROM Filters WHERE type=:FilterType))';
     Proc.SQL.Text:=SQLProc;
     Proc.Parameters.ParamByName('Location_1').Value:='slAnyWhere';
     Proc.Parameters.ParamByName('Location_2').Value:='slSubject';
    end;
  end;
+ }
 
  with Proc do    // поиск слов из таблицы в сообщении
   begin
-   ExecSQL;
-   Open;
+   FType:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
+   Active:=False;
+
+   SQL.Text:='SELECT id, FValue,Location,Description FROM SignalFilter  WHERE     (Active=TRUE) AND'  +
+   '(Location=:Location_2 OR Location=:Location_1)'+
+   'AND (mid=(SELECT id FROM Filters WHERE type='+ ''''+FType +'''' +'))';
+   Parameters.ParseSQL(SQL.Text,True);
+   Proc.Parameters.ParamByName('Location_1').Value:='slAnyWhere';
+   Proc.Parameters.ParamByName('Location_2').Value:='slBody';
+   Active:=True;
+//   Open;
    First;
    Flag:=True;
+
+   main.FMain.Edit1.Text:=SQL.Text;
+//   ShowMessage(IntToStr(RecordCount));
    while (not Proc.Eof) and (Flag) do
     begin
      try
       case TSignalLocation(GetEnumValue(TypeInfo(TSignalLocation),FieldByName('Location').AsString)) of    //
        slAnywhere:;   // давать два запроса
-       slSubject: ;
+       slSubject: ;   // давать один запрос с передачей всего текста
        slBody:
-        if FindString(RowText,Proc.FieldByName('FValue').AsString,sfSingle)
+        if FindString(RowText,Proc.FieldByName('FValue').AsString)
          then ShowMessage('!!!')  ;    // вызов поиска, передача тела сообщения
       end;
      except
@@ -267,38 +290,14 @@ begin
   end;
 end;
 
-function TSignalFilter.FindString(InpText:String;SubString:string;
-    SignalForm:TSignalForm): Boolean;
-var
- CanExit:boolean;
- Res:integer;
+function TSignalFilter.FindString(InpText:String;SubString:string): Boolean;
 begin
- // проверять все вхождения
- Res:=-1;
+ Exp.ShieldingExp:=SubString;
  Exp.Subject:=InpText;
- Exp.RegEx:='(?s)(?i)(\A|\w*)('+SubString+')(\Z|\w*)';
- if Exp.Match then
-  repeat
-   case SignalForm of
-    sfSingle:     // одиночное слово
-     if ((Length(Exp.SubExpressions[1])= 0)  AND (Length(Exp.SubExpressions[3])=0))
-      then   Res:=1 else Res:=0;
-    sfPart:  // начало либо конец слова
-     if ((Length(Exp.SubExpressions[1])= 0)  AND (Length(Exp.SubExpressions[3])>0))  OR
-        ((Length(Exp.SubExpressions[3])= 0)  AND (Length(Exp.SubExpressions[1])>0))
-        then   Res:=1 else Res:=0;
+ if Exp.Match then   Result:=True
+  else result:=false;
 
-    sfBoth:  //   в середине слова
-    if ((Length(Exp.SubExpressions[1])> 0)  AND (Length(Exp.SubExpressions[3])>0))
-      then   Res:=1 else Res:=0;
-   end;
-  until (not Exp.MatchAgain)or (Res=-1);
-
-  if ((Res=-1) or (Res=0)) then Result:=False
-   else Result:=True;
 end;
-
-
 
 
 end.

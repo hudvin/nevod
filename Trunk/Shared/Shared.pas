@@ -30,13 +30,10 @@ type
   TAccountStatus=(asFree,asClient,asServer);
 
 type
-  TSignalForm=(sfSingle,sfPart,sfBoth);
-
-type
   TLogType=(ltPOP3Server,ltPostReceiver);
 
 type
-  TFilterType=(ftBlackEmail,ftWhiteEmail,ftStamp,ftBExt,ftWExt,ftBURL,ftWURL,ftBlackWord,ftWhiteWord,ftNone);
+  TFilterType=(ftBlackEmail,ftWhiteEmail,ftStamp,ftBlackWord,ftWhiteWord,ftNone);
 
 type
   TBodyType=(btText,btHtml);  // тип тела сообщения
@@ -206,12 +203,11 @@ type
   TRegExp = class(TPerlRegEx)
   { при присвоении текста для обработки -экранирование спецсимволов }
   private
-    FShieldingSubject: string;
-    function GetShieldingSubject: string;
-    procedure SetShieldingSubject(const Value: string);
+    FShieldingExp: string;
+    function GetShieldingExp: string;
+    procedure SetShieldingExp(const Value: string);
   public
-    property ShieldingSubject: string read GetShieldingSubject write
-        SetShieldingSubject;
+    property ShieldingExp: string read GetShieldingExp write SetShieldingExp;
   end;
 
 
@@ -924,16 +920,16 @@ begin
 
 end;
 
-function TRegExp.GetShieldingSubject: string;
+function TRegExp.GetShieldingExp: string;
 begin
- Result:=FShieldingSubject;
+ Result:=FShieldingExp;
 end;
 
-procedure TRegExp.SetShieldingSubject(const Value: string);
+procedure TRegExp.SetShieldingExp(const Value: string);
 var inpString,buff,symbols:String;
     i:Integer;
 begin
- FShieldingSubject:=Value;
+ FShieldingExp:=Value;
  inpString:=Value;
  Symbols:='.[]\$^()';
  buff:='';
@@ -959,7 +955,7 @@ begin
  if (InpString[Length(InpString)]<>'.') AND (InpString[Length(InpString)]<>'*') then   // проверка в конце
   inpString:=InpString+'\b';
 
-  Subject:=InpString;
+  RegEx:=InpString;
 
 end;
 

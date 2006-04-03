@@ -3,8 +3,8 @@ object FMain: TFMain
   Top = 155
   BorderStyle = bsSingle
   Caption = 'FMain'
-  ClientHeight = 291
-  ClientWidth = 509
+  ClientHeight = 472
+  ClientWidth = 698
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -32,39 +32,21 @@ object FMain: TFMain
     TabOrder = 1
     OnClick = Button2Click
   end
-  object Button3: TButton
-    Left = 376
-    Top = 160
-    Width = 75
-    Height = 25
-    Caption = 'Button3'
-    TabOrder = 2
-    OnClick = Button3Click
-  end
   object Button4: TButton
-    Left = 288
-    Top = 168
+    Left = 264
+    Top = 160
     Width = 121
     Height = 105
     Caption = 'Button4'
-    TabOrder = 3
+    TabOrder = 2
     OnClick = Button4Click
-  end
-  object Button5: TButton
-    Left = 24
-    Top = 0
-    Width = 153
-    Height = 65
-    Caption = 'Button5'
-    TabOrder = 4
-    OnClick = Button5Click
   end
   object Edit1: TEdit
     Left = 208
     Top = 24
     Width = 121
     Height = 21
-    TabOrder = 5
+    TabOrder = 3
     Text = 'Edit1'
   end
   object Button6: TButton
@@ -73,8 +55,21 @@ object FMain: TFMain
     Width = 75
     Height = 25
     Caption = 'Button6'
-    TabOrder = 6
+    TabOrder = 4
     OnClick = Button6Click
+  end
+  object DBGrid1: TDBGrid
+    Left = 184
+    Top = 296
+    Width = 320
+    Height = 120
+    DataSource = DataSource1
+    TabOrder = 5
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'MS Sans Serif'
+    TitleFont.Style = []
   end
   object acon: TADOConnection
     Connected = True
@@ -95,16 +90,45 @@ object FMain: TFMain
     Left = 8
     Top = 8
   end
-  object tab: TADOTable
-    Active = True
+  object ADOQuery1: TADOQuery
     Connection = acon
     CursorType = ctStatic
-    TableName = 'Messages'
-    Left = 32
-    Top = 48
+    Parameters = <
+      item
+        Name = 'LocationA'
+        Attributes = [paNullable]
+        DataType = ftWideString
+        NumericScale = 255
+        Precision = 255
+        Size = 510
+        Value = 'slBody'
+      end
+      item
+        Name = 'FType'
+        Attributes = [paNullable]
+        DataType = ftWideString
+        NumericScale = 255
+        Precision = 255
+        Size = 510
+        Value = 'ftBlackWord'
+      end>
+    Prepared = True
+    SQL.Strings = (
+      'SELECT FValue FROM SignalFilter '
+      'WHERE     Active=TRUE'
+      ' AND Location=:LocationA'
+      ' AND mid=  '
+      '    ('
+      'SELECT id '
+      '   FROM Filters'
+      '    WHERE Type=:FType)'
+      '  ')
+    Left = 16
+    Top = 208
   end
-  object RDSConnection1: TRDSConnection
-    Left = 208
-    Top = 160
+  object DataSource1: TDataSource
+    DataSet = ADOQuery1
+    Left = 16
+    Top = 240
   end
 end

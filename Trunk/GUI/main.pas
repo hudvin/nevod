@@ -7,25 +7,22 @@ uses  PerlRegEx,Forms,  AsFilter, masks,
   Windows,ThreadManager, Messages, SysUtils, Variants, StdCtrls,
   IdBaseComponent, IdComponent, IdCustomTCPServer, IdTCPServer,
   IdCmdTCPServer, IdExplicitTLSClientServerBase, IdPOP3Server, IdMessage,
-  ADODB, DB, Classes, Controls;
+  ADODB, DB, Classes, Controls, Grids, DBGrids;
 
 type
   TFMain = class(TForm)
     acon: TADOConnection;
     Button1: TButton;
     Button2: TButton;
-    Button3: TButton;
-    tab: TADOTable;
-    RDSConnection1: TRDSConnection;
     Button4: TButton;
-    Button5: TButton;
     Edit1: TEdit;
     Button6: TButton;
+    ADOQuery1: TADOQuery;
+    DataSource1: TDataSource;
+    DBGrid1: TDBGrid;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
-    procedure Button5Click(Sender: TObject);
     procedure Button6Click(Sender: TObject);
   private
     { Private declarations }
@@ -92,27 +89,7 @@ ShowMessage (exp.Replace(res,' ',True));
  Inp.SaveToFile('c:\inp.txt');
 end;
 
-procedure TFMain.Button3Click(Sender: TObject);
-var
- blob:TADOBlobStream;
- ms:TFMessage;
-begin
- ShowMessage(IntToStr(pos(' @ ','fff@fg')));
- ms:=TFMessage.Create;
- tab.Open;
- while not tab.Eof do
- begin
-  blob:=TADOBlobStream.Create(TBlobField(tab.FieldByName('message')),bmRead);
-  ms.LoadFromZStream(blob);
-  if ms.BodyType=btText then ShowMessage('Text')
-   else Showmessage('html');
-  blob.Free;
-  tab.Next;
- end;    // while
- //tab.RecNo:=1;
 
- ms.SaveToFile('c:\mess.txt');
-end;
 procedure TFMain.Button4Click(Sender: TObject);
 var
  st:TSignalFilter;
@@ -127,56 +104,19 @@ begin
  st:=TSignalFilter.Create(Acon,dt,slBody);
  ShowMessage(st.AnalyzeMessage(mess).Reason) ;
 
-end;
 
-procedure TFMain.Button5Click(Sender: TObject);
-var inpString,buff,symbols:String;
-    i:Integer;
-begin
- {
- запрет на ввод некоторых символов (?)
- если слово без спецсимволов вначале - оно одиночное
-  или смотреть по карманам (?)
- }
- inpString:='*qwerty';
-
- symbols:='.[]\$^()';
- buff:='';
- for I := 1 to Length(inpString) do  // экранирование спецсимволов
-  begin
-    if pos(inpString[i],symbols)<>0
-     then buff:=buff+'\'+inpString[i]
-      else buff:=buff+InpString[i];
-  end;
-
-  inpString:='';
-  for I := 1 to Length(buff) do   // замена * и ? на поисковые кмбинации
-  begin
-    if  buff[i]='*'
-     then inpString:=InpString+'.*' else
-      if  buff[i]='?'
-        then inpString:=InpString+'.'
-         else InpString:=InpString + buff[i];
-  end;
-
- ShowMessage(InpString[Length(InpString)]);
- Edit1.Text:=InpString;
 
 end;
 
-{
 
-везде экранировать спецсимволы !!!
-
-}
 
 procedure TFMain.Button6Click(Sender: TObject);
 var reg:TRegExp;
 begin
  reg:=TRegExp.Create(nil);
- reg.ShieldingSubject:='q*ty';
- ShowMessage(reg.Subject);
- Edit1.Text:=reg.Subject;
+ reg.ShieldingExp:='q*ty';
+ ShowMessage(reg.RegEx);
+ Edit1.Text:=reg.RegEx;;
 end;
 
 end.
