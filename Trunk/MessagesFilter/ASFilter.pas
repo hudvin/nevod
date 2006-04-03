@@ -223,65 +223,55 @@ if Mess.BodyType=btHtml then
   RowText:=GetRowText(Mess.MessageText) // получение текста сообщения без тегов и лишних пробелов
  else RowText:=Mess.MessageText;
  Proc.Close;
-{ case FSignalLocation of  // по каким полям сообщения должен производится поиск
+ FType:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
+ case FSignalLocation of  // по каким полям сообщения должен производится поиск
   slAnywhere:
    begin
-    SQLProc:= 'SELECT FValue,Location,Decsription FROM SignalFilter'+
-              ' WHERE (Active=TRUE) AND (Location=:Location_1 OR Location=:Location_2 OR Location=:Location_3)'+
-               ' AND (mid=(SELECT id FROM Filters WHERE type=:FilterType))';
-    Proc.SQL.Text:=SQLProc;
+    Proc.SQL.Text:='SELECT id, FValue,Location,Description FROM SignalFilter  WHERE     (Active=TRUE) AND'  +
+     '(Location=:Location_1 OR Location=:Location_2 OR Location=:Location_3)'+
+     'AND (mid=(SELECT id FROM Filters WHERE type='+ ''''+FType +'''' +'))';
     Proc.Parameters.ParamByName('Location_1').Value:='slSubject';
     Proc.Parameters.ParamByName('Location_2').Value:='slAnyWhere';
     Proc.Parameters.ParamByName('Location_3').Value:='slBody';
    end;
   slBody:
    begin
-    SQLProc:= 'SELECT FValue,Location,Description FROM SignalFilter '+
-              ' WHERE (Active=TRUE) AND (Location=:Location_1 OR Location=:Location_2)'+
-                'AND (mid=(SELECT id FROM Filters WHERE type=:FilterType))';
-    Proc.SQL.Text:=SQLProc;
+    Proc.SQL.Text:='SELECT id, FValue,Location,Description FROM SignalFilter  WHERE     (Active=TRUE) AND'  +
+     '(Location=:Location_1 OR Location=:Location_2)'+
+     'AND (mid=(SELECT id FROM Filters WHERE type='+ ''''+FType +'''' +'))';
     Proc.Parameters.ParamByName('Location_1').Value:='slAnyWhere';
     Proc.Parameters.ParamByName('Location_2').Value:='slBody';
    end;
   slSubject:
    begin
-    SQLProc:= 'SELECT FValue,Location,Decsription FROM SignalFilter '+
-              ' WHERE (Active=TRUE) AND (Location=:Location_1 OR Location=:Location_2)'+
-                 ' AND (mid=(SELECT id FROM Filters WHERE type=:FilterType))';
-    Proc.SQL.Text:=SQLProc;
+    Proc.SQL.Text:='SELECT id, FValue,Location,Description FROM SignalFilter  WHERE     (Active=TRUE) AND'  +
+     '(Location=:Location_1 OR Location=:Location_2)'+
+     'AND (mid=(SELECT id FROM Filters WHERE type='+ ''''+FType +'''' +'))';
     Proc.Parameters.ParamByName('Location_1').Value:='slAnyWhere';
     Proc.Parameters.ParamByName('Location_2').Value:='slSubject';
    end;
  end;
- }
 
+   
  with Proc do    // поиск слов из таблицы в сообщении
   begin
    FType:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
-   Active:=False;
-
-   SQL.Text:='SELECT id, FValue,Location,Description FROM SignalFilter  WHERE     (Active=TRUE) AND'  +
-   '(Location=:Location_2 OR Location=:Location_1)'+
-   'AND (mid=(SELECT id FROM Filters WHERE type='+ ''''+FType +'''' +'))';
-   Parameters.ParseSQL(SQL.Text,True);
-   Proc.Parameters.ParamByName('Location_1').Value:='slAnyWhere';
-   Proc.Parameters.ParamByName('Location_2').Value:='slBody';
    Active:=True;
-//   Open;
    First;
-   Flag:=True;
-
-   main.FMain.Edit1.Text:=SQL.Text;
-//   ShowMessage(IntToStr(RecordCount));
-   while (not Proc.Eof) and (Flag) do
+   Flag:=False;
+   while (not Proc.Eof) and (not Flag) do
     begin
      try
       case TSignalLocation(GetEnumValue(TypeInfo(TSignalLocation),FieldByName('Location').AsString)) of    //
-       slAnywhere:;   // давать два запроса
-       slSubject: ;   // давать один запрос с передачей всего текста
+       slAnywhere:
+        if FindString(RowText+' '+mess.Subject,Proc.FieldByName('FValue').AsString)
+         then Flag:=True;
+       slSubject:
+        if FindString(mess.Subject,Proc.FieldByName('FValue').AsString)
+         then Flag:=True ;
        slBody:
         if FindString(RowText,Proc.FieldByName('FValue').AsString)
-         then ShowMessage('!!!')  ;    // вызов поиска, передача тела сообщения
+         then Flag:=True;
       end;
      except
      end;

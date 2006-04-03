@@ -13,17 +13,9 @@ type
   TFMain = class(TForm)
     acon: TADOConnection;
     Button1: TButton;
-    Button2: TButton;
     Button4: TButton;
-    Edit1: TEdit;
-    Button6: TButton;
-    ADOQuery1: TADOQuery;
-    DataSource1: TDataSource;
-    DBGrid1: TDBGrid;
     procedure Button1Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
-    procedure Button6Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -58,38 +50,6 @@ begin
 
 end;
 
-procedure TFMain.Button2Click(Sender: TObject);
-var
- exp:TRegExpr;
- str,res:string;
- inp:TStringList;
-begin
- inp:=TStringList.Create;
- inp.LoadFromFile('c:\sys_hotkey.html');
- exp:=TRegExpr.Create;
- str:='<.*>';
- exp.ModifierG:=False;
- exp.Expression:=str;
- res:=exp.Replace(Inp.Text,'',True);
-//ShowMessage (exp.Replace(Inp.Text,'',True));
- exp.Expression:='\s{2,}';
-ShowMessage (exp.Replace(res,' ',True));
- {
-
- удалять все теги из текста
-
- }
-{ exp.Exec(inp.Text);
- if exp.Exec (Inp.Text) then
-      REPEAT
-       Res := Res + exp.Match [0];
-      UNTIL not exp.ExecNext;   }
- ShowMessage(res);
- Inp.Text:=res;
- Inp.SaveToFile('c:\inp.txt');
-end;
-
-
 procedure TFMain.Button4Click(Sender: TObject);
 var
  st:TSignalFilter;
@@ -109,14 +69,5 @@ begin
 end;
 
 
-
-procedure TFMain.Button6Click(Sender: TObject);
-var reg:TRegExp;
-begin
- reg:=TRegExp.Create(nil);
- reg.ShieldingExp:='q*ty';
- ShowMessage(reg.RegEx);
- Edit1.Text:=reg.RegEx;;
-end;
 
 end.
