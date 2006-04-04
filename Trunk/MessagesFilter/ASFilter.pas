@@ -84,7 +84,7 @@ type
   public
     constructor Create(ADOCon:TADOConnection); virtual;
     destructor Destroy; override;
-    procedure LoadFilters; virtual; abstract;
+    procedure LoadFilters; virtual;
   end;
 
   TAllowFilterGroup = class(TBaseFilterContainer)
@@ -210,7 +210,6 @@ constructor TSignalFilter.Create(Exp:TRegExp;Proc:TADOQuery;
     FilterType:TFilterType);
 begin
   inherited Create(Exp,Proc,FilterType);
- // FSignalLocation:=SignalLocation;
   with Proc do
     begin
      SQL.Text:='SELECT Var FROM Settings WHERE Name=FName';
@@ -527,16 +526,16 @@ end;
 procedure TBaseFilterContainer.AddFilter(FilterType:TFilterType);
 begin
   case FilterType of
-    ftBlackEmail: ;
-    ftWhiteEmail: ;
-    ftStamp: ;
-    ftBlackWord: ;
-    ftWhiteWord:;
-    ftImageFilter:;
-    ftLinkFilter:;
-    ftBlackAttachExtFilter:;
-    ftWhiteAttachExtFilter:;
-    ftMessSize:;
+    ftBlackEmail: FilterList.Add(TSenderFilter.Create(Exp,Proc,ftBlackEmail));
+    ftWhiteEmail: FilterList.Add(TSenderFilter.Create(Exp,Proc,ftWhiteEmail));
+    ftStamp: FilterList.Add(TStampFilter.Create(Exp,Proc,ftStamp));
+    ftBlackWord: FilterList.Add(TSignalFilter.Create(Exp,Proc,ftBlackWord)) ;
+    ftWhiteWord:FilterList.Add(TSignalFilter.Create(Exp,Proc,ftWhiteWord)) ;
+    ftImageFilter:FilterList.Add(TImageFilter.Create(Exp,Proc,ftBlackWord)) ;
+    ftLinkFilter:FilterList.Add(TLinkFilter.Create(Exp,Proc,ftLinkFilter)) ;
+    ftBlackAttachExtFilter:FilterList.Add(TAttachmentExtFilter.Create(Exp,Proc,ftBlackAttachExtFilter));
+    ftWhiteAttachExtFilter:FilterList.Add(TAttachmentExtFilter.Create(Exp,Proc,ftWhiteAttachExtFilter));
+    ftMessSize:FilterList.Add(TMessageSizeFilter.Create(Exp,Proc,ftMessSize));
   end;
 end;
 
@@ -551,6 +550,28 @@ begin
      TBaseFilter(FilterList[i]).Free;
      FilterList[i]:=nil;
      FilterList.Pack;
+   end;
+end;
+
+procedure TBaseFilterContainer.LoadFilters;
+var
+ TabFilter:TFilterType;
+begin
+  {
+  идентичный код для  TAllowFilterGroup и TDenyFilterGroup
+  для контекстного фильтра - перезаписать метод
+  }
+ with Proc do
+   begin
+    SQL.Text:='SELECT Type FROM Filters WHERE Active=TRUE';
+    Active:=TRUE;
+    while not Eof do
+      begin
+       TabFilter:=TFilterType(GetEnumValue(TypeInfo(TFilterType),FieldByName('Type').AsString));
+       if TabFilter in Filters4Loading then
+        AddFilter(TabFilter);
+         
+      end;
    end;
 end;
 
@@ -579,4 +600,5 @@ end.
  провести выбоку всех активных фильтров
   в цикле приводить их к типу
    если тип есть в списке - создавать объект
+
 
