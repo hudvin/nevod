@@ -67,6 +67,20 @@ type
     function AnalyzeMessage(Mess:TFMessage): Boolean; override;
   end;
 
+  TAttachmentExtFilter = class(TBaseFilter)
+  private
+    function GetFileExtension(FileName:string): string;
+  end;
+
+{
+
+список расширений хранить в отдельной таблице
+формировать запросы для поиска
+указывать тип расширений, которые нужно просматривать 
+
+}
+
+
 implementation
 uses main;
 
@@ -420,6 +434,16 @@ begin
      FReason:='';
     end;
    end;
+end;
+
+function TAttachmentExtFilter.GetFileExtension(FileName:string): string;
+var
+  Buff: string;
+begin
+  Buff:=FileName;
+  Buff:=ReverseString(Buff);
+  Buff:=Copy(Buff,0,Pos('.',Buff)-1);
+  Result:=ReverseString(Buff);
 end;
 
 

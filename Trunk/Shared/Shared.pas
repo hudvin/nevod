@@ -33,7 +33,8 @@ type
   TLogType=(ltPOP3Server,ltPostReceiver);
 
 type
-  TFilterType=(ftBlackEmail,ftWhiteEmail,ftStamp,ftBlackWord,ftWhiteWord,ftImageFilter,ftLinkFilter);
+  TFilterType=(ftBlackEmail,ftWhiteEmail,ftStamp,ftBlackWord,ftWhiteWord,ftImageFilter,ftLinkFilter,
+               ftBlackAttachExtFilter,ftWhiteAttachExtFilter);
 
 type
   TBodyType=(btText,btHtml);  // тип тела сообщения
@@ -107,9 +108,6 @@ type
     Compressor: TCompressor;
     FCompression: Real;
     FExtensions: TStringList;
-    FImageCount: Integer;
-    FLinkCount: Integer;
-    Seacher: TStringSeacher;
     function GetBodyType: TBodyType;
     function GetFileExtension(FileName:string): string;
     function GetMessageText: string;
@@ -117,7 +115,6 @@ type
     constructor Create;
     destructor Destroy; override;
     function ExtensionExists(Extension:String): Boolean; virtual;
-    function FindString(SearchString:string;SearchType:TSearchType): Integer;
     procedure LoadFromZFile(FileName: String);
     procedure LoadFromZStream(ZStream:TStream);
     procedure SaveToZFile(FileName: String);
@@ -126,8 +123,6 @@ type
     property BodyType: TBodyType read GetBodyType;
     property Compression: Real read FCompression write FCompression;
     property Extensions: TStringList read FExtensions;
-    property ImageCount: Integer read FImageCount;
-    property LinkCount: Integer read FLinkCount;
     property MessageText: string read GetMessageText;
   end;
 
@@ -380,7 +375,6 @@ begin
   FExtensions.Sorted := True;
   FExtensions.Duplicates := dupIgnore;
   FCompression:=0;
-  Seacher:=TStringSeacher.Create;
 end;
 
 destructor TFMessage.Destroy;
@@ -388,32 +382,12 @@ begin
   inherited Destroy;
   Compressor.Free;
   FExtensions.Free;
-  Seacher.Free;
 end;
 
 function TFMessage.ExtensionExists(Extension:String): Boolean;
 begin
   if Extensions.IndexOf(Extension)<>-1 then Result:=True
     else Result:=False;
-end;
-
-function TFMessage.FindString(SearchString:string;SearchType:TSearchType):
-    Integer;
-var
-  Flag: Boolean;
-  Counter: Integer;
-begin
-  counter:=0;
-  Flag:=False;
- { case  SearchType of
-    stSubject :
-        Counter:=Seacher.Find(SearchString,Subject);
-    stBody    :
-        Counter:=Seacher.Find(SearchString,FMessageText);
-    stBoth    :
-        Counter:=Seacher.Find(SearchString,FMessageText)+Seacher.Find(SearchString,Subject);
-   end; }
-  Result:=Counter;
 end;
 
 function TFMessage.GetBodyType: TBodyType;
