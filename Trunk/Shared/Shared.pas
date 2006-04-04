@@ -107,22 +107,19 @@ type
   private
     Compressor: TCompressor;
     FCompression: Real;
-    FExtensions: TStringList;
     function GetBodyType: TBodyType;
-    function GetFileExtension(FileName:string): string;
+    function GetMessageSize: Integer;
     function GetMessageText: string;
   public
     constructor Create;
     destructor Destroy; override;
-    function ExtensionExists(Extension:String): Boolean; virtual;
     procedure LoadFromZFile(FileName: String);
     procedure LoadFromZStream(ZStream:TStream);
     procedure SaveToZFile(FileName: String);
     procedure SaveToZStream(ZStream:TStream);
-    procedure Update;
     property BodyType: TBodyType read GetBodyType;
     property Compression: Real read FCompression write FCompression;
-    property Extensions: TStringList read FExtensions;
+    property MessageSize: Integer read GetMessageSize;
     property MessageText: string read GetMessageText;
   end;
 
@@ -371,9 +368,6 @@ constructor TFMessage.Create;
 begin
   inherited Create;
   Compressor:=TCompressor.Create;
-  FExtensions:=TStringList.Create;
-  FExtensions.Sorted := True;
-  FExtensions.Duplicates := dupIgnore;
   FCompression:=0;
 end;
 
@@ -381,13 +375,6 @@ destructor TFMessage.Destroy;
 begin
   inherited Destroy;
   Compressor.Free;
-  FExtensions.Free;
-end;
-
-function TFMessage.ExtensionExists(Extension:String): Boolean;
-begin
-  if Extensions.IndexOf(Extension)<>-1 then Result:=True
-    else Result:=False;
 end;
 
 function TFMessage.GetBodyType: TBodyType;
@@ -420,14 +407,14 @@ begin
 
 end;
 
-function TFMessage.GetFileExtension(FileName:string): string;
-var
-  Buff: string;
+function TFMessage.GetMessageSize: Integer;
 begin
-  Buff:=FileName;
-  Buff:=ReverseString(Buff);
-  Buff:=Copy(Buff,0,Pos('.',Buff)-1);
-  Result:=ReverseString(Buff);
+
+ {
+
+ должно возвращать размер сообщения
+
+ }
 end;
 
 function TFMessage.GetMessageText: string;
@@ -494,33 +481,6 @@ begin
   Compression:=Buffer.Size/PackedStr.Size;
   Buffer.Free;
   PackedStr.Free;
-end;
-
-procedure TFMessage.Update;
-var
-  i: Integer;
-  Res: string;
-begin
-  // текст сообщения
-  for i:=0 to MessageParts.Count-1 do
-    if MessageParts.Items[i] is TIdText then Res:=Res+(MessageParts[i] as TIdText).Body.Text;
-//  FMessageText:=Res;
-  // массив расширений приложенных файлов - дубликаты удалять
-  FExtensions.Clear;
-  for i:=0 to MessageParts.Count-1 do
-        if MessageParts.Items[i] is TIdAttachment then
-           FExtensions.Add(GetFileExtension(TIdAttachment(MessageParts.Items[i]).FileName));
-  // тип сообщения
- // if Seacher.Find('<html',FMessageText)>0 then FBodyType:=btHtml
-  //   else FBodyType:=btText;
-  // количество изображений
-//  if FBodyType=btHtml then FImageCount:=Seacher.Find('src',FMessageText)
- //    else FImageCount:=0;
-  FLinkCount:=0;
-  // количество ссылок
-//  if FBodyType=btHtml then FLinkCount:=Seacher.Find(' href',MessageText);
- // if FBodyType=btText then FLinkCount:=(Seacher.Find(' www.',MessageText)+Seacher.Find('http://',MessageText));
-
 end;
 
 {

@@ -92,13 +92,11 @@ begin
 end;
 
 procedure TFMain.Button3Click(Sender: TObject);
-var exp:TPerlRegEx;
+var
+ ext:TAttachmentExtFilter;
 begin
- exp:=TPerlRegEx.Create(nil);
- exp.Subject:='< href> <a href> ';
- exp.RegEx:='<\s*a\s*href';
- if exp.Match then ShowMessage('Найдено');
-   
+ ext:=TAttachmentExtFilter.Create(ACon,ftBlackAttachExtFilter);
+
 end;
 
 end.

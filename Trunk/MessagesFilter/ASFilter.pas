@@ -1,7 +1,7 @@
 unit ASFilter;
 
 interface
-uses  Dialogs,  masks,
+uses  Dialogs,  masks,   StrUtils, IdAttachment,IdMessageParts, IdMessage,
    Windows,SysUtils,Classes, Shared, ADODB,DB,Typinfo,RegExpr,IdText,PerlRegEx;
 type
   TBaseFilter = class
@@ -70,15 +70,18 @@ type
   TAttachmentExtFilter = class(TBaseFilter)
   private
     function GetFileExtension(FileName:string): string;
+  public
+    constructor Create(ADOCon:TADOConnection;Filter:TFilterType); override;
+    function AnalyzeMessage(Mess:TFMessage): Boolean; override;
   end;
 
-{
-
-список расширений хранить в отдельной таблице
-формировать запросы для поиска
-указывать тип расширений, которые нужно просматривать 
-
-}
+  TMessageSizeFilter = class(TBaseFilter)
+  private
+    MaxSize: Integer;
+  public
+    constructor Create(ADOCon:TADOConnection;Filter:TFilterType); override;
+    function AnalyzeMessage(Mess:TFMessage): Boolean; override;
+  end;
 
 
 implementation
@@ -139,7 +142,7 @@ begin
     SQL.Text:='SELECT FVAlue FROM SenderFilter WHERE (Active=TRUE) AND '+
      ' (mid=(SELECT id FROM Filters WHERE type=:FilterType) ) ' ;
     Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
-    ExecSQL;
+  //  ExecSQL;
     Open;
     First;
     while (not Res) and (not Eof) do
@@ -436,6 +439,50 @@ begin
    end;
 end;
 
+constructor TAttachmentExtFilter.Create(ADOCon:TADOConnection;
+    Filter:TFilterType);
+begin
+  inherited Create(ADOCon,Filter);
+  with Proc do   // выборка всех расширений для фильтра данного типа
+   begin
+    Close;
+    SQL.Text:='SELECT FVAlue FROM AttachmentExtFilter WHERE (Active=TRUE) AND '+
+     ' (mid=(SELECT id FROM Filters WHERE type=:FilterType) ) ' ;
+    Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
+   end;
+end;
+
+function TAttachmentExtFilter.AnalyzeMessage(Mess:TFMessage): Boolean;
+var
+ Flag:boolean;
+ i:integer;
+ Ext:String;
+begin
+ i:=0;
+ Flag:=False;
+ Proc.SQL.Text:='SELECT FVAlue FROM AttachmentExtFilter WHERE (Active=TRUE) AND '+
+                ' (mid=(SELECT id FROM Filters WHERE type=:FilterType) ) AND FValue=:Ext';
+ while not Flag do
+  begin
+   if i<Mess.MessageParts.Count then
+    if Mess.MessageParts.Items[i] is TIdAttachment then
+      with Proc do   // поиск данного расширения в таблице
+       begin
+        Ext:=GetFileExtension(TIdAttachment(Mess.MessageParts.Items[i]).FileName);
+        Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
+        Parameters.ParamByName('Ext').Value:=Ext;
+        Active:=True;
+        if RecordCount>0 then          
+          Flag:=True;          // расширение найдено в списке
+        Active:=False;
+       end;
+   inc(i);
+  end;  
+
+ Result:=Flag;
+ FReason:=GetReason(FFilterType);
+end;
+
 function TAttachmentExtFilter.GetFileExtension(FileName:string): string;
 var
   Buff: string;
@@ -446,14 +493,36 @@ begin
   Result:=ReverseString(Buff);
 end;
 
+constructor TMessageSizeFilter.Create(ADOCon:TADOConnection;Filter:TFilterType);
+begin
+  inherited Create(ADOCon,Filter);
+  with Proc do
+  begin
+   Close;
+   SQL.Text:='SELECT Var FROM Settings WHERE Name='+'''' +'MaxSize'+'''';
+   Active:=True;
+   MaxSize:=Fields[0].AsInteger;
+   Close;
+  end;
+end;
+
+function TMessageSizeFilter.AnalyzeMessage(Mess:TFMessage): Boolean;
+begin
+ with Proc do
+  begin
+   SQL.Text:='SELECT MessSize FROM Messages WHERE messId=:MessageId';
+   Parameters.ParamByName('MessageId').Value:=Mess.MsgId;
+   Active:=True;
+   if RecordCount>0 then
+    if FieldByName('MessSize').AsInteger>MaxSize
+     then   Result:=True
+      else Result:=False
+    else Result:=False;
+   Active:=True;
+  end;
+end;
+
 
 end.
 
-
-
-{
-
-свойство фильтра типа должно устанавливаться само при вызове конструктора
-в Exp можно передавать строки с произвольными символами
-}
 
