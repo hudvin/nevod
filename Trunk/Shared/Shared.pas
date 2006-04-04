@@ -34,7 +34,7 @@ type
 
 type
   TFilterType=(ftBlackEmail,ftWhiteEmail,ftStamp,ftBlackWord,ftWhiteWord,ftImageFilter,ftLinkFilter,
-               ftBlackAttachExtFilter,ftWhiteAttachExtFilter);
+               ftBlackAttachExtFilter,ftWhiteAttachExtFilter,ftMessSize);
 
 type
   TBodyType=(btText,btHtml);  // тип тела сообщения
@@ -81,11 +81,6 @@ type
   PAccountParams = ^TAccountParams;
 
 type
-  TFilterList = class(TList)
-  public
-    procedure DestroyItem(Index:Integer); virtual;
-  end;
-
   TStringSeacher = class(TObject)
   private
     sTable: PBMTable;
@@ -108,7 +103,6 @@ type
     Compressor: TCompressor;
     FCompression: Real;
     function GetBodyType: TBodyType;
-    function GetMessageSize: Integer;
     function GetMessageText: string;
   public
     constructor Create;
@@ -119,7 +113,6 @@ type
     procedure SaveToZStream(ZStream:TStream);
     property BodyType: TBodyType read GetBodyType;
     property Compression: Real read FCompression write FCompression;
-    property MessageSize: Integer read GetMessageSize;
     property MessageText: string read GetMessageText;
   end;
 
@@ -212,14 +205,6 @@ implementation
 
 procedure Register;
 begin
-end;
-
-{
-********************************* TFilterList **********************************
-}
-procedure TFilterList.DestroyItem(Index:Integer);
-begin
-  TObject(Items[Index]).Free;
 end;
 
 {
@@ -405,16 +390,6 @@ begin
       
    end;
 
-end;
-
-function TFMessage.GetMessageSize: Integer;
-begin
-
- {
-
- должно возвращать размер сообщения
-
- }
 end;
 
 function TFMessage.GetMessageText: string;

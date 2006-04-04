@@ -56,30 +56,12 @@ begin
 end;
 
 procedure TFMain.Button4Click(Sender: TObject);
-var
- st:TSignalFilter;
- mess:TFMessage;
- dt:TFilterType;
-
+var bs:TBaseFilterContainer;
 begin
- mess:=TFMessage.Create;
- mess.LoadFromFile('c:\mess.txt');
- //mess.Sender.Address:='neiroman@gmail.com';
- dt:=ftBlackWord;
- st:=TSignalFilter.Create(Acon,dt,slBody);
-// ShowMessage(st.AnalyzeMessage(mess).Reason) ;
- if st.AnalyzeMessage(Mess) then ShowMessage(st.Reason);
-   
-
-
+// bs:=TBaseFilterContainer.Create;
+// bs.LoadActiveFilters([ftBlackEmail,ftBlackAttachExtFilter]);
 end;
 
-{
-
- каждый фильтр возвращает True/False
- в свойство Reason записывается причина
-
-}
 
 procedure TFMain.Button2Click(Sender: TObject);
 var it:TImageFilter;

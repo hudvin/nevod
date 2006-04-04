@@ -25,7 +25,7 @@ type
   public
     constructor Create(ADOCon:TADOConnection;Filter:TFilterType); override;
     destructor Destroy; override;
-    function AnalyzeMessage(Mess:TFMessage): Boolean; virtual;
+    function AnalyzeMessage(Mess:TFMessage): Boolean; override;
   end;
 
   TStampFilter = class(TBaseFilter)
@@ -81,6 +81,29 @@ type
   public
     constructor Create(ADOCon:TADOConnection;Filter:TFilterType); override;
     function AnalyzeMessage(Mess:TFMessage): Boolean; override;
+  end;
+
+  TBaseFilterContainer = class
+  private
+    FADOCon: TADOConnection;
+    FilterList: TList;
+    Filters4Loading: set of TFilterType;
+    procedure AddFilter(FilterType:TFilterType); virtual;
+    procedure DeleteFilter(FilterType:TFilterType); virtual;
+  public
+    constructor Create(ADOCon:TADOConnection); virtual;
+    destructor Destroy; override;
+    procedure LoadFilters; virtual; abstract;
+  end;
+
+  TAllowFilterGroup = class(TBaseFilterContainer)
+  public
+    constructor Create(ADOCon:TADOConnection);
+  end;
+
+  TDenyFilterGroup = class(TBaseFilterContainer)
+  public
+    constructor Create(ADOCon:TADOConnection); override;
   end;
 
 
@@ -361,14 +384,6 @@ var
  i:integer;
  Flag:boolean;
 begin
-  {
-
-  возвращает количество ссылок на изображени€ в сообещении
-  максимальное количество изображений хранить в таблице
-  в конструкторе - класс дл€ получени€ настроек
-  или получать при вызове конструктора
-  использовать регул€рные выражени€
-  }
   if Mess.MessageText<>'' then
    begin
    i:=0;
@@ -522,7 +537,74 @@ begin
   end;
 end;
 
+constructor TBaseFilterContainer.Create(ADOCon:TADOConnection);
+begin
+ FADOCon:=ADOCon;
+ FilterList:=TList.Create;
+end;
+
+destructor TBaseFilterContainer.Destroy;
+var
+ i:integer;
+begin
+ for  i:= 0 to FilterList.Count-1 do     // удаление объктов-фильтров из списка
+     TBaseFilter(FilterList[i]).Free;
+ FilterList.Free;
+end;
+
+procedure TBaseFilterContainer.AddFilter(FilterType:TFilterType);
+begin
+  case FilterType of
+    ftBlackEmail: ;
+    ftWhiteEmail: ;
+    ftStamp: ;
+    ftBlackWord: ;
+    ftWhiteWord:;
+    ftImageFilter:;
+    ftLinkFilter:;
+    ftBlackAttachExtFilter:;
+    ftWhiteAttachExtFilter:;
+    ftMessSize:;
+  end;
+end;
+
+procedure TBaseFilterContainer.DeleteFilter(FilterType:TFilterType);
+var
+ i:integer;
+begin
+ // удаление фильтра из списка по типу фильтра ( по классу объекта )
+ for i:=0 to FilterList.Count-1 do
+  if TBaseFilter(FilterList[i]).FilterType=FilterType then   // поиск объкта нужного класса
+   begin
+     TBaseFilter(FilterList[i]).Free;
+     FilterList[i]:=nil;
+     FilterList.Pack;
+   end;
+end;
+
+constructor TAllowFilterGroup.Create(ADOCon:TADOConnection);
+begin
+  inherited Create(ADOCon);
+  Filters4Loading:=[ftWhiteEmail,ftStamp,ftWhiteWord,ftWhiteAttachExtFilter];
+end;
+
+constructor TDenyFilterGroup.Create(ADOCon:TADOConnection);
+begin
+  inherited Create(ADOCon);
+  Filters4Loading:=[ftBlackEmail,ftBlackWord,ftImageFilter,ftLinkFilter,ftBlackAttachExtFilter,ftMessSize];
+end;
+
+
 
 end.
 
+{ LoadList:=[ftStapm,ftWhiteAttachExtFilter];
+ if ftStamp in LoadList then ShowMessage('');
+
+ {
+      LoadList:set of TFilterType;
+ i:integer;
+ провести выбоку всех активных фильтров
+  в цикле приводить их к типу
+   если тип есть в списке - создавать объект
 
