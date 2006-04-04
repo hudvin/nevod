@@ -49,7 +49,7 @@ begin
  mess:=TFMessage.Create;
  mess.Sender.Address:='neiroman@gmail.com';
  dt:=ftWhiteEmail;
- st:=TSenderFilter.Create(ACon,dt);
+// st:=TSenderFilter.Create(ACon,dt);
  //ShowMessage(st.AnalyzeMessage(mess).Reason) ;
  if st.AnalyzeMessage(Mess)
   then ShowMessage(st.Reason);
@@ -67,7 +67,7 @@ procedure TFMain.Button2Click(Sender: TObject);
 var it:TImageFilter;
     mess:TFMessage;
 begin
- it:=TImageFilter.Create(ACon,ftImagefilter);
+// it:=TImageFilter.Create(ACon,ftImagefilter);
  Mess:=TFMessage.Create;
  it.AnalyzeMessage(Mess);
  ShowMessage(it.Reason);
@@ -77,7 +77,7 @@ procedure TFMain.Button3Click(Sender: TObject);
 var
  ext:TAttachmentExtFilter;
 begin
- ext:=TAttachmentExtFilter.Create(ACon,ftBlackAttachExtFilter);
+// ext:=TAttachmentExtFilter.Create(ACon,ftBlackAttachExtFilter);
 
 end;
 
