@@ -98,7 +98,7 @@ type
 
   TDenyFilterGroup = class(TBaseFilterContainer)
   public
-    constructor Create(ADOCon:TADOConnection); override;
+    constructor Create(ADOCon:TADOConnection);
   end;
 
 
@@ -175,7 +175,7 @@ var
  StrExp:String;
  Flag:boolean;
 begin
-
+  Flag:=True;
  if Mess.MessageText<>'' then
   begin
    StrExp:='(?s)(?i)(&lt;|<)(\s*(&nbsp;)*\s*)*Nevod(\s*(&nbsp;)*\s*)*AntiSpam(\s*(&nbsp;)*\s*)*:(\s*(&nbsp;)*\s*)';
@@ -382,7 +382,7 @@ end;
 constructor TLinkFilter.Create(Exp:TRegExp;Proc:TADOQuery;
     FilterType:TFilterType);
 begin
-  inherited Create(FExp,Proc,FilterType);
+  inherited Create(Exp,Proc,FilterType);
   with Proc do
   begin
    Close;
@@ -565,7 +565,10 @@ begin
     FReason:=TBaseFilter(FilterList[i]).Reason;
    end
    else
-    inc(i);
+    begin
+     FReason:=''; 
+     inc(i);
+    end;
  Result:=Flag;
   {
   True  - подошло под фильтр

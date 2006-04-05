@@ -14,14 +14,11 @@ type
   TFMain = class(TForm)
     acon: TADOConnection;
     Button1: TButton;
-    Button4: TButton;
-    Button2: TButton;
     Button3: TButton;
     pop: TIdPOP3;
     mess: TIdMessage;
+    Memo1: TMemo;
     procedure Button1Click(Sender: TObject);
-    procedure Button4Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
   private
     { Private declarations }
@@ -45,33 +42,19 @@ uses RegExpr, StrMask;
 procedure TFMain.Button1Click(Sender: TObject);
 var fit:TAllowFilterGroup;
     ms:TFMessage;
+    I:integer;
 begin
  fit:=TAllowFilterGroup.Create(ACon);
  ms:=TFMessage.Create;
+ for I := 1 to 31 do    // Iterate
+   begin
+    //I:=7;
+     ms.LoadFromFile('c:\mail\'+IntToStr(i)+'.htm');
+    fit.AnalyzeMessage(ms);
+    ms.Clear;
+    Memo1.Lines.Add(fit.Reason+'  '+IntToStr(i));
+   end;    // for
 
- ms.LoadFromFile('c:\mail\31.htm');
-// ShowMessage(ms.Recipients.EMailAddresses);
-// ShowMessage(ms.Headers.Values['To']);
- fit.AnalyzeMessage(ms);
- ShowMessage(fit.Reason);  
-end;
-
-procedure TFMain.Button4Click(Sender: TObject);
-var bs:TBaseFilterContainer;
-begin
- bs:=TBaseFilterContainer.Create(ACon);
-// bs.LoadActiveFilters([ftBlackEmail,ftBlackAttachExtFilter]);
-end;
-
-
-procedure TFMain.Button2Click(Sender: TObject);
-var it:TImageFilter;
-    ms:TFMessage;
-begin
-// it:=TImageFilter.Create(ACon,ftImagefilter);
- Ms:=TFMessage.Create;
- it.AnalyzeMessage(Ms);
- ShowMessage(it.Reason);
 end;
 
 procedure TFMain.Button3Click(Sender: TObject);
