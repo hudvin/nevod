@@ -22,7 +22,7 @@ type
   TSenderFilter = class(TBaseFilter)
   private
   public
-    function AnalyzeMessage(Mess:TFMessage): Boolean; virtual;
+    function AnalyzeMessage(Mess:TFMessage): Boolean; override;
   end;
 
   TStampFilter = class(TBaseFilter)
@@ -78,13 +78,17 @@ type
     FADOCon: TADOConnection;
     FilterList: TList;
     Filters4Loading: set of TFilterType;
+    FReason: string;
     Proc: TADOQuery;
+    SubProc: TADOQuery;
     procedure AddFilter(FilterType:TFilterType); virtual;
     procedure DeleteFilter(FilterType:TFilterType); virtual;
   public
     constructor Create(ADOCon:TADOConnection); virtual;
     destructor Destroy; override;
+    function AnalyzeMessage(Mess:TFMessage): Boolean; virtual;
     procedure LoadFilters; virtual;
+    property Reason: string read FReason;
   end;
 
   TAllowFilterGroup = class(TBaseFilterContainer)
@@ -135,7 +139,7 @@ var
  sender:String;
 begin
   Res:=False;
-  Sender:=Mess.Sender.Address;
+  Sender:=Mess.Recipients.EMailAddresses;
   with FProc do
    begin       // делать выбоку по типу фильтра
     SQL.Text:='SELECT FVAlue FROM SenderFilter WHERE (Active=TRUE) AND '+
@@ -442,9 +446,8 @@ begin
  Flag:=False;
  FProc.SQL.Text:='SELECT FVAlue FROM AttachmentExtFilter WHERE (Active=TRUE) AND '+
                 ' (mid=(SELECT id FROM Filters WHERE type=:FilterType) ) AND FValue=:Ext';
- while not Flag do
+ while (not Flag) AND  (i<Mess.MessageParts.Count) do
   begin
-   if i<Mess.MessageParts.Count then
     if Mess.MessageParts.Items[i] is TIdAttachment then
       with FProc do   // поиск данного расширения в таблице
        begin
@@ -452,11 +455,12 @@ begin
         Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
         Parameters.ParamByName('Ext').Value:=Ext;
         Active:=True;
-        if RecordCount>0 then          
+        if RecordCount>0 then
           Flag:=True;          // расширение найдено в списке
         Active:=False;
        end;
    inc(i);
+
   end;  
 
  Result:=Flag;
@@ -507,9 +511,12 @@ constructor TBaseFilterContainer.Create(ADOCon:TADOConnection);
 begin
  FADOCon:=ADOCon;
  FilterList:=TList.Create;
+ SubProc:=TADOQuery.Create(nil);
+ SubProc.Connection:=FADOCon;
  Exp:=TRegExp.Create(nil);
  Proc:=TADOQuery.Create(nil);
  Proc.Connection:=FADOCon;
+ LoadFilters;
 end;
 
 destructor TBaseFilterContainer.Destroy;
@@ -521,6 +528,7 @@ begin
  FilterList.Free;
  Exp.Free;
  Proc.Free;
+ SubProc.Free;
 end;
 
 procedure TBaseFilterContainer.AddFilter(FilterType:TFilterType);
@@ -537,6 +545,32 @@ begin
     ftWhiteAttachExtFilter:FilterList.Add(TAttachmentExtFilter.Create(Exp,Proc,ftWhiteAttachExtFilter));
     ftMessSize:FilterList.Add(TMessageSizeFilter.Create(Exp,Proc,ftMessSize));
   end;
+end;
+
+function TBaseFilterContainer.AnalyzeMessage(Mess:TFMessage): Boolean;
+var
+ Flag:boolean;
+ i:integer;
+begin
+  {
+  идентичный код для  TAllowFilterGroup и TDenyFilterGroup
+  для контекстного фильтра - перезаписать метод
+  }
+ Flag:=False;
+ i:=0;
+ while (not Flag) and (i<FilterList.Count) do
+  if TBaseFilter(FilterList[i]).AnalyzeMessage(Mess) then
+   begin
+    Flag:=True;
+    FReason:=TBaseFilter(FilterList[i]).Reason;
+   end
+   else
+    inc(i);
+ Result:=Flag;
+  {
+  True  - подошло под фильтр
+  False - не подошло под фильтр
+  }
 end;
 
 procedure TBaseFilterContainer.DeleteFilter(FilterType:TFilterType);
@@ -561,7 +595,7 @@ begin
   идентичный код для  TAllowFilterGroup и TDenyFilterGroup
   для контекстного фильтра - перезаписать метод
   }
- with Proc do
+ with SubProc do
    begin
     SQL.Text:='SELECT Type FROM Filters WHERE Active=TRUE';
     Active:=TRUE;
@@ -570,35 +604,24 @@ begin
        TabFilter:=TFilterType(GetEnumValue(TypeInfo(TFilterType),FieldByName('Type').AsString));
        if TabFilter in Filters4Loading then
         AddFilter(TabFilter);
-         
+       Next;  
       end;
    end;
 end;
 
 constructor TAllowFilterGroup.Create(ADOCon:TADOConnection);
 begin
-  inherited Create(ADOCon);
   Filters4Loading:=[ftWhiteEmail,ftStamp,ftWhiteWord,ftWhiteAttachExtFilter];
+  inherited Create(ADOCon);
 end;
 
 constructor TDenyFilterGroup.Create(ADOCon:TADOConnection);
 begin
-  inherited Create(ADOCon);
   Filters4Loading:=[ftBlackEmail,ftBlackWord,ftImageFilter,ftLinkFilter,ftBlackAttachExtFilter,ftMessSize];
+  inherited Create(ADOCon);
 end;
 
 
 
 end.
-
-{ LoadList:=[ftStapm,ftWhiteAttachExtFilter];
- if ftStamp in LoadList then ShowMessage('');
-
- {
-      LoadList:set of TFilterType;
- i:integer;
- провести выбоку всех активных фильтров
-  в цикле приводить их к типу
-   если тип есть в списке - создавать объект
-
 

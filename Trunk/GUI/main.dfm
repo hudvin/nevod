@@ -69,4 +69,27 @@ object FMain: TFMain
     Left = 8
     Top = 8
   end
+  object pop: TIdPOP3
+    AutoLogin = True
+    Host = 'localhost'
+    Username = 'test'
+    Password = 'qaz'
+    SASLMechanisms = <>
+    Left = 240
+    Top = 120
+  end
+  object mess: TIdMessage
+    AttachmentEncoding = 'MIME'
+    BccList = <>
+    CCList = <>
+    Encoding = meDefault
+    FromList = <
+      item
+      end>
+    Recipients = <>
+    ReplyTo = <>
+    ConvertPreamble = True
+    Left = 240
+    Top = 104
+  end
 end
