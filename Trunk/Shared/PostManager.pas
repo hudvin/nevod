@@ -7,7 +7,6 @@ uses
 type
   TPostManager = class
   private
-    AccountManager: TAccountManager;
     FADOCommand: TADOCommand;
     Mutex: THandle;
     FADOCon: TADOConnection;
@@ -22,6 +21,7 @@ type
   protected
     SettingsProc: TADOQuery;
   public
+    AccountManager: TAccountManager;
     constructor Create(ADOCon:TADOConnection);
     destructor Destroy; override;
     procedure StartAllThreads;

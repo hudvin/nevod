@@ -5,7 +5,7 @@ interface
 uses Forms,Windows, Dialogs, ASFilter, Registry, dxBar, cxStyles, Shared,
   cxTL, DB, ADODB, RXShell, StdCtrls, ExtCtrls, cxContainer, cxEdit,
   cxCheckBox, cxGridLevel, cxGridCustomTableView, cxGridTableView,
-  
+  PostManager,
   
   cxGridCustomView, cxGrid, Menus, CoolTrayIcon,
   cxGridCustomPopupMenu, cxGridPopupMenu, Classes, Controls,
@@ -23,7 +23,7 @@ type
     cxTabSheet3: TcxTabSheet;
     cbRun: TcxCheckBox;
     LabeledEdit1: TLabeledEdit;
-    cxGrid1DBTableView1: TcxGridDBTableView;
+    cxAccounts: TcxGridDBTableView;
     cxGrid1Level1: TcxGridLevel;
     cxGrid1: TcxGrid;
     adAccounts: TADOTable;
@@ -36,13 +36,13 @@ type
     adAccountshost: TWideStringField;
     adAccountsport: TIntegerField;
     adAccountsTimeout: TIntegerField;
-    cxGrid1DBTableView1id: TcxGridDBColumn;
-    cxGrid1DBTableView1AccountName: TcxGridDBColumn;
-    cxGrid1DBTableView1username: TcxGridDBColumn;
-    cxGrid1DBTableView1pass: TcxGridDBColumn;
-    cxGrid1DBTableView1host: TcxGridDBColumn;
-    cxGrid1DBTableView1port: TcxGridDBColumn;
-    cxGrid1DBTableView1Timeout: TcxGridDBColumn;
+    cxAccountsid: TcxGridDBColumn;
+    cxAccountsAccountName: TcxGridDBColumn;
+    cxAccountsusername: TcxGridDBColumn;
+    cxAccountspass: TcxGridDBColumn;
+    cxAccountshost: TcxGridDBColumn;
+    cxAccountsport: TcxGridDBColumn;
+    cxAccountsTimeout: TcxGridDBColumn;
     rxTray: TRxTrayIcon;
     dsLog: TDataSource;
     adLog: TADOQuery;
@@ -87,28 +87,27 @@ type
     dxBarButton7: TdxBarButton;
     dxBarButton8: TdxBarButton;
     dxBarButton9: TdxBarButton;
+    Button1: TButton;
     procedure cbRunPropertiesChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure rxTrayClick(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure cxGrid1DBTableView1AccountNameGetDataText(
+    procedure cxAccountsAccountNameGetDataText(
       Sender: TcxCustomGridTableItem; ARecordIndex: Integer;
       var AText: String);
-    procedure cxGrid1DBTableView1passGetDataText(
+    procedure cxAccountspassGetDataText(
       Sender: TcxCustomGridTableItem; ARecordIndex: Integer;
       var AText: String);
-    procedure cxGrid1DBTableView1passGetDisplayText(
+    procedure cxAccountspassGetDisplayText(
       Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
       var AText: String);
-    procedure cxGrid1DBTableView1passCompareRowValuesForCellMerging(
-      Sender: TcxGridColumn; ARow1: TcxGridDataRow;
-      AProperties1: TcxCustomEditProperties; const AValue1: Variant;
-      ARow2: TcxGridDataRow; AProperties2: TcxCustomEditProperties;
-      const AValue2: Variant; var AAreEqual: Boolean);
+    procedure Button1Click(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     Reg: TRegistry;
     Coder:TBFCoder;
+    PSManager: TPostManager;
     { Private declarations }
   public
     procedure RunOnStartup(Run:boolean);
@@ -161,12 +160,10 @@ end;
 procedure TFMain.FormCreate(Sender: TObject);
 begin
  Reg:=TRegistry.Create;
- if Coder=nil then
-  begin
-   Coder:=TBFCoder.Create;
-   Coder.Key:=CriptKey;
-  end;
-   
+ Coder:=TBFCoder.Create;
+ Coder.Key:=CriptKey;
+ PSManager:=TPostManager.Create(adCon);
+    
 // Coder:=TBFCoder.Create;
 // Coder.Key:=Shared.CriptKey;
 // Application.ShowMainForm:=False;
@@ -180,7 +177,7 @@ begin
 
 end;
 
-procedure TFMain.cxGrid1DBTableView1AccountNameGetDataText(
+procedure TFMain.cxAccountsAccountNameGetDataText(
   Sender: TcxCustomGridTableItem; ARecordIndex: Integer;
   var AText: String);
 begin
@@ -190,11 +187,11 @@ end;
  производить расшифровку пароля и заменять все звездочками
 
  }
-procedure TFMain.cxGrid1DBTableView1passGetDataText(
+procedure TFMain.cxAccountspassGetDataText(
   Sender: TcxCustomGridTableItem; ARecordIndex: Integer;
   var AText: String);
 begin
- 
+
 {  if Coder=nil then
    begin
     Coder:=TBFCoder.Create;
@@ -208,20 +205,38 @@ begin
 }
 end;
 
-procedure TFMain.cxGrid1DBTableView1passGetDisplayText(
+procedure TFMain.cxAccountspassGetDisplayText(
   Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
   var AText: String);
 begin
 // ShowMessage('');
 end;
 
-procedure TFMain.cxGrid1DBTableView1passCompareRowValuesForCellMerging(
-  Sender: TcxGridColumn; ARow1: TcxGridDataRow;
-  AProperties1: TcxCustomEditProperties; const AValue1: Variant;
-  ARow2: TcxGridDataRow; AProperties2: TcxCustomEditProperties;
-  const AValue2: Variant; var AAreEqual: Boolean);
+procedure TFMain.Button1Click(Sender: TObject);
+var
+  i,J:integer;
 begin
- ShowMessage('Mess.Sender.Address');
+
+ cxAccounts.DataController.RecordCount := 10;
+  Randomize;
+  for I := 0 to 9 do
+    for J := 0 to 4 do
+      cxAccounts.DataController.SetValue(I, J, Random(100));
+
+{  cxAccounts.DataController.RecordCount:=PSManager.AccountManager.Count;
+ for i := 0 to PSManager.AccountManager.Count-1 do  // проход по строкам
+   begin
+    cxAccounts.DataController.SetValue(i,cxAccountsAccountName.Index,'dffsafasfassa');
+      //cxGrid1DBTableView1.DataController.SetValue(I, J, Random(100));
+   end;
+}
+end;
+
+procedure TFMain.FormDestroy(Sender: TObject);
+begin
+ Coder.Free;
+ Reg.Free;
+ PSManager.Free;
 end;
 
 end.

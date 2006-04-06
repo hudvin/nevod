@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 331
-  Top = 161
+  Left = 203
+  Top = 80
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -14,6 +14,7 @@ object FMain: TFMain
   Font.Style = []
   OldCreateOrder = False
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -120,9 +121,8 @@ object FMain: TFMain
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
         LookAndFeel.NativeStyle = True
-        object cxGrid1DBTableView1: TcxGridDBTableView
+        object cxAccounts: TcxGridDBTableView
           NavigatorButtons.ConfirmDelete = False
-          DataController.DataSource = dsAccounts
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <>
           DataController.Summary.SummaryGroups = <>
@@ -132,46 +132,54 @@ object FMain: TFMain
           OptionsCustomize.ColumnMoving = False
           OptionsView.ColumnAutoWidth = True
           OptionsView.GroupByBox = False
-          object cxGrid1DBTableView1id: TcxGridDBColumn
+          object cxAccountsid: TcxGridDBColumn
             DataBinding.FieldName = 'id'
             Visible = False
           end
-          object cxGrid1DBTableView1AccountName: TcxGridDBColumn
+          object cxAccountsAccountName: TcxGridDBColumn
             DataBinding.FieldName = 'AccountName'
-            OnGetDataText = cxGrid1DBTableView1AccountNameGetDataText
+            OnGetDataText = cxAccountsAccountNameGetDataText
             Width = 94
           end
-          object cxGrid1DBTableView1username: TcxGridDBColumn
+          object cxAccountsusername: TcxGridDBColumn
             Caption = 'Username'
             DataBinding.FieldName = 'username'
             Width = 78
           end
-          object cxGrid1DBTableView1pass: TcxGridDBColumn
+          object cxAccountspass: TcxGridDBColumn
             Caption = 'Password'
             DataBinding.FieldName = 'pass'
-            OnGetDataText = cxGrid1DBTableView1passGetDataText
-            OnGetDisplayText = cxGrid1DBTableView1passGetDisplayText
+            OnGetDataText = cxAccountspassGetDataText
+            OnGetDisplayText = cxAccountspassGetDisplayText
             Width = 104
-            OnCompareRowValuesForCellMerging = cxGrid1DBTableView1passCompareRowValuesForCellMerging
           end
-          object cxGrid1DBTableView1host: TcxGridDBColumn
+          object cxAccountshost: TcxGridDBColumn
             Caption = 'Post server'
             DataBinding.FieldName = 'host'
             Width = 93
           end
-          object cxGrid1DBTableView1port: TcxGridDBColumn
+          object cxAccountsport: TcxGridDBColumn
             Caption = 'Port'
             DataBinding.FieldName = 'port'
             Width = 54
           end
-          object cxGrid1DBTableView1Timeout: TcxGridDBColumn
+          object cxAccountsTimeout: TcxGridDBColumn
             DataBinding.FieldName = 'Timeout'
             Width = 57
           end
         end
         object cxGrid1Level1: TcxGridLevel
-          GridView = cxGrid1DBTableView1
+          GridView = cxAccounts
         end
+      end
+      object Button1: TButton
+        Left = 120
+        Top = 144
+        Width = 75
+        Height = 25
+        Caption = 'Button1'
+        TabOrder = 1
+        OnClick = Button1Click
       end
     end
     object cxTabSheet3: TcxTabSheet
@@ -267,7 +275,6 @@ object FMain: TFMain
     end
   end
   object adAccounts: TADOTable
-    Active = True
     Connection = adCon
     CursorType = ctStatic
     TableName = 'Accounts'
