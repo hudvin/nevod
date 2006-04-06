@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 269
-  Top = 229
+  Left = 331
+  Top = 161
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -99,7 +99,7 @@ object FMain: TFMain
     Top = 0
     Width = 488
     Height = 399
-    ActivePage = cxTabSheet1
+    ActivePage = cxTab_Accounts
     Align = alClient
     LookAndFeel.Kind = lfStandard
     LookAndFeel.NativeStyle = True
@@ -108,48 +108,8 @@ object FMain: TFMain
     ClientRectLeft = 2
     ClientRectRight = 484
     ClientRectTop = 22
-    object stPages_Log: TcxTabSheet
-      Caption = 'stPages_Log'
-      ImageIndex = 0
-      object cxLog: TcxGrid
-        Left = 0
-        Top = 0
-        Width = 482
-        Height = 373
-        Align = alClient
-        TabOrder = 0
-        LookAndFeel.Kind = lfStandard
-        LookAndFeel.NativeStyle = True
-        object cxLogTableView1: TcxGridTableView
-          NavigatorButtons.ConfirmDelete = False
-          DataController.Summary.DefaultGroupSummaryItems = <>
-          DataController.Summary.FooterSummaryItems = <>
-          DataController.Summary.SummaryGroups = <>
-          OptionsView.ColumnAutoWidth = True
-          OptionsView.GroupByBox = False
-          object cxLog_Id: TcxGridColumn
-            Caption = 'Id'
-          end
-          object cxLog_Account: TcxGridColumn
-            Caption = 'Account'
-          end
-          object cxLog_Type: TcxGridColumn
-            Caption = 'Type'
-          end
-          object cxLog_Date: TcxGridColumn
-            Caption = 'Date'
-          end
-          object cxLog_Desc: TcxGridColumn
-            Caption = 'Description'
-          end
-        end
-        object cxLogLevel1: TcxGridLevel
-          GridView = cxLogTableView1
-        end
-      end
-    end
-    object cxTabSheet2: TcxTabSheet
-      Caption = 'cxTabSheet2'
+    object cxTab_Accounts: TcxTabSheet
+      Caption = 'cxTab_Accounts'
       ImageIndex = 1
       object cxGrid1: TcxGrid
         Left = 0
@@ -178,27 +138,35 @@ object FMain: TFMain
           end
           object cxGrid1DBTableView1AccountName: TcxGridDBColumn
             DataBinding.FieldName = 'AccountName'
+            OnGetDataText = cxGrid1DBTableView1AccountNameGetDataText
             Width = 94
           end
           object cxGrid1DBTableView1username: TcxGridDBColumn
+            Caption = 'Username'
             DataBinding.FieldName = 'username'
             Width = 78
           end
           object cxGrid1DBTableView1pass: TcxGridDBColumn
+            Caption = 'Password'
             DataBinding.FieldName = 'pass'
+            OnGetDataText = cxGrid1DBTableView1passGetDataText
+            OnGetDisplayText = cxGrid1DBTableView1passGetDisplayText
             Width = 104
+            OnCompareRowValuesForCellMerging = cxGrid1DBTableView1passCompareRowValuesForCellMerging
           end
           object cxGrid1DBTableView1host: TcxGridDBColumn
+            Caption = 'Post server'
             DataBinding.FieldName = 'host'
-            Width = 140
+            Width = 93
           end
           object cxGrid1DBTableView1port: TcxGridDBColumn
+            Caption = 'Port'
             DataBinding.FieldName = 'port'
-            Width = 31
+            Width = 54
           end
           object cxGrid1DBTableView1Timeout: TcxGridDBColumn
             DataBinding.FieldName = 'Timeout'
-            Width = 33
+            Width = 57
           end
         end
         object cxGrid1Level1: TcxGridLevel
@@ -238,8 +206,8 @@ object FMain: TFMain
         TabOrder = 1
       end
     end
-    object cxTabSheet1: TcxTabSheet
-      Caption = 'cxTabSheet1'
+    object cxTab_Log: TcxTabSheet
+      Caption = 'cxTab_Log'
       ImageIndex = 3
       object cxGrid2: TcxGrid
         Left = 0

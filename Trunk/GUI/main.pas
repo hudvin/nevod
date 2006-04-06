@@ -2,16 +2,15 @@ unit main;
 
 interface
 
-uses Forms,  ASFilter, Registry,
-  StrUtils,PostReceiver, Dialogs, Shared,AccountManager,
-  Windows,ThreadManager, Messages, SysUtils, Variants, StdCtrls,
-  ADODB, DB, Classes, Controls, Grids, DBGrids, IdTCPConnection,
-   dxBar,
-  cxSplitter, cxInplaceContainer, cxTL, cxControls, dxStatusBar, cxPC,
-  ExtCtrls, cxContainer, cxEdit, cxCheckBox, cxGridCustomTableView,
-  cxGridTableView, cxGridDBTableView, cxGridLevel, cxClasses,
-  cxGridCustomView, cxGrid, Menus, CoolTrayIcon, RXShell, cxStyles,
-  cxGridCustomPopupMenu, cxGridPopupMenu;
+uses Forms,Windows, Dialogs, ASFilter, Registry, dxBar, cxStyles, Shared,
+  cxTL, DB, ADODB, RXShell, StdCtrls, ExtCtrls, cxContainer, cxEdit,
+  cxCheckBox, cxGridLevel, cxGridCustomTableView, cxGridTableView,
+  
+  
+  cxGridCustomView, cxGrid, Menus, CoolTrayIcon,
+  cxGridCustomPopupMenu, cxGridPopupMenu, Classes, Controls,
+  cxGridDBTableView, cxClasses, cxControls, cxPC, cxSplitter,
+  cxInplaceContainer, dxStatusBar;
 
 type
   TFMain = class(TForm)
@@ -20,8 +19,7 @@ type
     cxSplitter1: TcxSplitter;
     STree: TcxTreeListColumn;
     stPages: TcxPageControl;
-    stPages_Log: TcxTabSheet;
-    cxTabSheet2: TcxTabSheet;
+    cxTab_Accounts: TcxTabSheet;
     cxTabSheet3: TcxTabSheet;
     cbRun: TcxCheckBox;
     LabeledEdit1: TLabeledEdit;
@@ -47,16 +45,8 @@ type
     cxGrid1DBTableView1Timeout: TcxGridDBColumn;
     rxTray: TRxTrayIcon;
     dsLog: TDataSource;
-    cxLogLevel1: TcxGridLevel;
-    cxLog: TcxGrid;
-    cxLogTableView1: TcxGridTableView;
-    cxLog_Id: TcxGridColumn;
-    cxLog_Account: TcxGridColumn;
-    cxLog_Type: TcxGridColumn;
-    cxLog_Date: TcxGridColumn;
-    cxLog_Desc: TcxGridColumn;
     adLog: TADOQuery;
-    cxTabSheet1: TcxTabSheet;
+    cxTab_Log: TcxTabSheet;
     adLogAccountName: TWideStringField;
     adLogErrorType: TWideStringField;
     adLogMessage: TWideStringField;
@@ -102,8 +92,23 @@ type
     procedure FormCreate(Sender: TObject);
     procedure rxTrayClick(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure cxGrid1DBTableView1AccountNameGetDataText(
+      Sender: TcxCustomGridTableItem; ARecordIndex: Integer;
+      var AText: String);
+    procedure cxGrid1DBTableView1passGetDataText(
+      Sender: TcxCustomGridTableItem; ARecordIndex: Integer;
+      var AText: String);
+    procedure cxGrid1DBTableView1passGetDisplayText(
+      Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+      var AText: String);
+    procedure cxGrid1DBTableView1passCompareRowValuesForCellMerging(
+      Sender: TcxGridColumn; ARow1: TcxGridDataRow;
+      AProperties1: TcxCustomEditProperties; const AValue1: Variant;
+      ARow2: TcxGridDataRow; AProperties2: TcxCustomEditProperties;
+      const AValue2: Variant; var AAreEqual: Boolean);
   private
     Reg: TRegistry;
+    Coder:TBFCoder;
     { Private declarations }
   public
     procedure RunOnStartup(Run:boolean);
@@ -156,6 +161,14 @@ end;
 procedure TFMain.FormCreate(Sender: TObject);
 begin
  Reg:=TRegistry.Create;
+ if Coder=nil then
+  begin
+   Coder:=TBFCoder.Create;
+   Coder.Key:=CriptKey;
+  end;
+   
+// Coder:=TBFCoder.Create;
+// Coder.Key:=Shared.CriptKey;
 // Application.ShowMainForm:=False;
 end;
 
@@ -165,6 +178,50 @@ begin
  if not FMain.Active then
   FMain.Show;
 
+end;
+
+procedure TFMain.cxGrid1DBTableView1AccountNameGetDataText(
+  Sender: TcxCustomGridTableItem; ARecordIndex: Integer;
+  var AText: String);
+begin
+end;
+ {
+
+ производить расшифровку пароля и заменять все звездочками
+
+ }
+procedure TFMain.cxGrid1DBTableView1passGetDataText(
+  Sender: TcxCustomGridTableItem; ARecordIndex: Integer;
+  var AText: String);
+begin
+ 
+{  if Coder=nil then
+   begin
+    Coder:=TBFCoder.Create;
+    Coder.Key:=CriptKey;
+   end;
+   ShowMessage(AText);
+   try
+   AText:=Coder.DeCrypt(AText);
+   except
+   end;
+}
+end;
+
+procedure TFMain.cxGrid1DBTableView1passGetDisplayText(
+  Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+  var AText: String);
+begin
+// ShowMessage('');
+end;
+
+procedure TFMain.cxGrid1DBTableView1passCompareRowValuesForCellMerging(
+  Sender: TcxGridColumn; ARow1: TcxGridDataRow;
+  AProperties1: TcxCustomEditProperties; const AValue1: Variant;
+  ARow2: TcxGridDataRow; AProperties2: TcxCustomEditProperties;
+  const AValue2: Variant; var AAreEqual: Boolean);
+begin
+ ShowMessage('Mess.Sender.Address');
 end;
 
 end.
