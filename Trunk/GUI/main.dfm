@@ -1,10 +1,10 @@
 object FMain: TFMain
-  Left = 266
-  Top = 155
+  Left = 447
+  Top = 172
   BorderStyle = bsSingle
   Caption = 'FMain'
-  ClientHeight = 199
-  ClientWidth = 643
+  ClientHeight = 305
+  ClientWidth = 572
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,73 +14,78 @@ object FMain: TFMain
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
-  object Button1: TButton
-    Left = 72
-    Top = 72
-    Width = 75
-    Height = 25
-    Caption = 'Button1'
-    TabOrder = 0
-    OnClick = Button1Click
+  object dxStatusBar1: TdxStatusBar
+    Left = 0
+    Top = 285
+    Width = 572
+    Height = 20
+    Panels = <
+      item
+        PanelStyleClassName = 'TdxStatusBarTextPanelStyle'
+      end
+      item
+        PanelStyleClassName = 'TdxStatusBarTextPanelStyle'
+      end>
+    PaintStyle = stpsUseLookAndFeel
+    LookAndFeel.Kind = lfOffice11
+    LookAndFeel.NativeStyle = False
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
   end
-  object Button3: TButton
-    Left = 96
-    Top = 136
-    Width = 75
-    Height = 25
-    Caption = 'Button3'
-    TabOrder = 1
-    OnClick = Button3Click
-  end
-  object Memo1: TMemo
-    Left = 384
-    Top = 40
-    Width = 185
-    Height = 89
-    Lines.Strings = (
-      'Memo1')
-    TabOrder = 2
-  end
-  object acon: TADOConnection
-    Connected = True
-    ConnectionString = 
-      'Provider=Microsoft.Jet.OLEDB.4.0;User ID=Admin;Data Source=..\DB' +
-      '\messages.mdb;Mode=Share Deny None;Extended Properties="";Persis' +
-      't Security Info=False;Jet OLEDB:System database="";Jet OLEDB:Reg' +
-      'istry Path="";Jet OLEDB:Database Password="";Jet OLEDB:Engine Ty' +
-      'pe=5;Jet OLEDB:Database Locking Mode=1;Jet OLEDB:Global Partial ' +
-      'Bulk Ops=2;Jet OLEDB:Global Bulk Transactions=1;Jet OLEDB:New Da' +
-      'tabase Password="";Jet OLEDB:Create System Database=False;Jet OL' +
-      'EDB:Encrypt Database=False;Jet OLEDB:Don'#39't Copy Locale on Compac' +
-      't=False;Jet OLEDB:Compact Without Replica Repair=False;Jet OLEDB' +
-      ':SFP=False'
-    LoginPrompt = False
-    Mode = cmShareDenyNone
-    Provider = 'Microsoft.Jet.OLEDB.4.0'
-    Left = 8
-    Top = 8
-  end
-  object pop: TIdPOP3
-    AutoLogin = True
-    Host = 'localhost'
-    Username = 'test'
-    Password = 'qaz'
-    SASLMechanisms = <>
-    Left = 240
-    Top = 120
-  end
-  object mess: TIdMessage
-    AttachmentEncoding = 'MIME'
-    BccList = <>
-    CCList = <>
-    Encoding = meDefault
-    FromList = <
+  object cxTreeList1: TcxTreeList
+    Left = 0
+    Top = 0
+    Width = 169
+    Height = 285
+    Align = alLeft
+    Bands = <
       item
       end>
-    Recipients = <>
-    ReplyTo = <>
-    ConvertPreamble = True
-    Left = 240
-    Top = 104
+    BufferedPaint = False
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
+    LookAndFeel.Kind = lfOffice11
+    OptionsData.Deleting = False
+    OptionsSelection.CellSelect = False
+    OptionsSelection.HideSelection = True
+    OptionsSelection.MultiSelect = True
+    OptionsView.ColumnAutoWidth = True
+    OptionsView.TreeLineStyle = tllsSolid
+    ParentFont = False
+    TabOrder = 1
+    Data = {
+      020004004A0100000F00000044617461436F6E74726F6C6C6572310100000012
+      000000546378537472696E6756616C7565547970650A00000000000700000047
+      656E6572616C00000700000046696C746572730101010101000005000000416C
+      6C6F7700000400000044656E79000007000000436F6D706C6578070000000000
+      0000100000000000000000000000FFFFFFFF0100000004000000030000000000
+      000000000000FFFFFFFF07000000100000000000000000000000FFFFFFFF0800
+      0000100000000000000000000000FFFFFFFF0900000010000000000000000000
+      0000FFFFFFFF02000000100000000000000000000000FFFFFFFF030000001000
+      00000000000000000000FFFFFFFF04000000100000000000000000000000FFFF
+      FFFF05000000100000000000000000000000FFFFFFFF06000000100000000000
+      000000000000FFFFFFFF}
+    object cxTreeList1cxTreeListColumn1: TcxTreeListColumn
+      DataBinding.ValueType = 'String'
+      Options.Sorting = False
+      Position.ColIndex = 0
+      Position.RowIndex = 0
+      Position.BandIndex = 0
+    end
+  end
+  object cxSplitter1: TcxSplitter
+    Left = 169
+    Top = 0
+    Width = 8
+    Height = 285
+    HotZoneClassName = 'TcxMediaPlayer9Style'
+    AutoSnap = True
+    ResizeUpdate = True
   end
 end

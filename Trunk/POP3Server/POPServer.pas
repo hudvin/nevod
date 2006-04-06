@@ -33,7 +33,7 @@ end;
 
 implementation
 
-uses IdCustomTCPServer, DB;
+uses DB;
 
 constructor TPOPServer.Create(ADOCon:TADOConnection;
     AccountManager:TAccountManager;ServerPort:integer);

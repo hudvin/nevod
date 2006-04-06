@@ -17,7 +17,7 @@ uses
   POPServer in '..\POP3Server\POPServer.pas',
   ASFilter in '..\MessagesFilter\ASFilter.pas',
   RegExpr in '..\Libs\RegExpr.pas',
-  StrMask in 'StrMask.pas';
+  PerlRegEx in '..\Libs\RegExp\PerlRegEx.pas';
 
 {$R *.res}
 

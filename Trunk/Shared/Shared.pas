@@ -34,7 +34,7 @@ type
 
 type
   TFilterType=(ftBlackEmail,ftWhiteEmail,ftStamp,ftBlackWord,ftWhiteWord,ftImageFilter,ftLinkFilter,
-               ftBlackAttachExtFilter,ftWhiteAttachExtFilter,ftMessSize);
+               ftBlackAttachExtFilter,ftWhiteAttachExtFilter,ftMessSize,ftSpamWords);
 
 type
   TBodyType=(btText,btHtml);  // тип тела сообщения

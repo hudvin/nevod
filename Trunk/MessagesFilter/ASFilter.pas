@@ -101,6 +101,16 @@ type
     constructor Create(ADOCon:TADOConnection);
   end;
 
+  TComplexFilter = class(TBaseFilter)
+  private
+    MaxSignals: Integer;
+    Signals: TStringList;
+  public
+    constructor Create(Exp:TRegExp;Proc:TADOQuery;FilterType:TFilterType); override;
+    destructor Destroy; override;
+    function AnalyzeMessage(Mess:TFMessage): Boolean; override;
+  end;
+
 
 implementation
 uses main;
@@ -120,7 +130,7 @@ begin
    Close;
    SQL.Text:='SELECT Reason FROM Filters WHERE type=:FilterType';
    Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
-   ExecSQL;
+
    Open;
    Result:=Fields[0].AsString;
    Close;
@@ -145,7 +155,7 @@ begin
     SQL.Text:='SELECT FVAlue FROM SenderFilter WHERE (Active=TRUE) AND '+
      ' (mid=(SELECT id FROM Filters WHERE type=:FilterType) ) ' ;
     Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
-    ExecSQL;
+  //  ExecSQL;
     Open;
     First;
     while (not Res) and (not Eof) do
@@ -190,7 +200,7 @@ begin
       begin
        Close;
        Parameters.ParamByName('Stamp').Value:=Trim(FExp.SubExpressions[12]);
-       ExecSQL;
+    //   ExecSQL;
        Open;
        if Fields[0].AsInteger>0 then Flag:=False;
        Close;
@@ -620,8 +630,63 @@ end;
 
 constructor TDenyFilterGroup.Create(ADOCon:TADOConnection);
 begin
-  Filters4Loading:=[ftBlackEmail,ftBlackWord,ftImageFilter,ftLinkFilter,ftBlackAttachExtFilter,ftMessSize];
+  Filters4Loading:=[ftBlackEmail,ftBlackWord,ftImageFilter,ftLinkFilter,ftBlackAttachExtFilter,ftMessSize,ftSpamWords];
   inherited Create(ADOCon);
+end;
+
+constructor TComplexFilter.Create(Exp:TRegExp;Proc:TADOQuery;
+    FilterType:TFilterType);
+begin
+  inherited Create(Exp,Proc,FilterType);
+  Signals:=TStringList.Create;
+  Signals.Delimiter:=' ';
+  Signals.DelimitedText:='mail all click we real win out wish $ per money'+
+           'sex porno girls buy congratulations love best million'+
+           'Did sexual cheapest potent man tonight try never Credit'+
+           'partner absolutely just Worried product Wow life fuck'+
+           'amazing prizes offer happinesss unsubscribe subscribe care men' ;
+  with Proc do
+  begin
+   Close;
+   SQL.Text:='SELECT Var FROM Settings WHERE Name='+'''' +'MaxSpamWords'+'''';
+   Active:=True;
+   MaxSignals:=Fields[0].AsInteger;
+   Close;
+  end;
+end;
+
+destructor TComplexFilter.Destroy;
+begin
+  Signals.Free;
+  inherited;
+end;
+
+function TComplexFilter.AnalyzeMessage(Mess:TFMessage): Boolean;
+var
+ Counter:integer;
+ Flag:boolean;
+ i:integer;
+begin
+ {
+ искать слова, пока их количество не превысит MaxSignals
+ просматривать весь массив слов
+
+ }
+ Flag:=False;
+ Counter:=0;
+ i:=0;
+ while not Flag do
+   begin
+    FExp.Subject:=Mess.MessageText+' ' + Mess.Subject;
+    Fexp.RegEx:=Signals[i];
+    if FExp.Match
+     then inc(Counter);
+    if Counter>=MaxSignals   // превышено максимальное количество спам-слов
+     then  Flag:=True;
+    inc(i);
+   end;
+ Result:=Flag;
+
 end;
 
 
