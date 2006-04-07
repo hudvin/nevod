@@ -79,7 +79,6 @@ type
     dxBarButton7: TdxBarButton;
     dxBarButton8: TdxBarButton;
     dxBarButton9: TdxBarButton;
-    Button1: TButton;
     cxAccounts: TcxGridTableView;
     cxAccountsAccountName: TcxGridColumn;
     cxAccountsUsername: TcxGridColumn;
@@ -88,13 +87,18 @@ type
     cxAccountsPort: TcxGridColumn;
     cxAccountsTimeout: TcxGridColumn;
     cxAccountsStatus: TcxGridColumn;
+    dxBarSubItem1: TdxBarSubItem;
+    dxBarButton10: TdxBarButton;
+    dxBarButton11: TdxBarButton;
+    dxBarButton12: TdxBarButton;
+    dxBarButton13: TdxBarButton;
     procedure cbRunPropertiesChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure rxTrayClick(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure Button1Click(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure dxBarButton10Click(Sender: TObject);
   private
     Reg: TRegistry;
     Coder:TBFCoder;
@@ -110,6 +114,8 @@ type
 var
   FMain: TFMain;
 implementation
+
+uses AddAccount;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
@@ -166,31 +172,16 @@ begin
 
 end;
 
-procedure TFMain.Button1Click(Sender: TObject);
-var
-  i,J:integer;
-begin
-
-{ cxAccounts.DataController.RecordCount := 10;
-  Randomize;
-  for I := 0 to 9 do
-    for J := 0 to 4 do
-      cxAccounts.DataController.SetValue(I, J, Random(100));
- }
-  cxAccounts.DataController.RecordCount:=PSManager.AccountManager.Count;
- for i := 0 to PSManager.AccountManager.Count-1 do  // проход по строкам
-   begin
- //   cxAccounts.DataController.SetValue(i,cxName.Index,'dffsafasfassa');
-      //cxGrid1DBTableView1.DataController.SetValue(I, J, Random(100));
-   end;
-
-end;
-
 procedure TFMain.FormDestroy(Sender: TObject);
 begin
  Coder.Free;
  Reg.Free;
  PSManager.Free;
+end;
+
+procedure TFMain.dxBarButton10Click(Sender: TObject);
+begin
+ FAddAccount.ShowModal;
 end;
 
 end.

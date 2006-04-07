@@ -17,12 +17,14 @@ uses
   POPServer in '..\POP3Server\POPServer.pas',
   ASFilter in '..\MessagesFilter\ASFilter.pas',
   RegExpr in '..\Libs\RegExpr.pas',
-  PerlRegEx in '..\Libs\RegExp\PerlRegEx.pas';
+  PerlRegEx in '..\Libs\RegExp\PerlRegEx.pas',
+  AddAccount in 'AddAccount.pas' {FAddAccount};
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.CreateForm(TFMain, FMain);
+  Application.CreateForm(TFAddAccount, FAddAccount);
   Application.Run;
 end.

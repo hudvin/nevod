@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 203
-  Top = 80
+  Left = 212
+  Top = 371
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -41,9 +41,9 @@ object FMain: TFMain
   end
   object SettingsTree: TcxTreeList
     Left = 0
-    Top = 0
+    Top = 23
     Width = 169
-    Height = 399
+    Height = 376
     Align = alLeft
     Bands = <
       item
@@ -87,9 +87,9 @@ object FMain: TFMain
   end
   object cxSplitter1: TcxSplitter
     Left = 169
-    Top = 0
+    Top = 23
     Width = 8
-    Height = 399
+    Height = 376
     HotZoneClassName = 'TcxMediaPlayer9Style'
     AutoSnap = True
     ResizeUpdate = True
@@ -97,15 +97,15 @@ object FMain: TFMain
   end
   object stPages: TcxPageControl
     Left = 177
-    Top = 0
+    Top = 23
     Width = 594
-    Height = 399
+    Height = 376
     ActivePage = cxTab_Accounts
     Align = alClient
     LookAndFeel.Kind = lfStandard
     LookAndFeel.NativeStyle = True
     TabOrder = 3
-    ClientRectBottom = 395
+    ClientRectBottom = 372
     ClientRectLeft = 2
     ClientRectRight = 590
     ClientRectTop = 22
@@ -116,7 +116,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 588
-        Height = 373
+        Height = 350
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
@@ -126,6 +126,7 @@ object FMain: TFMain
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <>
           DataController.Summary.SummaryGroups = <>
+          OptionsSelection.CellSelect = False
           OptionsView.ColumnAutoWidth = True
           OptionsView.GroupByBox = False
           object cxAccountsAccountName: TcxGridColumn
@@ -139,6 +140,7 @@ object FMain: TFMain
           object cxAccountsPassword: TcxGridColumn
             Caption = 'Password'
             PropertiesClassName = 'TcxTextEditProperties'
+            Properties.EchoMode = eemPassword
             Properties.PasswordChar = '*'
             Width = 104
           end
@@ -162,15 +164,6 @@ object FMain: TFMain
         object cxAccountsGridLevel1: TcxGridLevel
           GridView = cxAccounts
         end
-      end
-      object Button1: TButton
-        Left = 120
-        Top = 144
-        Width = 75
-        Height = 25
-        Caption = 'Button1'
-        TabOrder = 1
-        OnClick = Button1Click
       end
     end
     object cxTabSheet3: TcxTabSheet
@@ -212,7 +205,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 588
-        Height = 373
+        Height = 350
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
@@ -3217,6 +3210,8 @@ object FMain: TFMain
     end
   end
   object cxStyleRepository1: TcxStyleRepository
+    Left = 96
+    Top = 56
     object cxStyle1: TcxStyle
       AssignedValues = [svFont]
       Font.Charset = DEFAULT_CHARSET
@@ -3330,28 +3325,52 @@ object FMain: TFMain
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    Bars = <>
+    Bars = <
+      item
+        Caption = 'Custom 1'
+        DockedDockingStyle = dsTop
+        DockedLeft = 0
+        DockedTop = 0
+        DockingStyle = dsTop
+        FloatLeft = 177
+        FloatTop = 169
+        FloatClientWidth = 0
+        FloatClientHeight = 0
+        IsMainMenu = True
+        ItemLinks = <
+          item
+            Item = dxBarSubItem1
+            Visible = True
+          end>
+        MultiLine = True
+        Name = 'Custom 1'
+        OneOnRow = True
+        Row = 0
+        UseOwnFont = False
+        Visible = True
+        WholeRow = True
+      end>
     Categories.Strings = (
       'Default')
     Categories.ItemsVisibles = (
       2)
     Categories.Visibles = (
       True)
-    LookAndFeel.Kind = lfStandard
-    LookAndFeel.NativeStyle = True
+    LookAndFeel.Kind = lfOffice11
+    LookAndFeel.NativeStyle = False
     PopupMenuLinks = <
       item
         Control = cxGrid2
         PopupMenu = dxBarPopupMenu1
       end>
-    Style = bmsFlat
+    Style = bmsXP
     UseSystemFont = True
     Left = 339
     Top = 230
     DockControlHeights = (
       0
       0
-      0
+      23
       0)
     object dxBarButton1: TdxBarButton
       Caption = 'New Item'
@@ -3405,6 +3424,53 @@ object FMain: TFMain
       Caption = 'New Item'
       Category = 0
       Hint = 'New Item'
+      Visible = ivAlways
+    end
+    object dxBarSubItem1: TdxBarSubItem
+      Caption = 'Account'
+      Category = 0
+      Visible = ivAlways
+      ItemLinks = <
+        item
+          Item = dxBarButton10
+          Visible = True
+        end
+        item
+          Item = dxBarButton11
+          Visible = True
+        end
+        item
+          Item = dxBarButton12
+          Visible = True
+        end
+        item
+          Item = dxBarButton13
+          Visible = True
+        end>
+    end
+    object dxBarButton10: TdxBarButton
+      Caption = 'Add ...'
+      Category = 0
+      Hint = 'Add '
+      Visible = ivAlways
+      OnClick = dxBarButton10Click
+    end
+    object dxBarButton11: TdxBarButton
+      Caption = 'Edit ...'
+      Category = 0
+      Hint = 'Edit '
+      Visible = ivAlways
+    end
+    object dxBarButton12: TdxBarButton
+      Caption = 'Delete ...'
+      Category = 0
+      Hint = 'Delete '
+      Visible = ivAlways
+    end
+    object dxBarButton13: TdxBarButton
+      Caption = 'Exit'
+      Category = 0
+      Hint = 'Exit'
       Visible = ivAlways
     end
   end

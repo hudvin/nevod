@@ -145,6 +145,7 @@ end;
 procedure TAccountManager.AddAccountToGrid(Account:TAccountParams);
 var
  Count:Integer;
+ Status:String;
 begin
  FAccountsGrid.DataController.RecordCount:=FAccountsGrid.DataController.RecordCount+1;
  Count:=FAccountsGrid.DataController.RecordCount-1;
@@ -156,6 +157,12 @@ begin
    SetValue(Count,cxAccountPort.Index,Account.Port);
    SetValue(Count,cxAccountTimeout.Index,Account.Timeout);
    SetValue(Count,cxAccountPassword.Index,Account.Password);
+   case Account.Status of
+     asFree: Status:='Free' ;
+     asClient: Status:='Client Loading mail' ;
+     asServer: Status:='Loading mail from server' ;
+   end;
+   SetValue(Count,cxAccountStatus.Index,Status);
   end;
 end;
 
