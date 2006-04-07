@@ -10,7 +10,7 @@ uses Forms,Windows, Dialogs, ASFilter, Registry, dxBar, cxStyles, Shared,
   cxGridCustomView, cxGrid, Menus, CoolTrayIcon,
   cxGridCustomPopupMenu, cxGridPopupMenu, Classes, Controls,
   cxGridDBTableView, cxClasses, cxControls, cxPC, cxSplitter,
-  cxInplaceContainer, dxStatusBar;
+  cxInplaceContainer, dxStatusBar, cxLookAndFeels;
 
 type
   TFMain = class(TForm)
@@ -102,9 +102,10 @@ type
   private
     Reg: TRegistry;
     Coder:TBFCoder;
-    PSManager: TPostManager;
+
     { Private declarations }
   public
+    PSManager: TPostManager;
     procedure RunOnStartup(Run:boolean);
     { Public declarations }
   protected

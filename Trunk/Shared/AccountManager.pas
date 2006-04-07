@@ -139,7 +139,9 @@ begin
      ParamByName('Timeout').Value:=NewAccount.Timeout;
      DBProc.ExecSQL;
      UpdateAccountTable;
+     AddAccountToGrid(NewAccount);
     end;
+
 end;
 
 procedure TAccountManager.AddAccountToGrid(Account:TAccountParams);
@@ -155,7 +157,7 @@ begin
    SetValue(Count,cxAccountUsername.Index,Account.Username);
    SetValue(Count,cxAccountServer.Index,Account.Host);
    SetValue(Count,cxAccountPort.Index,Account.Port);
-   SetValue(Count,cxAccountTimeout.Index,Account.Timeout);
+   SetValue(Count,cxAccountTimeout.Index,Account.Timeout/1000);
    SetValue(Count,cxAccountPassword.Index,Account.Password);
    case Account.Status of
      asFree: Status:='Free' ;
@@ -172,16 +174,6 @@ begin
   Result:=False;
   if Trim(Account.AccountName)='' then
     Raise EInvalidAccountParams.Create('Incorrect AccountName');
-  if Trim(Account.Username)='' then
-    Raise EInvalidAccountParams.Create('Incorrect Username ');
-  if Trim(Account.Host)='' then
-    Raise EInvalidAccountParams.Create('Incorrect Host');
-  if (Account.Port<1) or (Account.Port>65536) then
-    Raise EInvalidAccountParams.Create('Incorrect Port');
-  if (Account.Timeout<0) then
-    Raise EInvalidAccountParams.Create(' Incorrect Timeout ');
-
-
   with DBProc  do
    begin
     if NewAccount then   // если новая учетная запись
@@ -211,6 +203,16 @@ begin
        end;
      end;
    end;
+
+  if Trim(Account.Username)='' then
+    Raise EInvalidAccountParams.Create('Incorrect Username ');
+  if Trim(Account.Host)='' then
+    Raise EInvalidAccountParams.Create('Incorrect Host');
+  if (Account.Port<1) or (Account.Port>65536) then
+    Raise EInvalidAccountParams.Create('Incorrect Port');
+  if (Account.Timeout<-1) then
+    Raise EInvalidAccountParams.Create(' Incorrect Timeout ');
+
   Result:=True;
 end;
 

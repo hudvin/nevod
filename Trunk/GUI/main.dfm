@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 212
-  Top = 371
+  Left = 416
+  Top = 225
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -41,9 +41,9 @@ object FMain: TFMain
   end
   object SettingsTree: TcxTreeList
     Left = 0
-    Top = 23
+    Top = 25
     Width = 169
-    Height = 376
+    Height = 374
     Align = alLeft
     Bands = <
       item
@@ -87,9 +87,9 @@ object FMain: TFMain
   end
   object cxSplitter1: TcxSplitter
     Left = 169
-    Top = 23
+    Top = 25
     Width = 8
-    Height = 376
+    Height = 374
     HotZoneClassName = 'TcxMediaPlayer9Style'
     AutoSnap = True
     ResizeUpdate = True
@@ -97,15 +97,15 @@ object FMain: TFMain
   end
   object stPages: TcxPageControl
     Left = 177
-    Top = 23
+    Top = 25
     Width = 594
-    Height = 376
+    Height = 374
     ActivePage = cxTab_Accounts
     Align = alClient
     LookAndFeel.Kind = lfStandard
     LookAndFeel.NativeStyle = True
     TabOrder = 3
-    ClientRectBottom = 372
+    ClientRectBottom = 370
     ClientRectLeft = 2
     ClientRectRight = 590
     ClientRectTop = 22
@@ -116,7 +116,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 588
-        Height = 350
+        Height = 348
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
@@ -205,7 +205,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 588
-        Height = 350
+        Height = 348
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
@@ -3356,21 +3356,22 @@ object FMain: TFMain
       2)
     Categories.Visibles = (
       True)
-    LookAndFeel.Kind = lfOffice11
+    LookAndFeel.Kind = lfUltraFlat
     LookAndFeel.NativeStyle = False
     PopupMenuLinks = <
       item
         Control = cxGrid2
         PopupMenu = dxBarPopupMenu1
       end>
-    Style = bmsXP
+    Style = bmsFlat
+    SunkenBorder = True
     UseSystemFont = True
     Left = 339
     Top = 230
     DockControlHeights = (
       0
       0
-      23
+      25
       0)
     object dxBarButton1: TdxBarButton
       Caption = 'New Item'
