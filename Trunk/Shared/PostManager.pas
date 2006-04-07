@@ -2,11 +2,12 @@ unit PostManager;
 
 interface
 uses
-   Windows,SysUtils,Classes, ActiveX, Shared,POPServer, ADODB,DB,Settings, ThreadManager, AccountManager;
+   Windows,SysUtils,Classes,cxGridTableView, ActiveX, Shared,POPServer, ADODB,DB,Settings, ThreadManager, AccountManager;
 
 type
   TPostManager = class
   private
+    FAccountsGrid: TcxGridTableView;
     FADOCommand: TADOCommand;
     Mutex: THandle;
     FADOCon: TADOConnection;
@@ -22,7 +23,7 @@ type
     SettingsProc: TADOQuery;
   public
     AccountManager: TAccountManager;
-    constructor Create(ADOCon:TADOConnection);
+    constructor Create(ADOCon:TADOConnection;AccountsGrid:TcxGridTableView);
     destructor Destroy; override;
     procedure StartAllThreads;
     procedure StartThread(AccountId:Integer);
@@ -35,15 +36,17 @@ implementation
 
 uses Exceptions;
 
-constructor TPostManager.Create(ADOCon:TADOConnection);
+constructor TPostManager.Create(ADOCon:TADOConnection;
+    AccountsGrid:TcxGridTableView);
 begin
  Mutex:=CreateMutex(nil, False,MutexName);
+ FAccountsGrid:=AccountsGrid;
  FADOCon:=ADOCon;
  FADOCommand:=TADOCommand.Create(nil);
  FADOCommand.Connection:=FADOCon;
  SettingsProc:=TADOQuery.Create(nil);
  SettingsProc.Connection:=FADOCon;
- AccountManager:=TAccountManager.Create(FADOCon);
+ AccountManager:=TAccountManager.Create(FADOCon,FAccountsGrid);
  ThreadManager:=TThreadManager.Create(FADOCon,AccountManager,False); // запуск в пассивном состоянии
  ThreadManager.CheckInterval:=StrToInt(Setting['CheckInterval']);
  POP3Server:=TPOPServer.Create(FADOCon,AccountManager,StrToInt(Setting['ServerPort']));

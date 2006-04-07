@@ -23,9 +23,8 @@ type
     cxTabSheet3: TcxTabSheet;
     cbRun: TcxCheckBox;
     LabeledEdit1: TLabeledEdit;
-    cxAccounts: TcxGridDBTableView;
-    cxGrid1Level1: TcxGridLevel;
-    cxGrid1: TcxGrid;
+    cxAccountsGridLevel1: TcxGridLevel;
+    cxAccountsGrid: TcxGrid;
     adAccounts: TADOTable;
     dsAccounts: TDataSource;
     adCon: TADOConnection;
@@ -36,13 +35,6 @@ type
     adAccountshost: TWideStringField;
     adAccountsport: TIntegerField;
     adAccountsTimeout: TIntegerField;
-    cxAccountsid: TcxGridDBColumn;
-    cxAccountsAccountName: TcxGridDBColumn;
-    cxAccountsusername: TcxGridDBColumn;
-    cxAccountspass: TcxGridDBColumn;
-    cxAccountshost: TcxGridDBColumn;
-    cxAccountsport: TcxGridDBColumn;
-    cxAccountsTimeout: TcxGridDBColumn;
     rxTray: TRxTrayIcon;
     dsLog: TDataSource;
     adLog: TADOQuery;
@@ -88,20 +80,19 @@ type
     dxBarButton8: TdxBarButton;
     dxBarButton9: TdxBarButton;
     Button1: TButton;
+    cxAccounts: TcxGridTableView;
+    cxAccountsAccountName: TcxGridColumn;
+    cxAccountsUsername: TcxGridColumn;
+    cxAccountsPassword: TcxGridColumn;
+    cxAccountsServer: TcxGridColumn;
+    cxAccountsPort: TcxGridColumn;
+    cxAccountsTimeout: TcxGridColumn;
+    cxAccountsStatus: TcxGridColumn;
     procedure cbRunPropertiesChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure rxTrayClick(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure cxAccountsAccountNameGetDataText(
-      Sender: TcxCustomGridTableItem; ARecordIndex: Integer;
-      var AText: String);
-    procedure cxAccountspassGetDataText(
-      Sender: TcxCustomGridTableItem; ARecordIndex: Integer;
-      var AText: String);
-    procedure cxAccountspassGetDisplayText(
-      Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
-      var AText: String);
     procedure Button1Click(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
@@ -162,10 +153,8 @@ begin
  Reg:=TRegistry.Create;
  Coder:=TBFCoder.Create;
  Coder.Key:=CriptKey;
- PSManager:=TPostManager.Create(adCon);
-    
-// Coder:=TBFCoder.Create;
-// Coder.Key:=Shared.CriptKey;
+ PSManager:=TPostManager.Create(adCon,cxAccounts);
+
 // Application.ShowMainForm:=False;
 end;
 
@@ -177,59 +166,24 @@ begin
 
 end;
 
-procedure TFMain.cxAccountsAccountNameGetDataText(
-  Sender: TcxCustomGridTableItem; ARecordIndex: Integer;
-  var AText: String);
-begin
-end;
- {
-
- производить расшифровку пароля и заменять все звездочками
-
- }
-procedure TFMain.cxAccountspassGetDataText(
-  Sender: TcxCustomGridTableItem; ARecordIndex: Integer;
-  var AText: String);
-begin
-
-{  if Coder=nil then
-   begin
-    Coder:=TBFCoder.Create;
-    Coder.Key:=CriptKey;
-   end;
-   ShowMessage(AText);
-   try
-   AText:=Coder.DeCrypt(AText);
-   except
-   end;
-}
-end;
-
-procedure TFMain.cxAccountspassGetDisplayText(
-  Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
-  var AText: String);
-begin
-// ShowMessage('');
-end;
-
 procedure TFMain.Button1Click(Sender: TObject);
 var
   i,J:integer;
 begin
 
- cxAccounts.DataController.RecordCount := 10;
+{ cxAccounts.DataController.RecordCount := 10;
   Randomize;
   for I := 0 to 9 do
     for J := 0 to 4 do
       cxAccounts.DataController.SetValue(I, J, Random(100));
-
-{  cxAccounts.DataController.RecordCount:=PSManager.AccountManager.Count;
+ }
+  cxAccounts.DataController.RecordCount:=PSManager.AccountManager.Count;
  for i := 0 to PSManager.AccountManager.Count-1 do  // проход по строкам
    begin
-    cxAccounts.DataController.SetValue(i,cxAccountsAccountName.Index,'dffsafasfassa');
+ //   cxAccounts.DataController.SetValue(i,cxName.Index,'dffsafasfassa');
       //cxGrid1DBTableView1.DataController.SetValue(I, J, Random(100));
    end;
-}
+
 end;
 
 procedure TFMain.FormDestroy(Sender: TObject);

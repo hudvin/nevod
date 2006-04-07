@@ -3,23 +3,35 @@ unit AccountManager;
 interface
 
 uses
-  TypInfo, SysUtils,  ADODB,DB,Exceptions,Shared;
+  TypInfo, SysUtils, cxGridCustomTableView, cxGridTableView,
+   ADODB,DB,Exceptions,Shared;
 
 type
   TAccountManager = class(TBFCoder)
   private
     AccountTable: TADOTable;
+    cxAccountAccountName: TcxGridColumn;
+    cxAccountPassword: TcxGridColumn;
+    cxAccountPort: TcxGridColumn;
+    cxAccountServer: TcxGridColumn;
+    cxAccountStatus: TcxGridColumn;
+    cxAccountTimeout: TcxGridColumn;
+    cxAccountUsername: TcxGridColumn;
     FADOCon: TADOConnection;
     DBProc: TADOQuery;
+    FAccountsGrid: TcxGridTableView;
     function GetAccountById(AccountId:integer): TAccountParams;
     function GetItems(Index: Integer): TAccountParams;
     function GetCount: Integer;
+    procedure LoadAccount2Grid;
     procedure SetAccountById(AccountId:integer; Value: TAccountParams);
   protected
     function AccountIdExists(AccountId:integer): Boolean;
     function AccountNameExists(AccountName:String): Boolean;
+    procedure AddAccountToGrid(Account:TAccountParams);
   public
-    constructor Create(ADOCon:TADOConnection); virtual;
+    constructor Create(ADOCon:TADOConnection;AccountsGrid:TcxGridTableView);
+        virtual;
     destructor Destroy; override;
     function AccountName2Id(AccountName:String): Integer;
     procedure AddAccount(NewAccount:TAccountParams);
@@ -36,11 +48,13 @@ type
   end;
 
 implementation
-
-constructor TAccountManager.Create(ADOCon:TADOConnection);
+uses main;
+constructor TAccountManager.Create(ADOCon:TADOConnection;
+    AccountsGrid:TcxGridTableView);
 begin
   inherited Create;
   FADOCon:=ADOCon;
+  FAccountsGrid:=AccountsGrid;
   AccountTable:=TADOTable.Create(nil);
   AccountTable.Connection:=FADOCon;
   AccountTable.TableName:='Accounts';
@@ -48,6 +62,17 @@ begin
   DBProc:=TADOQuery.Create(nil);
   DBProc.Connection:=FADOCon;
   SetKey(Shared.CriptKey);
+  with main.FMain do
+   begin
+    cxAccountAccountName:=cxAccountsAccountName;
+    cxAccountUsername:=cxAccountsUsername;
+    cxAccountPassword:=cxAccountsPassword;
+    cxAccountServer:=cxAccountsServer;
+    cxAccountPort:=cxAccountsPort;
+    cxAccountStatus:=cxAccountsStatus;
+    cxAccountTimeout:=cxAccountsTimeout;
+   end;
+ LoadAccount2Grid;
 end;
 
 destructor TAccountManager.Destroy;
@@ -115,6 +140,23 @@ begin
      DBProc.ExecSQL;
      UpdateAccountTable;
     end;
+end;
+
+procedure TAccountManager.AddAccountToGrid(Account:TAccountParams);
+var
+ Count:Integer;
+begin
+ FAccountsGrid.DataController.RecordCount:=FAccountsGrid.DataController.RecordCount+1;
+ Count:=FAccountsGrid.DataController.RecordCount-1;
+ with FAccountsGrid.DataController do
+  begin
+   SetValue(Count,cxAccountAccountName.Index,Account.AccountName);
+   SetValue(Count,cxAccountUsername.Index,Account.Username);
+   SetValue(Count,cxAccountServer.Index,Account.Host);
+   SetValue(Count,cxAccountPort.Index,Account.Port);
+   SetValue(Count,cxAccountTimeout.Index,Account.Timeout);
+   SetValue(Count,cxAccountPassword.Index,Account.Password);
+  end;
 end;
 
 function TAccountManager.CheckParams(Account:TAccountParams;
@@ -297,6 +339,14 @@ begin
       Close;
     end
    else Result:='';
+end;
+
+procedure TAccountManager.LoadAccount2Grid;
+var
+ i:integer;
+begin
+ for i := 0 to Count-1 do  // проход по строкам
+  AddAccountToGrid(Items[i+1]);
 end;
 
 procedure TAccountManager.SetAccountById(AccountId:integer; Value:

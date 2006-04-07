@@ -5,7 +5,7 @@ object FMain: TFMain
   BorderStyle = bsSingle
   Caption = 'FMain'
   ClientHeight = 419
-  ClientWidth = 665
+  ClientWidth = 771
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,7 +21,7 @@ object FMain: TFMain
   object stBar: TdxStatusBar
     Left = 0
     Top = 399
-    Width = 665
+    Width = 771
     Height = 20
     Panels = <
       item
@@ -98,7 +98,7 @@ object FMain: TFMain
   object stPages: TcxPageControl
     Left = 177
     Top = 0
-    Width = 488
+    Width = 594
     Height = 399
     ActivePage = cxTab_Accounts
     Align = alClient
@@ -107,68 +107,59 @@ object FMain: TFMain
     TabOrder = 3
     ClientRectBottom = 395
     ClientRectLeft = 2
-    ClientRectRight = 484
+    ClientRectRight = 590
     ClientRectTop = 22
     object cxTab_Accounts: TcxTabSheet
       Caption = 'cxTab_Accounts'
       ImageIndex = 1
-      object cxGrid1: TcxGrid
+      object cxAccountsGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 482
+        Width = 588
         Height = 373
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
         LookAndFeel.NativeStyle = True
-        object cxAccounts: TcxGridDBTableView
+        object cxAccounts: TcxGridTableView
           NavigatorButtons.ConfirmDelete = False
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <>
           DataController.Summary.SummaryGroups = <>
-          OptionsBehavior.ImmediateEditor = False
-          OptionsCustomize.ColumnFiltering = False
-          OptionsCustomize.ColumnGrouping = False
-          OptionsCustomize.ColumnMoving = False
           OptionsView.ColumnAutoWidth = True
           OptionsView.GroupByBox = False
-          object cxAccountsid: TcxGridDBColumn
-            DataBinding.FieldName = 'id'
-            Visible = False
+          object cxAccountsAccountName: TcxGridColumn
+            Caption = 'Account Name'
+            Width = 117
           end
-          object cxAccountsAccountName: TcxGridDBColumn
-            DataBinding.FieldName = 'AccountName'
-            OnGetDataText = cxAccountsAccountNameGetDataText
-            Width = 94
-          end
-          object cxAccountsusername: TcxGridDBColumn
+          object cxAccountsUsername: TcxGridColumn
             Caption = 'Username'
-            DataBinding.FieldName = 'username'
-            Width = 78
+            Width = 112
           end
-          object cxAccountspass: TcxGridDBColumn
+          object cxAccountsPassword: TcxGridColumn
             Caption = 'Password'
-            DataBinding.FieldName = 'pass'
-            OnGetDataText = cxAccountspassGetDataText
-            OnGetDisplayText = cxAccountspassGetDisplayText
+            PropertiesClassName = 'TcxTextEditProperties'
+            Properties.PasswordChar = '*'
             Width = 104
           end
-          object cxAccountshost: TcxGridDBColumn
-            Caption = 'Post server'
-            DataBinding.FieldName = 'host'
-            Width = 93
+          object cxAccountsServer: TcxGridColumn
+            Caption = 'Server'
+            Width = 104
           end
-          object cxAccountsport: TcxGridDBColumn
+          object cxAccountsPort: TcxGridColumn
             Caption = 'Port'
-            DataBinding.FieldName = 'port'
-            Width = 54
+            Width = 47
           end
-          object cxAccountsTimeout: TcxGridDBColumn
-            DataBinding.FieldName = 'Timeout'
-            Width = 57
+          object cxAccountsTimeout: TcxGridColumn
+            Caption = 'Timeout'
+            Width = 51
+          end
+          object cxAccountsStatus: TcxGridColumn
+            Caption = 'Status'
+            Width = 51
           end
         end
-        object cxGrid1Level1: TcxGridLevel
+        object cxAccountsGridLevel1: TcxGridLevel
           GridView = cxAccounts
         end
       end
@@ -220,7 +211,7 @@ object FMain: TFMain
       object cxGrid2: TcxGrid
         Left = 0
         Top = 0
-        Width = 482
+        Width = 588
         Height = 373
         Align = alClient
         TabOrder = 0
