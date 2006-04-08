@@ -18,7 +18,8 @@ uses
   ASFilter in '..\MessagesFilter\ASFilter.pas',
   RegExpr in '..\Libs\RegExpr.pas',
   PerlRegEx in '..\Libs\RegExp\PerlRegEx.pas',
-  AddAccount in 'AddAccount.pas' {FAddAccount};
+  AddAccount in 'AddAccount.pas' {FAddAccount},
+  ModifyAccount in 'ModifyAccount.pas' {FModifyAccount};
 
 {$R *.res}
 
@@ -26,5 +27,6 @@ begin
   Application.Initialize;
   Application.CreateForm(TFMain, FMain);
   Application.CreateForm(TFAddAccount, FAddAccount);
+  Application.CreateForm(TFModifyAccount, FModifyAccount);
   Application.Run;
 end.

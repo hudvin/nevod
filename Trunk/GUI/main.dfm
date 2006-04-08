@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 193
-  Top = 152
+  Left = 251
+  Top = 527
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -590,13 +590,16 @@ object FMain: TFMain
     end
     object dxBarButton10: TdxBarButton
       Action = amAddAccount
+      Caption = 'Add Account ...'
       Category = 0
+      Hint = 'Add Account '
     end
     object dxBarButton11: TdxBarButton
       Caption = 'Edit ...'
       Category = 0
       Hint = 'Edit '
       Visible = ivAlways
+      OnClick = dxBarButton11Click
     end
     object dxBarButton12: TdxBarButton
       Caption = 'Delete ...'

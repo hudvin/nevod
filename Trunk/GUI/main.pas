@@ -109,6 +109,7 @@ type
     procedure amAddAccountExecute(Sender: TObject);
     procedure dxBarButton15Click(Sender: TObject);
     procedure dxAccountsPopupPopup(Sender: TObject);
+    procedure dxBarButton11Click(Sender: TObject);
   private
     Reg: TRegistry;
     Coder:TBFCoder;
@@ -126,7 +127,7 @@ var
   FMain: TFMain;
 implementation
 
-uses AddAccount;
+uses AddAccount, ModifyAccount;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
@@ -199,7 +200,8 @@ end;
 procedure TFMain.dxBarButton15Click(Sender: TObject);
 begin
  //
- Caption:= cxAccounts.Controller.SelectedRecords[0].DisplayTexts[0];
+//  cxAccountsAccountName.
+ Caption:= cxAccounts.Controller.SelectedRecords[0].Values[cxAccountsAccountName.VisibleIndex];
 end;
 
 procedure TFMain.dxAccountsPopupPopup(Sender: TObject);
@@ -211,6 +213,11 @@ begin
   end;
 end;
 
+procedure TFMain.dxBarButton11Click(Sender: TObject);
+begin
+ FModifyAccount.ShowModal;
+end;
+
 end.
 
 {
@@ -219,6 +226,6 @@ end.
 базу хранить в каталоге пользователя (Documents and Settings)
 создать класс TAccountManager и через него получать список учетныЯ записей
 при минимизировании - сворачивать в трей
-проигрывание музыки при системных событиях
+проигрывание музыки при системных событиях хранить в минутах (тольк целые числа !!!) !!!
 
 }

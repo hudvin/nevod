@@ -24,6 +24,7 @@ type
     function GetItems(Index: Integer): TAccountParams;
     function GetCount: Integer;
     procedure LoadAccount2Grid;
+    procedure ModifyAccounstGrid(Params:TAccountParams);
     procedure SetAccountById(AccountId:integer; Value: TAccountParams);
   protected
     function AccountIdExists(AccountId:integer): Boolean;
@@ -39,6 +40,7 @@ type
     function CheckStatus(Status:TAccountStatus;AccountId:Integer): Boolean;
     procedure DeleteAccount(AccountId:Integer);
     function Id2AccountName(AccountId:integer): string;
+    procedure ModifyAccount(Params:TAccountParams);
     procedure SetStatus(AccountId:integer;AccountStatus:TAccountStatus);
     procedure UpdateAccountTable;
     property AccountById[AccountId:integer]: TAccountParams read GetAccountById
@@ -119,7 +121,8 @@ begin
     Parameters.ParamByName('AccountName').Value:=AccountName;
     ExecSQL;
     Open;
-    if Fields[0].AsInteger>0 then Result:=True else Result:=False;
+    if Fields[0].AsInteger>0 then Result:=True
+     else Result:=False;
     Close;
    end;
 end;
@@ -157,7 +160,7 @@ begin
    SetValue(Count,cxAccountUsername.Index,Account.Username);
    SetValue(Count,cxAccountServer.Index,Account.Host);
    SetValue(Count,cxAccountPort.Index,Account.Port);
-   SetValue(Count,cxAccountTimeout.Index,Account.Timeout/1000);
+   SetValue(Count,cxAccountTimeout.Index,Account.Timeout);
    SetValue(Count,cxAccountPassword.Index,Account.Password);
    case Account.Status of
      asFree: Status:='Free' ;
@@ -356,6 +359,41 @@ var
 begin
  for i := 0 to Count-1 do  // проход по строкам
   AddAccountToGrid(Items[i+1]);
+end;
+
+procedure TAccountManager.ModifyAccounstGrid(Params:TAccountParams);
+var
+  AName:String;
+  i:integer;
+  Flag:boolean;
+begin
+ {
+  получить имя записи (старое - из базы)
+   найти в гриде и поменять данные
+ }   // if cxAccounts.Controller.SelectedRecords[0].Values[cxAccountsAccountName.VisibleIndex]; then
+ AName:=AccountById[Params.Id].AccountName;
+ i:=0;
+ Flag:=false;
+ while (not Flag) or (i<FAccountsGrid.DataController.RecordCount)  do
+    with FAccountsGrid.DataController do
+       if GetValue(i,cxAccountAccountName.VisibleIndex)=Params.AccountName then
+        begin
+         Flag:=True;
+         SetValue(i,cxAccountAccountName.Index,Params.AccountName);
+         SetValue(i,cxAccountAccountName.Index,Params.AccountName);
+         SetValue(i,cxAccountUsername.Index,Params.Username);
+         SetValue(i,cxAccountServer.Index,Params.Host);
+         SetValue(i,cxAccountPort.Index,Params.Port);
+         SetValue(i,cxAccountTimeout.Index,Params.Timeout);
+         SetValue(i,cxAccountPassword.Index,params.Password);
+        end else inc(i);
+end;
+
+procedure TAccountManager.ModifyAccount(Params:TAccountParams);
+begin
+ CheckParams(Params);
+ ModifyAccounstGrid(Params);
+ AccountById[Params.Id]:=Params;
 end;
 
 procedure TAccountManager.SetAccountById(AccountId:integer; Value:
