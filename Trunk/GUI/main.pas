@@ -5,12 +5,13 @@ interface
 uses Forms,Windows, Dialogs, ASFilter, Registry, dxBar, cxStyles, Shared,
   cxTL, DB, ADODB, RXShell, StdCtrls, ExtCtrls, cxContainer, cxEdit,
   cxCheckBox, cxGridLevel, cxGridCustomTableView, cxGridTableView,
-  PostManager,
+  PostManager, SysUtils,
   
   cxGridCustomView, cxGrid, Menus, CoolTrayIcon,
   cxGridCustomPopupMenu, cxGridPopupMenu, Classes, Controls,
   cxGridDBTableView, cxClasses, cxControls, cxPC, cxSplitter,
-  cxInplaceContainer, dxStatusBar, cxLookAndFeels;
+  cxInplaceContainer, dxStatusBar, cxLookAndFeels, ActnList,
+  XPStyleActnCtrls, ActnMan;
 
 type
   TFMain = class(TForm)
@@ -35,7 +36,6 @@ type
     adAccountshost: TWideStringField;
     adAccountsport: TIntegerField;
     adAccountsTimeout: TIntegerField;
-    rxTray: TRxTrayIcon;
     dsLog: TDataSource;
     adLog: TADOQuery;
     cxTab_Log: TcxTabSheet;
@@ -92,13 +92,23 @@ type
     dxBarButton11: TdxBarButton;
     dxBarButton12: TdxBarButton;
     dxBarButton13: TdxBarButton;
+    aMan: TActionManager;
+    amAddAccount: TAction;
+    Action2: TAction;
+    dxAccountsPopup: TdxBarPopupMenu;
+    pbAddAccount: TdxBarButton;
+    dxBarButton15: TdxBarButton;
+    dxBarButton16: TdxBarButton;
+    dxBarButton17: TdxBarButton;
     procedure cbRunPropertiesChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure rxTrayClick(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure FormDestroy(Sender: TObject);
-    procedure dxBarButton10Click(Sender: TObject);
+    procedure amAddAccountExecute(Sender: TObject);
+    procedure dxBarButton15Click(Sender: TObject);
+    procedure dxAccountsPopupPopup(Sender: TObject);
   private
     Reg: TRegistry;
     Coder:TBFCoder;
@@ -180,9 +190,25 @@ begin
  PSManager.Free;
 end;
 
-procedure TFMain.dxBarButton10Click(Sender: TObject);
+procedure TFMain.amAddAccountExecute(Sender: TObject);
 begin
- FAddAccount.ShowModal;
+ ShowMessage(IntToStr(cxAccounts.Controller.SelectedRowCount));
+  FAddAccount.ShowModal;
+end;
+
+procedure TFMain.dxBarButton15Click(Sender: TObject);
+begin
+ //
+ Caption:= cxAccounts.Controller.SelectedRecords[0].DisplayTexts[0];
+end;
+
+procedure TFMain.dxAccountsPopupPopup(Sender: TObject);
+begin
+ if cxAccounts.Controller.SelectedRowCount=0 then
+  begin
+  //  pbAddAccount.Enabled:=False;
+
+  end;
 end;
 
 end.
