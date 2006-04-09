@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 140
-  Top = 188
+  Left = 229
+  Top = 145
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -64,19 +64,24 @@ object FMain: TFMain
     OptionsView.TreeLineStyle = tllsSolid
     ParentFont = False
     TabOrder = 1
+    OnFocusedNodeChanged = SettingsTreeFocusedNodeChanged
     Data = {
-      020004006C0100000F00000044617461436F6E74726F6C6C6572310100000012
-      000000546378537472696E6756616C7565547970650B00000000000700000047
+      02000400F50100000F00000044617461436F6E74726F6C6C6572310100000012
+      000000546378537472696E6756616C7565547970650D00000000000700000047
       656E6572616C00000700000046696C746572730000080000004163636F756E74
-      7301010101000005000000416C6C6F7700000400000044656E79000007000000
-      436F6D706C6578010800000000000000100000000000000000000000FFFFFFFF
-      02000000100000000000000000000000FFFFFFFF010000000400000003000000
-      0000000000000000FFFFFFFF07000000100000000000000000000000FFFFFFFF
-      08000000100000000000000000000000FFFFFFFF090000001000000000000000
-      00000000FFFFFFFF03000000100000000000000000000000FFFFFFFF04000000
-      100000000000000000000000FFFFFFFF05000000100000000000000000000000
-      FFFFFFFF06000000100000000000000000000000FFFFFFFF0A00000010000000
-      0000000000000000FFFFFFFF}
+      73000005000000416C6C6F7700000400000044656E79000007000000436F6D70
+      6C6578000005000000576F7264730000060000005374616D7073000007000000
+      53656E6465727300000B0000004174746163686D656E7473000005000000576F
+      72647300000700000053656E6465727300000B0000004174746163686D656E74
+      730300000000000000100000000000000000000000FFFFFFFF02000000100000
+      000000000000000000FFFFFFFF01000000040000000300000000000000000000
+      00FFFFFFFF0300000004000000040000000000000000000000FFFFFFFF060000
+      00100000000000000000000000FFFFFFFF070000001000000000000000000000
+      00FFFFFFFF08000000100000000000000000000000FFFFFFFF09000000100000
+      000000000000000000FFFFFFFF04000000040000000300000000000000000000
+      00FFFFFFFF0A000000100000000000000000000000FFFFFFFF0B000000100000
+      000000000000000000FFFFFFFF0C000000100000000000000000000000FFFFFF
+      FF05000000100000000000000000000000FFFFFFFF}
     object STree: TcxTreeListColumn
       DataBinding.ValueType = 'String'
       Options.Sorting = False
@@ -100,7 +105,7 @@ object FMain: TFMain
     Top = 25
     Width = 594
     Height = 370
-    ActivePage = cxTab_Signal
+    ActivePage = cxTab_WhiteWords
     Align = alClient
     LookAndFeel.Kind = lfStandard
     LookAndFeel.NativeStyle = True
@@ -166,8 +171,8 @@ object FMain: TFMain
         end
       end
     end
-    object cxTabSheet3: TcxTabSheet
-      Caption = 'cxTabSheet3'
+    object cxTab_General: TcxTabSheet
+      Caption = 'cxTab_General'
       ImageIndex = 2
       object cbRun: TcxCheckBox
         Left = 8
@@ -282,15 +287,19 @@ object FMain: TFMain
           OptionsView.ColumnAutoWidth = True
           OptionsView.GroupByBox = False
           object cxStampsFValue: TcxGridDBColumn
+            Caption = 'Stamp'
             DataBinding.FieldName = 'FValue'
             Options.Editing = False
+            Width = 283
           end
           object cxStampsDescription: TcxGridDBColumn
             DataBinding.FieldName = 'Description'
             Options.Editing = False
+            Width = 231
           end
           object cxStampsActive: TcxGridDBColumn
             DataBinding.FieldName = 'Active'
+            Width = 72
           end
         end
         object cxStampsGridLevel1: TcxGridLevel
@@ -298,9 +307,117 @@ object FMain: TFMain
         end
       end
     end
-    object cxTab_Signal: TcxTabSheet
-      Caption = 'cxTab_Signal'
+    object cxTab_BlackWords: TcxTabSheet
+      Caption = 'cxTab_BlackWords'
       ImageIndex = 4
+      object cxBlackWordsGrid: TcxGrid
+        Left = 0
+        Top = 0
+        Width = 588
+        Height = 344
+        Align = alClient
+        TabOrder = 0
+        LookAndFeel.Kind = lfStandard
+        LookAndFeel.NativeStyle = True
+        object cxBlackWords: TcxGridDBTableView
+          NavigatorButtons.ConfirmDelete = False
+          DataController.DataSource = dsBlackWords
+          DataController.Summary.DefaultGroupSummaryItems = <>
+          DataController.Summary.FooterSummaryItems = <>
+          DataController.Summary.SummaryGroups = <>
+          OptionsData.DeletingConfirmation = False
+          OptionsSelection.InvertSelect = False
+          OptionsSelection.MultiSelect = True
+          OptionsView.ColumnAutoWidth = True
+          OptionsView.GroupByBox = False
+          object cxBlackWordsFValue: TcxGridDBColumn
+            Caption = 'Word'
+            DataBinding.FieldName = 'FValue'
+            Options.Editing = False
+            Width = 176
+          end
+          object cxBlackWordsSignalFilterDescription: TcxGridDBColumn
+            Caption = 'Description'
+            DataBinding.FieldName = 'SignalFilter.Description'
+            Options.Editing = False
+            Width = 199
+          end
+          object cxBlackWordsTypesDescription: TcxGridDBColumn
+            Caption = 'Location'
+            DataBinding.FieldName = 'Types.Description'
+            Options.Editing = False
+            Width = 153
+          end
+          object cxBlackWordsActive: TcxGridDBColumn
+            DataBinding.FieldName = 'Active'
+            Width = 58
+          end
+          object cxBlackWordsId: TcxGridDBColumn
+            DataBinding.FieldName = 'Id'
+            Visible = False
+          end
+        end
+        object cxBlackWordsGridLevel1: TcxGridLevel
+          GridView = cxBlackWords
+        end
+      end
+    end
+    object cxTab_WhiteWords: TcxTabSheet
+      Caption = 'cxTab_WhiteWords'
+      ImageIndex = 5
+      object cxWhiteWordsGrid: TcxGrid
+        Left = 0
+        Top = 0
+        Width = 588
+        Height = 344
+        Align = alClient
+        TabOrder = 0
+        LookAndFeel.Kind = lfStandard
+        LookAndFeel.NativeStyle = True
+        object cxWhiteWords: TcxGridDBTableView
+          NavigatorButtons.ConfirmDelete = False
+          DataController.DataSource = dsWhiteWords
+          DataController.Summary.DefaultGroupSummaryItems = <>
+          DataController.Summary.FooterSummaryItems = <>
+          DataController.Summary.SummaryGroups = <>
+          OptionsData.DeletingConfirmation = False
+          OptionsSelection.InvertSelect = False
+          OptionsSelection.MultiSelect = True
+          OptionsView.ColumnAutoWidth = True
+          OptionsView.GroupByBox = False
+          object cxWhiteWordsId: TcxGridDBColumn
+            DataBinding.FieldName = 'Id'
+            Visible = False
+            Options.Editing = False
+            Width = 20
+          end
+          object cxWhiteWordsFValue: TcxGridDBColumn
+            Caption = 'Word'
+            DataBinding.FieldName = 'FValue'
+            Options.Editing = False
+            Width = 219
+          end
+          object cxWhiteWordsSignalFilterDescription: TcxGridDBColumn
+            Caption = 'Description'
+            DataBinding.FieldName = 'SignalFilter.Description'
+            Options.Editing = False
+            Width = 192
+          end
+          object cxWhiteWordsTypesDescription: TcxGridDBColumn
+            Caption = 'Location'
+            DataBinding.FieldName = 'Types.Description'
+            Options.Editing = False
+            Width = 105
+          end
+          object cxWhiteWordsActive: TcxGridDBColumn
+            DataBinding.FieldName = 'Active'
+            Width = 50
+          end
+        end
+        object cxGridLevel1: TcxGridLevel
+          GridView = cxWhiteWords
+        end
+      end
     end
   end
   object adAccounts: TADOTable
@@ -394,11 +511,11 @@ object FMain: TFMain
     Top = 56
     object cxStyle1: TcxStyle
       AssignedValues = [svFont]
-      Font.Charset = DEFAULT_CHARSET
+      Font.Charset = RUSSIAN_CHARSET
       Font.Color = clWindowText
-      Font.Height = -7
-      Font.Name = 'MS Sans Serif'
-      Font.Style = []
+      Font.Height = -12
+      Font.Name = 'Times New Roman'
+      Font.Style = [fsBold, fsItalic]
     end
     object cxStyle2: TcxStyle
       AssignedValues = [svColor]
@@ -778,8 +895,8 @@ object FMain: TFMain
     Top = 158
   end
   object aMan: TActionManager
-    Left = 48
-    Top = 336
+    Left = 96
+    Top = 168
     StyleName = 'XP Style'
     object amAddAccount: TAction
       Caption = 'amAddAccount'
@@ -871,20 +988,71 @@ object FMain: TFMain
     Left = 107
     Top = 87
   end
-  object adSignal: TADOQuery
+  object adBlackWords: TADOQuery
+    Active = True
     Connection = adCon
+    CursorType = ctStatic
     Parameters = <>
     SQL.Strings = (
       
-        'SELECT SignalFilter.Description,Types.Description  FROM SignalFi' +
-        'lter,Types'
-      'WHERE SignalFilter.Location=Types.Type')
+        'SELECT SignalFilter.Id, SignalFilter.FValue,SignalFilter.Descrip' +
+        'tion,Types.Description,SignalFilter.Active  FROM SignalFilter,Ty' +
+        'pes'
+      'WHERE SignalFilter.Location=Types.Type'
+      'AND'
+      'mid=('
+      '          SELECT id FROM Filters'
+      '          WHERE Type='#39'ftBlackWord'#39
+      '         )')
     Left = 8
     Top = 296
+    object adBlackWordsId: TAutoIncField
+      FieldName = 'Id'
+      ReadOnly = True
+    end
+    object adBlackWordsFValue: TWideStringField
+      FieldName = 'FValue'
+      Size = 255
+    end
+    object adBlackWordsSignalFilterDescription: TWideStringField
+      FieldName = 'SignalFilter.Description'
+      Size = 255
+    end
+    object adBlackWordsTypesDescription: TWideStringField
+      FieldName = 'Types.Description'
+      Size = 50
+    end
+    object adBlackWordsActive: TBooleanField
+      FieldName = 'Active'
+    end
   end
-  object dsSiognal: TDataSource
-    DataSet = adSignal
+  object dsBlackWords: TDataSource
+    DataSet = adBlackWords
     Left = 40
     Top = 296
+  end
+  object adWhiteWords: TADOQuery
+    Active = True
+    Connection = adCon
+    CursorType = ctStatic
+    Parameters = <>
+    SQL.Strings = (
+      
+        'SELECT SignalFilter.Id, SignalFilter.FValue,SignalFilter.Descrip' +
+        'tion,Types.Description,SignalFilter.Active  FROM SignalFilter,Ty' +
+        'pes'
+      'WHERE SignalFilter.Location=Types.Type'
+      'AND'
+      'mid=('
+      '          SELECT id FROM Filters'
+      '          WHERE Type='#39'ftWhiteWord'#39
+      '         )')
+    Left = 8
+    Top = 328
+  end
+  object dsWhiteWords: TDataSource
+    DataSet = adWhiteWords
+    Left = 40
+    Top = 328
   end
 end

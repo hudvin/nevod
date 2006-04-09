@@ -5,7 +5,7 @@ interface
 uses Forms,Windows, Dialogs, ASFilter, Registry, dxBar, cxStyles, Shared,
   cxTL, DB, ADODB, RXShell, StdCtrls, ExtCtrls, cxContainer, cxEdit,
   cxCheckBox, cxGridLevel, cxGridCustomTableView, cxGridTableView,
-  PostManager, SysUtils,
+  PostManager, SysUtils, Typinfo,
   
   cxGridCustomView, cxGrid, Menus, CoolTrayIcon,
   cxGridCustomPopupMenu, cxGridPopupMenu, Classes, Controls,
@@ -21,7 +21,7 @@ type
     STree: TcxTreeListColumn;
     stPages: TcxPageControl;
     cxTab_Accounts: TcxTabSheet;
-    cxTabSheet3: TcxTabSheet;
+    cxTab_General: TcxTabSheet;
     cbRun: TcxCheckBox;
     LabeledEdit1: TLabeledEdit;
     cxAccountsGridLevel1: TcxGridLevel;
@@ -125,9 +125,33 @@ type
     dxBarButton23: TdxBarButton;
     dxBarButton24: TdxBarButton;
     adDeleteStamp: TAction;
-    cxTab_Signal: TcxTabSheet;
-    adSignal: TADOQuery;
-    dsSiognal: TDataSource;
+    cxTab_BlackWords: TcxTabSheet;
+    adBlackWords: TADOQuery;
+    dsBlackWords: TDataSource;
+    cxBlackWords: TcxGridDBTableView;
+    cxBlackWordsGridLevel1: TcxGridLevel;
+    cxBlackWordsGrid: TcxGrid;
+    adBlackWordsSignalFilterDescription: TWideStringField;
+    adBlackWordsTypesDescription: TWideStringField;
+    adBlackWordsFValue: TWideStringField;
+    adBlackWordsActive: TBooleanField;
+    cxBlackWordsFValue: TcxGridDBColumn;
+    cxBlackWordsSignalFilterDescription: TcxGridDBColumn;
+    cxBlackWordsTypesDescription: TcxGridDBColumn;
+    cxBlackWordsActive: TcxGridDBColumn;
+    adBlackWordsId: TAutoIncField;
+    cxBlackWordsId: TcxGridDBColumn;
+    cxTab_WhiteWords: TcxTabSheet;
+    adWhiteWords: TADOQuery;
+    dsWhiteWords: TDataSource;
+    cxWhiteWordsGrid: TcxGrid;
+    cxWhiteWords: TcxGridDBTableView;
+    cxGridLevel1: TcxGridLevel;
+    cxWhiteWordsId: TcxGridDBColumn;
+    cxWhiteWordsFValue: TcxGridDBColumn;
+    cxWhiteWordsSignalFilterDescription: TcxGridDBColumn;
+    cxWhiteWordsTypesDescription: TcxGridDBColumn;
+    cxWhiteWordsActive: TcxGridDBColumn;
     procedure cbRunPropertiesChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -141,6 +165,8 @@ type
     procedure amDeleteAccountExecute(Sender: TObject);
     procedure amAddStampExecute(Sender: TObject);
     procedure adDeleteStampExecute(Sender: TObject);
+    procedure SettingsTreeFocusedNodeChanged(Sender: TObject;
+      APrevFocusedNode, AFocusedNode: TcxTreeListNode);
   private
     Reg: TRegistry;
     Coder:TBFCoder;
@@ -270,6 +296,31 @@ begin
   begin
    cxStamps.Controller.DeleteSelection;
   end;
+end;
+
+procedure TFMain.SettingsTreeFocusedNodeChanged(Sender: TObject;
+  APrevFocusedNode, AFocusedNode: TcxTreeListNode);
+var
+ Node:String;
+begin
+ Node:= STree.TreeList.FocusedNode.Texts[0];
+ case TNodeGroup(GetEnumValue(TypeInfo(TNodeGroup),'nd'+Node)) of
+   ndGeneral:
+    begin
+     Caption:='General' ;
+     cxTab_General.Show;
+    end;
+   ndAccounts:
+    begin
+     Caption:='Accounts' ;
+     cxTab_Accounts.Show;
+    end;
+   ndStamps:
+    begin
+     Caption:='Stamps' ;
+     cxTab_Stamp.Show;
+    end;
+ end;
 end;
 
 end.

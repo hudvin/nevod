@@ -25,7 +25,10 @@ const
   MutexName='{94FA4497-A317-4C45-9B57-A0558F8221D7}';
   ServerMutex='{B66AEAD2-94BF-453B-9D79-27CC798B6657}';
   WaitTime=1000;      // время между проверками состояний
-  
+
+type
+ TNodeGroup=(ndGeneral,ndAccounts,ndStamps);  
+
 type
   TAccountStatus=(asFree,asClient,asServer);
 
