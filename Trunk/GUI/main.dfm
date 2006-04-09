@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 247
-  Top = 286
+  Left = 140
+  Top = 188
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -100,7 +100,7 @@ object FMain: TFMain
     Top = 25
     Width = 594
     Height = 370
-    ActivePage = cxTab_Stamp
+    ActivePage = cxTab_Signal
     Align = alClient
     LookAndFeel.Kind = lfStandard
     LookAndFeel.NativeStyle = True
@@ -266,6 +266,7 @@ object FMain: TFMain
         Width = 588
         Height = 344
         Align = alClient
+        PopupMenu = dxStampsPopup
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
         LookAndFeel.NativeStyle = True
@@ -275,6 +276,7 @@ object FMain: TFMain
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <>
           DataController.Summary.SummaryGroups = <>
+          OptionsData.DeletingConfirmation = False
           OptionsSelection.InvertSelect = False
           OptionsSelection.MultiSelect = True
           OptionsView.ColumnAutoWidth = True
@@ -295,6 +297,10 @@ object FMain: TFMain
           GridView = cxStamps
         end
       end
+    end
+    object cxTab_Signal: TcxTabSheet
+      Caption = 'cxTab_Signal'
+      ImageIndex = 4
     end
   end
   object adAccounts: TADOTable
@@ -544,6 +550,10 @@ object FMain: TFMain
       item
         Control = cxAccountsGrid
         PopupMenu = dxAccountsPopup
+      end
+      item
+        Control = cxStampsGrid
+        PopupMenu = dxStampsPopup
       end>
     Style = bmsFlat
     SunkenBorder = True
@@ -723,6 +733,22 @@ object FMain: TFMain
       Hint = 'New Item'
       Visible = ivAlways
     end
+    object dxBarButton22: TdxBarButton
+      Action = adDeleteStamp
+      Category = 0
+    end
+    object dxBarButton23: TdxBarButton
+      Caption = 'New Item'
+      Category = 0
+      Hint = 'New Item'
+      Visible = ivAlways
+    end
+    object dxBarButton24: TdxBarButton
+      Caption = 'New Item'
+      Category = 0
+      Hint = 'New Item'
+      Visible = ivAlways
+    end
   end
   object dxBarPopupMenu1: TdxBarPopupMenu
     BarManager = dxBarManager1
@@ -766,6 +792,10 @@ object FMain: TFMain
     object amAddStamp: TAction
       Caption = 'amAddStamp'
       OnExecute = amAddStampExecute
+    end
+    object adDeleteStamp: TAction
+      Caption = 'adDeleteStamp'
+      OnExecute = adDeleteStampExecute
     end
   end
   object dxAccountsPopup: TdxBarPopupMenu
@@ -821,5 +851,40 @@ object FMain: TFMain
     Parameters = <>
     Left = 104
     Top = 24
+  end
+  object dxStampsPopup: TdxBarPopupMenu
+    BarManager = dxBarManager1
+    ItemLinks = <
+      item
+        Item = dxBarButton22
+        Visible = True
+      end
+      item
+        Item = dxBarButton24
+        Visible = True
+      end
+      item
+        Item = dxBarButton23
+        Visible = True
+      end>
+    UseOwnFont = False
+    Left = 107
+    Top = 87
+  end
+  object adSignal: TADOQuery
+    Connection = adCon
+    Parameters = <>
+    SQL.Strings = (
+      
+        'SELECT SignalFilter.Description,Types.Description  FROM SignalFi' +
+        'lter,Types'
+      'WHERE SignalFilter.Location=Types.Type')
+    Left = 8
+    Top = 296
+  end
+  object dsSiognal: TDataSource
+    DataSet = adSignal
+    Left = 40
+    Top = 296
   end
 end

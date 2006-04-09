@@ -120,6 +120,14 @@ type
     dxBarButton21: TdxBarButton;
     adTest: TADOQuery;
     amAddStamp: TAction;
+    dxStampsPopup: TdxBarPopupMenu;
+    dxBarButton22: TdxBarButton;
+    dxBarButton23: TdxBarButton;
+    dxBarButton24: TdxBarButton;
+    adDeleteStamp: TAction;
+    cxTab_Signal: TcxTabSheet;
+    adSignal: TADOQuery;
+    dsSiognal: TDataSource;
     procedure cbRunPropertiesChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -132,6 +140,7 @@ type
     procedure dxBarButton11Click(Sender: TObject);
     procedure amDeleteAccountExecute(Sender: TObject);
     procedure amAddStampExecute(Sender: TObject);
+    procedure adDeleteStampExecute(Sender: TObject);
   private
     Reg: TRegistry;
     Coder:TBFCoder;
@@ -252,6 +261,15 @@ end;
 procedure TFMain.amAddStampExecute(Sender: TObject);
 begin
  FAddStamp.ShowModal;
+end;
+
+procedure TFMain.adDeleteStampExecute(Sender: TObject);
+begin
+  // удаление штампа
+ if Application.MessageBox('Are you are sure ?','Deleting Stamp',MB_OKCANCEL)=IDOK then
+  begin
+   cxStamps.Controller.DeleteSelection;
+  end;
 end;
 
 end.
