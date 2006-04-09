@@ -50,7 +50,7 @@ type
   end;
 
 implementation
-uses main;
+uses main, cxCustomData;
 constructor TAccountManager.Create(ADOCon:TADOConnection;
     AccountsGrid:TcxGridTableView);
 begin
@@ -238,7 +238,7 @@ end;
 procedure TAccountManager.DeleteAccount(AccountId:Integer);
 begin
   with DBProc do
-   begin
+   begin     // проверка есть в другом месте
     SQL.Text:='SELECT COUNT(Id) FROM Accounts WHERE Id=:AccountId ';
     Parameters.ParamByName('AccountId').Value:=AccountId;
     ExecSQL;
@@ -255,6 +255,7 @@ begin
       Parameters.ParamByName('AccountId').Value:=AccountId;
       ExecSQL;
       UpdateAccountTable;
+      FAccountsGrid.DataController.DeleteSelection;
      end;
    end;
 end;
@@ -374,9 +375,9 @@ begin
  AName:=AccountById[Params.Id].AccountName;
  i:=0;
  Flag:=false;
- while (not Flag) or (i<FAccountsGrid.DataController.RecordCount)  do
+ while (not Flag) and (i<FAccountsGrid.DataController.RecordCount)  do
     with FAccountsGrid.DataController do
-       if GetValue(i,cxAccountAccountName.VisibleIndex)=Params.AccountName then
+       if GetValue(i,cxAccountAccountName.VisibleIndex)=AName then
         begin
          Flag:=True;
          SetValue(i,cxAccountAccountName.Index,Params.AccountName);

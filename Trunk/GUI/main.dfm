@@ -1,10 +1,10 @@
 object FMain: TFMain
-  Left = 251
-  Top = 527
+  Left = 247
+  Top = 286
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
-  ClientHeight = 419
+  ClientHeight = 415
   ClientWidth = 771
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -20,7 +20,7 @@ object FMain: TFMain
   TextHeight = 13
   object stBar: TdxStatusBar
     Left = 0
-    Top = 399
+    Top = 395
     Width = 771
     Height = 20
     Panels = <
@@ -43,7 +43,7 @@ object FMain: TFMain
     Left = 0
     Top = 25
     Width = 169
-    Height = 374
+    Height = 370
     Align = alLeft
     Bands = <
       item
@@ -89,7 +89,7 @@ object FMain: TFMain
     Left = 169
     Top = 25
     Width = 8
-    Height = 374
+    Height = 370
     HotZoneClassName = 'TcxMediaPlayer9Style'
     AutoSnap = True
     ResizeUpdate = True
@@ -99,13 +99,13 @@ object FMain: TFMain
     Left = 177
     Top = 25
     Width = 594
-    Height = 374
-    ActivePage = cxTab_Accounts
+    Height = 370
+    ActivePage = cxTab_Stamp
     Align = alClient
     LookAndFeel.Kind = lfStandard
     LookAndFeel.NativeStyle = True
     TabOrder = 3
-    ClientRectBottom = 370
+    ClientRectBottom = 366
     ClientRectLeft = 2
     ClientRectRight = 590
     ClientRectTop = 22
@@ -116,7 +116,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 588
-        Height = 348
+        Height = 344
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
@@ -205,7 +205,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 588
-        Height = 348
+        Height = 344
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
@@ -254,6 +254,45 @@ object FMain: TFMain
         end
         object cxGrid2Level1: TcxGridLevel
           GridView = cxGrid2DBTableView1
+        end
+      end
+    end
+    object cxTab_Stamp: TcxTabSheet
+      Caption = 'cxTab_Stamp'
+      ImageIndex = 3
+      object cxStampsGrid: TcxGrid
+        Left = 0
+        Top = 0
+        Width = 588
+        Height = 344
+        Align = alClient
+        TabOrder = 0
+        LookAndFeel.Kind = lfStandard
+        LookAndFeel.NativeStyle = True
+        object cxStamps: TcxGridDBTableView
+          NavigatorButtons.ConfirmDelete = False
+          DataController.DataSource = dsStamp
+          DataController.Summary.DefaultGroupSummaryItems = <>
+          DataController.Summary.FooterSummaryItems = <>
+          DataController.Summary.SummaryGroups = <>
+          OptionsSelection.InvertSelect = False
+          OptionsSelection.MultiSelect = True
+          OptionsView.ColumnAutoWidth = True
+          OptionsView.GroupByBox = False
+          object cxStampsFValue: TcxGridDBColumn
+            DataBinding.FieldName = 'FValue'
+            Options.Editing = False
+          end
+          object cxStampsDescription: TcxGridDBColumn
+            DataBinding.FieldName = 'Description'
+            Options.Editing = False
+          end
+          object cxStampsActive: TcxGridDBColumn
+            DataBinding.FieldName = 'Active'
+          end
+        end
+        object cxStampsGridLevel1: TcxGridLevel
+          GridView = cxStamps
         end
       end
     end
@@ -309,7 +348,7 @@ object FMain: TFMain
   end
   object dsLog: TDataSource
     DataSet = adLog
-    Left = 48
+    Left = 40
     Top = 232
   end
   object adLog: TADOQuery
@@ -476,6 +515,10 @@ object FMain: TFMain
           item
             Item = dxBarSubItem1
             Visible = True
+          end
+          item
+            Item = dxBarSubItem2
+            Visible = True
           end>
         MultiLine = True
         Name = 'Custom 1'
@@ -505,8 +548,8 @@ object FMain: TFMain
     Style = bmsFlat
     SunkenBorder = True
     UseSystemFont = True
-    Left = 267
-    Top = 318
+    Left = 147
+    Top = 126
     DockControlHeights = (
       0
       0
@@ -602,10 +645,10 @@ object FMain: TFMain
       OnClick = dxBarButton11Click
     end
     object dxBarButton12: TdxBarButton
+      Action = amDeleteAccount
       Caption = 'Delete ...'
       Category = 0
       Hint = 'Delete '
-      Visible = ivAlways
     end
     object dxBarButton13: TdxBarButton
       Caption = 'Exit'
@@ -633,6 +676,48 @@ object FMain: TFMain
       Visible = ivAlways
     end
     object dxBarButton17: TdxBarButton
+      Caption = 'New Item'
+      Category = 0
+      Hint = 'New Item'
+      Visible = ivAlways
+    end
+    object dxBarButton14: TdxBarButton
+      Caption = 'Filters'
+      Category = 0
+      Hint = 'Filters'
+      Visible = ivAlways
+    end
+    object dxBarButton18: TdxBarButton
+      Caption = 'New Item'
+      Category = 0
+      Hint = 'New Item'
+      Visible = ivAlways
+    end
+    object dxBarSubItem2: TdxBarSubItem
+      Caption = 'Filters'
+      Category = 0
+      Visible = ivAlways
+      ItemLinks = <
+        item
+          Item = dxBarButton20
+          Visible = True
+        end
+        item
+          Item = dxBarButton21
+          Visible = True
+        end>
+    end
+    object dxBarButton19: TdxBarButton
+      Caption = 'New Item'
+      Category = 0
+      Hint = 'New Item'
+      Visible = ivAlways
+    end
+    object dxBarButton20: TdxBarButton
+      Action = amAddStamp
+      Category = 0
+    end
+    object dxBarButton21: TdxBarButton
       Caption = 'New Item'
       Category = 0
       Hint = 'New Item'
@@ -674,8 +759,13 @@ object FMain: TFMain
       Caption = 'amAddAccount'
       OnExecute = amAddAccountExecute
     end
-    object Action2: TAction
-      Caption = 'Action2'
+    object amDeleteAccount: TAction
+      Caption = 'amDeleteAccount'
+      OnExecute = amDeleteAccountExecute
+    end
+    object amAddStamp: TAction
+      Caption = 'amAddStamp'
+      OnExecute = amAddStampExecute
     end
   end
   object dxAccountsPopup: TdxBarPopupMenu
@@ -699,7 +789,37 @@ object FMain: TFMain
       end>
     UseOwnFont = False
     OnPopup = dxAccountsPopupPopup
-    Left = 187
+    Left = 139
     Top = 79
+  end
+  object adStamp: TADOTable
+    Active = True
+    Connection = adCon
+    CursorType = ctStatic
+    TableName = 'StampFilter'
+    Left = 8
+    Top = 264
+    object adStampFValue: TWideStringField
+      FieldName = 'FValue'
+      Size = 255
+    end
+    object adStampDescription: TWideStringField
+      FieldName = 'Description'
+      Size = 255
+    end
+    object adStampActive: TBooleanField
+      FieldName = 'Active'
+    end
+  end
+  object dsStamp: TDataSource
+    DataSet = adStamp
+    Left = 40
+    Top = 264
+  end
+  object adTest: TADOQuery
+    Connection = adCon
+    Parameters = <>
+    Left = 104
+    Top = 24
   end
 end

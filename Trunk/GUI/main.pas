@@ -94,12 +94,32 @@ type
     dxBarButton13: TdxBarButton;
     aMan: TActionManager;
     amAddAccount: TAction;
-    Action2: TAction;
+    amDeleteAccount: TAction;
     dxAccountsPopup: TdxBarPopupMenu;
     pbAddAccount: TdxBarButton;
     dxBarButton15: TdxBarButton;
     dxBarButton16: TdxBarButton;
     dxBarButton17: TdxBarButton;
+    cxTab_Stamp: TcxTabSheet;
+    adStamp: TADOTable;
+    dsStamp: TDataSource;
+    adStampFValue: TWideStringField;
+    adStampDescription: TWideStringField;
+    adStampActive: TBooleanField;
+    cxStamps: TcxGridDBTableView;
+    cxStampsGridLevel1: TcxGridLevel;
+    cxStampsGrid: TcxGrid;
+    cxStampsFValue: TcxGridDBColumn;
+    cxStampsDescription: TcxGridDBColumn;
+    cxStampsActive: TcxGridDBColumn;
+    dxBarButton14: TdxBarButton;
+    dxBarButton18: TdxBarButton;
+    dxBarSubItem2: TdxBarSubItem;
+    dxBarButton19: TdxBarButton;
+    dxBarButton20: TdxBarButton;
+    dxBarButton21: TdxBarButton;
+    adTest: TADOQuery;
+    amAddStamp: TAction;
     procedure cbRunPropertiesChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -110,6 +130,8 @@ type
     procedure dxBarButton15Click(Sender: TObject);
     procedure dxAccountsPopupPopup(Sender: TObject);
     procedure dxBarButton11Click(Sender: TObject);
+    procedure amDeleteAccountExecute(Sender: TObject);
+    procedure amAddStampExecute(Sender: TObject);
   private
     Reg: TRegistry;
     Coder:TBFCoder;
@@ -127,7 +149,7 @@ var
   FMain: TFMain;
 implementation
 
-uses AddAccount, ModifyAccount;
+uses AddAccount, ModifyAccount, AddStamp;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
@@ -216,6 +238,20 @@ end;
 procedure TFMain.dxBarButton11Click(Sender: TObject);
 begin
  FModifyAccount.ShowModal;
+end;
+
+procedure TFMain.amDeleteAccountExecute(Sender: TObject);
+begin
+ // удаление учетной записи
+ if Application.MessageBox('Are you are sure ?','Deleting Account',MB_OKCANCEL)=IDOK then
+  begin
+   PSManager.AccountManager.DeleteAccount( PSManager.AccountManager.AccountName2Id(cxAccounts.Controller.SelectedRecords[0].Values[cxAccountsAccountName.VisibleIndex]));
+  end;
+end;
+
+procedure TFMain.amAddStampExecute(Sender: TObject);
+begin
+ FAddStamp.ShowModal;
 end;
 
 end.

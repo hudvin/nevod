@@ -19,7 +19,8 @@ uses
   RegExpr in '..\Libs\RegExpr.pas',
   PerlRegEx in '..\Libs\RegExp\PerlRegEx.pas',
   AddAccount in 'AddAccount.pas' {FAddAccount},
-  ModifyAccount in 'ModifyAccount.pas' {FModifyAccount};
+  ModifyAccount in 'ModifyAccount.pas' {FModifyAccount},
+  AddStamp in 'AddStamp.pas' {FAddStamp};
 
 {$R *.res}
 
@@ -28,5 +29,6 @@ begin
   Application.CreateForm(TFMain, FMain);
   Application.CreateForm(TFAddAccount, FAddAccount);
   Application.CreateForm(TFModifyAccount, FModifyAccount);
+  Application.CreateForm(TFAddStamp, FAddStamp);
   Application.Run;
 end.
