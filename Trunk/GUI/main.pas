@@ -11,7 +11,7 @@ uses Forms,Windows, Dialogs, ASFilter, Registry, dxBar, cxStyles, Shared,
   cxGridCustomPopupMenu, cxGridPopupMenu, Classes, Controls,
   cxGridDBTableView, cxClasses, cxControls, cxPC, cxSplitter,
   cxInplaceContainer, dxStatusBar, cxLookAndFeels, ActnList,
-  XPStyleActnCtrls, ActnMan;
+  XPStyleActnCtrls, ActnMan, ImgList;
 
 type
   TFMain = class(TForm)
@@ -52,33 +52,8 @@ type
     cxGrid2DBTableView1ErrorTime: TcxGridDBColumn;
     adLogId: TAutoIncField;
     cxGrid2DBTableView1Id: TcxGridDBColumn;
-    cxStyleRepository1: TcxStyleRepository;
-    cxStyle1: TcxStyle;
-    TreeListStyleSheetDevExpress: TcxTreeListStyleSheet;
-    cxStyle2: TcxStyle;
-    cxStyle3: TcxStyle;
-    cxStyle4: TcxStyle;
-    cxStyle5: TcxStyle;
-    cxStyle6: TcxStyle;
-    cxStyle7: TcxStyle;
-    cxStyle8: TcxStyle;
-    cxStyle9: TcxStyle;
-    cxStyle10: TcxStyle;
-    cxStyle11: TcxStyle;
-    cxStyle12: TcxStyle;
-    cxStyle13: TcxStyle;
-    cxStyle14: TcxStyle;
     dxBarManager1: TdxBarManager;
-    dxBarButton1: TdxBarButton;
-    dxBarButton2: TdxBarButton;
-    dxBarButton3: TdxBarButton;
-    dxBarButton4: TdxBarButton;
     dxBarPopupMenu1: TdxBarPopupMenu;
-    dxBarButton5: TdxBarButton;
-    dxBarButton6: TdxBarButton;
-    dxBarButton7: TdxBarButton;
-    dxBarButton8: TdxBarButton;
-    dxBarButton9: TdxBarButton;
     cxAccounts: TcxGridTableView;
     cxAccountsAccountName: TcxGridColumn;
     cxAccountsUsername: TcxGridColumn;
@@ -91,15 +66,12 @@ type
     dxBarButton10: TdxBarButton;
     dxBarButton11: TdxBarButton;
     dxBarButton12: TdxBarButton;
-    dxBarButton13: TdxBarButton;
     aMan: TActionManager;
     amAddAccount: TAction;
     amDeleteAccount: TAction;
     dxAccountsPopup: TdxBarPopupMenu;
     pbAddAccount: TdxBarButton;
     dxBarButton15: TdxBarButton;
-    dxBarButton16: TdxBarButton;
-    dxBarButton17: TdxBarButton;
     cxTab_Stamp: TcxTabSheet;
     adStamp: TADOTable;
     dsStamp: TDataSource;
@@ -112,18 +84,11 @@ type
     cxStampsFValue: TcxGridDBColumn;
     cxStampsDescription: TcxGridDBColumn;
     cxStampsActive: TcxGridDBColumn;
-    dxBarButton14: TdxBarButton;
-    dxBarButton18: TdxBarButton;
     dxBarSubItem2: TdxBarSubItem;
-    dxBarButton19: TdxBarButton;
-    dxBarButton20: TdxBarButton;
-    dxBarButton21: TdxBarButton;
     adTest: TADOQuery;
     amAddStamp: TAction;
     dxStampsPopup: TdxBarPopupMenu;
     dxBarButton22: TdxBarButton;
-    dxBarButton23: TdxBarButton;
-    dxBarButton24: TdxBarButton;
     adDeleteStamp: TAction;
     cxTab_BlackWords: TcxTabSheet;
     adBlackWords: TADOQuery;
@@ -152,14 +117,21 @@ type
     cxWhiteWordsSignalFilterDescription: TcxGridDBColumn;
     cxWhiteWordsTypesDescription: TcxGridDBColumn;
     cxWhiteWordsActive: TcxGridDBColumn;
+    amModifyWord: TAction;
+    amAddWord: TAction;
+    Button1: TButton;
+    dxWhiteWordsPopup: TdxBarPopupMenu;
+    dxBlackWordsPopup: TdxBarPopupMenu;
+    dxBarButton1: TdxBarButton;
+    dxBarButton2: TdxBarButton;
+    dxBarButton3: TdxBarButton;
+    Action1: TAction;
+    dxBarButton4: TdxBarButton;
     procedure cbRunPropertiesChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure rxTrayClick(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
     procedure FormDestroy(Sender: TObject);
     procedure amAddAccountExecute(Sender: TObject);
-    procedure dxBarButton15Click(Sender: TObject);
     procedure dxAccountsPopupPopup(Sender: TObject);
     procedure dxBarButton11Click(Sender: TObject);
     procedure amDeleteAccountExecute(Sender: TObject);
@@ -167,6 +139,11 @@ type
     procedure adDeleteStampExecute(Sender: TObject);
     procedure SettingsTreeFocusedNodeChanged(Sender: TObject;
       APrevFocusedNode, AFocusedNode: TcxTreeListNode);
+    procedure cxBlackWordsDblClick(Sender: TObject);
+    procedure amAddWordExecute(Sender: TObject);
+    procedure dxWhiteWordsPopupPopup(Sender: TObject);
+    procedure dxBlackWordsPopupPopup(Sender: TObject);
+    procedure amModifyWordExecute(Sender: TObject);
   private
     Reg: TRegistry;
     Coder:TBFCoder;
@@ -184,7 +161,7 @@ var
   FMain: TFMain;
 implementation
 
-uses AddAccount, ModifyAccount, AddStamp;
+uses AddAccount, ModifyAccount, AddStamp, ModifyWord;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
@@ -229,17 +206,8 @@ begin
  Coder:=TBFCoder.Create;
  Coder.Key:=CriptKey;
  PSManager:=TPostManager.Create(adCon,cxAccounts);
-
-// Application.ShowMainForm:=False;
 end;
 
-procedure TFMain.rxTrayClick(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
-begin
- if not FMain.Active then
-  FMain.Show;
-
-end;
 
 procedure TFMain.FormDestroy(Sender: TObject);
 begin
@@ -252,13 +220,6 @@ procedure TFMain.amAddAccountExecute(Sender: TObject);
 begin
  ShowMessage(IntToStr(cxAccounts.Controller.SelectedRowCount));
   FAddAccount.ShowModal;
-end;
-
-procedure TFMain.dxBarButton15Click(Sender: TObject);
-begin
- //
-//  cxAccountsAccountName.
- Caption:= cxAccounts.Controller.SelectedRecords[0].Values[cxAccountsAccountName.VisibleIndex];
 end;
 
 procedure TFMain.dxAccountsPopupPopup(Sender: TObject);
@@ -323,9 +284,68 @@ begin
  end;
 end;
 
+procedure TFMain.cxBlackWordsDblClick(Sender: TObject);
+begin
+// FModifyWord.ShowModal;
+end;
+
+procedure TFMain.amAddWordExecute(Sender: TObject);
+begin
+ {
+
+ взять данные из текущей строки
+ заполнить поля в форме
+ для модификации использовать id в таблице
+ показать модальную форму
+
+ 
+ поддержка переноса (Drag&Drop) ! (для аналогичной таблицы)
+ }
+end;
+
+procedure TFMain.dxWhiteWordsPopupPopup(Sender: TObject);
+begin
+ with FModifyWord do
+  if Grid<>cxWhiteWords then
+   begin
+    Grid:=cxWhiteWords;
+    cxWordsActive:=cxWhiteWordsActive;
+    cxWordsFValue:=cxWhiteWordsFValue;
+    cxWordsId:=cxWhiteWordsId;
+    cxWordSignalFilterDescription:=cxWhiteWordsSignalFilterDescription;
+    cxWordsTypesDescription:=cxWhiteWordsTypesDescription;
+   end;
+end;
+
+procedure TFMain.dxBlackWordsPopupPopup(Sender: TObject);
+begin
+ with FModifyWord do
+    if Grid<>cxBlackWords then
+     begin
+      Grid:=cxBlackWords;
+      cxWordsActive:=cxBlackWordsActive;
+      cxWordsFValue:=cxBlackWordsFValue;
+      cxWordsId:=cxBlackWordsId;
+      cxWordSignalFilterDescription:=cxBlackWordsSignalFilterDescription;
+      cxWordsTypesDescription:=cxBlackWordsTypesDescription;
+     end;
+end;
+
+procedure TFMain.amModifyWordExecute(Sender: TObject);
+begin
+ FModifyWord.ShowModal;
+end;
+
 end.
 
 {
+
+
+редактирование либо прямо в таблице
+ либо в отдельной форме !!!
+ два метода не использовать - возможна путаница
+
+
 запускать в свернутом виде !
 при минимизации - в трей
 базу хранить в каталоге пользователя (Documents and Settings)

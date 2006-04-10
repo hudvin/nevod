@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 229
-  Top = 145
+  Left = 205
+  Top = 218
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -42,7 +42,7 @@ object FMain: TFMain
   object SettingsTree: TcxTreeList
     Left = 0
     Top = 25
-    Width = 169
+    Width = 177
     Height = 370
     Align = alLeft
     Bands = <
@@ -91,7 +91,7 @@ object FMain: TFMain
     end
   end
   object cxSplitter1: TcxSplitter
-    Left = 169
+    Left = 177
     Top = 25
     Width = 8
     Height = 370
@@ -101,18 +101,18 @@ object FMain: TFMain
     Control = SettingsTree
   end
   object stPages: TcxPageControl
-    Left = 177
+    Left = 185
     Top = 25
-    Width = 594
+    Width = 586
     Height = 370
-    ActivePage = cxTab_WhiteWords
+    ActivePage = cxTab_BlackWords
     Align = alClient
     LookAndFeel.Kind = lfStandard
     LookAndFeel.NativeStyle = True
     TabOrder = 3
     ClientRectBottom = 366
     ClientRectLeft = 2
-    ClientRectRight = 590
+    ClientRectRight = 582
     ClientRectTop = 22
     object cxTab_Accounts: TcxTabSheet
       Caption = 'cxTab_Accounts'
@@ -120,7 +120,7 @@ object FMain: TFMain
       object cxAccountsGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 588
+        Width = 580
         Height = 344
         Align = alClient
         TabOrder = 0
@@ -209,7 +209,7 @@ object FMain: TFMain
       object cxGrid2: TcxGrid
         Left = 0
         Top = 0
-        Width = 588
+        Width = 580
         Height = 344
         Align = alClient
         TabOrder = 0
@@ -228,32 +228,24 @@ object FMain: TFMain
           OptionsView.DataRowHeight = 19
           OptionsView.FooterAutoHeight = True
           OptionsView.GroupByBox = False
-          Styles.Background = cxStyle10
-          Styles.Content = cxStyle8
-          Styles.Selection = cxStyle7
           object cxGrid2DBTableView1AccountName: TcxGridDBColumn
             DataBinding.FieldName = 'AccountName'
-            Styles.Content = cxStyle1
             Width = 102
           end
           object cxGrid2DBTableView1ErrorType: TcxGridDBColumn
             DataBinding.FieldName = 'ErrorType'
-            Styles.Content = cxStyle1
             Width = 65
           end
           object cxGrid2DBTableView1Message: TcxGridDBColumn
             DataBinding.FieldName = 'Message'
-            Styles.Content = cxStyle1
             Width = 194
           end
           object cxGrid2DBTableView1ErrorTime: TcxGridDBColumn
             DataBinding.FieldName = 'ErrorTime'
-            Styles.Content = cxStyle1
             Width = 66
           end
           object cxGrid2DBTableView1Id: TcxGridDBColumn
             DataBinding.FieldName = 'Id'
-            Styles.Content = cxStyle1
             Width = 53
           end
         end
@@ -268,7 +260,7 @@ object FMain: TFMain
       object cxStampsGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 588
+        Width = 580
         Height = 344
         Align = alClient
         PopupMenu = dxStampsPopup
@@ -313,13 +305,14 @@ object FMain: TFMain
       object cxBlackWordsGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 588
+        Width = 580
         Height = 344
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
         LookAndFeel.NativeStyle = True
         object cxBlackWords: TcxGridDBTableView
+          OnDblClick = cxBlackWordsDblClick
           NavigatorButtons.ConfirmDelete = False
           DataController.DataSource = dsBlackWords
           DataController.Summary.DefaultGroupSummaryItems = <>
@@ -350,6 +343,7 @@ object FMain: TFMain
           end
           object cxBlackWordsActive: TcxGridDBColumn
             DataBinding.FieldName = 'Active'
+            Options.Editing = False
             Width = 58
           end
           object cxBlackWordsId: TcxGridDBColumn
@@ -361,6 +355,14 @@ object FMain: TFMain
           GridView = cxBlackWords
         end
       end
+      object Button1: TButton
+        Left = 80
+        Top = 112
+        Width = 75
+        Height = 25
+        Caption = 'amAddWord'
+        TabOrder = 1
+      end
     end
     object cxTab_WhiteWords: TcxTabSheet
       Caption = 'cxTab_WhiteWords'
@@ -368,7 +370,7 @@ object FMain: TFMain
       object cxWhiteWordsGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 588
+        Width = 580
         Height = 344
         Align = alClient
         TabOrder = 0
@@ -385,33 +387,33 @@ object FMain: TFMain
           OptionsSelection.MultiSelect = True
           OptionsView.ColumnAutoWidth = True
           OptionsView.GroupByBox = False
-          object cxWhiteWordsId: TcxGridDBColumn
-            DataBinding.FieldName = 'Id'
-            Visible = False
-            Options.Editing = False
-            Width = 20
-          end
           object cxWhiteWordsFValue: TcxGridDBColumn
             Caption = 'Word'
             DataBinding.FieldName = 'FValue'
             Options.Editing = False
-            Width = 219
+            Width = 201
           end
           object cxWhiteWordsSignalFilterDescription: TcxGridDBColumn
             Caption = 'Description'
             DataBinding.FieldName = 'SignalFilter.Description'
             Options.Editing = False
-            Width = 192
+            Width = 176
           end
           object cxWhiteWordsTypesDescription: TcxGridDBColumn
             Caption = 'Location'
             DataBinding.FieldName = 'Types.Description'
             Options.Editing = False
-            Width = 105
+            Width = 96
           end
           object cxWhiteWordsActive: TcxGridDBColumn
             DataBinding.FieldName = 'Active'
-            Width = 50
+            Width = 46
+          end
+          object cxWhiteWordsId: TcxGridDBColumn
+            DataBinding.FieldName = 'Id'
+            Visible = False
+            Options.Editing = False
+            Width = 59
           end
         end
         object cxGridLevel1: TcxGridLevel
@@ -506,116 +508,6 @@ object FMain: TFMain
       FieldName = 'ErrorTime'
     end
   end
-  object cxStyleRepository1: TcxStyleRepository
-    Left = 96
-    Top = 56
-    object cxStyle1: TcxStyle
-      AssignedValues = [svFont]
-      Font.Charset = RUSSIAN_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -12
-      Font.Name = 'Times New Roman'
-      Font.Style = [fsBold, fsItalic]
-    end
-    object cxStyle2: TcxStyle
-      AssignedValues = [svColor]
-      Color = 15451300
-    end
-    object cxStyle3: TcxStyle
-      AssignedValues = [svColor]
-      Color = 15451300
-    end
-    object cxStyle4: TcxStyle
-      AssignedValues = [svColor, svFont, svTextColor]
-      Color = 12937777
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = [fsBold]
-      TextColor = clWhite
-    end
-    object cxStyle5: TcxStyle
-      AssignedValues = [svColor, svFont, svTextColor]
-      Color = 12937777
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = [fsBold]
-      TextColor = clWhite
-    end
-    object cxStyle6: TcxStyle
-      AssignedValues = [svColor, svTextColor]
-      Color = 16247513
-      TextColor = clBlack
-    end
-    object cxStyle7: TcxStyle
-      AssignedValues = [svColor, svTextColor]
-      Color = 16445924
-      TextColor = clBlack
-    end
-    object cxStyle8: TcxStyle
-      AssignedValues = [svColor, svTextColor]
-      Color = 15850688
-      TextColor = clBlack
-    end
-    object cxStyle9: TcxStyle
-      AssignedValues = [svColor, svFont, svTextColor]
-      Color = 12937777
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = [fsBold]
-      TextColor = clWhite
-    end
-    object cxStyle10: TcxStyle
-      AssignedValues = [svColor]
-      Color = 15451300
-    end
-    object cxStyle11: TcxStyle
-      AssignedValues = [svColor, svTextColor]
-      Color = 4707838
-      TextColor = clBlack
-    end
-    object cxStyle12: TcxStyle
-      AssignedValues = [svColor]
-      Color = 15451300
-    end
-    object cxStyle13: TcxStyle
-      AssignedValues = [svColor, svFont, svTextColor]
-      Color = 16711164
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -9
-      Font.Name = 'MS Sans Serif'
-      Font.Style = []
-      TextColor = clSilver
-    end
-    object cxStyle14: TcxStyle
-      AssignedValues = [svColor, svTextColor]
-      Color = 12937777
-      TextColor = clWhite
-    end
-    object TreeListStyleSheetDevExpress: TcxTreeListStyleSheet
-      Caption = 'DevExpress'
-      Styles.Background = cxStyle2
-      Styles.Content = cxStyle6
-      Styles.Inactive = cxStyle10
-      Styles.Selection = cxStyle14
-      Styles.BandBackground = cxStyle3
-      Styles.BandHeader = cxStyle4
-      Styles.ColumnHeader = cxStyle5
-      Styles.ContentEven = cxStyle7
-      Styles.ContentOdd = cxStyle8
-      Styles.Footer = cxStyle9
-      Styles.IncSearch = cxStyle11
-      Styles.Indicator = cxStyle12
-      Styles.Preview = cxStyle13
-      BuiltIn = True
-    end
-  end
   object dxBarManager1: TdxBarManager
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -671,6 +563,14 @@ object FMain: TFMain
       item
         Control = cxStampsGrid
         PopupMenu = dxStampsPopup
+      end
+      item
+        Control = cxBlackWordsGrid
+        PopupMenu = dxBlackWordsPopup
+      end
+      item
+        Control = cxWhiteWordsGrid
+        PopupMenu = dxWhiteWordsPopup
       end>
     Style = bmsFlat
     SunkenBorder = True
@@ -682,60 +582,6 @@ object FMain: TFMain
       0
       25
       0)
-    object dxBarButton1: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-    end
-    object dxBarButton2: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-    end
-    object dxBarButton3: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-    end
-    object dxBarButton4: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-    end
-    object dxBarButton5: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-    end
-    object dxBarButton6: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-    end
-    object dxBarButton7: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-    end
-    object dxBarButton8: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-    end
-    object dxBarButton9: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-    end
     object dxBarSubItem1: TdxBarSubItem
       Caption = 'Account'
       Category = 0
@@ -751,10 +597,6 @@ object FMain: TFMain
         end
         item
           Item = dxBarButton12
-          Visible = True
-        end
-        item
-          Item = dxBarButton13
           Visible = True
         end>
     end
@@ -777,12 +619,6 @@ object FMain: TFMain
       Category = 0
       Hint = 'Delete '
     end
-    object dxBarButton13: TdxBarButton
-      Caption = 'Exit'
-      Category = 0
-      Hint = 'Exit'
-      Visible = ivAlways
-    end
     object pbAddAccount: TdxBarButton
       Action = amAddAccount
       Caption = 'Add Account ...'
@@ -794,102 +630,41 @@ object FMain: TFMain
       Category = 0
       Hint = 'Edit '
       Visible = ivAlways
-      OnClick = dxBarButton15Click
-    end
-    object dxBarButton16: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-    end
-    object dxBarButton17: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-    end
-    object dxBarButton14: TdxBarButton
-      Caption = 'Filters'
-      Category = 0
-      Hint = 'Filters'
-      Visible = ivAlways
-    end
-    object dxBarButton18: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
     end
     object dxBarSubItem2: TdxBarSubItem
       Caption = 'Filters'
       Category = 0
       Visible = ivAlways
-      ItemLinks = <
-        item
-          Item = dxBarButton20
-          Visible = True
-        end
-        item
-          Item = dxBarButton21
-          Visible = True
-        end>
-    end
-    object dxBarButton19: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-    end
-    object dxBarButton20: TdxBarButton
-      Action = amAddStamp
-      Category = 0
-    end
-    object dxBarButton21: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
+      ItemLinks = <>
     end
     object dxBarButton22: TdxBarButton
       Action = adDeleteStamp
       Category = 0
     end
-    object dxBarButton23: TdxBarButton
+    object dxBarButton1: TdxBarButton
+      Action = amModifyWord
+      Category = 0
+    end
+    object dxBarButton2: TdxBarButton
       Caption = 'New Item'
       Category = 0
       Hint = 'New Item'
       Visible = ivAlways
     end
-    object dxBarButton24: TdxBarButton
+    object dxBarButton3: TdxBarButton
       Caption = 'New Item'
       Category = 0
       Hint = 'New Item'
       Visible = ivAlways
+    end
+    object dxBarButton4: TdxBarButton
+      Action = amModifyWord
+      Category = 0
     end
   end
   object dxBarPopupMenu1: TdxBarPopupMenu
     BarManager = dxBarManager1
-    ItemLinks = <
-      item
-        Item = dxBarButton5
-        Visible = True
-      end
-      item
-        Item = dxBarButton7
-        Visible = True
-      end
-      item
-        Item = dxBarButton9
-        Visible = True
-      end
-      item
-        Item = dxBarButton8
-        Visible = True
-      end
-      item
-        Item = dxBarButton6
-        Visible = True
-      end>
+    ItemLinks = <>
     UseOwnFont = False
     Left = 755
     Top = 158
@@ -914,6 +689,17 @@ object FMain: TFMain
       Caption = 'adDeleteStamp'
       OnExecute = adDeleteStampExecute
     end
+    object amModifyWord: TAction
+      Caption = 'amModifyWord'
+      OnExecute = amModifyWordExecute
+    end
+    object amAddWord: TAction
+      Caption = 'amAddWord'
+      OnExecute = amAddWordExecute
+    end
+    object Action1: TAction
+      Caption = 'Action1'
+    end
   end
   object dxAccountsPopup: TdxBarPopupMenu
     BarManager = dxBarManager1
@@ -925,19 +711,11 @@ object FMain: TFMain
       item
         Item = dxBarButton15
         Visible = True
-      end
-      item
-        Item = dxBarButton17
-        Visible = True
-      end
-      item
-        Item = dxBarButton16
-        Visible = True
       end>
     UseOwnFont = False
     OnPopup = dxAccountsPopupPopup
-    Left = 139
-    Top = 79
+    Left = 187
+    Top = 71
   end
   object adStamp: TADOTable
     Active = True
@@ -974,14 +752,6 @@ object FMain: TFMain
     ItemLinks = <
       item
         Item = dxBarButton22
-        Visible = True
-      end
-      item
-        Item = dxBarButton24
-        Visible = True
-      end
-      item
-        Item = dxBarButton23
         Visible = True
       end>
     UseOwnFont = False
@@ -1054,5 +824,37 @@ object FMain: TFMain
     DataSet = adWhiteWords
     Left = 40
     Top = 328
+  end
+  object dxWhiteWordsPopup: TdxBarPopupMenu
+    BarManager = dxBarManager1
+    ItemLinks = <
+      item
+        Item = dxBarButton4
+        Visible = True
+      end>
+    UseOwnFont = False
+    OnPopup = dxWhiteWordsPopupPopup
+    Left = 523
+    Top = 351
+  end
+  object dxBlackWordsPopup: TdxBarPopupMenu
+    BarManager = dxBarManager1
+    ItemLinks = <
+      item
+        Item = dxBarButton1
+        Visible = True
+      end
+      item
+        Item = dxBarButton3
+        Visible = True
+      end
+      item
+        Item = dxBarButton2
+        Visible = True
+      end>
+    UseOwnFont = False
+    OnPopup = dxBlackWordsPopupPopup
+    Left = 523
+    Top = 319
   end
 end

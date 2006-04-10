@@ -1,6 +1,6 @@
 inherited FModifyAccount: TFModifyAccount
-  Left = 273
-  Top = 158
+  Left = 470
+  Top = 301
   Caption = 'Modify Account'
   OldCreateOrder = True
   PixelsPerInch = 96
