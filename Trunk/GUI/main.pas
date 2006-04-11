@@ -154,7 +154,6 @@ type
     procedure dxBlackWordsPopupPopup(Sender: TObject);
     procedure amModifyWordExecute(Sender: TObject);
     procedure amModifyStampExecute(Sender: TObject);
-    procedure cxStampsSelectionChanged(Sender: TcxCustomGridTableView);
     procedure amRemoveStampExecute(Sender: TObject);
     procedure amSetStampsStatusToActiveExecute(Sender: TObject);
     procedure amSetStampsStatusToNonActiveExecute(Sender: TObject);
@@ -343,30 +342,6 @@ begin
  FModifyStamp.ShowModal;
 end;
 
-procedure TFMain.cxStampsSelectionChanged(Sender: TcxCustomGridTableView);
-begin
- if cxStamps.Controller.SelectedRowCount>0 then // если есть выделенные €чейки
-  begin
-   dxFiltersStampsEdit.Enabled:=True;
-   dxpFiltersStampsEdit.Enabled:=True;
-   dxpFiltersRevomeStamp.Enabled:=True;
-   dxFiltersStampsDelete.Enabled:=True;
-   dxpFiltersStampSetToActive.Enabled:=True;
-   dxFiltersStampsSetToActive.Enabled:=True;
-   dxpFiltersStampSetToNonActive.Enabled:=True;
-  end
- else    // если не выделено ни одной €чейки
-    begin
-     dxFiltersStampsEdit.Enabled:=False;
-     dxpFiltersStampsEdit.Enabled:=False;
-     dxpFiltersRevomeStamp.Enabled:=False;
-     dxFiltersStampsDelete.Enabled:=False;
-     dxpFiltersStampSetToActive.Enabled:=False;
-     dxFiltersStampsSetToActive.Enabled:=False;
-     dxpFiltersStampSetToNonActive.Enabled:=False;
-    end;
-end;
-
 procedure TFMain.amRemoveStampExecute(Sender: TObject);
 begin
  if Application.MessageBox('Are you are sure ?','Deleting Stamp',MB_OKCANCEL)=IDOK then
@@ -405,21 +380,32 @@ var
 begin
  SAct:=False;
  SNonAct:=False;
+ if cxStamps.Controller.SelectedRowCount>0 then // если есть выделенные €чейки
+  begin
+   dxpFiltersRevomeStamp.Enabled:=True;
+   dxpFiltersStampsEdit.Enabled:=True;
+   i:=0;
+   while (i<cxStamps.Controller.SelectedRowCount) and (not SAct) do
+    if not cxStamps.Controller.SelectedRows[i].Values[cxStampsActive.Index]  // если не активно
+     then  SAct:=True else inc(i);
+   i:=0;
+   while (i<cxStamps.Controller.SelectedRowCount) and (not SNonAct) do
+    if  cxStamps.Controller.SelectedRows[i].Values[cxStampsActive.Index]  // если не активно
+     then  SNonAct:=True else inc(i);
 
- i:=0;
- while (i<cxStamps.Controller.SelectedRowCount) and (not SAct) do
-  if not cxStamps.Controller.SelectedRows[i].Values[cxStampsActive.Index]  // если не активно
-   then  SAct:=True else inc(i);
-
- i:=0;
- while (i<cxStamps.Controller.SelectedRowCount) and (not SNonAct) do
-  if  cxStamps.Controller.SelectedRows[i].Values[cxStampsActive.Index]  // если не активно
-   then  SNonAct:=True else inc(i);
- if SAct then dxpFiltersStampSetToActive.Enabled:=True
-  else  dxpFiltersStampSetToActive.Enabled:=False;
- if SNonAct then dxpFiltersStampSetToNonActive.Enabled:=True
-  else  dxpFiltersStampSetToNonActive.Enabled:=False;
-
+   if SAct then dxpFiltersStampSetToActive.Enabled:=True
+    else  dxpFiltersStampSetToActive.Enabled:=False;
+   if SNonAct then dxpFiltersStampSetToNonActive.Enabled:=True
+    else  dxpFiltersStampSetToNonActive.Enabled:=False;
+  end
+   else
+    begin
+     dxpFiltersRevomeStamp.Enabled:=False;
+     dxpFiltersStampsEdit.Enabled:=False;
+     dxpFiltersStampsEdit.Enabled:=False;
+     dxpFiltersStampSetToActive.Enabled:=False;
+     dxpFiltersStampSetToNonActive.Enabled:=False;
+    end;
 end;
 
 procedure TFMain.dxFiltersStampsPopup(Sender: TObject);
@@ -442,27 +428,18 @@ begin
     if  cxStamps.Controller.SelectedRows[i].Values[cxStampsActive.Index]  // если не активно
      then  SNonAct:=True else inc(i);
 
-   if SAct then dxpFiltersStampSetToActive.Enabled:=True
+   if SAct then dxFiltersStampsSetToActive.Enabled:=True
     else  dxFiltersStampsSetToActive.Enabled:=False;
-   if SNonAct then dxpFiltersStampSetToNonActive.Enabled:=True
+   if SNonAct then dxFiltersStampSetToNonActive.Enabled:=True
     else  dxFiltersStampSetToNonActive.Enabled:=False;
   end
    else
     begin
      dxFiltersStampsEdit.Enabled:=False;
      dxFiltersStampsDelete.Enabled:=False;
+     dxFiltersStampsSetToActive.Enabled:=False;
+     dxFiltersStampSetToNonActive.Enabled:=False;
     end;
- {
-
- dxFiltersStampsEdit.Enabled:=True;
-   dxpFiltersStampsEdit.Enabled:=True;
-   dxpFiltersRevomeStamp.Enabled:=True;
-   dxFiltersStampsDelete.Enabled:=True;
-   dxpFiltersStampSetToActive.Enabled:=True;
-   dxFiltersStampsSetToActive.Enabled:=True;
-   dxpFiltersStampSetToNonActive.Enabled:=True;
-
- }
 end;
 
 end.

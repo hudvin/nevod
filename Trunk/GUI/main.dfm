@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 186
-  Top = 159
+  Left = 392
+  Top = 200
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -105,7 +105,7 @@ object FMain: TFMain
     Top = 25
     Width = 586
     Height = 370
-    ActivePage = cxTab_Stamp
+    ActivePage = cxTab_Accounts
     Align = alClient
     LookAndFeel.Kind = lfStandard
     LookAndFeel.NativeStyle = True
@@ -269,7 +269,6 @@ object FMain: TFMain
         object cxStamps: TcxGridDBTableView
           PopupMenu = dxStampsPopup
           NavigatorButtons.ConfirmDelete = False
-          OnSelectionChanged = cxStampsSelectionChanged
           DataController.DataSource = dsStamp
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <>
@@ -653,14 +652,12 @@ object FMain: TFMain
       Action = amRemoveStamp
       Caption = 'Delete'
       Category = 0
-      Enabled = False
       Hint = 'Delete'
     end
     object dxFiltersStampsEdit: TdxBarButton
       Action = amModifyStamp
       Caption = 'Edit Stamp'
       Category = 0
-      Enabled = False
       Hint = 'Edit Stamp'
     end
     object dxPopupStampEdit: TdxBarButton
@@ -678,14 +675,12 @@ object FMain: TFMain
       Action = amModifyStamp
       Caption = 'Edit Stamp'
       Category = 0
-      Enabled = False
       Hint = 'Edit Stamp'
     end
     object dxpFiltersRevomeStamp: TdxBarButton
       Action = amRemoveStamp
       Caption = 'Remove Stamp'
       Category = 0
-      Enabled = False
       Hint = 'Remove Stamp'
     end
     object dxpFiltersStampsAdd: TdxBarButton
@@ -697,22 +692,18 @@ object FMain: TFMain
     object dxpFiltersStampSetToActive: TdxBarButton
       Action = amSetStampsStatusToActive
       Category = 0
-      Enabled = False
     end
     object dxFiltersStampsSetToActive: TdxBarButton
       Action = amSetStampsStatusToActive
       Category = 0
-      Enabled = False
     end
     object dxpFiltersStampSetToNonActive: TdxBarButton
       Action = amSetStampsStatusToNonActive
       Category = 0
-      Enabled = False
     end
     object dxFiltersStampSetToNonActive: TdxBarButton
       Action = amSetStampsStatusToNonActive
       Category = 0
-      Enabled = False
     end
   end
   object dxBarPopupMenu1: TdxBarPopupMenu
