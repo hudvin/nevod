@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 205
-  Top = 218
+  Left = 120
+  Top = 211
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -105,7 +105,7 @@ object FMain: TFMain
     Top = 25
     Width = 586
     Height = 370
-    ActivePage = cxTab_BlackWords
+    ActivePage = cxTab_Accounts
     Align = alClient
     LookAndFeel.Kind = lfStandard
     LookAndFeel.NativeStyle = True
@@ -354,14 +354,6 @@ object FMain: TFMain
         object cxBlackWordsGridLevel1: TcxGridLevel
           GridView = cxBlackWords
         end
-      end
-      object Button1: TButton
-        Left = 80
-        Top = 112
-        Width = 75
-        Height = 25
-        Caption = 'amAddWord'
-        TabOrder = 1
       end
     end
     object cxTab_WhiteWords: TcxTabSheet

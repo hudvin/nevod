@@ -13,6 +13,7 @@ type
   ECorreptedAccount=class(Exception);
   EDBerror = class(Exception);
   EInvalidSettingName=class(Exception);
+  EInvalidFilterParams=class(Exception);
 implementation
 
 

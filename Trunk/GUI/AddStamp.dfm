@@ -1,6 +1,6 @@
 object FAddStamp: TFAddStamp
-  Left = 544
-  Top = 197
+  Left = 601
+  Top = 267
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Add Stamp'

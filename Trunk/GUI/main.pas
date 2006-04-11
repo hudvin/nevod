@@ -3,11 +3,11 @@ unit main;
 interface
 
 uses Forms,Windows, Dialogs, ASFilter, Registry, dxBar, cxStyles, Shared,
-  cxTL, DB, ADODB, RXShell, StdCtrls, ExtCtrls, cxContainer, cxEdit,
+  cxTL, DB, ADODB,  StdCtrls, ExtCtrls, cxContainer, cxEdit,
   cxCheckBox, cxGridLevel, cxGridCustomTableView, cxGridTableView,
   PostManager, SysUtils, Typinfo,
-  
-  cxGridCustomView, cxGrid, Menus, CoolTrayIcon,
+
+  cxGridCustomView, cxGrid, Menus,
   cxGridCustomPopupMenu, cxGridPopupMenu, Classes, Controls,
   cxGridDBTableView, cxClasses, cxControls, cxPC, cxSplitter,
   cxInplaceContainer, dxStatusBar, cxLookAndFeels, ActnList,
@@ -119,7 +119,6 @@ type
     cxWhiteWordsActive: TcxGridDBColumn;
     amModifyWord: TAction;
     amAddWord: TAction;
-    Button1: TButton;
     dxWhiteWordsPopup: TdxBarPopupMenu;
     dxBlackWordsPopup: TdxBarPopupMenu;
     dxBarButton1: TdxBarButton;
@@ -308,6 +307,7 @@ begin
  with FModifyWord do
   if Grid<>cxWhiteWords then
    begin
+    adWords:=adWhiteWords;
     Grid:=cxWhiteWords;
     cxWordsActive:=cxWhiteWordsActive;
     cxWordsFValue:=cxWhiteWordsFValue;
@@ -322,6 +322,7 @@ begin
  with FModifyWord do
     if Grid<>cxBlackWords then
      begin
+      adWords:=adBlackWords;
       Grid:=cxBlackWords;
       cxWordsActive:=cxBlackWordsActive;
       cxWordsFValue:=cxBlackWordsFValue;
@@ -352,5 +353,6 @@ end.
 создать класс TAccountManager и через него получать список учетныЯ записей
 при минимизировании - сворачивать в трей
 проигрывание музыки при системных событиях хранить в минутах (тольк целые числа !!!) !!!
+слова для cbLocation грузить из базы данных
 
 }
