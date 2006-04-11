@@ -21,7 +21,9 @@ uses
   AddAccount in 'AddAccount.pas' {FAddAccount},
   ModifyAccount in 'ModifyAccount.pas' {FModifyAccount},
   AddStamp in 'AddStamp.pas' {FAddStamp},
-  ModifyWord in 'ModifyWord.pas' {FModifyWord};
+  ModifyWord in 'ModifyWord.pas' {FModifyWord},
+  FilterManager in '..\Shared\FilterManager.PAS',
+  ModifyStamp in 'ModifyStamp.pas' {FModifyStamp};
 
 {$R *.res}
 
@@ -32,5 +34,6 @@ begin
   Application.CreateForm(TFModifyAccount, FModifyAccount);
   Application.CreateForm(TFAddStamp, FAddStamp);
   Application.CreateForm(TFModifyWord, FModifyWord);
+  Application.CreateForm(TFModifyStamp, FModifyStamp);
   Application.Run;
 end.

@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 120
-  Top = 211
+  Left = 186
+  Top = 159
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -75,7 +75,7 @@ object FMain: TFMain
       72647300000700000053656E6465727300000B0000004174746163686D656E74
       730300000000000000100000000000000000000000FFFFFFFF02000000100000
       000000000000000000FFFFFFFF01000000040000000300000000000000000000
-      00FFFFFFFF0300000004000000040000000000000000000000FFFFFFFF060000
+      00FFFFFFFF0300000014000000040000000000000000000000FFFFFFFF060000
       00100000000000000000000000FFFFFFFF070000001000000000000000000000
       00FFFFFFFF08000000100000000000000000000000FFFFFFFF09000000100000
       000000000000000000FFFFFFFF04000000040000000300000000000000000000
@@ -105,7 +105,7 @@ object FMain: TFMain
     Top = 25
     Width = 586
     Height = 370
-    ActivePage = cxTab_Accounts
+    ActivePage = cxTab_Stamp
     Align = alClient
     LookAndFeel.Kind = lfStandard
     LookAndFeel.NativeStyle = True
@@ -263,12 +263,13 @@ object FMain: TFMain
         Width = 580
         Height = 344
         Align = alClient
-        PopupMenu = dxStampsPopup
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
         LookAndFeel.NativeStyle = True
         object cxStamps: TcxGridDBTableView
+          PopupMenu = dxStampsPopup
           NavigatorButtons.ConfirmDelete = False
+          OnSelectionChanged = cxStampsSelectionChanged
           DataController.DataSource = dsStamp
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <>
@@ -282,16 +283,20 @@ object FMain: TFMain
             Caption = 'Stamp'
             DataBinding.FieldName = 'FValue'
             Options.Editing = False
-            Width = 283
+            Width = 211
           end
           object cxStampsDescription: TcxGridDBColumn
             DataBinding.FieldName = 'Description'
             Options.Editing = False
-            Width = 231
+            Width = 299
           end
           object cxStampsActive: TcxGridDBColumn
             DataBinding.FieldName = 'Active'
-            Width = 72
+            Width = 68
+          end
+          object cxStampsId: TcxGridDBColumn
+            DataBinding.FieldName = 'id'
+            Visible = False
           end
         end
         object cxStampsGridLevel1: TcxGridLevel
@@ -312,7 +317,6 @@ object FMain: TFMain
         LookAndFeel.Kind = lfStandard
         LookAndFeel.NativeStyle = True
         object cxBlackWords: TcxGridDBTableView
-          OnDblClick = cxBlackWordsDblClick
           NavigatorButtons.ConfirmDelete = False
           DataController.DataSource = dsBlackWords
           DataController.Summary.DefaultGroupSummaryItems = <>
@@ -520,11 +524,7 @@ object FMain: TFMain
         IsMainMenu = True
         ItemLinks = <
           item
-            Item = dxBarSubItem1
-            Visible = True
-          end
-          item
-            Item = dxBarSubItem2
+            Item = dxMFilters
             Visible = True
           end>
         MultiLine = True
@@ -554,7 +554,6 @@ object FMain: TFMain
       end
       item
         Control = cxStampsGrid
-        PopupMenu = dxStampsPopup
       end
       item
         Control = cxBlackWordsGrid
@@ -574,24 +573,6 @@ object FMain: TFMain
       0
       25
       0)
-    object dxBarSubItem1: TdxBarSubItem
-      Caption = 'Account'
-      Category = 0
-      Visible = ivAlways
-      ItemLinks = <
-        item
-          Item = dxBarButton10
-          Visible = True
-        end
-        item
-          Item = dxBarButton11
-          Visible = True
-        end
-        item
-          Item = dxBarButton12
-          Visible = True
-        end>
-    end
     object dxBarButton10: TdxBarButton
       Action = amAddAccount
       Caption = 'Add Account ...'
@@ -617,41 +598,121 @@ object FMain: TFMain
       Category = 0
       Hint = 'Add Account '
     end
-    object dxBarButton15: TdxBarButton
-      Caption = 'Edit ...'
-      Category = 0
-      Hint = 'Edit '
-      Visible = ivAlways
-    end
-    object dxBarSubItem2: TdxBarSubItem
+    object dxMFilters: TdxBarSubItem
       Caption = 'Filters'
       Category = 0
       Visible = ivAlways
-      ItemLinks = <>
-    end
-    object dxBarButton22: TdxBarButton
-      Action = adDeleteStamp
-      Category = 0
+      ItemLinks = <
+        item
+          Item = dxFiltersStamps
+          Visible = True
+        end>
     end
     object dxBarButton1: TdxBarButton
       Action = amModifyWord
       Category = 0
     end
-    object dxBarButton2: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-    end
-    object dxBarButton3: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-    end
     object dxBarButton4: TdxBarButton
       Action = amModifyWord
       Category = 0
+    end
+    object dxFiltersStamps: TdxBarSubItem
+      Caption = 'Stamps'
+      Category = 0
+      Visible = ivAlways
+      ItemLinks = <
+        item
+          Item = dxFiltersStampsAdd
+          Visible = True
+        end
+        item
+          Item = dxFiltersStampsDelete
+          Visible = True
+        end
+        item
+          Item = dxFiltersStampsEdit
+          Visible = True
+        end
+        item
+          Item = dxFiltersStampsSetToActive
+          Visible = True
+        end
+        item
+          Item = dxFiltersStampSetToNonActive
+          Visible = True
+        end>
+      OnPopup = dxFiltersStampsPopup
+    end
+    object dxFiltersStampsAdd: TdxBarButton
+      Action = amAddStamp
+      Caption = 'Add'
+      Category = 0
+      Hint = 'Add'
+    end
+    object dxFiltersStampsDelete: TdxBarButton
+      Action = amRemoveStamp
+      Caption = 'Delete'
+      Category = 0
+      Enabled = False
+      Hint = 'Delete'
+    end
+    object dxFiltersStampsEdit: TdxBarButton
+      Action = amModifyStamp
+      Caption = 'Edit Stamp'
+      Category = 0
+      Enabled = False
+      Hint = 'Edit Stamp'
+    end
+    object dxPopupStampEdit: TdxBarButton
+      Action = amModifyStamp
+      Caption = 'Edit Stamp'
+      Category = 0
+      Enabled = False
+      Hint = 'Edit Stamp'
+    end
+    object dxBarButton6: TdxBarButton
+      Action = amModifyStamp
+      Category = 0
+    end
+    object dxpFiltersStampsEdit: TdxBarButton
+      Action = amModifyStamp
+      Caption = 'Edit Stamp'
+      Category = 0
+      Enabled = False
+      Hint = 'Edit Stamp'
+    end
+    object dxpFiltersRevomeStamp: TdxBarButton
+      Action = amRemoveStamp
+      Caption = 'Remove Stamp'
+      Category = 0
+      Enabled = False
+      Hint = 'Remove Stamp'
+    end
+    object dxpFiltersStampsAdd: TdxBarButton
+      Action = amAddStamp
+      Caption = 'Add Stamp'
+      Category = 0
+      Hint = 'Add Stamp'
+    end
+    object dxpFiltersStampSetToActive: TdxBarButton
+      Action = amSetStampsStatusToActive
+      Category = 0
+      Enabled = False
+    end
+    object dxFiltersStampsSetToActive: TdxBarButton
+      Action = amSetStampsStatusToActive
+      Category = 0
+      Enabled = False
+    end
+    object dxpFiltersStampSetToNonActive: TdxBarButton
+      Action = amSetStampsStatusToNonActive
+      Category = 0
+      Enabled = False
+    end
+    object dxFiltersStampSetToNonActive: TdxBarButton
+      Action = amSetStampsStatusToNonActive
+      Category = 0
+      Enabled = False
     end
   end
   object dxBarPopupMenu1: TdxBarPopupMenu
@@ -677,20 +738,28 @@ object FMain: TFMain
       Caption = 'amAddStamp'
       OnExecute = amAddStampExecute
     end
-    object adDeleteStamp: TAction
-      Caption = 'adDeleteStamp'
-      OnExecute = adDeleteStampExecute
-    end
     object amModifyWord: TAction
       Caption = 'amModifyWord'
       OnExecute = amModifyWordExecute
     end
     object amAddWord: TAction
       Caption = 'amAddWord'
-      OnExecute = amAddWordExecute
     end
-    object Action1: TAction
-      Caption = 'Action1'
+    object amModifyStamp: TAction
+      Caption = 'Modify Stamp'
+      OnExecute = amModifyStampExecute
+    end
+    object amRemoveStamp: TAction
+      Caption = 'amRemoveStamp'
+      OnExecute = amRemoveStampExecute
+    end
+    object amSetStampsStatusToActive: TAction
+      Caption = 'Set To Active'
+      OnExecute = amSetStampsStatusToActiveExecute
+    end
+    object amSetStampsStatusToNonActive: TAction
+      Caption = 'Set To nonActive'
+      OnExecute = amSetStampsStatusToNonActiveExecute
     end
   end
   object dxAccountsPopup: TdxBarPopupMenu
@@ -699,34 +768,11 @@ object FMain: TFMain
       item
         Item = pbAddAccount
         Visible = True
-      end
-      item
-        Item = dxBarButton15
-        Visible = True
       end>
     UseOwnFont = False
     OnPopup = dxAccountsPopupPopup
-    Left = 187
-    Top = 71
-  end
-  object adStamp: TADOTable
-    Active = True
-    Connection = adCon
-    CursorType = ctStatic
-    TableName = 'StampFilter'
-    Left = 8
-    Top = 264
-    object adStampFValue: TWideStringField
-      FieldName = 'FValue'
-      Size = 255
-    end
-    object adStampDescription: TWideStringField
-      FieldName = 'Description'
-      Size = 255
-    end
-    object adStampActive: TBooleanField
-      FieldName = 'Active'
-    end
+    Left = 467
+    Top = 359
   end
   object dsStamp: TDataSource
     DataSet = adStamp
@@ -738,17 +784,6 @@ object FMain: TFMain
     Parameters = <>
     Left = 104
     Top = 24
-  end
-  object dxStampsPopup: TdxBarPopupMenu
-    BarManager = dxBarManager1
-    ItemLinks = <
-      item
-        Item = dxBarButton22
-        Visible = True
-      end>
-    UseOwnFont = False
-    Left = 107
-    Top = 87
   end
   object adBlackWords: TADOQuery
     Active = True
@@ -835,18 +870,64 @@ object FMain: TFMain
       item
         Item = dxBarButton1
         Visible = True
-      end
-      item
-        Item = dxBarButton3
-        Visible = True
-      end
-      item
-        Item = dxBarButton2
-        Visible = True
       end>
     UseOwnFont = False
     OnPopup = dxBlackWordsPopupPopup
     Left = 523
     Top = 319
+  end
+  object adStamp: TADOQuery
+    Active = True
+    Connection = adCon
+    CursorType = ctStatic
+    Parameters = <>
+    SQL.Strings = (
+      'SELECT id,FValue,Description,Active'
+      'FROM StampFilter')
+    Left = 8
+    Top = 264
+    object adStampFValue: TWideStringField
+      FieldName = 'FValue'
+      Size = 255
+    end
+    object adStampDescription: TWideStringField
+      FieldName = 'Description'
+      Size = 255
+    end
+    object adStampActive: TBooleanField
+      FieldName = 'Active'
+    end
+    object adStampid: TAutoIncField
+      FieldName = 'id'
+      ReadOnly = True
+    end
+  end
+  object dxStampsPopup: TdxBarPopupMenu
+    BarManager = dxBarManager1
+    ItemLinks = <
+      item
+        Item = dxpFiltersStampsEdit
+        Visible = True
+      end
+      item
+        Item = dxpFiltersStampsAdd
+        Visible = True
+      end
+      item
+        Item = dxpFiltersRevomeStamp
+        Visible = True
+      end
+      item
+        Item = dxpFiltersStampSetToActive
+        Visible = True
+      end
+      item
+        Item = dxpFiltersStampSetToNonActive
+        Visible = True
+      end>
+    UseOwnFont = False
+    OnPopup = dxStampsPopupPopup
+    Left = 16
+    Top = 104
   end
 end

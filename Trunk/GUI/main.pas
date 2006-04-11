@@ -5,7 +5,7 @@ interface
 uses Forms,Windows, Dialogs, ASFilter, Registry, dxBar, cxStyles, Shared,
   cxTL, DB, ADODB,  StdCtrls, ExtCtrls, cxContainer, cxEdit,
   cxCheckBox, cxGridLevel, cxGridCustomTableView, cxGridTableView,
-  PostManager, SysUtils, Typinfo,
+  PostManager, SysUtils, Typinfo, FilterManager,
 
   cxGridCustomView, cxGrid, Menus,
   cxGridCustomPopupMenu, cxGridPopupMenu, Classes, Controls,
@@ -62,7 +62,6 @@ type
     cxAccountsPort: TcxGridColumn;
     cxAccountsTimeout: TcxGridColumn;
     cxAccountsStatus: TcxGridColumn;
-    dxBarSubItem1: TdxBarSubItem;
     dxBarButton10: TdxBarButton;
     dxBarButton11: TdxBarButton;
     dxBarButton12: TdxBarButton;
@@ -71,25 +70,17 @@ type
     amDeleteAccount: TAction;
     dxAccountsPopup: TdxBarPopupMenu;
     pbAddAccount: TdxBarButton;
-    dxBarButton15: TdxBarButton;
     cxTab_Stamp: TcxTabSheet;
-    adStamp: TADOTable;
     dsStamp: TDataSource;
-    adStampFValue: TWideStringField;
-    adStampDescription: TWideStringField;
-    adStampActive: TBooleanField;
     cxStamps: TcxGridDBTableView;
     cxStampsGridLevel1: TcxGridLevel;
     cxStampsGrid: TcxGrid;
     cxStampsFValue: TcxGridDBColumn;
     cxStampsDescription: TcxGridDBColumn;
     cxStampsActive: TcxGridDBColumn;
-    dxBarSubItem2: TdxBarSubItem;
+    dxMFilters: TdxBarSubItem;
     adTest: TADOQuery;
     amAddStamp: TAction;
-    dxStampsPopup: TdxBarPopupMenu;
-    dxBarButton22: TdxBarButton;
-    adDeleteStamp: TAction;
     cxTab_BlackWords: TcxTabSheet;
     adBlackWords: TADOQuery;
     dsBlackWords: TDataSource;
@@ -122,10 +113,31 @@ type
     dxWhiteWordsPopup: TdxBarPopupMenu;
     dxBlackWordsPopup: TdxBarPopupMenu;
     dxBarButton1: TdxBarButton;
-    dxBarButton2: TdxBarButton;
-    dxBarButton3: TdxBarButton;
-    Action1: TAction;
+    amModifyStamp: TAction;
     dxBarButton4: TdxBarButton;
+    adStamp: TADOQuery;
+    adStampFValue: TWideStringField;
+    adStampDescription: TWideStringField;
+    adStampActive: TBooleanField;
+    adStampid: TAutoIncField;
+    cxStampsId: TcxGridDBColumn;
+    dxFiltersStamps: TdxBarSubItem;
+    dxFiltersStampsAdd: TdxBarButton;
+    dxFiltersStampsDelete: TdxBarButton;
+    dxFiltersStampsEdit: TdxBarButton;
+    amRemoveStamp: TAction;
+    dxPopupStampEdit: TdxBarButton;
+    dxBarButton6: TdxBarButton;
+    dxStampsPopup: TdxBarPopupMenu;
+    dxpFiltersStampsEdit: TdxBarButton;
+    dxpFiltersRevomeStamp: TdxBarButton;
+    dxpFiltersStampsAdd: TdxBarButton;
+    amSetStampsStatusToActive: TAction;
+    dxpFiltersStampSetToActive: TdxBarButton;
+    dxFiltersStampsSetToActive: TdxBarButton;
+    amSetStampsStatusToNonActive: TAction;
+    dxpFiltersStampSetToNonActive: TdxBarButton;
+    dxFiltersStampSetToNonActive: TdxBarButton;
     procedure cbRunPropertiesChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -138,11 +150,16 @@ type
     procedure adDeleteStampExecute(Sender: TObject);
     procedure SettingsTreeFocusedNodeChanged(Sender: TObject;
       APrevFocusedNode, AFocusedNode: TcxTreeListNode);
-    procedure cxBlackWordsDblClick(Sender: TObject);
-    procedure amAddWordExecute(Sender: TObject);
     procedure dxWhiteWordsPopupPopup(Sender: TObject);
     procedure dxBlackWordsPopupPopup(Sender: TObject);
     procedure amModifyWordExecute(Sender: TObject);
+    procedure amModifyStampExecute(Sender: TObject);
+    procedure cxStampsSelectionChanged(Sender: TcxCustomGridTableView);
+    procedure amRemoveStampExecute(Sender: TObject);
+    procedure amSetStampsStatusToActiveExecute(Sender: TObject);
+    procedure amSetStampsStatusToNonActiveExecute(Sender: TObject);
+    procedure dxStampsPopupPopup(Sender: TObject);
+    procedure dxFiltersStampsPopup(Sender: TObject);
   private
     Reg: TRegistry;
     Coder:TBFCoder;
@@ -150,6 +167,7 @@ type
     { Private declarations }
   public
     PSManager: TPostManager;
+    FManager:TFilterManager;
     procedure RunOnStartup(Run:boolean);
     { Public declarations }
   protected
@@ -160,7 +178,7 @@ var
   FMain: TFMain;
 implementation
 
-uses AddAccount, ModifyAccount, AddStamp, ModifyWord;
+uses AddAccount, ModifyAccount, AddStamp, ModifyWord, ModifyStamp;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
@@ -205,6 +223,7 @@ begin
  Coder:=TBFCoder.Create;
  Coder.Key:=CriptKey;
  PSManager:=TPostManager.Create(adCon,cxAccounts);
+ FManager:=TFilterManager.Create(adCon,adBlackWords,adWhiteWords,adStamp);
 end;
 
 
@@ -213,6 +232,7 @@ begin
  Coder.Free;
  Reg.Free;
  PSManager.Free;
+ FManager.Free;
 end;
 
 procedure TFMain.amAddAccountExecute(Sender: TObject);
@@ -283,25 +303,6 @@ begin
  end;
 end;
 
-procedure TFMain.cxBlackWordsDblClick(Sender: TObject);
-begin
-// FModifyWord.ShowModal;
-end;
-
-procedure TFMain.amAddWordExecute(Sender: TObject);
-begin
- {
-
- взять данные из текущей строки
- заполнить поля в форме
- для модификации использовать id в таблице
- показать модальную форму
-
- 
- поддержка переноса (Drag&Drop) ! (для аналогичной таблицы)
- }
-end;
-
 procedure TFMain.dxWhiteWordsPopupPopup(Sender: TObject);
 begin
  with FModifyWord do
@@ -337,22 +338,132 @@ begin
  FModifyWord.ShowModal;
 end;
 
+procedure TFMain.amModifyStampExecute(Sender: TObject);
+begin
+ FModifyStamp.ShowModal;
+end;
+
+procedure TFMain.cxStampsSelectionChanged(Sender: TcxCustomGridTableView);
+begin
+ if cxStamps.Controller.SelectedRowCount>0 then // если есть выделенные ячейки
+  begin
+   dxFiltersStampsEdit.Enabled:=True;
+   dxpFiltersStampsEdit.Enabled:=True;
+   dxpFiltersRevomeStamp.Enabled:=True;
+   dxFiltersStampsDelete.Enabled:=True;
+   dxpFiltersStampSetToActive.Enabled:=True;
+   dxFiltersStampsSetToActive.Enabled:=True;
+   dxpFiltersStampSetToNonActive.Enabled:=True;
+  end
+ else    // если не выделено ни одной ячейки
+    begin
+     dxFiltersStampsEdit.Enabled:=False;
+     dxpFiltersStampsEdit.Enabled:=False;
+     dxpFiltersRevomeStamp.Enabled:=False;
+     dxFiltersStampsDelete.Enabled:=False;
+     dxpFiltersStampSetToActive.Enabled:=False;
+     dxFiltersStampsSetToActive.Enabled:=False;
+     dxpFiltersStampSetToNonActive.Enabled:=False;
+    end;
+end;
+
+procedure TFMain.amRemoveStampExecute(Sender: TObject);
+begin
+ if Application.MessageBox('Are you are sure ?','Deleting Stamp',MB_OKCANCEL)=IDOK then
+  begin
+   cxStamps.Controller.DeleteSelection;
+  end;
+end;
+
+procedure TFMain.amSetStampsStatusToActiveExecute(Sender: TObject);
+var
+  I: Integer;
+  Elem:array of integer;
+begin
+ SetLength(Elem,cxStamps.Controller.SelectedRowCount);
+ for I := 0 to cxStamps.Controller.SelectedRowCount-1 do
+   Elem[i]:=cxStamps.Controller.SelectedRows[i].Values[cxStampsId.Index];
+ FManager.SetStampStatus(Elem,True);
+end;
+
+procedure TFMain.amSetStampsStatusToNonActiveExecute(Sender: TObject);
+var
+  I: Integer;
+  Elem:array of integer;
+begin
+ SetLength(Elem,cxStamps.Controller.SelectedRowCount);
+ for I := 0 to cxStamps.Controller.SelectedRowCount-1 do
+   Elem[i]:=cxStamps.Controller.SelectedRows[i].Values[cxStampsId.Index];
+ FManager.SetStampStatus(Elem,False);
+
+end;
+
+procedure TFMain.dxStampsPopupPopup(Sender: TObject);
+var
+ SAct,SNonAct:boolean;
+ i:integer;
+begin
+ SAct:=False;
+ SNonAct:=False;
+
+ i:=0;
+ while (i<cxStamps.Controller.SelectedRowCount) and (not SAct) do
+  if not cxStamps.Controller.SelectedRows[i].Values[cxStampsActive.Index]  // если не активно
+   then  SAct:=True else inc(i);
+
+ i:=0;
+ while (i<cxStamps.Controller.SelectedRowCount) and (not SNonAct) do
+  if  cxStamps.Controller.SelectedRows[i].Values[cxStampsActive.Index]  // если не активно
+   then  SNonAct:=True else inc(i);
+ if SAct then dxpFiltersStampSetToActive.Enabled:=True
+  else  dxpFiltersStampSetToActive.Enabled:=False;
+ if SNonAct then dxpFiltersStampSetToNonActive.Enabled:=True
+  else  dxpFiltersStampSetToNonActive.Enabled:=False;
+
+end;
+
+procedure TFMain.dxFiltersStampsPopup(Sender: TObject);
+var
+ SAct,SNonAct:boolean;
+ i:integer;
+begin
+ SAct:=False;
+ SNonAct:=False;
+ if cxStamps.Controller.SelectedRowCount>0 then // если есть выделенные ячейки
+  begin
+   i:=0;
+   dxFiltersStampsEdit.Enabled:=True;
+   dxFiltersStampsDelete.Enabled:=True;
+   while (i<cxStamps.Controller.SelectedRowCount) and (not SAct) do
+    if not cxStamps.Controller.SelectedRows[i].Values[cxStampsActive.Index]  // если не активно
+     then  SAct:=True else inc(i);
+   i:=0;
+   while (i<cxStamps.Controller.SelectedRowCount) and (not SNonAct) do
+    if  cxStamps.Controller.SelectedRows[i].Values[cxStampsActive.Index]  // если не активно
+     then  SNonAct:=True else inc(i);
+
+   if SAct then dxpFiltersStampSetToActive.Enabled:=True
+    else  dxFiltersStampsSetToActive.Enabled:=False;
+   if SNonAct then dxpFiltersStampSetToNonActive.Enabled:=True
+    else  dxFiltersStampSetToNonActive.Enabled:=False;
+  end
+   else
+    begin
+     dxFiltersStampsEdit.Enabled:=False;
+     dxFiltersStampsDelete.Enabled:=False;
+    end;
+ {
+
+ dxFiltersStampsEdit.Enabled:=True;
+   dxpFiltersStampsEdit.Enabled:=True;
+   dxpFiltersRevomeStamp.Enabled:=True;
+   dxFiltersStampsDelete.Enabled:=True;
+   dxpFiltersStampSetToActive.Enabled:=True;
+   dxFiltersStampsSetToActive.Enabled:=True;
+   dxpFiltersStampSetToNonActive.Enabled:=True;
+
+ }
+end;
+
 end.
 
-{
-
-
-редактирование либо прямо в таблице
- либо в отдельной форме !!!
- два метода не использовать - возможна путаница
-
-
-запускать в свернутом виде !
-при минимизации - в трей
-базу хранить в каталоге пользователя (Documents and Settings)
-создать класс TAccountManager и через него получать список учетныЯ записей
-при минимизировании - сворачивать в трей
-проигрывание музыки при системных событиях хранить в минутах (тольк целые числа !!!) !!!
-слова для cbLocation грузить из базы данных
-
-}

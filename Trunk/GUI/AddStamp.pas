@@ -30,6 +30,8 @@ var
 
 implementation
 
+uses Math;
+
 {$R *.dfm}
 
 procedure TFAddStamp.FormShow(Sender: TObject);
@@ -39,37 +41,19 @@ begin
 end;
 
 procedure TFAddStamp.btAddClick(Sender: TObject);
+var
+ Flag:boolean;
 begin
- if Trim(leStamp.Text)<>'' then
-  begin
-   with adTest do
-     begin
-      Close;
-      SQL.Text:='SELECT COUNT(id) FROM StampFilter WHERE FVAlue=:Stamp ';
-      Parameters.ParamByName('Stamp').Value:=leStamp.Text;
-      Active:=True;
-      if Fields[0].AsInteger>0 then  // если есть в таблице
-       begin
-        Close;
-        ShowMessage(' Stamp ' +leStamp.Text + ' already in table ');
-       end
-        else // если нет в таблице
-          begin
-            Close;
-            SQL.Text:='INSERT INTO StampFilter(FValue,Description,Active) '+
-                      'VALUES(:Stamp,:Description,:Active)';
-            Parameters.ParamByName('Stamp').Value:=leStamp.Text;
-            Parameters.ParamByName('Description').Value:=leDescription.Text;
-            if cxActive.Checked then
-             Parameters.ParamByName('Active').Value:=True
-              else Parameters.ParamByName('Active').Value:=False;
-             ExecSQL;
-             main.FMain.adStamp.Requery;
-             FAddStamp.Close;
-          end;
-     end;
-
-  end;
+ try
+  if cxActive.Checked  then
+  Flag:=True
+   else Flag:=False;
+  main.FMain.FManager.AddStamp(leStamp.Text,leDescription.Text,Flag);
+  Close;
+ except
+  on E: Exception  do
+    ShowMessage(E.Message);
+ end;
 end;
 
 procedure TFAddStamp.FormCreate(Sender: TObject);
