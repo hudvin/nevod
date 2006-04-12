@@ -1,11 +1,11 @@
-object FModifyWord: TFModifyWord
-  Left = 561
-  Top = 249
+object FAddWord: TFAddWord
+  Left = 318
+  Top = 257
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
-  Caption = 'Modify Word'
-  ClientHeight = 152
-  ClientWidth = 227
+  Caption = 'Add Word'
+  ClientHeight = 151
+  ClientWidth = 218
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,23 +13,22 @@ object FModifyWord: TFModifyWord
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  Position = poMainFormCenter
   OnCreate = FormCreate
-  OnShow = FormShow
+  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
   object cxTabControl1: TcxTabControl
     Left = 0
     Top = 0
-    Width = 227
-    Height = 152
+    Width = 218
+    Height = 151
     Align = alClient
     LookAndFeel.Kind = lfStandard
     LookAndFeel.NativeStyle = True
     TabOrder = 0
-    ClientRectBottom = 148
+    ClientRectBottom = 147
     ClientRectLeft = 2
-    ClientRectRight = 223
+    ClientRectRight = 214
     ClientRectTop = 2
     object leWord: TLabeledEdit
       Left = 80
@@ -76,7 +75,6 @@ object FModifyWord: TFModifyWord
         'Only in mail subject'
         'Only in mail body'
         'In mail body and subject')
-      Properties.OnChange = cbLocationPropertiesChange
       Style.BorderStyle = ebsNone
       Style.LookAndFeel.Kind = lfStandard
       Style.LookAndFeel.NativeStyle = True
@@ -104,7 +102,6 @@ object FModifyWord: TFModifyWord
       Height = 25
       Caption = 'Cancel'
       TabOrder = 5
-      OnClick = btCancelClick
     end
   end
 end

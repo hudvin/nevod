@@ -19,7 +19,6 @@ type
     btOK: TButton;
     btCancel: TButton;
     procedure btCancelClick(Sender: TObject);
-    procedure btOKClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure cbLocationPropertiesChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -50,40 +49,6 @@ begin
  Close;
 end;
 
-procedure TFModifyWord.btOKClick(Sender: TObject);
-begin
- if Trim(leWord.Text)='' then ShowMessage('Word Cannon be empty')
-  else
-   with  Proc do
-    begin
-     Active:=False;
-     SQL.Text:='SELECT COUNT(Id) FROM SignalFilter WHERE FValue=:FValue '+
-               ' AND id<>:Id ';
-     Parameters.ParamByName('FValue').Value:=Trim(leWord.Text);
-     Parameters.ParamByName('Id').Value:=Grid.Controller.SelectedRecords[0].Values[cxWordsId.Index];
-     Active:=True;
-     if Fields[0].AsInteger>0  then ShowMessage('Such word exists')
-      else
-       begin
-        Active:=False;
-        SQL.Text:='UPDATE SignalFilter SET FValue=:FValue,Description=:Description,'+
-                'Location=:Location,Active=:Active WHERE Id=:Id';
-        Parameters.ParamByName('FValue').Value:=leWord.Text;
-        Parameters.ParamByName('Description').Value:=leDescription.Text;
-        Parameters.ParamByName('Location').Value:=GetEnumName(TypeInfo(TSignalLocation), Ord(FSelectedLocation));
-        if chbActive.Checked then
-         Parameters.ParamByName('Active').Value:=True
-          else
-           Parameters.ParamByName('Active').Value:=False;
-        Parameters.ParamByName('Id').Value:=Grid.Controller.SelectedRecords[0].Values[cxWordsId.Index];
-        ExecSQL;
-        adWords.Requery;
-        FModifyWord.Close;
-       end;
-   end;
-
-end;
-
 procedure TFModifyWord.FormShow(Sender: TObject);
 begin
  leWord.Text:=Grid.Controller.SelectedRecords[0].Values[cxWordsFValue.Index];
@@ -105,15 +70,6 @@ begin
     Active:=False;
    end;
 
-
-
- { заполнить поля нужными данными из таблицы
-   при модификации
-    проверить, чтобы поля не были пустыми
-      получить тип таблицы (?)
-      отправить запрос на модификацию и закрыть форму
-
-  }
 end;
 
 procedure TFModifyWord.cbLocationPropertiesChange(Sender: TObject);

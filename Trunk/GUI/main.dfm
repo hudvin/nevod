@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 392
-  Top = 200
+  Left = 195
+  Top = 182
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -41,9 +41,9 @@ object FMain: TFMain
   end
   object SettingsTree: TcxTreeList
     Left = 0
-    Top = 25
+    Top = 51
     Width = 177
-    Height = 370
+    Height = 344
     Align = alLeft
     Bands = <
       item
@@ -92,9 +92,9 @@ object FMain: TFMain
   end
   object cxSplitter1: TcxSplitter
     Left = 177
-    Top = 25
+    Top = 51
     Width = 8
-    Height = 370
+    Height = 344
     HotZoneClassName = 'TcxMediaPlayer9Style'
     AutoSnap = True
     ResizeUpdate = True
@@ -102,15 +102,15 @@ object FMain: TFMain
   end
   object stPages: TcxPageControl
     Left = 185
-    Top = 25
+    Top = 51
     Width = 586
-    Height = 370
-    ActivePage = cxTab_Accounts
+    Height = 344
+    ActivePage = cxTab_Stamp
     Align = alClient
     LookAndFeel.Kind = lfStandard
     LookAndFeel.NativeStyle = True
     TabOrder = 3
-    ClientRectBottom = 366
+    ClientRectBottom = 340
     ClientRectLeft = 2
     ClientRectRight = 582
     ClientRectTop = 22
@@ -121,7 +121,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 580
-        Height = 344
+        Height = 318
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
@@ -210,7 +210,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 580
-        Height = 344
+        Height = 318
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
@@ -257,11 +257,12 @@ object FMain: TFMain
     object cxTab_Stamp: TcxTabSheet
       Caption = 'cxTab_Stamp'
       ImageIndex = 3
+      OnShow = cxTab_StampShow
       object cxStampsGrid: TcxGrid
         Left = 0
         Top = 0
         Width = 580
-        Height = 344
+        Height = 318
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
@@ -306,11 +307,12 @@ object FMain: TFMain
     object cxTab_BlackWords: TcxTabSheet
       Caption = 'cxTab_BlackWords'
       ImageIndex = 4
+      OnShow = cxTab_BlackWordsShow
       object cxBlackWordsGrid: TcxGrid
         Left = 0
         Top = 0
         Width = 580
-        Height = 344
+        Height = 318
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
@@ -358,6 +360,15 @@ object FMain: TFMain
           GridView = cxBlackWords
         end
       end
+      object Button1: TButton
+        Left = 128
+        Top = 144
+        Width = 75
+        Height = 25
+        Caption = 'Button1'
+        TabOrder = 1
+        OnClick = Button1Click
+      end
     end
     object cxTab_WhiteWords: TcxTabSheet
       Caption = 'cxTab_WhiteWords'
@@ -366,7 +377,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 580
-        Height = 344
+        Height = 318
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
@@ -533,6 +544,24 @@ object FMain: TFMain
         UseOwnFont = False
         Visible = True
         WholeRow = True
+      end
+      item
+        Caption = 'Custom 2'
+        DockedDockingStyle = dsTop
+        DockedLeft = 3
+        DockedTop = 23
+        DockingStyle = dsTop
+        FloatLeft = 123
+        FloatTop = 274
+        FloatClientWidth = 0
+        FloatClientHeight = 0
+        ItemLinks = <>
+        Name = 'Custom 2'
+        OneOnRow = True
+        Row = 1
+        UseOwnFont = False
+        Visible = True
+        WholeRow = False
       end>
     Categories.Strings = (
       'Default')
@@ -545,22 +574,18 @@ object FMain: TFMain
     PopupMenuLinks = <
       item
         Control = cxGrid2
-        PopupMenu = dxBarPopupMenu1
       end
       item
         Control = cxAccountsGrid
-        PopupMenu = dxAccountsPopup
       end
       item
         Control = cxStampsGrid
       end
       item
         Control = cxBlackWordsGrid
-        PopupMenu = dxBlackWordsPopup
       end
       item
         Control = cxWhiteWordsGrid
-        PopupMenu = dxWhiteWordsPopup
       end>
     Style = bmsFlat
     SunkenBorder = True
@@ -570,7 +595,7 @@ object FMain: TFMain
     DockControlHeights = (
       0
       0
-      25
+      51
       0)
     object dxBarButton10: TdxBarButton
       Action = amAddAccount
@@ -706,13 +731,6 @@ object FMain: TFMain
       Category = 0
     end
   end
-  object dxBarPopupMenu1: TdxBarPopupMenu
-    BarManager = dxBarManager1
-    ItemLinks = <>
-    UseOwnFont = False
-    Left = 755
-    Top = 158
-  end
   object aMan: TActionManager
     Left = 96
     Top = 168
@@ -752,18 +770,6 @@ object FMain: TFMain
       Caption = 'Set To nonActive'
       OnExecute = amSetStampsStatusToNonActiveExecute
     end
-  end
-  object dxAccountsPopup: TdxBarPopupMenu
-    BarManager = dxBarManager1
-    ItemLinks = <
-      item
-        Item = pbAddAccount
-        Visible = True
-      end>
-    UseOwnFont = False
-    OnPopup = dxAccountsPopupPopup
-    Left = 467
-    Top = 359
   end
   object dsStamp: TDataSource
     DataSet = adStamp
@@ -843,30 +849,6 @@ object FMain: TFMain
     Left = 40
     Top = 328
   end
-  object dxWhiteWordsPopup: TdxBarPopupMenu
-    BarManager = dxBarManager1
-    ItemLinks = <
-      item
-        Item = dxBarButton4
-        Visible = True
-      end>
-    UseOwnFont = False
-    OnPopup = dxWhiteWordsPopupPopup
-    Left = 523
-    Top = 351
-  end
-  object dxBlackWordsPopup: TdxBarPopupMenu
-    BarManager = dxBarManager1
-    ItemLinks = <
-      item
-        Item = dxBarButton1
-        Visible = True
-      end>
-    UseOwnFont = False
-    OnPopup = dxBlackWordsPopupPopup
-    Left = 523
-    Top = 319
-  end
   object adStamp: TADOQuery
     Active = True
     Connection = adCon
@@ -918,7 +900,7 @@ object FMain: TFMain
       end>
     UseOwnFont = False
     OnPopup = dxStampsPopupPopup
-    Left = 16
-    Top = 104
+    Left = 192
+    Top = 200
   end
 end

@@ -53,7 +53,6 @@ type
     adLogId: TAutoIncField;
     cxGrid2DBTableView1Id: TcxGridDBColumn;
     dxBarManager1: TdxBarManager;
-    dxBarPopupMenu1: TdxBarPopupMenu;
     cxAccounts: TcxGridTableView;
     cxAccountsAccountName: TcxGridColumn;
     cxAccountsUsername: TcxGridColumn;
@@ -68,7 +67,6 @@ type
     aMan: TActionManager;
     amAddAccount: TAction;
     amDeleteAccount: TAction;
-    dxAccountsPopup: TdxBarPopupMenu;
     pbAddAccount: TdxBarButton;
     cxTab_Stamp: TcxTabSheet;
     dsStamp: TDataSource;
@@ -110,8 +108,6 @@ type
     cxWhiteWordsActive: TcxGridDBColumn;
     amModifyWord: TAction;
     amAddWord: TAction;
-    dxWhiteWordsPopup: TdxBarPopupMenu;
-    dxBlackWordsPopup: TdxBarPopupMenu;
     dxBarButton1: TdxBarButton;
     amModifyStamp: TAction;
     dxBarButton4: TdxBarButton;
@@ -138,12 +134,12 @@ type
     amSetStampsStatusToNonActive: TAction;
     dxpFiltersStampSetToNonActive: TdxBarButton;
     dxFiltersStampSetToNonActive: TdxBarButton;
+    Button1: TButton;
     procedure cbRunPropertiesChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure amAddAccountExecute(Sender: TObject);
-    procedure dxAccountsPopupPopup(Sender: TObject);
     procedure dxBarButton11Click(Sender: TObject);
     procedure amDeleteAccountExecute(Sender: TObject);
     procedure amAddStampExecute(Sender: TObject);
@@ -159,6 +155,9 @@ type
     procedure amSetStampsStatusToNonActiveExecute(Sender: TObject);
     procedure dxStampsPopupPopup(Sender: TObject);
     procedure dxFiltersStampsPopup(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure cxTab_BlackWordsShow(Sender: TObject);
+    procedure cxTab_StampShow(Sender: TObject);
   private
     Reg: TRegistry;
     Coder:TBFCoder;
@@ -167,6 +166,12 @@ type
   public
     PSManager: TPostManager;
     FManager:TFilterManager;
+    cxWordsGrid:TcxGridDBTableView;
+    cxWordsActive:TcxGridDBColumn;
+    cxWordsFValue:TcxGridDBColumn;
+    cxWordsId:TcxGridDBColumn;
+    cxWordSignalFilterDescription:TcxGridDBColumn;
+    cxWordsTypesDescription:TcxGridDBcolumn;
     procedure RunOnStartup(Run:boolean);
     { Public declarations }
   protected
@@ -236,17 +241,7 @@ end;
 
 procedure TFMain.amAddAccountExecute(Sender: TObject);
 begin
- ShowMessage(IntToStr(cxAccounts.Controller.SelectedRowCount));
   FAddAccount.ShowModal;
-end;
-
-procedure TFMain.dxAccountsPopupPopup(Sender: TObject);
-begin
- if cxAccounts.Controller.SelectedRowCount=0 then
-  begin
-  //  pbAddAccount.Enabled:=False;
-
-  end;
 end;
 
 procedure TFMain.dxBarButton11Click(Sender: TObject);
@@ -256,7 +251,6 @@ end;
 
 procedure TFMain.amDeleteAccountExecute(Sender: TObject);
 begin
- // удаление учетной записи
  if Application.MessageBox('Are you are sure ?','Deleting Account',MB_OKCANCEL)=IDOK then
   begin
    PSManager.AccountManager.DeleteAccount( PSManager.AccountManager.AccountName2Id(cxAccounts.Controller.SelectedRecords[0].Values[cxAccountsAccountName.VisibleIndex]));
@@ -270,7 +264,6 @@ end;
 
 procedure TFMain.adDeleteStampExecute(Sender: TObject);
 begin
-  // удаление штампа
  if Application.MessageBox('Are you are sure ?','Deleting Stamp',MB_OKCANCEL)=IDOK then
   begin
    cxStamps.Controller.DeleteSelection;
@@ -440,6 +433,36 @@ begin
      dxFiltersStampsSetToActive.Enabled:=False;
      dxFiltersStampSetToNonActive.Enabled:=False;
     end;
+end;
+
+procedure TFMain.Button1Click(Sender: TObject);
+begin
+ //cxStamps.Columns[0].;
+  {
+
+  устанавливать
+
+  }
+end;
+
+procedure TFMain.cxTab_BlackWordsShow(Sender: TObject);
+begin
+ cxWordsGrid:=cxBlackWords;
+ cxWordsActive:=cxBlackWordsActive;
+ cxWordsFValue:=cxBlackWordsFValue;
+ cxWordsId:=cxBlackWordsId;
+ cxWordSignalFilterDescription:=cxBlackWordsSignalFilterDescription;
+ cxWordsTypesDescription:=cxBlackWordsTypesDescription;
+end;
+
+procedure TFMain.cxTab_StampShow(Sender: TObject);
+begin
+ cxWordsGrid:=cxWhiteWords;
+ cxWordsActive:=cxWhiteWordsActive;
+ cxWordsFValue:=cxWhiteWordsFValue;
+ cxWordsId:=cxWhiteWordsId;
+ cxWordSignalFilterDescription:=cxWhiteWordsSignalFilterDescription;
+ cxWordsTypesDescription:=cxWhiteWordsTypesDescription;
 end;
 
 end.

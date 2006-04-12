@@ -23,7 +23,8 @@ uses
   AddStamp in 'AddStamp.pas' {FAddStamp},
   ModifyWord in 'ModifyWord.pas' {FModifyWord},
   FilterManager in '..\Shared\FilterManager.PAS',
-  ModifyStamp in 'ModifyStamp.pas' {FModifyStamp};
+  ModifyStamp in 'ModifyStamp.pas' {FModifyStamp},
+  AddWord in 'AddWord.PAS' {FAddWord};
 
 {$R *.res}
 
@@ -35,5 +36,6 @@ begin
   Application.CreateForm(TFAddStamp, FAddStamp);
   Application.CreateForm(TFModifyWord, FModifyWord);
   Application.CreateForm(TFModifyStamp, FModifyStamp);
+  Application.CreateForm(TFAddWord, FAddWord);
   Application.Run;
 end.
