@@ -1,11 +1,10 @@
-object FModifySender: TFModifySender
-  Left = 344
-  Top = 202
+object FModifyExt: TFModifyExt
+  Left = 673
+  Top = 231
+  Width = 219
+  Height = 175
   BorderIcons = [biSystemMenu]
-  BorderStyle = bsSingle
-  Caption = 'Modify Sender'
-  ClientHeight = 134
-  ClientWidth = 218
+  Caption = 'Modify Ext'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,21 +12,20 @@ object FModifySender: TFModifySender
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object cxTabControl1: TcxTabControl
     Left = 0
     Top = 0
-    Width = 218
-    Height = 134
+    Width = 211
+    Height = 141
     Align = alClient
     LookAndFeel.Kind = lfStandard
     LookAndFeel.NativeStyle = True
     TabOrder = 0
-    ClientRectBottom = 130
+    ClientRectBottom = 137
     ClientRectLeft = 2
-    ClientRectRight = 214
+    ClientRectRight = 207
     ClientRectTop = 2
     object leWord: TLabeledEdit
       Left = 80
@@ -73,7 +71,6 @@ object FModifySender: TFModifySender
       Height = 25
       Caption = 'OK'
       TabOrder = 3
-      OnClick = btOKClick
     end
     object btCancel: TButton
       Left = 120
@@ -82,7 +79,6 @@ object FModifySender: TFModifySender
       Height = 25
       Caption = 'Cancel'
       TabOrder = 4
-      OnClick = btCancelClick
     end
   end
 end

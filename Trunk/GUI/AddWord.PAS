@@ -21,6 +21,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure btOKClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure btCancelClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -91,6 +92,11 @@ begin
  leWord.Text:='';
  leDescription.Text:='';
  chbActive.Checked:=True;
+end;
+
+procedure TFAddWord.btCancelClick(Sender: TObject);
+begin
+ Close;
 end;
 
 end.

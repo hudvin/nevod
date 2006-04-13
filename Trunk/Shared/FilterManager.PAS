@@ -8,22 +8,27 @@ type
   TFilterManager = class
   private
     adProc: TADOQuery;
+    FBlackExtTab: TADOQuery;
     FBlackSender: TADOQuery;
     FBlackWordsTab: TADOQuery;
     FStampTab: TADOQuery;
+    FWhiteExtTab: TADOQuery;
     FWhiteSender: TADOQuery;
     FWhiteWordsTab: TADOQuery;
   public
     constructor Create(adCon:TADOConnection;BlackWordsTab,WhiteWordsTab,
-        StampTab:TADOQuery;WhiteSendersTab:TADOQuery;BlackSendersTab:TADOQuery);
+        StampTab:TADOQuery;WhiteSendersTab:TADOQuery;BlackSendersTab:TADOQuery;
+        BlackExtTab:TADOQuery;WhiteExtTab:TADOQuery);
     destructor Destroy; override;
+    procedure AddAttachExt(Value:String;Description:String;AttachType:TfilterType;
+        Status:boolean);
     procedure AddSender(Value:String;Description:String;SenderType:TFilterType;
         Status:boolean);
     procedure AddSignal(Value:String;Description:String;SignalType:TFilterType;
         Location:TSignalLocation;Status:Boolean);
     procedure AddStamp(Value:String;Description:String;Status:Boolean);
     procedure ModifySender(SenderId:Integer;Value:String;Description:String;
-        SenderType:TFilterType; Active:boolean);
+        SenderType:TFilterType; Status:boolean);
     procedure ModifySignal(SignalId:Integer;Value:String;Description:String;
         SignalType:TFilterType;Location:TSignalLocation; Status:Boolean);
     procedure ModifyStamp(StampId:Integer;Value:String;Description:String;
@@ -38,7 +43,7 @@ implementation
 
 constructor TFilterManager.Create(adCon:TADOConnection;BlackWordsTab,
     WhiteWordsTab, StampTab:TADOQuery;WhiteSendersTab:TADOQuery;
-    BlackSendersTab:TADOQuery);
+    BlackSendersTab:TADOQuery; BlackExtTab:TADOQuery;WhiteExtTab:TADOQuery);
 begin
  adProc:=TADOQuery.Create(nil);
  adProc.Connection:=adCon;
@@ -47,11 +52,58 @@ begin
  FStampTab:=StampTab;
  FBlackSender:=BlackSendersTab;
  FWhiteSender:=WhiteSendersTab;
+ FWhiteExtTab:=WhiteExtTab;
+ FBlackExtTab:=BlackExtTab;
 end;
 
 destructor TFilterManager.Destroy;
 begin
  adProc.Free;
+end;
+
+procedure TFilterManager.AddAttachExt(Value:String;Description:String;
+    AttachType:TFilterType;Status:boolean);
+var
+ mid:Integer;
+begin
+ Value:=Trim(Value);
+ if Value='' then
+  Raise EInvalidFilterParams.Create(' Расширение не может быть пустым ');
+ with adProc do
+   begin
+    Active:=False;
+    SQL.Text:='SELECT COUNT (Id) FROM AttachmentExtFilter WHERE FValue=:Value';
+    Parameters.ParamByName('Value').Value:=Value;
+    Active:=True;
+    if Fields[0].AsInteger>0 then
+     begin
+      Active:=False;
+      Raise EInvalidFilterParams.Create('Данное расширение уже есть в таблице');
+     end;
+    Active:=False;
+   end;
+
+ with adProc do
+   begin
+    Active:=False;
+    SQL.Text:='SELECT id FROM Filters WHERE Type=:FilterType';
+    Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(AttachType));
+    Active:=True;
+    mid:=Fields[0].AsInteger;
+    Active:=False;
+
+    SQL.Text:='INSERT INTO AttachmentExtFilter(mid,FValue,Description,Active) ' +
+               'VALUES(:mid,:Value,:Description,:Active)';
+    Parameters.ParamByName('mid').Value:=mid;
+    Parameters.ParamByName('Value').Value:=Value;
+    Parameters.ParamByName('Description').Value:=Description;
+    Parameters.ParamByName('Active').Value:=Status;
+    ExecSQL;   // ftBlackAttachExtFilter,ftWhiteAttachExtFilter,
+    if AttachType=ftBlackAttachExtFilter then
+     FBlackExtTab.Requery;
+    if AttachType=ftWhiteAttachExtFilter then
+     FWhiteExtTab.Requery; 
+   end;
 end;
 
 procedure TFilterManager.AddSender(Value:String;Description:String;
@@ -61,13 +113,6 @@ var
  Exp:TPerlRegEx;
 begin
  Value:=Trim(Value);
- {
-
- производить проверку на коорректсность адреса !
- регуляноное выражение 
-
-
- }
  Exp:=TPerlRegEx.Create(nil);
  Exp.RegEx:='[_a-zA-Z\d\-\.\*]+@([_a-zA-Z\d\-]+(\.[_a-zA-Z\d\-]+)+)';
  Exp.Subject:=Value;
@@ -156,7 +201,7 @@ begin
     if SignalType=ftWhiteWord then
      FWhiteWordsTab.Requery;
 
-      
+
    end;
 end;
 
@@ -191,15 +236,20 @@ begin
 end;
 
 procedure TFilterManager.ModifySender(SenderId:Integer;Value:String;
-    Description:String; SenderType:TFilterType; Active:boolean);
+    Description:String; SenderType:TFilterType; Status:boolean);
 var
  mid:Integer;
+ Exp:TPerlRegEx;
 begin
  Value:=Trim(Value);
+ Exp:=TPerlRegEx.Create(nil);
+ Exp.RegEx:='[_a-zA-Z\d\-\.\*]+@([_a-zA-Z\d\-]+(\.[_a-zA-Z\d\-]+)+)';
+ Exp.Subject:=Value;
+ if not Exp.Match then
+  Raise EInvalidFilterParams.Create('Адрес отправителя некорректен');
+ 
  if SenderId<1  then
   Raise EInvalidFilterParams.Create('Неправильный id отправителя');
- if Value='' then
-  Raise EInvalidFilterParams.Create('Значение отпрвителя не может быть пустым');
 
  with adProc do
    begin
@@ -223,16 +273,20 @@ begin
     Active:=True;
     mid:=Fields[0].AsInteger;
     Active:=False;
-    SQL.Text:='UPDATE SenderFilter SET mid=:mid, FValue=:Value,Descripton=:Description,Active=:Active'+
+    SQL.Text:='UPDATE SenderFilter SET mid=:mid, FValue=:Value,Description=:Description,Active=:Active '+
               'WHERE Id=:SenderId';
     Parameters.ParamByName('mid').Value:=mid;
     Parameters.ParamByName('Value').Value:=Value;
     Parameters.ParamByName('Description').Value:=Description;
-    Parameters.ParamByName('Active').Value:=Active;
+    Parameters.ParamByName('Active').Value:=Status;
     Parameters.ParamByName('SenderId').Value:=SenderId;
     ExecSQL;
-    FStampTab.Requery;
+    if SenderType=ftBlackEmail then
+     FBlackSender.Requery;
+    if SenderType=ftWhiteEmail then
+     FWhiteSender.Requery;
    end;
+ Exp.Free;
 end;
 
 procedure TFilterManager.ModifySignal(SignalId:Integer;Value:String;

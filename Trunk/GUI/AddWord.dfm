@@ -100,6 +100,7 @@ object FAddWord: TFAddWord
       Height = 25
       Caption = 'Cancel'
       TabOrder = 5
+      OnClick = btCancelClick
     end
   end
 end

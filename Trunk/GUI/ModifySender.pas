@@ -16,6 +16,8 @@ type
     btOK: TButton;
     btCancel: TButton;
     procedure FormShow(Sender: TObject);
+    procedure btCancelClick(Sender: TObject);
+    procedure btOKClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -42,6 +44,26 @@ begin
   chbActive.Checked:=cxWordsGrid.Controller.SelectedRecords[0].Values[cxWordsActive.Index];
  end
 
+end;
+
+procedure TFModifySender.btCancelClick(Sender: TObject);
+begin
+ Close;
+end;
+
+procedure TFModifySender.btOKClick(Sender: TObject);
+var
+ Flag:boolean;
+begin
+ try
+  if chbActive.Checked then Flag:=True
+   else Flag:=False;
+  main.FMain.FManager.ModifySender(SenderId,leWord.Text,leDescription.Text,main.FMain.WordsTable,Flag);
+  Close;
+ except
+  on e: Exception do
+    ShowMessage(E.Message);
+ end;
 end;
 
 end.

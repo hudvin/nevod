@@ -183,6 +183,27 @@ type
     adBlackSendersActive: TBooleanField;
     Button3: TButton;
     Button4: TButton;
+    adWhiteExt: TADOQuery;
+    adBlackExt: TADOQuery;
+    dsWhiteExt: TDataSource;
+    dsBlackExt: TDataSource;
+    cxTab_WhiteExt: TcxTabSheet;
+    cxTab_BlackExt: TcxTabSheet;
+    cxWhiteExt: TcxGridDBTableView;
+    cxWhiteExtGridLevel1: TcxGridLevel;
+    cxWhiteExtGrid: TcxGrid;
+    cxWhiteExtid: TcxGridDBColumn;
+    cxWhiteExtFValue: TcxGridDBColumn;
+    cxWhiteExtDescription: TcxGridDBColumn;
+    cxWhiteExtActive: TcxGridDBColumn;
+    cxBlackExt: TcxGridDBTableView;
+    cxBlackExtGridLevel1: TcxGridLevel;
+    cxBlackExtGrid: TcxGrid;
+    cxBlackExtid: TcxGridDBColumn;
+    cxBlackExtFValue: TcxGridDBColumn;
+    cxBlackExtDescription: TcxGridDBColumn;
+    cxBlackExtActive: TcxGridDBColumn;
+    Button5: TButton;
     procedure cbRunPropertiesChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -209,6 +230,9 @@ type
     procedure Button3Click(Sender: TObject);
     procedure cxTab_BlackSendersShow(Sender: TObject);
     procedure Button4Click(Sender: TObject);
+    procedure cxTab_WhiteExtShow(Sender: TObject);
+    procedure cxTab_BlackExtShow(Sender: TObject);
+    procedure Button5Click(Sender: TObject);
   private
     Reg: TRegistry;
     Coder:TBFCoder;
@@ -235,7 +259,7 @@ var
 implementation
 
 uses AddAccount, ModifyAccount, AddStamp, ModifyWord, ModifyStamp, AddWord,
-  AddSender, ModifySender;
+  AddSender, ModifySender, AddExt;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
@@ -280,7 +304,7 @@ begin
  Coder:=TBFCoder.Create;
  Coder.Key:=CriptKey;
  PSManager:=TPostManager.Create(adCon,cxAccounts);
- FManager:=TFilterManager.Create(adCon,adBlackWords,adWhiteWords,adStamp,adWhiteSenders,adBlackSenders);
+ FManager:=TFilterManager.Create(adCon,adBlackWords,adWhiteWords,adStamp,adWhiteSenders,adBlackSenders,adBlackExt,adWhiteExt);
 end;
 
 
@@ -520,6 +544,31 @@ end;
 procedure TFMain.Button4Click(Sender: TObject);
 begin
  FModifySender.ShowModal;
+end;
+
+procedure TFMain.cxTab_WhiteExtShow(Sender: TObject);
+begin
+ WordsTable:=ftWhiteAttachExtFilter;
+ cxWordsGrid:=cxWhiteExt;
+ cxWordsActive:=cxWhiteExtActive;
+ cxWordsFValue:=cxWhiteExtFValue;
+ cxWordsId:=cxWhiteExtId;
+ cxWordsTypesDescription:=cxWhiteExtDescription;
+end;
+
+procedure TFMain.cxTab_BlackExtShow(Sender: TObject);
+begin
+ WordsTable:=ftBlackAttachExtFilter;
+ cxWordsGrid:=cxBlackExt;
+ cxWordsActive:=cxBlackExtActive;
+ cxWordsFValue:=cxBlackExtFValue;
+ cxWordsId:=cxBlackExtId;
+ cxWordsTypesDescription:=cxBlackExtDescription;
+end;
+
+procedure TFMain.Button5Click(Sender: TObject);
+begin
+ FAddExt.ShowModal;
 end;
 
 end.

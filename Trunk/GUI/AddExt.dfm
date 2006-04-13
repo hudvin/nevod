@@ -1,11 +1,11 @@
-object FModifySender: TFModifySender
-  Left = 344
-  Top = 202
+object FAddExt: TFAddExt
+  Left = 671
+  Top = 231
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
-  Caption = 'Modify Sender'
-  ClientHeight = 134
-  ClientWidth = 218
+  Caption = 'Add Extension'
+  ClientHeight = 145
+  ClientWidth = 216
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,24 +19,24 @@ object FModifySender: TFModifySender
   object cxTabControl1: TcxTabControl
     Left = 0
     Top = 0
-    Width = 218
-    Height = 134
+    Width = 216
+    Height = 145
     Align = alClient
     LookAndFeel.Kind = lfStandard
     LookAndFeel.NativeStyle = True
     TabOrder = 0
-    ClientRectBottom = 130
+    ClientRectBottom = 141
     ClientRectLeft = 2
-    ClientRectRight = 214
+    ClientRectRight = 212
     ClientRectTop = 2
     object leWord: TLabeledEdit
       Left = 80
       Top = 16
       Width = 121
       Height = 21
-      EditLabel.Width = 40
+      EditLabel.Width = 46
       EditLabel.Height = 13
-      EditLabel.Caption = 'Sender  '
+      EditLabel.Caption = 'Extension'
       LabelPosition = lpLeft
       TabOrder = 0
     end
@@ -53,7 +53,7 @@ object FModifySender: TFModifySender
     end
     object chbActive: TcxCheckBox
       Left = 80
-      Top = 64
+      Top = 72
       Caption = 'Active'
       Style.LookAndFeel.Kind = lfStandard
       Style.LookAndFeel.NativeStyle = True
@@ -68,7 +68,7 @@ object FModifySender: TFModifySender
     end
     object btOK: TButton
       Left = 16
-      Top = 104
+      Top = 96
       Width = 75
       Height = 25
       Caption = 'OK'
@@ -76,8 +76,8 @@ object FModifySender: TFModifySender
       OnClick = btOKClick
     end
     object btCancel: TButton
-      Left = 120
-      Top = 104
+      Left = 112
+      Top = 96
       Width = 75
       Height = 25
       Caption = 'Cancel'

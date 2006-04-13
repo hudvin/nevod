@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 120
-  Top = 122
+  Left = 243
+  Top = 649
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -105,7 +105,7 @@ object FMain: TFMain
     Top = 25
     Width = 586
     Height = 370
-    ActivePage = cxTab_WhiteSenders
+    ActivePage = cxTab_WhiteExt
     Align = alClient
     LookAndFeel.Kind = lfStandard
     LookAndFeel.NativeStyle = True
@@ -462,6 +462,7 @@ object FMain: TFMain
           OptionsView.GroupByBox = False
           object cxWhiteSendersid: TcxGridDBColumn
             DataBinding.FieldName = 'id'
+            Visible = False
             Width = 53
           end
           object cxWhiteSendersFValue: TcxGridDBColumn
@@ -544,6 +545,100 @@ object FMain: TFMain
         end
         object cxBlackSendersGridLevel1: TcxGridLevel
           GridView = cxBlackSenders
+        end
+      end
+    end
+    object cxTab_WhiteExt: TcxTabSheet
+      Caption = 'cxTab_WhiteExt'
+      ImageIndex = 8
+      OnShow = cxTab_WhiteExtShow
+      object cxWhiteExtGrid: TcxGrid
+        Left = 0
+        Top = 0
+        Width = 580
+        Height = 344
+        Align = alClient
+        TabOrder = 0
+        LookAndFeel.Kind = lfStandard
+        LookAndFeel.NativeStyle = True
+        object cxWhiteExt: TcxGridDBTableView
+          NavigatorButtons.ConfirmDelete = False
+          DataController.DataSource = dsWhiteExt
+          DataController.Summary.DefaultGroupSummaryItems = <>
+          DataController.Summary.FooterSummaryItems = <>
+          DataController.Summary.SummaryGroups = <>
+          OptionsSelection.CellSelect = False
+          OptionsSelection.InvertSelect = False
+          OptionsSelection.MultiSelect = True
+          OptionsView.ColumnAutoWidth = True
+          OptionsView.GroupByBox = False
+          object cxWhiteExtid: TcxGridDBColumn
+            DataBinding.FieldName = 'id'
+            Visible = False
+          end
+          object cxWhiteExtFValue: TcxGridDBColumn
+            DataBinding.FieldName = 'FValue'
+          end
+          object cxWhiteExtDescription: TcxGridDBColumn
+            DataBinding.FieldName = 'Description'
+          end
+          object cxWhiteExtActive: TcxGridDBColumn
+            DataBinding.FieldName = 'Active'
+          end
+        end
+        object cxWhiteExtGridLevel1: TcxGridLevel
+          GridView = cxWhiteExt
+        end
+      end
+      object Button5: TButton
+        Left = 312
+        Top = 176
+        Width = 75
+        Height = 25
+        Caption = 'Button5'
+        TabOrder = 1
+        OnClick = Button5Click
+      end
+    end
+    object cxTab_BlackExt: TcxTabSheet
+      Caption = 'cxTab_BlackExt'
+      ImageIndex = 9
+      OnShow = cxTab_BlackExtShow
+      object cxBlackExtGrid: TcxGrid
+        Left = 0
+        Top = 0
+        Width = 580
+        Height = 344
+        Align = alClient
+        TabOrder = 0
+        LookAndFeel.NativeStyle = True
+        object cxBlackExt: TcxGridDBTableView
+          NavigatorButtons.ConfirmDelete = False
+          DataController.DataSource = dsBlackExt
+          DataController.Summary.DefaultGroupSummaryItems = <>
+          DataController.Summary.FooterSummaryItems = <>
+          DataController.Summary.SummaryGroups = <>
+          OptionsSelection.CellSelect = False
+          OptionsSelection.InvertSelect = False
+          OptionsSelection.MultiSelect = True
+          OptionsView.ColumnAutoWidth = True
+          OptionsView.GroupByBox = False
+          object cxBlackExtid: TcxGridDBColumn
+            DataBinding.FieldName = 'id'
+            Visible = False
+          end
+          object cxBlackExtFValue: TcxGridDBColumn
+            DataBinding.FieldName = 'FValue'
+          end
+          object cxBlackExtDescription: TcxGridDBColumn
+            DataBinding.FieldName = 'Description'
+          end
+          object cxBlackExtActive: TcxGridDBColumn
+            DataBinding.FieldName = 'Active'
+          end
+        end
+        object cxBlackExtGridLevel1: TcxGridLevel
+          GridView = cxBlackExt
         end
       end
     end
@@ -1224,5 +1319,43 @@ object FMain: TFMain
     object adBlackSendersActive: TBooleanField
       FieldName = 'Active'
     end
+  end
+  object adWhiteExt: TADOQuery
+    Active = True
+    Connection = adCon
+    CursorType = ctStatic
+    Parameters = <>
+    SQL.Strings = (
+      'SELECT id,FValue,Description,Active FROM AttachmentExtFilter'
+      'WHERE mid=('
+      '          SELECT id FROM Filters'
+      '          WHERE Type='#39'ftWhiteAttachExtFilter'#39
+      '         )')
+    Left = 8
+    Top = 160
+  end
+  object adBlackExt: TADOQuery
+    Active = True
+    Connection = adCon
+    CursorType = ctStatic
+    Parameters = <>
+    SQL.Strings = (
+      'SELECT id,FValue,Description,Active FROM AttachmentExtFilter'
+      'WHERE mid=('
+      '          SELECT id FROM Filters'
+      '          WHERE Type='#39'ftBlackAttachExtFilter'#39
+      '         )')
+    Left = 8
+    Top = 128
+  end
+  object dsWhiteExt: TDataSource
+    DataSet = adWhiteExt
+    Left = 40
+    Top = 160
+  end
+  object dsBlackExt: TDataSource
+    DataSet = adBlackExt
+    Left = 40
+    Top = 128
   end
 end
