@@ -11,7 +11,7 @@ uses Forms,Windows, Dialogs, ASFilter, Registry, dxBar, cxStyles, Shared,
   cxGridCustomPopupMenu, cxGridPopupMenu, Classes, Controls,
   cxGridDBTableView, cxClasses, cxControls, cxPC, cxSplitter,
   cxInplaceContainer, dxStatusBar, cxLookAndFeels, ActnList,
-  XPStyleActnCtrls, ActnMan, ImgList;
+  XPStyleActnCtrls, ActnMan, ImgList, dxBarExtItems;
 
 type
   TFMain = class(TForm)
@@ -135,6 +135,54 @@ type
     dxpFiltersStampSetToNonActive: TdxBarButton;
     dxFiltersStampSetToNonActive: TdxBarButton;
     Button1: TButton;
+    dxBarButton2: TdxBarButton;
+    dxFiltersBlackWords: TdxBarSubItem;
+    dxFiltersBlackWordsAdd: TdxBarButton;
+    dxFiltersBlackWordsDelete: TdxBarButton;
+    dxFiltersBlackWordsEdit: TdxBarButton;
+    dxFiltersBlackWordsSetToActive: TdxBarButton;
+    dxFiltersBlackWordsSetToNonActive: TdxBarButton;
+    dxFiltersWhiteWords: TdxBarSubItem;
+    dxFiltersWhiteWordsAdd: TdxBarButton;
+    dxFiltersWhiteWordsEdit: TdxBarButton;
+    dxFiltersWhiteWordsDelete: TdxBarButton;
+    dxFiltersWhiteWordsSetToActive: TdxBarButton;
+    dxFiltersWhiteWordsSetToNonActive: TdxBarButton;
+    dxBarButton18: TdxBarButton;
+    dxBarButton19: TdxBarButton;
+    dxBarLargeButton1: TdxBarLargeButton;
+    dxBarStatic1: TdxBarStatic;
+    Button2: TButton;
+    adWhiteSenders: TADOQuery;
+    dsWhiteSenders: TDataSource;
+    dsBlackSenders: TDataSource;
+    adBlackSenders: TADOQuery;
+    adWhiteSendersid: TAutoIncField;
+    adWhiteSendersFValue: TWideStringField;
+    adWhiteSendersDescription: TWideStringField;
+    adWhiteSendersActive: TBooleanField;
+    cxTab_WhiteSenders: TcxTabSheet;
+    cxTab_BlackSenders: TcxTabSheet;
+    cxWhiteSenders: TcxGridDBTableView;
+    cxWhiteSendersGridLevel1: TcxGridLevel;
+    cxWhiteSendersGrid: TcxGrid;
+    cxWhiteSendersid: TcxGridDBColumn;
+    cxWhiteSendersFValue: TcxGridDBColumn;
+    cxWhiteSendersDescription: TcxGridDBColumn;
+    cxWhiteSendersActive: TcxGridDBColumn;
+    cxBlackSenders: TcxGridDBTableView;
+    cxBlackSendersGridLevel1: TcxGridLevel;
+    cxBlackSendersGrid: TcxGrid;
+    cxBlackSendersid: TcxGridDBColumn;
+    cxBlackSendersFValue: TcxGridDBColumn;
+    cxBlackSendersDescription: TcxGridDBColumn;
+    cxBlackSendersActive: TcxGridDBColumn;
+    adBlackSendersid: TAutoIncField;
+    adBlackSendersFValue: TWideStringField;
+    adBlackSendersDescription: TWideStringField;
+    adBlackSendersActive: TBooleanField;
+    Button3: TButton;
+    Button4: TButton;
     procedure cbRunPropertiesChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -146,8 +194,6 @@ type
     procedure adDeleteStampExecute(Sender: TObject);
     procedure SettingsTreeFocusedNodeChanged(Sender: TObject;
       APrevFocusedNode, AFocusedNode: TcxTreeListNode);
-    procedure dxWhiteWordsPopupPopup(Sender: TObject);
-    procedure dxBlackWordsPopupPopup(Sender: TObject);
     procedure amModifyWordExecute(Sender: TObject);
     procedure amModifyStampExecute(Sender: TObject);
     procedure amRemoveStampExecute(Sender: TObject);
@@ -158,6 +204,11 @@ type
     procedure Button1Click(Sender: TObject);
     procedure cxTab_BlackWordsShow(Sender: TObject);
     procedure cxTab_StampShow(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure cxTab_WhiteSendersShow(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure cxTab_BlackSendersShow(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
   private
     Reg: TRegistry;
     Coder:TBFCoder;
@@ -165,6 +216,7 @@ type
     { Private declarations }
   public
     PSManager: TPostManager;
+    WordsTable:TFilterType;
     FManager:TFilterManager;
     cxWordsGrid:TcxGridDBTableView;
     cxWordsActive:TcxGridDBColumn;
@@ -182,7 +234,8 @@ var
   FMain: TFMain;
 implementation
 
-uses AddAccount, ModifyAccount, AddStamp, ModifyWord, ModifyStamp;
+uses AddAccount, ModifyAccount, AddStamp, ModifyWord, ModifyStamp, AddWord,
+  AddSender, ModifySender;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
@@ -227,7 +280,7 @@ begin
  Coder:=TBFCoder.Create;
  Coder.Key:=CriptKey;
  PSManager:=TPostManager.Create(adCon,cxAccounts);
- FManager:=TFilterManager.Create(adCon,adBlackWords,adWhiteWords,adStamp);
+ FManager:=TFilterManager.Create(adCon,adBlackWords,adWhiteWords,adStamp,adWhiteSenders,adBlackSenders);
 end;
 
 
@@ -275,6 +328,7 @@ procedure TFMain.SettingsTreeFocusedNodeChanged(Sender: TObject;
 var
  Node:String;
 begin
+ //ShowMessage(IntToStr(STree.TreeList.FocusedNode.AbsoluteIndex));
  Node:= STree.TreeList.FocusedNode.Texts[0];
  case TNodeGroup(GetEnumValue(TypeInfo(TNodeGroup),'nd'+Node)) of
    ndGeneral:
@@ -293,36 +347,6 @@ begin
      cxTab_Stamp.Show;
     end;
  end;
-end;
-
-procedure TFMain.dxWhiteWordsPopupPopup(Sender: TObject);
-begin
- with FModifyWord do
-  if Grid<>cxWhiteWords then
-   begin
-    adWords:=adWhiteWords;
-    Grid:=cxWhiteWords;
-    cxWordsActive:=cxWhiteWordsActive;
-    cxWordsFValue:=cxWhiteWordsFValue;
-    cxWordsId:=cxWhiteWordsId;
-    cxWordSignalFilterDescription:=cxWhiteWordsSignalFilterDescription;
-    cxWordsTypesDescription:=cxWhiteWordsTypesDescription;
-   end;
-end;
-
-procedure TFMain.dxBlackWordsPopupPopup(Sender: TObject);
-begin
- with FModifyWord do
-    if Grid<>cxBlackWords then
-     begin
-      adWords:=adBlackWords;
-      Grid:=cxBlackWords;
-      cxWordsActive:=cxBlackWordsActive;
-      cxWordsFValue:=cxBlackWordsFValue;
-      cxWordsId:=cxBlackWordsId;
-      cxWordSignalFilterDescription:=cxBlackWordsSignalFilterDescription;
-      cxWordsTypesDescription:=cxBlackWordsTypesDescription;
-     end;
 end;
 
 procedure TFMain.amModifyWordExecute(Sender: TObject);
@@ -437,16 +461,13 @@ end;
 
 procedure TFMain.Button1Click(Sender: TObject);
 begin
- //cxStamps.Columns[0].;
-  {
-
-  устанавливать
-
-  }
+ //FAddWord.ShowModal;
+ FModifyWord.ShowModal;
 end;
 
 procedure TFMain.cxTab_BlackWordsShow(Sender: TObject);
 begin
+ WordsTable:=ftBlackWord;
  cxWordsGrid:=cxBlackWords;
  cxWordsActive:=cxBlackWordsActive;
  cxWordsFValue:=cxBlackWordsFValue;
@@ -457,12 +478,48 @@ end;
 
 procedure TFMain.cxTab_StampShow(Sender: TObject);
 begin
+ WordsTable:=ftWhiteWord;
  cxWordsGrid:=cxWhiteWords;
  cxWordsActive:=cxWhiteWordsActive;
  cxWordsFValue:=cxWhiteWordsFValue;
  cxWordsId:=cxWhiteWordsId;
  cxWordSignalFilterDescription:=cxWhiteWordsSignalFilterDescription;
  cxWordsTypesDescription:=cxWhiteWordsTypesDescription;
+end;
+
+procedure TFMain.Button2Click(Sender: TObject);
+begin
+ FAddWord.ShowModal;
+end;
+
+procedure TFMain.cxTab_WhiteSendersShow(Sender: TObject);
+begin
+ WordsTable:=ftWhiteEmail;
+ cxWordsGrid:=cxWhiteSenders;
+ cxWordsActive:=cxWhiteSendersActive;
+ cxWordsFValue:=cxWhiteSendersFValue;
+ cxWordsId:=cxWhiteSendersId;
+ cxWordsTypesDescription:=cxWhiteSendersDescription;
+end;
+
+procedure TFMain.Button3Click(Sender: TObject);
+begin
+ FAddSender.ShowModal;
+end;
+
+procedure TFMain.cxTab_BlackSendersShow(Sender: TObject);
+begin
+ WordsTable:=ftBlackEmail;
+ cxWordsGrid:=cxBlackSenders;
+ cxWordsActive:=cxBlackSendersActive;
+ cxWordsFValue:=cxBlackSendersFValue;
+ cxWordsId:=cxBlackSendersId;
+ cxWordsTypesDescription:=cxBlackSendersDescription;
+end;
+
+procedure TFMain.Button4Click(Sender: TObject);
+begin
+ FModifySender.ShowModal;
 end;
 
 end.

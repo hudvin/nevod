@@ -24,7 +24,9 @@ uses
   ModifyWord in 'ModifyWord.pas' {FModifyWord},
   FilterManager in '..\Shared\FilterManager.PAS',
   ModifyStamp in 'ModifyStamp.pas' {FModifyStamp},
-  AddWord in 'AddWord.PAS' {FAddWord};
+  AddWord in 'AddWord.PAS' {FAddWord},
+  AddSender in 'AddSender.pas' {FAddSender},
+  ModifySender in 'ModifySender.pas' {FModifySender};
 
 {$R *.res}
 
@@ -37,5 +39,7 @@ begin
   Application.CreateForm(TFModifyWord, FModifyWord);
   Application.CreateForm(TFModifyStamp, FModifyStamp);
   Application.CreateForm(TFAddWord, FAddWord);
+  Application.CreateForm(TFAddSender, FAddSender);
+  Application.CreateForm(TFModifySender, FModifySender);
   Application.Run;
 end.

@@ -1,6 +1,6 @@
 object FModifyWord: TFModifyWord
-  Left = 561
-  Top = 249
+  Left = 422
+  Top = 238
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Modify Word'
@@ -15,6 +15,7 @@ object FModifyWord: TFModifyWord
   OldCreateOrder = False
   Position = poMainFormCenter
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -76,7 +77,6 @@ object FModifyWord: TFModifyWord
         'Only in mail subject'
         'Only in mail body'
         'In mail body and subject')
-      Properties.OnChange = cbLocationPropertiesChange
       Style.BorderStyle = ebsNone
       Style.LookAndFeel.Kind = lfStandard
       Style.LookAndFeel.NativeStyle = True
@@ -96,6 +96,7 @@ object FModifyWord: TFModifyWord
       Height = 25
       Caption = 'OK'
       TabOrder = 4
+      OnClick = btOKClick
     end
     object btCancel: TButton
       Left = 120

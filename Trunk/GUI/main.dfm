@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 195
-  Top = 182
+  Left = 120
+  Top = 122
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -41,9 +41,9 @@ object FMain: TFMain
   end
   object SettingsTree: TcxTreeList
     Left = 0
-    Top = 51
+    Top = 25
     Width = 177
-    Height = 344
+    Height = 370
     Align = alLeft
     Bands = <
       item
@@ -92,9 +92,9 @@ object FMain: TFMain
   end
   object cxSplitter1: TcxSplitter
     Left = 177
-    Top = 51
+    Top = 25
     Width = 8
-    Height = 344
+    Height = 370
     HotZoneClassName = 'TcxMediaPlayer9Style'
     AutoSnap = True
     ResizeUpdate = True
@@ -102,15 +102,15 @@ object FMain: TFMain
   end
   object stPages: TcxPageControl
     Left = 185
-    Top = 51
+    Top = 25
     Width = 586
-    Height = 344
-    ActivePage = cxTab_Stamp
+    Height = 370
+    ActivePage = cxTab_WhiteSenders
     Align = alClient
     LookAndFeel.Kind = lfStandard
     LookAndFeel.NativeStyle = True
     TabOrder = 3
-    ClientRectBottom = 340
+    ClientRectBottom = 366
     ClientRectLeft = 2
     ClientRectRight = 582
     ClientRectTop = 22
@@ -121,7 +121,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 580
-        Height = 318
+        Height = 344
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
@@ -210,7 +210,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 580
-        Height = 318
+        Height = 344
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
@@ -262,7 +262,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 580
-        Height = 318
+        Height = 344
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
@@ -312,7 +312,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 580
-        Height = 318
+        Height = 344
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
@@ -369,6 +369,15 @@ object FMain: TFMain
         TabOrder = 1
         OnClick = Button1Click
       end
+      object Button2: TButton
+        Left = 376
+        Top = 176
+        Width = 75
+        Height = 25
+        Caption = 'Button2'
+        TabOrder = 2
+        OnClick = Button2Click
+      end
     end
     object cxTab_WhiteWords: TcxTabSheet
       Caption = 'cxTab_WhiteWords'
@@ -377,7 +386,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 580
-        Height = 318
+        Height = 344
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
@@ -424,6 +433,117 @@ object FMain: TFMain
         end
         object cxGridLevel1: TcxGridLevel
           GridView = cxWhiteWords
+        end
+      end
+    end
+    object cxTab_WhiteSenders: TcxTabSheet
+      Caption = 'cxTab_WhiteSenders'
+      ImageIndex = 6
+      OnShow = cxTab_WhiteSendersShow
+      object cxWhiteSendersGrid: TcxGrid
+        Left = 0
+        Top = 0
+        Width = 580
+        Height = 344
+        Align = alClient
+        TabOrder = 0
+        LookAndFeel.Kind = lfStandard
+        LookAndFeel.NativeStyle = True
+        object cxWhiteSenders: TcxGridDBTableView
+          NavigatorButtons.ConfirmDelete = False
+          DataController.DataSource = dsWhiteSenders
+          DataController.Summary.DefaultGroupSummaryItems = <>
+          DataController.Summary.FooterSummaryItems = <>
+          DataController.Summary.SummaryGroups = <>
+          OptionsSelection.CellSelect = False
+          OptionsSelection.InvertSelect = False
+          OptionsSelection.MultiSelect = True
+          OptionsView.ColumnAutoWidth = True
+          OptionsView.GroupByBox = False
+          object cxWhiteSendersid: TcxGridDBColumn
+            DataBinding.FieldName = 'id'
+            Width = 53
+          end
+          object cxWhiteSendersFValue: TcxGridDBColumn
+            DataBinding.FieldName = 'FValue'
+            Width = 267
+          end
+          object cxWhiteSendersDescription: TcxGridDBColumn
+            DataBinding.FieldName = 'Description'
+            Width = 251
+          end
+          object cxWhiteSendersActive: TcxGridDBColumn
+            DataBinding.FieldName = 'Active'
+            Width = 60
+          end
+        end
+        object cxWhiteSendersGridLevel1: TcxGridLevel
+          GridView = cxWhiteSenders
+        end
+      end
+      object Button3: TButton
+        Left = 312
+        Top = 176
+        Width = 75
+        Height = 25
+        Caption = 'Button3'
+        TabOrder = 1
+        OnClick = Button3Click
+      end
+      object Button4: TButton
+        Left = 88
+        Top = 184
+        Width = 75
+        Height = 25
+        Caption = 'Button4'
+        TabOrder = 2
+        OnClick = Button4Click
+      end
+    end
+    object cxTab_BlackSenders: TcxTabSheet
+      Caption = 'cxTab_BlackSenders'
+      ImageIndex = 7
+      OnShow = cxTab_BlackSendersShow
+      object cxBlackSendersGrid: TcxGrid
+        Left = 0
+        Top = 0
+        Width = 580
+        Height = 344
+        Align = alClient
+        TabOrder = 0
+        LookAndFeel.Kind = lfStandard
+        LookAndFeel.NativeStyle = True
+        object cxBlackSenders: TcxGridDBTableView
+          NavigatorButtons.ConfirmDelete = False
+          DataController.DataSource = dsBlackSenders
+          DataController.Summary.DefaultGroupSummaryItems = <>
+          DataController.Summary.FooterSummaryItems = <>
+          DataController.Summary.SummaryGroups = <>
+          OptionsSelection.CellSelect = False
+          OptionsSelection.InvertSelect = False
+          OptionsSelection.MultiSelect = True
+          OptionsView.ColumnAutoWidth = True
+          OptionsView.GroupByBox = False
+          object cxBlackSendersid: TcxGridDBColumn
+            DataBinding.FieldName = 'id'
+            Visible = False
+            Width = 20
+          end
+          object cxBlackSendersFValue: TcxGridDBColumn
+            DataBinding.FieldName = 'FValue'
+            Width = 309
+          end
+          object cxBlackSendersDescription: TcxGridDBColumn
+            DataBinding.FieldName = 'Description'
+            Width = 137
+          end
+          object cxBlackSendersActive: TcxGridDBColumn
+            DataBinding.FieldName = 'Active'
+            Width = 112
+          end
+        end
+        object cxBlackSendersGridLevel1: TcxGridLevel
+          GridView = cxBlackSenders
         end
       end
     end
@@ -474,13 +594,13 @@ object FMain: TFMain
     LoginPrompt = False
     Mode = cmShareDenyNone
     Provider = 'Microsoft.Jet.OLEDB.4.0'
-    Left = 136
-    Top = 24
+    Left = 96
+    Top = 368
   end
   object dsLog: TDataSource
     DataSet = adLog
     Left = 40
-    Top = 232
+    Top = 224
   end
   object adLog: TADOQuery
     Active = True
@@ -493,7 +613,7 @@ object FMain: TFMain
         'me  FROM Log,Accounts'
       'WHERE  Accounts.Id=log.mid')
     Left = 8
-    Top = 232
+    Top = 224
     object adLogId: TAutoIncField
       FieldName = 'Id'
       ReadOnly = True
@@ -544,24 +664,6 @@ object FMain: TFMain
         UseOwnFont = False
         Visible = True
         WholeRow = True
-      end
-      item
-        Caption = 'Custom 2'
-        DockedDockingStyle = dsTop
-        DockedLeft = 3
-        DockedTop = 23
-        DockingStyle = dsTop
-        FloatLeft = 123
-        FloatTop = 274
-        FloatClientWidth = 0
-        FloatClientHeight = 0
-        ItemLinks = <>
-        Name = 'Custom 2'
-        OneOnRow = True
-        Row = 1
-        UseOwnFont = False
-        Visible = True
-        WholeRow = False
       end>
     Categories.Strings = (
       'Default')
@@ -595,7 +697,7 @@ object FMain: TFMain
     DockControlHeights = (
       0
       0
-      51
+      25
       0)
     object dxBarButton10: TdxBarButton
       Action = amAddAccount
@@ -629,6 +731,14 @@ object FMain: TFMain
       ItemLinks = <
         item
           Item = dxFiltersStamps
+          Visible = True
+        end
+        item
+          Item = dxFiltersBlackWords
+          Visible = True
+        end
+        item
+          Item = dxFiltersWhiteWords
           Visible = True
         end>
     end
@@ -730,6 +840,150 @@ object FMain: TFMain
       Action = amSetStampsStatusToNonActive
       Category = 0
     end
+    object dxBarButton2: TdxBarButton
+      Caption = 'BlackWords'
+      Category = 0
+      Hint = 'BlackWords'
+      Visible = ivAlways
+    end
+    object dxFiltersBlackWords: TdxBarSubItem
+      Caption = 'BlackWords'
+      Category = 0
+      Visible = ivAlways
+      ItemLinks = <
+        item
+          Item = dxFiltersBlackWordsAdd
+          Visible = True
+        end
+        item
+          Item = dxFiltersBlackWordsEdit
+          Visible = True
+        end
+        item
+          Item = dxFiltersBlackWordsDelete
+          Visible = True
+        end
+        item
+          Item = dxFiltersBlackWordsSetToActive
+          Visible = True
+        end
+        item
+          Item = dxFiltersBlackWordsSetToNonActive
+          Visible = True
+        end>
+    end
+    object dxFiltersBlackWordsAdd: TdxBarButton
+      Caption = 'Add'
+      Category = 0
+      Hint = 'Add'
+      Visible = ivAlways
+    end
+    object dxFiltersBlackWordsDelete: TdxBarButton
+      Caption = 'Delete'
+      Category = 0
+      Hint = 'Delete'
+      Visible = ivAlways
+    end
+    object dxFiltersBlackWordsEdit: TdxBarButton
+      Caption = 'Edit'
+      Category = 0
+      Hint = 'Edit'
+      Visible = ivAlways
+    end
+    object dxFiltersBlackWordsSetToActive: TdxBarButton
+      Caption = 'Set To Active'
+      Category = 0
+      Hint = 'Set To Active'
+      Visible = ivAlways
+    end
+    object dxFiltersBlackWordsSetToNonActive: TdxBarButton
+      Caption = 'Set To nonActive'
+      Category = 0
+      Hint = 'Set To nonActive'
+      Visible = ivAlways
+    end
+    object dxFiltersWhiteWords: TdxBarSubItem
+      Caption = 'WhiteWords'
+      Category = 0
+      Visible = ivAlways
+      ItemLinks = <
+        item
+          Item = dxFiltersWhiteWordsAdd
+          Visible = True
+        end
+        item
+          Item = dxFiltersWhiteWordsEdit
+          Visible = True
+        end
+        item
+          Item = dxFiltersWhiteWordsDelete
+          Visible = True
+        end
+        item
+          Item = dxFiltersWhiteWordsSetToActive
+          Visible = True
+        end
+        item
+          Item = dxFiltersWhiteWordsSetToNonActive
+          Visible = True
+        end>
+    end
+    object dxFiltersWhiteWordsAdd: TdxBarButton
+      Caption = 'Add'
+      Category = 0
+      Hint = 'Add'
+      Visible = ivAlways
+    end
+    object dxFiltersWhiteWordsEdit: TdxBarButton
+      Caption = 'Edit'
+      Category = 0
+      Hint = 'Edit'
+      Visible = ivAlways
+    end
+    object dxFiltersWhiteWordsDelete: TdxBarButton
+      Caption = 'Delete'
+      Category = 0
+      Hint = 'Delete'
+      Visible = ivAlways
+    end
+    object dxFiltersWhiteWordsSetToActive: TdxBarButton
+      Caption = 'Set To Active'
+      Category = 0
+      Hint = 'Set To Active'
+      Visible = ivAlways
+    end
+    object dxFiltersWhiteWordsSetToNonActive: TdxBarButton
+      Caption = 'Set To nonActive'
+      Category = 0
+      Hint = 'Set To nonActive'
+      Visible = ivAlways
+    end
+    object dxBarButton18: TdxBarButton
+      Caption = 'New Item'
+      Category = 0
+      Hint = 'New Item'
+      Visible = ivAlways
+      PaintStyle = psCaptionInMenu
+    end
+    object dxBarButton19: TdxBarButton
+      Caption = 'New Item'
+      Category = 0
+      Hint = 'New Item'
+      Visible = ivAlways
+      PaintStyle = psCaptionGlyph
+    end
+    object dxBarLargeButton1: TdxBarLargeButton
+      Caption = 'New Item'
+      Category = 0
+      Hint = 'New Item'
+      Visible = ivAlways
+    end
+    object dxBarStatic1: TdxBarStatic
+      Caption = 'New Item'
+      Category = 0
+      Hint = 'New Item'
+      Visible = ivAlways
+    end
   end
   object aMan: TActionManager
     Left = 96
@@ -774,13 +1028,13 @@ object FMain: TFMain
   object dsStamp: TDataSource
     DataSet = adStamp
     Left = 40
-    Top = 264
+    Top = 256
   end
   object adTest: TADOQuery
     Connection = adCon
     Parameters = <>
-    Left = 104
-    Top = 24
+    Left = 128
+    Top = 368
   end
   object adBlackWords: TADOQuery
     Active = True
@@ -799,7 +1053,7 @@ object FMain: TFMain
       '          WHERE Type='#39'ftBlackWord'#39
       '         )')
     Left = 8
-    Top = 296
+    Top = 288
     object adBlackWordsId: TAutoIncField
       FieldName = 'Id'
       ReadOnly = True
@@ -823,7 +1077,7 @@ object FMain: TFMain
   object dsBlackWords: TDataSource
     DataSet = adBlackWords
     Left = 40
-    Top = 296
+    Top = 288
   end
   object adWhiteWords: TADOQuery
     Active = True
@@ -842,12 +1096,12 @@ object FMain: TFMain
       '          WHERE Type='#39'ftWhiteWord'#39
       '         )')
     Left = 8
-    Top = 328
+    Top = 320
   end
   object dsWhiteWords: TDataSource
     DataSet = adWhiteWords
     Left = 40
-    Top = 328
+    Top = 320
   end
   object adStamp: TADOQuery
     Active = True
@@ -858,7 +1112,7 @@ object FMain: TFMain
       'SELECT id,FValue,Description,Active'
       'FROM StampFilter')
     Left = 8
-    Top = 264
+    Top = 256
     object adStampFValue: TWideStringField
       FieldName = 'FValue'
       Size = 255
@@ -902,5 +1156,73 @@ object FMain: TFMain
     OnPopup = dxStampsPopupPopup
     Left = 192
     Top = 200
+  end
+  object adWhiteSenders: TADOQuery
+    Active = True
+    Connection = adCon
+    CursorType = ctStatic
+    Parameters = <>
+    SQL.Strings = (
+      'SELECT id,FValue,Description,Active FROM SenderFilter'
+      'WHERE mid=('
+      '          SELECT id FROM Filters'
+      '          WHERE Type='#39'ftWhiteEMail'#39
+      '         )')
+    Left = 8
+    Top = 352
+    object adWhiteSendersid: TAutoIncField
+      FieldName = 'id'
+      ReadOnly = True
+    end
+    object adWhiteSendersFValue: TWideStringField
+      FieldName = 'FValue'
+      Size = 255
+    end
+    object adWhiteSendersDescription: TWideStringField
+      FieldName = 'Description'
+      Size = 50
+    end
+    object adWhiteSendersActive: TBooleanField
+      FieldName = 'Active'
+    end
+  end
+  object dsWhiteSenders: TDataSource
+    DataSet = adWhiteSenders
+    Left = 40
+    Top = 352
+  end
+  object dsBlackSenders: TDataSource
+    DataSet = adBlackSenders
+    Left = 40
+    Top = 384
+  end
+  object adBlackSenders: TADOQuery
+    Active = True
+    Connection = adCon
+    CursorType = ctStatic
+    Parameters = <>
+    SQL.Strings = (
+      'SELECT id,FValue,Description,Active FROM SenderFilter'
+      'WHERE mid=('
+      '          SELECT id FROM Filters'
+      '          WHERE Type='#39'ftBlackEMail'#39
+      '         )')
+    Left = 8
+    Top = 384
+    object adBlackSendersid: TAutoIncField
+      FieldName = 'id'
+      ReadOnly = True
+    end
+    object adBlackSendersFValue: TWideStringField
+      FieldName = 'FValue'
+      Size = 255
+    end
+    object adBlackSendersDescription: TWideStringField
+      FieldName = 'Description'
+      Size = 50
+    end
+    object adBlackSendersActive: TBooleanField
+      FieldName = 'Active'
+    end
   end
 end

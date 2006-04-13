@@ -1,6 +1,6 @@
 object FAddWord: TFAddWord
-  Left = 318
-  Top = 257
+  Left = 414
+  Top = 99
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Add Word'
@@ -15,6 +15,7 @@ object FAddWord: TFAddWord
   OldCreateOrder = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object cxTabControl1: TcxTabControl
@@ -71,10 +72,6 @@ object FAddWord: TFAddWord
       Left = 80
       Top = 64
       Properties.DropDownListStyle = lsFixedList
-      Properties.Items.Strings = (
-        'Only in mail subject'
-        'Only in mail body'
-        'In mail body and subject')
       Style.BorderStyle = ebsNone
       Style.LookAndFeel.Kind = lfStandard
       Style.LookAndFeel.NativeStyle = True
@@ -94,6 +91,7 @@ object FAddWord: TFAddWord
       Height = 25
       Caption = 'OK'
       TabOrder = 4
+      OnClick = btOKClick
     end
     object btCancel: TButton
       Left = 120

@@ -81,6 +81,14 @@ type
   end;
 
 type
+ PSignalTypeDescriptor=^TSignalTypeDescriptor;
+ TSignalTypeDescriptor = record
+    Description: string;
+    Location: TSignalLocation;
+  end;
+
+
+type
   PAccountParams = ^TAccountParams;
 
 type
@@ -196,6 +204,21 @@ type
     procedure SetShieldingExp(const Value: string);
   public
     property ShieldingExp: string read GetShieldingExp write SetShieldingExp;
+  end;
+
+  TSignalDescriptorsList = class
+  private
+    List: TList;
+    function GetCount: Integer;
+    function GetIndex(Index: Integer): TSignalTypeDescriptor;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    procedure Add(Location:TSignalLocation;Description:String);
+    function DescriptionByLocation(Location:TSignalLocation): string;
+    function LocationByDescription(Description:String): TSignalLocation;
+    property Count: Integer read GetCount;
+    property Index[Index: Integer]: TSignalTypeDescriptor read GetIndex;
   end;
 
 
@@ -870,6 +893,80 @@ begin
   RegEx:=InpString;
 
 end;
+
+constructor TSignalDescriptorsList.Create;
+begin
+ List:=TList.Create;
+end;
+
+destructor TSignalDescriptorsList.Destroy;
+var
+ i:integer;
+ DelRecord:PSignalTypeDescriptor;
+begin
+ for I := 0 to List.Count - 1 do
+   begin
+     DelRecord:=List.Items[i];
+     Dispose(DelRecord);
+   end;
+end;
+
+procedure TSignalDescriptorsList.Add(Location:TSignalLocation;
+    Description:String);
+var
+ NewItem:PSignalTypeDescriptor;
+begin
+ New(NewItem);
+ NewItem.Description:=Description;
+ NewItem.Location:=Location;
+ List.Add(NewItem);
+end;
+
+function TSignalDescriptorsList.DescriptionByLocation(
+    Location:TSignalLocation): string;
+var
+ Flag:boolean;
+ i:integer;
+begin
+ Flag:=False;
+ i:=0;
+ while (not Flag) and (i<List.Count) do
+    if PSignalTypeDescriptor(List.Items[i]).Location=Location then
+     begin
+      Flag:=True;
+      Result:=PSignalTypeDescriptor(List.Items[i]).Description;
+     end
+    else inc(i);
+end;
+
+function TSignalDescriptorsList.GetCount: Integer;
+begin
+ Result:=List.Count;
+end;
+
+function TSignalDescriptorsList.GetIndex(Index: Integer): TSignalTypeDescriptor;
+begin
+ Result.Description:=PSignalTypeDescriptor(List.Items[Index]).Description;
+ Result.Location:=PSignalTypeDescriptor(List.Items[Index]).Location;
+end;
+
+function TSignalDescriptorsList.LocationByDescription(Description:String):
+    TSignalLocation;
+var
+ Flag:boolean;
+ i:integer;
+begin
+ Flag:=False;
+ i:=0;
+ while (not Flag) and (i<List.Count) do
+    if PSignalTypeDescriptor(List.Items[i]).Description=Description then
+     begin
+      Flag:=True;
+      Result:=PSignalTypeDescriptor(List.Items[i]).Location;
+     end
+    else inc(i);
+end;
+
 
 
 end.

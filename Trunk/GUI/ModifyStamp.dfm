@@ -1,6 +1,6 @@
 object FModifyStamp: TFModifyStamp
-  Left = 444
-  Top = 216
+  Left = 666
+  Top = 181
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Modify Stamp'

@@ -2,28 +2,30 @@ unit FilterManager;
 
 interface
 uses
- Windows,DB,Exceptions, ADODB,Typinfo, Messages, Shared, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+ Windows,DB,Exceptions,Shared,PerlRegEx, ADODB,Typinfo, Messages,  SysUtils, Variants, Classes, Graphics, Controls, Forms,
  Dialogs;
 type
   TFilterManager = class
   private
     adProc: TADOQuery;
+    FBlackSender: TADOQuery;
     FBlackWordsTab: TADOQuery;
     FStampTab: TADOQuery;
+    FWhiteSender: TADOQuery;
     FWhiteWordsTab: TADOQuery;
   public
     constructor Create(adCon:TADOConnection;BlackWordsTab,WhiteWordsTab,
-        StampTab:TADOQuery);
+        StampTab:TADOQuery;WhiteSendersTab:TADOQuery;BlackSendersTab:TADOQuery);
     destructor Destroy; override;
     procedure AddSender(Value:String;Description:String;SenderType:TFilterType;
-        Active:boolean);
+        Status:boolean);
     procedure AddSignal(Value:String;Description:String;SignalType:TFilterType;
-        Location:TSignalLocation;Active:Boolean);
+        Location:TSignalLocation;Status:Boolean);
     procedure AddStamp(Value:String;Description:String;Status:Boolean);
     procedure ModifySender(SenderId:Integer;Value:String;Description:String;
         SenderType:TFilterType; Active:boolean);
     procedure ModifySignal(SignalId:Integer;Value:String;Description:String;
-        SignalType:TFilterType;Location:TSignalLocation; Active:Boolean);
+        SignalType:TFilterType;Location:TSignalLocation; Status:Boolean);
     procedure ModifyStamp(StampId:Integer;Value:String;Description:String;
         Status:boolean);
     procedure RemoveSender(SenderId:Integer);
@@ -35,13 +37,16 @@ type
 implementation
 
 constructor TFilterManager.Create(adCon:TADOConnection;BlackWordsTab,
-    WhiteWordsTab, StampTab:TADOQuery);
+    WhiteWordsTab, StampTab:TADOQuery;WhiteSendersTab:TADOQuery;
+    BlackSendersTab:TADOQuery);
 begin
  adProc:=TADOQuery.Create(nil);
  adProc.Connection:=adCon;
  FBlackWordsTab:=BlackWordsTab;
  FWhiteWordsTab:=WhiteWordsTab;
  FStampTab:=StampTab;
+ FBlackSender:=BlackSendersTab;
+ FWhiteSender:=WhiteSendersTab;
 end;
 
 destructor TFilterManager.Destroy;
@@ -50,13 +55,24 @@ begin
 end;
 
 procedure TFilterManager.AddSender(Value:String;Description:String;
-    SenderType:TFilterType;Active:boolean);
+    SenderType:TFilterType;Status:boolean);
 var
  mid:Integer;
+ Exp:TPerlRegEx;
 begin
  Value:=Trim(Value);
- if Value='' then
-  Raise EInvalidFilterParams.Create('Адрес отправителя не может быть пустным');
+ {
+
+ производить проверку на коорректсность адреса !
+ регуляноное выражение 
+
+
+ }
+ Exp:=TPerlRegEx.Create(nil);
+ Exp.RegEx:='[_a-zA-Z\d\-\.\*]+@([_a-zA-Z\d\-]+(\.[_a-zA-Z\d\-]+)+)';
+ Exp.Subject:=Value;
+ if not Exp.Match then
+  Raise EInvalidFilterParams.Create('Адрес отправителя некорректен');
  if NOT ((SenderType=ftBlackEmail) or (SenderType=ftWhiteEmail)) then
   Raise EInvalidFilterParams.Create('Неправильный тип фильтра');
 
@@ -69,7 +85,7 @@ begin
     if Fields[0].AsInteger>0 then
      begin
       Active:=False;
-      Raise EInvalidFilterParams.Create('Данный отпрвитель уже есть в списке');
+      Raise EInvalidFilterParams.Create('Данный отправитель уже есть в списке');
      end;
     Active:=False;
     SQL.Text:='SELECT id FROM Filters WHERE Type=:FilterType';
@@ -83,13 +99,18 @@ begin
     Parameters.ParamByName('mid').Value:=mid;
     Parameters.ParamByName('Value').Value:=Value;
     Parameters.ParamByName('Description').Value:=Description;
-    Parameters.ParamByName('Active').Value:=Active;
+    Parameters.ParamByName('Active').Value:=Status;
     ExecSQL;
+    if SenderType=ftBlackEmail then
+     FBlackSender.Requery;
+    if SenderType=ftWhiteEmail then
+     FWhiteSender.Requery;
    end;
+ Exp.Free;
 end;
 
 procedure TFilterManager.AddSignal(Value:String;Description:String;
-    SignalType:TFilterType; Location:TSignalLocation;Active:Boolean);
+    SignalType:TFilterType; Location:TSignalLocation;Status:Boolean);
 var
  mid:Integer;
 begin
@@ -126,10 +147,16 @@ begin
                'VALUES(:mid,:Value,:Location,:Description,:Active)';
     Parameters.ParamByName('mid').Value:=mid;
     Parameters.ParamByName('Value').Value:=Value;
-    Parameters.ParamByName('Location').Value:=GetEnumName(TypeInfo(TSignalLocation), Ord(SignalType));
+    Parameters.ParamByName('Location').Value:=GetEnumName(TypeInfo(TSignalLocation), Ord(Location));
     Parameters.ParamByName('Description').Value:=Description;
-    Parameters.ParamByName('Active').Value:=Active;
+    Parameters.ParamByName('Active').Value:=Status;
     ExecSQL;
+    if SignalType=ftBlackWord then
+     FBlackWordsTab.Requery;
+    if SignalType=ftWhiteWord then
+     FWhiteWordsTab.Requery;
+
+      
    end;
 end;
 
@@ -210,7 +237,7 @@ end;
 
 procedure TFilterManager.ModifySignal(SignalId:Integer;Value:String;
     Description:String; SignalType:TFilterType;Location:TSignalLocation;
-    Active:Boolean);
+    Status:Boolean);
 var
  mid:Integer;
 begin
@@ -225,7 +252,7 @@ begin
  with adProc do
    begin
     Active:=False;
-    SQL.Text:='SELECT COUNT (Id) FROM SignalFilter WHERE FValue=:Value'+
+    SQL.Text:='SELECT COUNT (Id) FROM SignalFilter WHERE FValue=:Value '+
               'AND id<>:SignalId ' ;
     Parameters.ParamByName('Value').Value:=Value;
     Parameters.ParamByName('SignalId').Value:=SignalId;
@@ -236,11 +263,7 @@ begin
       Raise EInvalidFilterParams.Create('Данное слово уже есть в таблице');
      end;
     Active:=False;
-   end;
 
- with adProc do
-   begin
-    Active:=False;
     SQL.Text:='SELECT id FROM Filters WHERE Type=:FilterType';
     Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(SignalType));
     Active:=True;
@@ -248,14 +271,19 @@ begin
     Active:=False;
 
     SQL.Text:='UPDATE SignalFilter SET mid=:mid,FValue=:Value,Location=:Location,'+
-              ' Description=:Description,Active=:Active)';
+              ' Description=:Description,Active=:Active WHERE Id=:SignalId';
     Parameters.ParamByName('mid').Value:=mid;
     Parameters.ParamByName('Value').Value:=Value;
     Parameters.ParamByName('Location').Value:=GetEnumName(TypeInfo(TSignalLocation), Ord(Location));
     Parameters.ParamByName('Description').Value:=Description;
-    Parameters.ParamByName('Active').Value:=Active;
+    Parameters.ParamByName('Active').Value:=Status;
+    Parameters.ParamByName('SignalId').Value:=SignalId;
     ExecSQL;
     Active:=False;
+    if SignalType=ftBlackWord then
+     FBlackWordsTab.Requery;
+    if SignalType=ftWhiteWord then
+     FWhiteWordsTab.Requery;
    end;
 end;
 
