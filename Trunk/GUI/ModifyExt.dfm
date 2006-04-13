@@ -1,6 +1,6 @@
 object FModifyExt: TFModifyExt
-  Left = 673
-  Top = 231
+  Left = 404
+  Top = 189
   Width = 219
   Height = 175
   BorderIcons = [biSystemMenu]
@@ -12,6 +12,7 @@ object FModifyExt: TFModifyExt
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object cxTabControl1: TcxTabControl
@@ -71,6 +72,7 @@ object FModifyExt: TFModifyExt
       Height = 25
       Caption = 'OK'
       TabOrder = 3
+      OnClick = btOKClick
     end
     object btCancel: TButton
       Left = 120
@@ -79,6 +81,7 @@ object FModifyExt: TFModifyExt
       Height = 25
       Caption = 'Cancel'
       TabOrder = 4
+      OnClick = btCancelClick
     end
   end
 end

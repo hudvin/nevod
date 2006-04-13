@@ -26,7 +26,9 @@ uses
   ModifyStamp in 'ModifyStamp.pas' {FModifyStamp},
   AddWord in 'AddWord.PAS' {FAddWord},
   AddSender in 'AddSender.pas' {FAddSender},
-  ModifySender in 'ModifySender.pas' {FModifySender};
+  ModifySender in 'ModifySender.pas' {FModifySender},
+  AddExt in 'AddExt.pas' {FAddExt},
+  ModifyExt in 'ModifyExt.pas' {FModifyExt};
 
 {$R *.res}
 
@@ -41,5 +43,7 @@ begin
   Application.CreateForm(TFAddWord, FAddWord);
   Application.CreateForm(TFAddSender, FAddSender);
   Application.CreateForm(TFModifySender, FModifySender);
+  Application.CreateForm(TFAddExt, FAddExt);
+  Application.CreateForm(TFModifyExt, FModifyExt);
   Application.Run;
 end.

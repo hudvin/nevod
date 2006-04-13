@@ -204,6 +204,8 @@ type
     cxBlackExtDescription: TcxGridDBColumn;
     cxBlackExtActive: TcxGridDBColumn;
     Button5: TButton;
+    Button6: TButton;
+    Button7: TButton;
     procedure cbRunPropertiesChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -233,6 +235,8 @@ type
     procedure cxTab_WhiteExtShow(Sender: TObject);
     procedure cxTab_BlackExtShow(Sender: TObject);
     procedure Button5Click(Sender: TObject);
+    procedure Button6Click(Sender: TObject);
+    procedure Button7Click(Sender: TObject);
   private
     Reg: TRegistry;
     Coder:TBFCoder;
@@ -259,7 +263,7 @@ var
 implementation
 
 uses AddAccount, ModifyAccount, AddStamp, ModifyWord, ModifyStamp, AddWord,
-  AddSender, ModifySender, AddExt;
+  AddSender, ModifySender, AddExt, ModifyExt;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
@@ -567,6 +571,16 @@ begin
 end;
 
 procedure TFMain.Button5Click(Sender: TObject);
+begin
+ FAddExt.ShowModal;
+end;
+
+procedure TFMain.Button6Click(Sender: TObject);
+begin
+ FModifyExt.ShowModal;
+end;
+
+procedure TFMain.Button7Click(Sender: TObject);
 begin
  FAddExt.ShowModal;
 end;

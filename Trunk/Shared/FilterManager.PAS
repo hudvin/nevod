@@ -27,6 +27,8 @@ type
     procedure AddSignal(Value:String;Description:String;SignalType:TFilterType;
         Location:TSignalLocation;Status:Boolean);
     procedure AddStamp(Value:String;Description:String;Status:Boolean);
+    procedure ModifyAttachExt(AttachExtId:Integer;Value:String;Description:String;
+        AttachType:TFilterType;Status:Boolean);
     procedure ModifySender(SenderId:Integer;Value:String;Description:String;
         SenderType:TFilterType; Status:boolean);
     procedure ModifySignal(SignalId:Integer;Value:String;Description:String;
@@ -233,6 +235,54 @@ begin
     ExecSQL;
     FStampTab.Requery;
    end;
+end;
+
+procedure TFilterManager.ModifyAttachExt(AttachExtId:Integer;Value:String;
+    Description:String;AttachType:TFilterType;Status:Boolean);
+var
+ mid:Integer;
+begin
+ Value:=Trim(Value);
+ if AttachExtId<1 then
+  Raise EInvalidFilterParams.Create('Неправильный id расширения');
+ if Value='' then
+  Raise EInvalidFilterParams.Create(' Расширение не может быть пустым ');
+ with adProc do
+   begin
+    Active:=False;
+    SQL.Text:='SELECT COUNT (Id) FROM AttachmentExtFilter WHERE FValue=:Value '+
+              'AND id<>:AttachExtId ' ;
+    Parameters.ParamByName('Value').Value:=Value;
+    Parameters.ParamByName('AttachExtId').Value:=AttachExtId;
+    Active:=True;
+    if Fields[0].AsInteger>0 then
+     begin
+      Active:=False;
+      Raise EInvalidFilterParams.Create('Данное расширение уже есть в таблице');
+     end;
+    Active:=False;
+
+    SQL.Text:='SELECT id FROM Filters WHERE Type=:FilterType';
+    Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(AttachType));
+    Active:=True;
+    mid:=Fields[0].AsInteger;
+    Active:=False;
+
+    SQL.Text:='UPDATE AttachmentExtFilter SET mid=:mid,FValue=:Value ,'+
+              ' Description=:Description,Active=:Active WHERE Id=:AttachExtId';
+    Parameters.ParamByName('mid').Value:=mid;
+    Parameters.ParamByName('Value').Value:=Value;
+    Parameters.ParamByName('Description').Value:=Description;
+    Parameters.ParamByName('Active').Value:=Status;
+    Parameters.ParamByName('AttachExtId').Value:=AttachExtId;
+    ExecSQL;
+    Active:=False;
+    if AttachType=ftBlackAttachExtFilter then
+     FBlackExtTab.Requery;
+    if AttachType=ftWhiteAttachExtFilter then
+     FWhiteExtTab.Requery;
+   end;
+
 end;
 
 procedure TFilterManager.ModifySender(SenderId:Integer;Value:String;

@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 243
-  Top = 649
+  Left = 92
+  Top = 294
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -105,7 +105,7 @@ object FMain: TFMain
     Top = 25
     Width = 586
     Height = 370
-    ActivePage = cxTab_WhiteExt
+    ActivePage = cxTab_BlackExt
     Align = alClient
     LookAndFeel.Kind = lfStandard
     LookAndFeel.NativeStyle = True
@@ -599,6 +599,15 @@ object FMain: TFMain
         TabOrder = 1
         OnClick = Button5Click
       end
+      object Button6: TButton
+        Left = 64
+        Top = 136
+        Width = 75
+        Height = 25
+        Caption = 'Button6'
+        TabOrder = 2
+        OnClick = Button6Click
+      end
     end
     object cxTab_BlackExt: TcxTabSheet
       Caption = 'cxTab_BlackExt'
@@ -640,6 +649,15 @@ object FMain: TFMain
         object cxBlackExtGridLevel1: TcxGridLevel
           GridView = cxBlackExt
         end
+      end
+      object Button7: TButton
+        Left = 136
+        Top = 208
+        Width = 75
+        Height = 25
+        Caption = 'Button7'
+        TabOrder = 1
+        OnClick = Button7Click
       end
     end
   end
