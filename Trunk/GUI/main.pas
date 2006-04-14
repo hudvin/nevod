@@ -207,6 +207,12 @@ type
     Button6: TButton;
     Button7: TButton;
     dxBarButton3: TdxBarButton;
+    cxStyleRepository1: TcxStyleRepository;
+    cxStyle1: TcxStyle;
+    cxStyleRepository2: TcxStyleRepository;
+    cxStyle2: TcxStyle;
+    Memo1: TMemo;
+    Memo2: TMemo;
     procedure cbRunPropertiesChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -216,8 +222,6 @@ type
     procedure amDeleteAccountExecute(Sender: TObject);
     procedure amAddStampExecute(Sender: TObject);
     procedure adDeleteStampExecute(Sender: TObject);
-    procedure SettingsTreeFocusedNodeChanged(Sender: TObject;
-      APrevFocusedNode, AFocusedNode: TcxTreeListNode);
     procedure amModifyWordExecute(Sender: TObject);
     procedure amModifyStampExecute(Sender: TObject);
     procedure amRemoveStampExecute(Sender: TObject);
@@ -240,10 +244,15 @@ type
     procedure Button7Click(Sender: TObject);
     procedure SettingsTreeDragOver(Sender, Source: TObject; X, Y: Integer;
       State: TDragState; var Accept: Boolean);
+    procedure cxBlackWordsStartDrag(Sender: TObject;
+      var DragObject: TDragObject);
+    procedure SettingsTreeSelectionChanged(Sender: TObject);
+    procedure cxBlackWordsEndDrag(Sender, Target: TObject; X, Y: Integer);
+    procedure SettingsTreeDragDrop(Sender, Source: TObject; X, Y: Integer);
   private
     Reg: TRegistry;
     Coder:TBFCoder;
-
+    CurrNode:TcxTreeListNode;
     { Private declarations }
   public
     PSManager: TPostManager;
@@ -263,6 +272,7 @@ type
 
 var
   FMain: TFMain;
+  DragState:boolean=False;
 implementation
 
 uses AddAccount, ModifyAccount, AddStamp, ModifyWord, ModifyStamp, AddWord,
@@ -352,27 +362,6 @@ begin
   begin
    cxStamps.Controller.DeleteSelection;
   end;
-end;
-
-procedure TFMain.SettingsTreeFocusedNodeChanged(Sender: TObject;
-  APrevFocusedNode, AFocusedNode: TcxTreeListNode);
-var
- NodeIndex:Integer;
-begin
- NodeIndex:=STree.TreeList.FocusedNode.AbsoluteIndex;
- case NodeIndex of  
-   0: cxTab_General.Show;
-   1: cxTab_Accounts.Show;
-   2: ;
-   3: ;
-   4: cxTab_WhiteWords.Show ;
-   5: cxTab_Stamp.Show ;
-   6: cxTab_WhiteExt.Show;
-   7: cxTab_WhiteSenders.Show ;
-   9: cxTab_BlackWords.Show ;
-   10:cxTab_BlackSenders.Show;
-   11:cxTab_BlackExt.Show;
- end;
 end;
 
 procedure TFMain.amModifyWordExecute(Sender: TObject);
@@ -586,26 +575,61 @@ end;
 procedure TFMain.SettingsTreeDragOver(Sender, Source: TObject; X,
   Y: Integer; State: TDragState; var Accept: Boolean);
 begin
- Accept:=True;
+ if (CurrNode.AbsoluteIndex<>STree.TreeList.FocusedNode.AbsoluteIndex)
+     and (CurrNode.Texts[0]=STree.TreeList.FocusedNode.Texts[0])
+   then  Accept:=True
+     else Accept:=False;
+  Memo1.Lines.Add(CurrNode.Texts[0]);
+  Memo2.Lines.Add(STree.TreeList.FocusedNode.Texts[0]);
 end;
 
 
-{
-при реализации переноса расширения, адреса, слова
- ВСЕГДА будут различными, так как выполняется проверка при добавлении в таблицы
 
+procedure TFMain.cxBlackWordsStartDrag(Sender: TObject;
+  var DragObject: TDragObject);
+begin
+  DragState:=True;
+  CurrNode:=STree.TreeList.FocusedNode;
+end;
 
+procedure TFMain.SettingsTreeSelectionChanged(Sender: TObject);
+var
+ NodeIndex:Integer;
+begin
+ NodeIndex:=STree.TreeList.FocusedNode.AbsoluteIndex;
+ if not DragState then
+ case NodeIndex of
+   0: cxTab_General.Show;
+   1: cxTab_Accounts.Show;
+   2: ;
+   3: ;
+   4: cxTab_WhiteWords.Show ;
+   5: cxTab_Stamp.Show ;
+   6: cxTab_WhiteExt.Show;
+   7: cxTab_WhiteSenders.Show ;
+   9: cxTab_BlackWords.Show ;
+   10:cxTab_BlackSenders.Show;
+   11:cxTab_BlackExt.Show;
+ end;
 
-}
+end;
 
-{
+procedure TFMain.cxBlackWordsEndDrag(Sender, Target: TObject; X,
+  Y: Integer);
+begin
+ DragState:=False;
+end;
 
-    замечания  к структуре
-перенести массивы определений (формы для работы со словами)
-дать нормальные имена ссылкам на столбцы таблицы и на таблицы
-перенести часть кода в отдельные функции в класс TFilterManager
-
-}
+procedure TFMain.SettingsTreeDragDrop(Sender, Source: TObject; X,
+  Y: Integer);
+begin
+ ShowMessage('');
+ (*
+ пройти все выделенные колонки
+ произвести модификацию через менеджер
+ 
+  *)
+end;
 
 end.
 

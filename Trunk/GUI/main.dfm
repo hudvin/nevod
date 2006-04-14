@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 279
-  Top = 207
+  Left = 213
+  Top = 157
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -44,6 +44,8 @@ object FMain: TFMain
     Top = 25
     Width = 177
     Height = 370
+    Styles.Inactive = cxStyle2
+    Styles.HotTrack = cxStyle1
     Align = alLeft
     Bands = <
       item
@@ -56,16 +58,18 @@ object FMain: TFMain
     Font.Style = []
     LookAndFeel.Kind = lfStandard
     LookAndFeel.NativeStyle = True
+    OptionsBehavior.DragFocusing = True
+    OptionsBehavior.WaitForExpandNodeTime = 5
+    OptionsData.Editing = False
     OptionsData.Deleting = False
-    OptionsSelection.CellSelect = False
-    OptionsSelection.HideSelection = True
-    OptionsSelection.MultiSelect = True
+    OptionsSelection.InvertSelect = False
     OptionsView.ColumnAutoWidth = True
     OptionsView.TreeLineStyle = tllsSolid
     ParentFont = False
     TabOrder = 1
+    OnDragDrop = SettingsTreeDragDrop
     OnDragOver = SettingsTreeDragOver
-    OnFocusedNodeChanged = SettingsTreeFocusedNodeChanged
+    OnSelectionChanged = SettingsTreeSelectionChanged
     Data = {
       02000400F50100000F00000044617461436F6E74726F6C6C6572310100000012
       000000546378537472696E6756616C7565547970650D00000000000700000047
@@ -106,7 +110,7 @@ object FMain: TFMain
     Top = 25
     Width = 586
     Height = 370
-    ActivePage = cxTab_BlackExt
+    ActivePage = cxTab_BlackWords
     Align = alClient
     DragMode = dmAutomatic
     LookAndFeel.Kind = lfStandard
@@ -316,10 +320,14 @@ object FMain: TFMain
         Width = 580
         Height = 344
         Align = alClient
+        DragMode = dmAutomatic
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
         LookAndFeel.NativeStyle = True
         object cxBlackWords: TcxGridDBTableView
+          DragMode = dmAutomatic
+          OnEndDrag = cxBlackWordsEndDrag
+          OnStartDrag = cxBlackWordsStartDrag
           NavigatorButtons.ConfirmDelete = False
           DataController.DataSource = dsBlackWords
           DataController.Summary.DefaultGroupSummaryItems = <>
@@ -380,6 +388,24 @@ object FMain: TFMain
         TabOrder = 2
         OnClick = Button2Click
       end
+      object Memo1: TMemo
+        Left = 64
+        Top = 200
+        Width = 185
+        Height = 89
+        Lines.Strings = (
+          'Memo1')
+        TabOrder = 3
+      end
+      object Memo2: TMemo
+        Left = 288
+        Top = 184
+        Width = 185
+        Height = 89
+        Lines.Strings = (
+          'Memo2')
+        TabOrder = 4
+      end
     end
     object cxTab_WhiteWords: TcxTabSheet
       Caption = 'cxTab_WhiteWords'
@@ -394,6 +420,7 @@ object FMain: TFMain
         LookAndFeel.Kind = lfStandard
         LookAndFeel.NativeStyle = True
         object cxWhiteWords: TcxGridDBTableView
+          DragMode = dmAutomatic
           NavigatorButtons.ConfirmDelete = False
           DataController.DataSource = dsWhiteWords
           DataController.Summary.DefaultGroupSummaryItems = <>
@@ -1386,5 +1413,21 @@ object FMain: TFMain
     DataSet = adBlackExt
     Left = 40
     Top = 128
+  end
+  object cxStyleRepository1: TcxStyleRepository
+    object cxStyle1: TcxStyle
+    end
+  end
+  object cxStyleRepository2: TcxStyleRepository
+    object cxStyle2: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = clHighlight
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      TextColor = clWhite
+    end
   end
 end
