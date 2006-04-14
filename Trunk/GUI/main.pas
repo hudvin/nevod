@@ -206,6 +206,7 @@ type
     Button5: TButton;
     Button6: TButton;
     Button7: TButton;
+    dxBarButton3: TdxBarButton;
     procedure cbRunPropertiesChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -237,6 +238,8 @@ type
     procedure Button5Click(Sender: TObject);
     procedure Button6Click(Sender: TObject);
     procedure Button7Click(Sender: TObject);
+    procedure SettingsTreeDragOver(Sender, Source: TObject; X, Y: Integer;
+      State: TDragState; var Accept: Boolean);
   private
     Reg: TRegistry;
     Coder:TBFCoder;
@@ -354,26 +357,21 @@ end;
 procedure TFMain.SettingsTreeFocusedNodeChanged(Sender: TObject;
   APrevFocusedNode, AFocusedNode: TcxTreeListNode);
 var
- Node:String;
+ NodeIndex:Integer;
 begin
- //ShowMessage(IntToStr(STree.TreeList.FocusedNode.AbsoluteIndex));
- Node:= STree.TreeList.FocusedNode.Texts[0];
- case TNodeGroup(GetEnumValue(TypeInfo(TNodeGroup),'nd'+Node)) of
-   ndGeneral:
-    begin
-     Caption:='General' ;
-     cxTab_General.Show;
-    end;
-   ndAccounts:
-    begin
-     Caption:='Accounts' ;
-     cxTab_Accounts.Show;
-    end;
-   ndStamps:
-    begin
-     Caption:='Stamps' ;
-     cxTab_Stamp.Show;
-    end;
+ NodeIndex:=STree.TreeList.FocusedNode.AbsoluteIndex;
+ case NodeIndex of  
+   0: cxTab_General.Show;
+   1: cxTab_Accounts.Show;
+   2: ;
+   3: ;
+   4: cxTab_WhiteWords.Show ;
+   5: cxTab_Stamp.Show ;
+   6: cxTab_WhiteExt.Show;
+   7: cxTab_WhiteSenders.Show ;
+   9: cxTab_BlackWords.Show ;
+   10:cxTab_BlackSenders.Show;
+   11:cxTab_BlackExt.Show;
  end;
 end;
 
@@ -584,6 +582,30 @@ procedure TFMain.Button7Click(Sender: TObject);
 begin
  FAddExt.ShowModal;
 end;
+
+procedure TFMain.SettingsTreeDragOver(Sender, Source: TObject; X,
+  Y: Integer; State: TDragState; var Accept: Boolean);
+begin
+ Accept:=True;
+end;
+
+
+{
+при реализации переноса расширения, адреса, слова
+ ВСЕГДА будут различными, так как выполняется проверка при добавлении в таблицы
+
+
+
+}
+
+{
+
+    замечания  к структуре
+перенести массивы определений (формы для работы со словами)
+дать нормальные имена ссылкам на столбцы таблицы и на таблицы
+перенести часть кода в отдельные функции в класс TFilterManager
+
+}
 
 end.
 

@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 92
-  Top = 294
+  Left = 279
+  Top = 207
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -64,6 +64,7 @@ object FMain: TFMain
     OptionsView.TreeLineStyle = tllsSolid
     ParentFont = False
     TabOrder = 1
+    OnDragOver = SettingsTreeDragOver
     OnFocusedNodeChanged = SettingsTreeFocusedNodeChanged
     Data = {
       02000400F50100000F00000044617461436F6E74726F6C6C6572310100000012
@@ -75,7 +76,7 @@ object FMain: TFMain
       72647300000700000053656E6465727300000B0000004174746163686D656E74
       730300000000000000100000000000000000000000FFFFFFFF02000000100000
       000000000000000000FFFFFFFF01000000040000000300000000000000000000
-      00FFFFFFFF0300000014000000040000000000000000000000FFFFFFFF060000
+      00FFFFFFFF0300000004000000040000000000000000000000FFFFFFFF060000
       00100000000000000000000000FFFFFFFF070000001000000000000000000000
       00FFFFFFFF08000000100000000000000000000000FFFFFFFF09000000100000
       000000000000000000FFFFFFFF04000000040000000300000000000000000000
@@ -107,6 +108,7 @@ object FMain: TFMain
     Height = 370
     ActivePage = cxTab_BlackExt
     Align = alClient
+    DragMode = dmAutomatic
     LookAndFeel.Kind = lfStandard
     LookAndFeel.NativeStyle = True
     TabOrder = 3
@@ -503,6 +505,7 @@ object FMain: TFMain
     end
     object cxTab_BlackSenders: TcxTabSheet
       Caption = 'cxTab_BlackSenders'
+      DragMode = dmAutomatic
       ImageIndex = 7
       OnShow = cxTab_BlackSendersShow
       object cxBlackSendersGrid: TcxGrid
@@ -511,6 +514,7 @@ object FMain: TFMain
         Width = 580
         Height = 344
         Align = alClient
+        DragMode = dmAutomatic
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
         LookAndFeel.NativeStyle = True
@@ -622,6 +626,7 @@ object FMain: TFMain
         TabOrder = 0
         LookAndFeel.NativeStyle = True
         object cxBlackExt: TcxGridDBTableView
+          DragMode = dmAutomatic
           NavigatorButtons.ConfirmDelete = False
           DataController.DataSource = dsBlackExt
           DataController.Summary.DefaultGroupSummaryItems = <>
@@ -1095,6 +1100,12 @@ object FMain: TFMain
       Caption = 'New Item'
       Category = 0
       Hint = 'New Item'
+      Visible = ivAlways
+    end
+    object dxBarButton3: TdxBarButton
+      Caption = 'Black Extensions'
+      Category = 0
+      Hint = 'Black Extensions'
       Visible = ivAlways
     end
   end
