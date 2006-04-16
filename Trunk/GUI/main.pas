@@ -248,7 +248,6 @@ type
       var DragObject: TDragObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
     procedure cxBlackWordsEndDrag(Sender, Target: TObject; X, Y: Integer);
-    procedure SettingsTreeDragDrop(Sender, Source: TObject; X, Y: Integer);
   private
     Reg: TRegistry;
     Coder:TBFCoder;
@@ -579,8 +578,8 @@ begin
      and (CurrNode.Texts[0]=STree.TreeList.FocusedNode.Texts[0])
    then  Accept:=True
      else Accept:=False;
-  Memo1.Lines.Add(CurrNode.Texts[0]);
-  Memo2.Lines.Add(STree.TreeList.FocusedNode.Texts[0]);
+ // Memo1.Lines.Add(CurrNode.Texts[0]);
+ // Memo2.Lines.Add(STree.TreeList.FocusedNode.Texts[0]);
 end;
 
 
@@ -618,17 +617,6 @@ procedure TFMain.cxBlackWordsEndDrag(Sender, Target: TObject; X,
   Y: Integer);
 begin
  DragState:=False;
-end;
-
-procedure TFMain.SettingsTreeDragDrop(Sender, Source: TObject; X,
-  Y: Integer);
-begin
- ShowMessage('');
- (*
- пройти все выделенные колонки
- произвести модификацию через менеджер
- 
-  *)
 end;
 
 end.

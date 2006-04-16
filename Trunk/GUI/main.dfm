@@ -67,7 +67,6 @@ object FMain: TFMain
     OptionsView.TreeLineStyle = tllsSolid
     ParentFont = False
     TabOrder = 1
-    OnDragDrop = SettingsTreeDragDrop
     OnDragOver = SettingsTreeDragOver
     OnSelectionChanged = SettingsTreeSelectionChanged
     Data = {
