@@ -3,6 +3,17 @@ unit Shared;
 interface
 
 uses  PerlRegEx,
+  cxEdit,
+  cxCheckBox, cxGridLevel, cxGridCustomTableView, cxGridTableView,
+  
+
+  cxGridCustomView, cxGrid, Menus,
+  cxGridCustomPopupMenu, cxGridPopupMenu,  Controls,
+  cxGridDBTableView, cxClasses, cxControls, cxPC, cxSplitter,
+  cxInplaceContainer, dxStatusBar, cxLookAndFeels,
+
+
+
   Windows,WinSock, Registry,  ZLib,TypInfo, Messages, SysUtils, Variants,  ComObj,ActiveX,
   Dialogs, StdCtrls, DB, ADODB,IdMessage, Classes, IniFiles,
   IdText,IdMessageParts, StrUtils,IdAttachment,IdZLibCompressorBase,
@@ -26,6 +37,8 @@ const
   ServerMutex='{B66AEAD2-94BF-453B-9D79-27CC798B6657}';
   WaitTime=1000;      // время между проверками состояний
 
+
+
 type
  TNodeGroup=(ndGeneral,ndAccounts,ndStamps);  
 
@@ -37,7 +50,7 @@ type
 
 type
   TFilterType=(ftBlackEmail,ftWhiteEmail,ftStamp,ftBlackWord,ftWhiteWord,ftImageFilter,ftLinkFilter,
-               ftBlackAttachExtFilter,ftWhiteAttachExtFilter,ftMessSize,ftSpamWords);
+               ftBlackAttach,ftWhiteAttach,ftMessSize,ftSpamWord);
 
 type
   TBodyType=(btText,btHtml);  // тип тела сообщения
@@ -87,6 +100,15 @@ type
     Location: TSignalLocation;
   end;
 
+type
+ PNodeParams=^TNodeParams;
+ TNodeParams=record
+  NodeIndex:integer;
+  FilterType:TFilterType;
+  Sheet:TcxTabSheet;
+  adTab:TADOQuery;
+  Grid:TcxGridDBTableView;
+end;
 
 type
   PAccountParams = ^TAccountParams;

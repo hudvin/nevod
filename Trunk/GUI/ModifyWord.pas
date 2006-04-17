@@ -27,7 +27,11 @@ type
     WordId:Integer;
   public
   end;
+{
 
+
+
+}
 var
   FModifyWord: TFModifyWord;
   SelDesc:TSignalDescriptorsList;

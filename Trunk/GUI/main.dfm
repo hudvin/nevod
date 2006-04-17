@@ -15,7 +15,6 @@ object FMain: TFMain
   OldCreateOrder = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object stBar: TdxStatusBar
@@ -67,7 +66,6 @@ object FMain: TFMain
     OptionsView.TreeLineStyle = tllsSolid
     ParentFont = False
     TabOrder = 1
-    OnDragOver = SettingsTreeDragOver
     OnSelectionChanged = SettingsTreeSelectionChanged
     Data = {
       02000400F50100000F00000044617461436F6E74726F6C6C6572310100000012
@@ -109,7 +107,7 @@ object FMain: TFMain
     Top = 25
     Width = 586
     Height = 370
-    ActivePage = cxTab_BlackWords
+    ActivePage = cxTab_BlackExt
     Align = alClient
     DragMode = dmAutomatic
     LookAndFeel.Kind = lfStandard
@@ -183,7 +181,6 @@ object FMain: TFMain
         Left = 8
         Top = 16
         Caption = 'Run program on statrtup'
-        Properties.OnChange = cbRunPropertiesChange
         State = cbsChecked
         Style.LookAndFeel.Kind = lfOffice11
         Style.LookAndFeel.NativeStyle = True
@@ -325,8 +322,6 @@ object FMain: TFMain
         LookAndFeel.NativeStyle = True
         object cxBlackWords: TcxGridDBTableView
           DragMode = dmAutomatic
-          OnEndDrag = cxBlackWordsEndDrag
-          OnStartDrag = cxBlackWordsStartDrag
           NavigatorButtons.ConfirmDelete = False
           DataController.DataSource = dsBlackWords
           DataController.Summary.DefaultGroupSummaryItems = <>
@@ -376,7 +371,6 @@ object FMain: TFMain
         Height = 25
         Caption = 'Button1'
         TabOrder = 1
-        OnClick = Button1Click
       end
       object Button2: TButton
         Left = 376
@@ -385,25 +379,6 @@ object FMain: TFMain
         Height = 25
         Caption = 'Button2'
         TabOrder = 2
-        OnClick = Button2Click
-      end
-      object Memo1: TMemo
-        Left = 64
-        Top = 200
-        Width = 185
-        Height = 89
-        Lines.Strings = (
-          'Memo1')
-        TabOrder = 3
-      end
-      object Memo2: TMemo
-        Left = 288
-        Top = 184
-        Width = 185
-        Height = 89
-        Lines.Strings = (
-          'Memo2')
-        TabOrder = 4
       end
     end
     object cxTab_WhiteWords: TcxTabSheet
@@ -510,24 +485,6 @@ object FMain: TFMain
           GridView = cxWhiteSenders
         end
       end
-      object Button3: TButton
-        Left = 312
-        Top = 176
-        Width = 75
-        Height = 25
-        Caption = 'Button3'
-        TabOrder = 1
-        OnClick = Button3Click
-      end
-      object Button4: TButton
-        Left = 88
-        Top = 184
-        Width = 75
-        Height = 25
-        Caption = 'Button4'
-        TabOrder = 2
-        OnClick = Button4Click
-      end
     end
     object cxTab_BlackSenders: TcxTabSheet
       Caption = 'cxTab_BlackSenders'
@@ -627,7 +584,6 @@ object FMain: TFMain
         Height = 25
         Caption = 'Button5'
         TabOrder = 1
-        OnClick = Button5Click
       end
       object Button6: TButton
         Left = 64
@@ -636,7 +592,6 @@ object FMain: TFMain
         Height = 25
         Caption = 'Button6'
         TabOrder = 2
-        OnClick = Button6Click
       end
     end
     object cxTab_BlackExt: TcxTabSheet
@@ -688,7 +643,6 @@ object FMain: TFMain
         Height = 25
         Caption = 'Button7'
         TabOrder = 1
-        OnClick = Button7Click
       end
     end
   end
@@ -854,7 +808,6 @@ object FMain: TFMain
       Category = 0
       Hint = 'Edit '
       Visible = ivAlways
-      OnClick = dxBarButton11Click
     end
     object dxBarButton12: TdxBarButton
       Action = amDeleteAccount
@@ -919,7 +872,6 @@ object FMain: TFMain
           Item = dxFiltersStampSetToNonActive
           Visible = True
         end>
-      OnPopup = dxFiltersStampsPopup
     end
     object dxFiltersStampsAdd: TdxBarButton
       Action = amAddStamp
@@ -1141,7 +1093,6 @@ object FMain: TFMain
     StyleName = 'XP Style'
     object amAddAccount: TAction
       Caption = 'amAddAccount'
-      OnExecute = amAddAccountExecute
     end
     object amDeleteAccount: TAction
       Caption = 'amDeleteAccount'
@@ -1149,30 +1100,24 @@ object FMain: TFMain
     end
     object amAddStamp: TAction
       Caption = 'amAddStamp'
-      OnExecute = amAddStampExecute
     end
     object amModifyWord: TAction
       Caption = 'amModifyWord'
-      OnExecute = amModifyWordExecute
     end
     object amAddWord: TAction
       Caption = 'amAddWord'
     end
     object amModifyStamp: TAction
       Caption = 'Modify Stamp'
-      OnExecute = amModifyStampExecute
     end
     object amRemoveStamp: TAction
       Caption = 'amRemoveStamp'
-      OnExecute = amRemoveStampExecute
     end
     object amSetStampsStatusToActive: TAction
       Caption = 'Set To Active'
-      OnExecute = amSetStampsStatusToActiveExecute
     end
     object amSetStampsStatusToNonActive: TAction
       Caption = 'Set To nonActive'
-      OnExecute = amSetStampsStatusToNonActiveExecute
     end
   end
   object dsStamp: TDataSource
@@ -1303,7 +1248,6 @@ object FMain: TFMain
         Visible = True
       end>
     UseOwnFont = False
-    OnPopup = dxStampsPopupPopup
     Left = 192
     Top = 200
   end

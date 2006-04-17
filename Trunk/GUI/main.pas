@@ -2,16 +2,30 @@ unit main;
 
 interface
 
-uses Forms,Windows, Dialogs, ASFilter, Registry, dxBar, cxStyles, Shared,
+uses Forms,Windows, Dialogs, Registry, dxBar, cxStyles, Shared,
   cxTL, DB, ADODB,  StdCtrls, ExtCtrls, cxContainer, cxEdit,
   cxCheckBox, cxGridLevel, cxGridCustomTableView, cxGridTableView,
-  PostManager, SysUtils, Typinfo, FilterManager,
+  SysUtils, Typinfo, FilterManager,
 
   cxGridCustomView, cxGrid, Menus,
   cxGridCustomPopupMenu, cxGridPopupMenu, Classes, Controls,
   cxGridDBTableView, cxClasses, cxControls, cxPC, cxSplitter,
   cxInplaceContainer, dxStatusBar, cxLookAndFeels, ActnList,
   XPStyleActnCtrls, ActnMan, ImgList, dxBarExtItems;
+
+
+
+type
+ TNodeParamsList=class
+  List:TList;
+
+ public
+  destructor Destroy; override;
+  constructor Create;
+  procedure Add(NodeIndex:Integer;FilterType:TFilterType;Sheet:TcxTabSheet;
+      Grid:TcxGridDBTableView;adTab:TADOQuery);
+  procedure Remove(i:integer);
+end;
 
 type
   TFMain = class(TForm)
@@ -181,8 +195,6 @@ type
     adBlackSendersFValue: TWideStringField;
     adBlackSendersDescription: TWideStringField;
     adBlackSendersActive: TBooleanField;
-    Button3: TButton;
-    Button4: TButton;
     adWhiteExt: TADOQuery;
     adBlackExt: TADOQuery;
     dsWhiteExt: TDataSource;
@@ -211,50 +223,27 @@ type
     cxStyle1: TcxStyle;
     cxStyleRepository2: TcxStyleRepository;
     cxStyle2: TcxStyle;
-    Memo1: TMemo;
-    Memo2: TMemo;
-    procedure cbRunPropertiesChange(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure amAddAccountExecute(Sender: TObject);
-    procedure dxBarButton11Click(Sender: TObject);
     procedure amDeleteAccountExecute(Sender: TObject);
-    procedure amAddStampExecute(Sender: TObject);
-    procedure adDeleteStampExecute(Sender: TObject);
-    procedure amModifyWordExecute(Sender: TObject);
-    procedure amModifyStampExecute(Sender: TObject);
-    procedure amRemoveStampExecute(Sender: TObject);
-    procedure amSetStampsStatusToActiveExecute(Sender: TObject);
-    procedure amSetStampsStatusToNonActiveExecute(Sender: TObject);
-    procedure dxStampsPopupPopup(Sender: TObject);
-    procedure dxFiltersStampsPopup(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
     procedure cxTab_BlackWordsShow(Sender: TObject);
     procedure cxTab_StampShow(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
     procedure cxTab_WhiteSendersShow(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
     procedure cxTab_BlackSendersShow(Sender: TObject);
-    procedure Button4Click(Sender: TObject);
     procedure cxTab_WhiteExtShow(Sender: TObject);
     procedure cxTab_BlackExtShow(Sender: TObject);
-    procedure Button5Click(Sender: TObject);
-    procedure Button6Click(Sender: TObject);
-    procedure Button7Click(Sender: TObject);
-    procedure SettingsTreeDragOver(Sender, Source: TObject; X, Y: Integer;
-      State: TDragState; var Accept: Boolean);
-    procedure cxBlackWordsStartDrag(Sender: TObject;
-      var DragObject: TDragObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
-    procedure cxBlackWordsEndDrag(Sender, Target: TObject; X, Y: Integer);
   private
     Reg: TRegistry;
+    NodeList:TNodeParamsList;
     Coder:TBFCoder;
     CurrNode:TcxTreeListNode;
     { Private declarations }
   public
-    PSManager: TPostManager;
+    CurrentGrid:TcxGridDBTableView; // ссылка на текущую таблицу
+    CurrentFilterType:TFilterType;  // тип текущего фильтра
+
+ //   PSManager: TPostManager;
     WordsTable:TFilterType;
     FManager:TFilterManager;
     cxWordsGrid:TcxGridDBTableView;
@@ -263,10 +252,20 @@ type
     cxWordsId:TcxGridDBColumn;
     cxWordSignalFilterDescription:TcxGridDBColumn;
     cxWordsTypesDescription:TcxGridDBcolumn;
+    function IndexByCaption(ColumnCaption:String): Integer;
     procedure RunOnStartup(Run:boolean);
+
     { Public declarations }
   protected
+    procedure SetCurrentParams(Grid:TcxGridDBTableView;Filter:TFilterType);
   end;
+
+{
+
+при смене таблицы передавать в функцию параметры
+ таблица, тип фильтра
+
+}
 
 
 var
@@ -274,321 +273,87 @@ var
   DragState:boolean=False;
 implementation
 
-uses AddAccount, ModifyAccount, AddStamp, ModifyWord, ModifyStamp, AddWord,
-  AddSender, ModifySender, AddExt, ModifyExt;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
 
 
-procedure TFMain.cbRunPropertiesChange(Sender: TObject);
+function TFMain.IndexByCaption(ColumnCaption:String): Integer;
+var
+ i:integer;
+ Flag:boolean;
 begin
- if cbRun.Checked then
-   RunOnStartup(True)
-  else RunOnStartup(False);
+ Flag:=False;
+ i:=0;
+ while (not Flag) and (i<CurrentGrid.ColumnCount) do
+   begin
+    if CurrentGrid.Columns[i].Caption=ColumnCaption then
+     begin
+      Flag:=False;
+      Result:=CurrentGrid.Columns[i].Index;
+     end
+      else inc(i);
+   end;
+ if Flag then Result:=-1; // нет колонки с таким именем
 end;
-
 
 procedure TFMain.RunOnStartup(Run:boolean);
 begin
- with Reg do
-  begin
-   RootKey:=HKEY_LOCAL_MACHINE;
-   OpenKey('\SOFTWARE\Microsoft\Windows\CurrentVersion\Run',False);
-   if Run then
-     WriteString('NevodAntiSpam',Application.ExeName)
-    else DeleteValue('NevodAntiSpam');
-     CloseKey;
-   end;
-end;
-
-procedure TFMain.FormShow(Sender: TObject);
-begin
- with Reg do
-  begin
-   RootKey:=HKEY_LOCAL_MACHINE;
-   OpenKey('\SOFTWARE\Microsoft\Windows\CurrentVersion\Run',False);
-   if Reg.ValueExists('NevodAntispam') then
-    cbRun.Checked:=True
-     else cbRun.Checked:=False;
-   end;
 end;
 
 procedure TFMain.FormCreate(Sender: TObject);
 begin
- Reg:=TRegistry.Create;
- Coder:=TBFCoder.Create;
- Coder.Key:=CriptKey;
- PSManager:=TPostManager.Create(adCon,cxAccounts);
- FManager:=TFilterManager.Create(adCon,adBlackWords,adWhiteWords,adStamp,adWhiteSenders,adBlackSenders,adBlackExt,adWhiteExt);
+
+ NodeList:=TNodeParamsList.Create;
+
+// NodeList.Add(1,ftBlackEmail,cxTab_Accounts,cxBlackWords);
+// Coder.Key:=CriptKey;
+
+// FManager:=TFilterManager.Create(adCon,adBlackWords,adWhiteWords,adStamp,adWhiteSenders,adBlackSenders,adBlackExt,adWhiteExt);
 end;
 
 
 procedure TFMain.FormDestroy(Sender: TObject);
 begin
- Coder.Free;
- Reg.Free;
- PSManager.Free;
  FManager.Free;
-end;
-
-procedure TFMain.amAddAccountExecute(Sender: TObject);
-begin
-  FAddAccount.ShowModal;
-end;
-
-procedure TFMain.dxBarButton11Click(Sender: TObject);
-begin
- FModifyAccount.ShowModal;
 end;
 
 procedure TFMain.amDeleteAccountExecute(Sender: TObject);
 begin
  if Application.MessageBox('Are you are sure ?','Deleting Account',MB_OKCANCEL)=IDOK then
   begin
-   PSManager.AccountManager.DeleteAccount( PSManager.AccountManager.AccountName2Id(cxAccounts.Controller.SelectedRecords[0].Values[cxAccountsAccountName.VisibleIndex]));
+ //  PSManager.AccountManager.DeleteAccount( PSManager.AccountManager.AccountName2Id(cxAccounts.Controller.SelectedRecords[0].Values[cxAccountsAccountName.VisibleIndex]));
   end;
-end;
-
-procedure TFMain.amAddStampExecute(Sender: TObject);
-begin
- FAddStamp.ShowModal;
-end;
-
-procedure TFMain.adDeleteStampExecute(Sender: TObject);
-begin
- if Application.MessageBox('Are you are sure ?','Deleting Stamp',MB_OKCANCEL)=IDOK then
-  begin
-   cxStamps.Controller.DeleteSelection;
-  end;
-end;
-
-procedure TFMain.amModifyWordExecute(Sender: TObject);
-begin
- FModifyWord.ShowModal;
-end;
-
-procedure TFMain.amModifyStampExecute(Sender: TObject);
-begin
- FModifyStamp.ShowModal;
-end;
-
-procedure TFMain.amRemoveStampExecute(Sender: TObject);
-begin
- if Application.MessageBox('Are you are sure ?','Deleting Stamp',MB_OKCANCEL)=IDOK then
-  begin
-   cxStamps.Controller.DeleteSelection;
-  end;
-end;
-
-procedure TFMain.amSetStampsStatusToActiveExecute(Sender: TObject);
-var
-  I: Integer;
-  Elem:array of integer;
-begin
- SetLength(Elem,cxStamps.Controller.SelectedRowCount);
- for I := 0 to cxStamps.Controller.SelectedRowCount-1 do
-   Elem[i]:=cxStamps.Controller.SelectedRows[i].Values[cxStampsId.Index];
- FManager.SetStampStatus(Elem,True);
-end;
-
-procedure TFMain.amSetStampsStatusToNonActiveExecute(Sender: TObject);
-var
-  I: Integer;
-  Elem:array of integer;
-begin
- SetLength(Elem,cxStamps.Controller.SelectedRowCount);
- for I := 0 to cxStamps.Controller.SelectedRowCount-1 do
-   Elem[i]:=cxStamps.Controller.SelectedRows[i].Values[cxStampsId.Index];
- FManager.SetStampStatus(Elem,False);
-
-end;
-
-procedure TFMain.dxStampsPopupPopup(Sender: TObject);
-var
- SAct,SNonAct:boolean;
- i:integer;
-begin
- SAct:=False;
- SNonAct:=False;
- if cxStamps.Controller.SelectedRowCount>0 then // если есть выделенные €чейки
-  begin
-   dxpFiltersRevomeStamp.Enabled:=True;
-   dxpFiltersStampsEdit.Enabled:=True;
-   i:=0;
-   while (i<cxStamps.Controller.SelectedRowCount) and (not SAct) do
-    if not cxStamps.Controller.SelectedRows[i].Values[cxStampsActive.Index]  // если не активно
-     then  SAct:=True else inc(i);
-   i:=0;
-   while (i<cxStamps.Controller.SelectedRowCount) and (not SNonAct) do
-    if  cxStamps.Controller.SelectedRows[i].Values[cxStampsActive.Index]  // если не активно
-     then  SNonAct:=True else inc(i);
-
-   if SAct then dxpFiltersStampSetToActive.Enabled:=True
-    else  dxpFiltersStampSetToActive.Enabled:=False;
-   if SNonAct then dxpFiltersStampSetToNonActive.Enabled:=True
-    else  dxpFiltersStampSetToNonActive.Enabled:=False;
-  end
-   else
-    begin
-     dxpFiltersRevomeStamp.Enabled:=False;
-     dxpFiltersStampsEdit.Enabled:=False;
-     dxpFiltersStampsEdit.Enabled:=False;
-     dxpFiltersStampSetToActive.Enabled:=False;
-     dxpFiltersStampSetToNonActive.Enabled:=False;
-    end;
-end;
-
-procedure TFMain.dxFiltersStampsPopup(Sender: TObject);
-var
- SAct,SNonAct:boolean;
- i:integer;
-begin
- SAct:=False;
- SNonAct:=False;
- if cxStamps.Controller.SelectedRowCount>0 then // если есть выделенные €чейки
-  begin
-   i:=0;
-   dxFiltersStampsEdit.Enabled:=True;
-   dxFiltersStampsDelete.Enabled:=True;
-   while (i<cxStamps.Controller.SelectedRowCount) and (not SAct) do
-    if not cxStamps.Controller.SelectedRows[i].Values[cxStampsActive.Index]  // если не активно
-     then  SAct:=True else inc(i);
-   i:=0;
-   while (i<cxStamps.Controller.SelectedRowCount) and (not SNonAct) do
-    if  cxStamps.Controller.SelectedRows[i].Values[cxStampsActive.Index]  // если не активно
-     then  SNonAct:=True else inc(i);
-
-   if SAct then dxFiltersStampsSetToActive.Enabled:=True
-    else  dxFiltersStampsSetToActive.Enabled:=False;
-   if SNonAct then dxFiltersStampSetToNonActive.Enabled:=True
-    else  dxFiltersStampSetToNonActive.Enabled:=False;
-  end
-   else
-    begin
-     dxFiltersStampsEdit.Enabled:=False;
-     dxFiltersStampsDelete.Enabled:=False;
-     dxFiltersStampsSetToActive.Enabled:=False;
-     dxFiltersStampSetToNonActive.Enabled:=False;
-    end;
-end;
-
-procedure TFMain.Button1Click(Sender: TObject);
-begin
- //FAddWord.ShowModal;
- FModifyWord.ShowModal;
 end;
 
 procedure TFMain.cxTab_BlackWordsShow(Sender: TObject);
 begin
- WordsTable:=ftBlackWord;
- cxWordsGrid:=cxBlackWords;
- cxWordsActive:=cxBlackWordsActive;
- cxWordsFValue:=cxBlackWordsFValue;
- cxWordsId:=cxBlackWordsId;
- cxWordSignalFilterDescription:=cxBlackWordsSignalFilterDescription;
- cxWordsTypesDescription:=cxBlackWordsTypesDescription;
+ SetCurrentParams(cxBlackWords,ftBlackWord);
 end;
 
 procedure TFMain.cxTab_StampShow(Sender: TObject);
 begin
- WordsTable:=ftWhiteWord;
- cxWordsGrid:=cxWhiteWords;
- cxWordsActive:=cxWhiteWordsActive;
- cxWordsFValue:=cxWhiteWordsFValue;
- cxWordsId:=cxWhiteWordsId;
- cxWordSignalFilterDescription:=cxWhiteWordsSignalFilterDescription;
- cxWordsTypesDescription:=cxWhiteWordsTypesDescription;
-end;
-
-procedure TFMain.Button2Click(Sender: TObject);
-begin
- FAddWord.ShowModal;
+ SetCurrentParams(cxWhiteWords,ftWhiteWord);
 end;
 
 procedure TFMain.cxTab_WhiteSendersShow(Sender: TObject);
 begin
- WordsTable:=ftWhiteEmail;
- cxWordsGrid:=cxWhiteSenders;
- cxWordsActive:=cxWhiteSendersActive;
- cxWordsFValue:=cxWhiteSendersFValue;
- cxWordsId:=cxWhiteSendersId;
- cxWordsTypesDescription:=cxWhiteSendersDescription;
-end;
-
-procedure TFMain.Button3Click(Sender: TObject);
-begin
- FAddSender.ShowModal;
+ SetCurrentParams(cxWhiteSenders,ftWhiteEmail);
 end;
 
 procedure TFMain.cxTab_BlackSendersShow(Sender: TObject);
 begin
- WordsTable:=ftBlackEmail;
- cxWordsGrid:=cxBlackSenders;
- cxWordsActive:=cxBlackSendersActive;
- cxWordsFValue:=cxBlackSendersFValue;
- cxWordsId:=cxBlackSendersId;
- cxWordsTypesDescription:=cxBlackSendersDescription;
-end;
-
-procedure TFMain.Button4Click(Sender: TObject);
-begin
- FModifySender.ShowModal;
+ SetCurrentParams(cxBlackSenders,ftBlackEmail);
 end;
 
 procedure TFMain.cxTab_WhiteExtShow(Sender: TObject);
 begin
- WordsTable:=ftWhiteAttachExtFilter;
- cxWordsGrid:=cxWhiteExt;
- cxWordsActive:=cxWhiteExtActive;
- cxWordsFValue:=cxWhiteExtFValue;
- cxWordsId:=cxWhiteExtId;
- cxWordsTypesDescription:=cxWhiteExtDescription;
+ SetCurrentParams(cxWhiteExt,ftWhiteAttach);
 end;
 
 procedure TFMain.cxTab_BlackExtShow(Sender: TObject);
 begin
- WordsTable:=ftBlackAttachExtFilter;
- cxWordsGrid:=cxBlackExt;
- cxWordsActive:=cxBlackExtActive;
- cxWordsFValue:=cxBlackExtFValue;
- cxWordsId:=cxBlackExtId;
- cxWordsTypesDescription:=cxBlackExtDescription;
-end;
-
-procedure TFMain.Button5Click(Sender: TObject);
-begin
- FAddExt.ShowModal;
-end;
-
-procedure TFMain.Button6Click(Sender: TObject);
-begin
- FModifyExt.ShowModal;
-end;
-
-procedure TFMain.Button7Click(Sender: TObject);
-begin
- FAddExt.ShowModal;
-end;
-
-procedure TFMain.SettingsTreeDragOver(Sender, Source: TObject; X,
-  Y: Integer; State: TDragState; var Accept: Boolean);
-begin
- if (CurrNode.AbsoluteIndex<>STree.TreeList.FocusedNode.AbsoluteIndex)
-     and (CurrNode.Texts[0]=STree.TreeList.FocusedNode.Texts[0])
-   then  Accept:=True
-     else Accept:=False;
- // Memo1.Lines.Add(CurrNode.Texts[0]);
- // Memo2.Lines.Add(STree.TreeList.FocusedNode.Texts[0]);
-end;
-
-
-
-procedure TFMain.cxBlackWordsStartDrag(Sender: TObject;
-  var DragObject: TDragObject);
-begin
-  DragState:=True;
-  CurrNode:=STree.TreeList.FocusedNode;
+ SetCurrentParams(cxBlackExt,ftBlackAttach);
 end;
 
 procedure TFMain.SettingsTreeSelectionChanged(Sender: TObject);
@@ -613,11 +378,55 @@ begin
 
 end;
 
-procedure TFMain.cxBlackWordsEndDrag(Sender, Target: TObject; X,
-  Y: Integer);
+procedure TFMain.SetCurrentParams(Grid:TcxGridDBTableView;Filter:TFilterType);
 begin
- DragState:=False;
+ CurrentGrid:=Grid;
+ CurrentFilterType:=Filter;
+end;
+
+destructor TNodeParamsList.Destroy;
+var
+ i:integer;
+begin
+ for I:=0 to List.Count-1 do
+    Remove(i);
+ List.Free;
+end;
+
+constructor TNodeParamsList.Create;
+begin
+ List:=TList.Create;
+end;
+
+procedure TNodeParamsList.Add(NodeIndex:Integer;FilterType:TFilterType;
+    Sheet:TcxTabSheet;Grid:TcxGridDBTableView;adTab:TADOQuery);
+var
+ buf:PNodeParams;
+begin
+ New(buf);
+ buf.NodeIndex:=NodeIndex;
+ buf.FilterType:=FilterType;
+ buf.Sheet:=Sheet;
+ buf.Grid:=Grid;
+ buf.adTab:=adTab;
+ List.Add(buf);
+end;
+
+procedure TNodeParamsList.Remove(i:integer);
+var
+ buf:PNodeParams;
+begin
+ buf:=List.Items[i];
+ Dispose(buf);
+ List.Items[i]:=nil;
 end;
 
 end.
 
+
+{
+
+при смене вкладки устанавливать ссылку на таблицу и тип фильтра
+изменить названи€ типов фильров (слишком длинные и некорректные)
+
+}

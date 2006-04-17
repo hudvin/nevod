@@ -2,60 +2,41 @@ unit FilterManager;
 
 interface
 uses
- Windows,DB,Exceptions,Shared,PerlRegEx, ADODB,Typinfo, Messages,  SysUtils, Variants, Classes, Graphics, Controls, Forms,
- Dialogs;
+ Windows,DB,Exceptions,Shared, ADODB,Typinfo, Messages,  SysUtils,
+ Variants, Classes;
+
 type
   TFilterManager = class
   private
     adProc: TADOQuery;
-    FBlackExtTab: TADOQuery;
-    FBlackSender: TADOQuery;
-    FBlackWordsTab: TADOQuery;
-    FStampTab: TADOQuery;
-    FWhiteExtTab: TADOQuery;
-    FWhiteSender: TADOQuery;
-    FWhiteWordsTab: TADOQuery;
+    procedure Modify(ElementId:Integer;ElementValue:String;FilterType:TFilterType;
+        Description:String; Status:Boolean;Params:Variant);
+  protected
+    procedure Add(ElementValue:String;FilterType:TFilterType;Description:String;
+        Status:Boolean;Params:Variant);
   public
-    constructor Create(adCon:TADOConnection;BlackWordsTab,WhiteWordsTab,
-        StampTab:TADOQuery;WhiteSendersTab:TADOQuery;BlackSendersTab:TADOQuery;
-        BlackExtTab:TADOQuery;WhiteExtTab:TADOQuery);
+    constructor Create(adCon:TADOConnection);
     destructor Destroy; override;
-    procedure AddAttachExt(Value:String;Description:String;AttachType:TfilterType;
-        Status:boolean);
-    procedure AddSender(Value:String;Description:String;SenderType:TFilterType;
-        Status:boolean);
-    procedure AddSignal(Value:String;Description:String;SignalType:TFilterType;
-        Location:TSignalLocation;Status:Boolean);
-    procedure AddStamp(Value:String;Description:String;Status:Boolean);
-    procedure ModifyAttachExt(AttachExtId:Integer;Value:String;Description:String;
-        AttachType:TFilterType;Status:Boolean);
-    procedure ModifySender(SenderId:Integer;Value:String;Description:String;
-        SenderType:TFilterType; Status:boolean);
-    procedure ModifySignal(SignalId:Integer;Value:String;Description:String;
-        SignalType:TFilterType;Location:TSignalLocation; Status:Boolean);
-    procedure ModifyStamp(StampId:Integer;Value:String;Description:String;
-        Status:boolean);
-    procedure RemoveSender(SenderId:Integer);
-    procedure RemoveSignal(SignalId:Integer);
-    procedure RemoveStamp(StampId:Integer);
-    procedure SetStampStatus(StampsId: Array of Integer;Status:boolean);
+    procedure AddElement(ElementValue:String;FilterType:TFilterType;
+        Description:String; Status:Boolean;Params:Variant);
+    function ElementExists(ElementValue:String;FilterType:TFilterType): Boolean;
+        overload;
+    function ElementExists(ElementValue:String;ElementId:integer;
+        FilterType:TFilterType): Boolean; overload;
+    procedure FilterStatus(FilterType:TFilterType;Status:boolean);
+    function MidByFilterType(FilterType:TFilterType): Integer;
+    procedure ModifyElement(ElementId:Integer;ElementValue:String;
+        FilterType:TFilterType; Description:String; Status:Boolean;Params:Variant);
+    procedure RemoveElements(ElementsId:array of integer);
+    function TwinFilter(FilterType:TFilterType):TFilterType;
   end;
 
 implementation
 
-constructor TFilterManager.Create(adCon:TADOConnection;BlackWordsTab,
-    WhiteWordsTab, StampTab:TADOQuery;WhiteSendersTab:TADOQuery;
-    BlackSendersTab:TADOQuery; BlackExtTab:TADOQuery;WhiteExtTab:TADOQuery);
+constructor TFilterManager.Create(adCon:TADOConnection);
 begin
  adProc:=TADOQuery.Create(nil);
  adProc.Connection:=adCon;
- FBlackWordsTab:=BlackWordsTab;
- FWhiteWordsTab:=WhiteWordsTab;
- FStampTab:=StampTab;
- FBlackSender:=BlackSendersTab;
- FWhiteSender:=WhiteSendersTab;
- FWhiteExtTab:=WhiteExtTab;
- FBlackExtTab:=BlackExtTab;
 end;
 
 destructor TFilterManager.Destroy;
@@ -63,469 +44,196 @@ begin
  adProc.Free;
 end;
 
-procedure TFilterManager.AddAttachExt(Value:String;Description:String;
-    AttachType:TFilterType;Status:boolean);
-var
- mid:Integer;
+procedure TFilterManager.Add(ElementValue:String;FilterType:TFilterType;
+    Description:String; Status:Boolean;Params:Variant);
 begin
- Value:=Trim(Value);
- if Value='' then
-  Raise EInvalidFilterParams.Create(' Расширение не может быть пустым ');
  with adProc do
    begin
     Active:=False;
-    SQL.Text:='SELECT COUNT (Id) FROM AttachmentExtFilter WHERE FValue=:Value';
-    Parameters.ParamByName('Value').Value:=Value;
-    Active:=True;
-    if Fields[0].AsInteger>0 then
-     begin
-      Active:=False;
-      Raise EInvalidFilterParams.Create('Данное расширение уже есть в таблице');
-     end;
-    Active:=False;
-   end;
-
- with adProc do
-   begin
-    Active:=False;
-    SQL.Text:='SELECT id FROM Filters WHERE Type=:FilterType';
-    Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(AttachType));
-    Active:=True;
-    mid:=Fields[0].AsInteger;
-    Active:=False;
-
-    SQL.Text:='INSERT INTO AttachmentExtFilter(mid,FValue,Description,Active) ' +
-               'VALUES(:mid,:Value,:Description,:Active)';
-    Parameters.ParamByName('mid').Value:=mid;
-    Parameters.ParamByName('Value').Value:=Value;
+    SQL.Text:='INSERT INTO FilterParams(mid,FValue,Description,Active,Params) ' +
+               'VALUES(:mid,:Value,:Description,:Active,:Params)';
+    Parameters.ParamByName('mid').Value:=MidByFilterType(FilterType);
+    Parameters.ParamByName('Value').Value:=ElementValue;
     Parameters.ParamByName('Description').Value:=Description;
     Parameters.ParamByName('Active').Value:=Status;
-    ExecSQL;   // ftBlackAttachExtFilter,ftWhiteAttachExtFilter,
-    if AttachType=ftBlackAttachExtFilter then
-     FBlackExtTab.Requery;
-    if AttachType=ftWhiteAttachExtFilter then
-     FWhiteExtTab.Requery; 
-   end;
-end;
-
-procedure TFilterManager.AddSender(Value:String;Description:String;
-    SenderType:TFilterType;Status:boolean);
-var
- mid:Integer;
- Exp:TPerlRegEx;
-begin
- Value:=Trim(Value);
- Exp:=TPerlRegEx.Create(nil);
- Exp.RegEx:='[_a-zA-Z\d\-\.\*]+@([_a-zA-Z\d\-]+(\.[_a-zA-Z\d\-]+)+)';
- Exp.Subject:=Value;
- if not Exp.Match then
-  Raise EInvalidFilterParams.Create('Адрес отправителя некорректен');
- if NOT ((SenderType=ftBlackEmail) or (SenderType=ftWhiteEmail)) then
-  Raise EInvalidFilterParams.Create('Неправильный тип фильтра');
-
- with adProc do  // есть ли элемент в таблице
-   begin
-    Active:=False;
-    SQL.Text:='SELECT COUNT(Id) FROM SenderFilter WHERE FValue=:Value ';
-    Parameters.ParamByName('Value').Value:=Value;
-    Active:=True;
-    if Fields[0].AsInteger>0 then
-     begin
-      Active:=False;
-      Raise EInvalidFilterParams.Create('Данный отправитель уже есть в списке');
-     end;
-    Active:=False;
-    SQL.Text:='SELECT id FROM Filters WHERE Type=:FilterType';
-    Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(SenderType));
-    Active:=True;
-    mid:=Fields[0].AsInteger;
-    Active:=False;
-
-    SQL.Text:='INSERT INTO SenderFilter(mid,FValue,Description,Active) ' +
-               'VALUES(:mid,:Value,:Description,:Active)';
-    Parameters.ParamByName('mid').Value:=mid;
-    Parameters.ParamByName('Value').Value:=Value;
-    Parameters.ParamByName('Description').Value:=Description;
-    Parameters.ParamByName('Active').Value:=Status;
-    ExecSQL;
-    if SenderType=ftBlackEmail then
-     FBlackSender.Requery;
-    if SenderType=ftWhiteEmail then
-     FWhiteSender.Requery;
-   end;
- Exp.Free;
-end;
-
-procedure TFilterManager.AddSignal(Value:String;Description:String;
-    SignalType:TFilterType; Location:TSignalLocation;Status:Boolean);
-var
- mid:Integer;
-begin
- Value:=Trim(Value);
- if Value='' then
-  Raise EInvalidFilterParams.Create(' Сигнал не может быть пустым ');
- if  NOT ((SignalType=ftBlackWord) or (SignalType=ftWhiteWord)) then
-  Raise EInvalidFilterParams.Create(' Неправильный ти фильтра ');
-
- with adProc do
-   begin
-    Active:=False;
-    SQL.Text:='SELECT COUNT (Id) FROM SignalFilter WHERE FValue=:Value';
-    Parameters.ParamByName('Value').Value:=Value;
-    Active:=True;
-    if Fields[0].AsInteger>0 then
-     begin
-      Active:=False;
-      Raise EInvalidFilterParams.Create('Данное слово уже есть в таблице');
-     end;
-    Active:=False;
-   end;
-
- with adProc do
-   begin
-    Active:=False;
-    SQL.Text:='SELECT id FROM Filters WHERE Type=:FilterType';
-    Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(SignalType));
-    Active:=True;
-    mid:=Fields[0].AsInteger;
-    Active:=False;
-
-    SQL.Text:='INSERT INTO SignalFilter(mid,FValue,Location,Description,Active) ' +
-               'VALUES(:mid,:Value,:Location,:Description,:Active)';
-    Parameters.ParamByName('mid').Value:=mid;
-    Parameters.ParamByName('Value').Value:=Value;
-    Parameters.ParamByName('Location').Value:=GetEnumName(TypeInfo(TSignalLocation), Ord(Location));
-    Parameters.ParamByName('Description').Value:=Description;
-    Parameters.ParamByName('Active').Value:=Status;
-    ExecSQL;
-    if SignalType=ftBlackWord then
-     FBlackWordsTab.Requery;
-    if SignalType=ftWhiteWord then
-     FWhiteWordsTab.Requery;
-
-
-   end;
-end;
-
-procedure TFilterManager.AddStamp(Value:String;Description:String;
-    Status:Boolean);
-begin
- Value:=Trim(Value);
- if Value='' then
-  Raise EInvalidFilterParams.Create('Stamp cannot be empty');
-
- with adProc do
-   begin
-    Active:=False;
-    SQL.Text:='SELECT COUNT(Id) FROM StampFilter WHERE FValue=:Value';
-    Parameters.ParseSQL(SQL.Text,True);
-    Parameters.ParamByName('Value').Value:=Value;
-    Active:=True;
-    if Fields[0].AsInteger>0 then
-     begin
-      Close;
-      Raise EInvalidFilterParams.Create(' Данный штамп уже есть в таблице ');
-     end;
-    Active:=False;
-    SQL.Text:='INSERT INTO StampFilter(FValue,Description,Active) '+
-               'VALUES(:Value,:Description,:Active)';
-    Parameters.ParamByName('Value').Value:=Value;
-    Parameters.ParamByName('Description').Value:=Description;
-    Parameters.ParamByName('Active').Value:=Status;
-    ExecSQL;
-    FStampTab.Requery;
-   end;
-end;
-
-procedure TFilterManager.ModifyAttachExt(AttachExtId:Integer;Value:String;
-    Description:String;AttachType:TFilterType;Status:Boolean);
-var
- mid:Integer;
-begin
- Value:=Trim(Value);
- if AttachExtId<1 then
-  Raise EInvalidFilterParams.Create('Неправильный id расширения');
- if Value='' then
-  Raise EInvalidFilterParams.Create(' Расширение не может быть пустым ');
- with adProc do
-   begin
-    Active:=False;
-    SQL.Text:='SELECT COUNT (Id) FROM AttachmentExtFilter WHERE FValue=:Value '+
-              'AND id<>:AttachExtId ' ;
-    Parameters.ParamByName('Value').Value:=Value;
-    Parameters.ParamByName('AttachExtId').Value:=AttachExtId;
-    Active:=True;
-    if Fields[0].AsInteger>0 then
-     begin
-      Active:=False;
-      Raise EInvalidFilterParams.Create('Данное расширение уже есть в таблице');
-     end;
-    Active:=False;
-
-    SQL.Text:='SELECT id FROM Filters WHERE Type=:FilterType';
-    Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(AttachType));
-    Active:=True;
-    mid:=Fields[0].AsInteger;
-    Active:=False;
-
-    SQL.Text:='UPDATE AttachmentExtFilter SET mid=:mid,FValue=:Value ,'+
-              ' Description=:Description,Active=:Active WHERE Id=:AttachExtId';
-    Parameters.ParamByName('mid').Value:=mid;
-    Parameters.ParamByName('Value').Value:=Value;
-    Parameters.ParamByName('Description').Value:=Description;
-    Parameters.ParamByName('Active').Value:=Status;
-    Parameters.ParamByName('AttachExtId').Value:=AttachExtId;
+    Parameters.ParamByName('Params').Value:=Params;
     ExecSQL;
     Active:=False;
-    if AttachType=ftBlackAttachExtFilter then
-     FBlackExtTab.Requery;
-    if AttachType=ftWhiteAttachExtFilter then
-     FWhiteExtTab.Requery;
    end;
+end;
+
+procedure TFilterManager.AddElement(ElementValue:String;FilterType:TFilterType;
+    Description:String; Status:Boolean;Params:Variant);
+var
+ tFilter:TFilterType;
+begin
+ ElementValue:=Trim(ElementValue);
+ if ElementValue='' then
+  Raise EInvalidFilterParams.Create('Фильтр не может быть пустым');
+ if not (FilterType in [ftBlackEmail,ftWhiteEmail,ftStamp,ftBlackWord,ftWhiteWord,
+               ftBlackAttach,ftWhiteAttach,ftSpamWord]) then
+   Raise EInvalidFilterParams.Create('Неправильный тип фильтра');
+ if (FilterType=ftWhiteWord) or (FilterType=ftBlackWord) and not( TSignalLocation(GetEnumValue(TypeInfo(TSignalLocation),Params)) in[slAnywhere,slSubject,slBody] ) then
+   Raise EInvalidFilterParams.Create('Неправильное расположение спам-слова');
+ if ElementExists(ElementValue,FilterType) then
+   Raise EInvalidFilterParams.Create('Фильтр уже есть в данной группе');
+ tFilter:=TwinFilter(FilterType);
+ if tFilter<>FilterType then
+  if ElementExists(ElementValue,tFilter) then
+   Raise EInvalidFilterParams.Create(' Фильтр уже есть в противоположной группе ');
+   
+ AddElement(ElementValue,FilterType,Description,Status,Params);
 
 end;
 
-procedure TFilterManager.ModifySender(SenderId:Integer;Value:String;
-    Description:String; SenderType:TFilterType; Status:boolean);
+function TFilterManager.ElementExists(ElementValue:String;
+    FilterType:TFilterType): Boolean;
 var
- mid:Integer;
- Exp:TPerlRegEx;
+ mid:integer;
 begin
- Value:=Trim(Value);
- Exp:=TPerlRegEx.Create(nil);
- Exp.RegEx:='[_a-zA-Z\d\-\.\*]+@([_a-zA-Z\d\-]+(\.[_a-zA-Z\d\-]+)+)';
- Exp.Subject:=Value;
- if not Exp.Match then
-  Raise EInvalidFilterParams.Create('Адрес отправителя некорректен');
- 
- if SenderId<1  then
-  Raise EInvalidFilterParams.Create('Неправильный id отправителя');
-
- with adProc do
-   begin
-    Active:=False;
-    SQl.Text:='SELECT COUNT(Id) FROM SenderFilter WHERE FValue=:Value AND Id<>:SenderId ';
-    Parameters.ParamByName('Value').Value:=Value;
-    Parameters.ParamByName('SenderId').Value:=SenderId;
-    Active:=True;
-    if Fields[0].AsInteger>0 then
-     begin
-      Active:=False;
-      Raise EInvalidFilterParams.Create('Данный отпарвитель уже есть  в таблице');
-     end;
-   end;
-
+ ElementValue:=Trim(ElementValue);
+ Result:=False;
+ mid:=MidByFilterType(FilterType);
+ if mid<>-1 then
   with adProc do
-   begin
-    Active:=False;
-    SQL.Text:='SELECT id FROM Filters WHERE Type=:FilterType';
-    Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(SenderType));
-    Active:=True;
-    mid:=Fields[0].AsInteger;
-    Active:=False;
-    SQL.Text:='UPDATE SenderFilter SET mid=:mid, FValue=:Value,Description=:Description,Active=:Active '+
-              'WHERE Id=:SenderId';
-    Parameters.ParamByName('mid').Value:=mid;
-    Parameters.ParamByName('Value').Value:=Value;
-    Parameters.ParamByName('Description').Value:=Description;
-    Parameters.ParamByName('Active').Value:=Status;
-    Parameters.ParamByName('SenderId').Value:=SenderId;
-    ExecSQL;
-    if SenderType=ftBlackEmail then
-     FBlackSender.Requery;
-    if SenderType=ftWhiteEmail then
-     FWhiteSender.Requery;
-   end;
- Exp.Free;
+    begin
+     Active:=False;
+     SQL.Text:='SELECT COUNT(id) FROM FiltersParams WHERE mid=:mid AND FVAlue=:FValue';
+     Parameters.ParamByName('mid').Value:=mid;
+     Parameters.ParamByName('FValue').Value:=ElementValue;
+     Active:=True;
+     if Fields[0].AsInteger>0 then
+      Result:=True
+       else Result:=False;
+     Active:=False;       
+    end;
 end;
 
-procedure TFilterManager.ModifySignal(SignalId:Integer;Value:String;
-    Description:String; SignalType:TFilterType;Location:TSignalLocation;
-    Status:Boolean);
-var
- mid:Integer;
+function TFilterManager.ElementExists(ElementValue:String;ElementId:integer;
+    FilterType:TFilterType): Boolean;
 begin
- Value:=Trim(Value);
- if SignalId<1 then
-  Raise EInvalidFilterParams.Create('Неправильный id сигнала');
- if Value='' then
-  Raise EInvalidFilterParams.Create(' Сигнал не может быть пустым ');
- if  NOT ((SignalType=ftBlackWord) or (SignalType=ftWhiteWord)) then
-  Raise EInvalidFilterParams.Create(' Неправильный ти фильтра ');
-
- with adProc do
-   begin
-    Active:=False;
-    SQL.Text:='SELECT COUNT (Id) FROM SignalFilter WHERE FValue=:Value '+
-              'AND id<>:SignalId ' ;
-    Parameters.ParamByName('Value').Value:=Value;
-    Parameters.ParamByName('SignalId').Value:=SignalId;
-    Active:=True;
-    if Fields[0].AsInteger>0 then
-     begin
-      Active:=False;
-      Raise EInvalidFilterParams.Create('Данное слово уже есть в таблице');
-     end;
-    Active:=False;
-
-    SQL.Text:='SELECT id FROM Filters WHERE Type=:FilterType';
-    Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(SignalType));
-    Active:=True;
-    mid:=Fields[0].AsInteger;
-    Active:=False;
-
-    SQL.Text:='UPDATE SignalFilter SET mid=:mid,FValue=:Value,Location=:Location,'+
-              ' Description=:Description,Active=:Active WHERE Id=:SignalId';
-    Parameters.ParamByName('mid').Value:=mid;
-    Parameters.ParamByName('Value').Value:=Value;
-    Parameters.ParamByName('Location').Value:=GetEnumName(TypeInfo(TSignalLocation), Ord(Location));
-    Parameters.ParamByName('Description').Value:=Description;
-    Parameters.ParamByName('Active').Value:=Status;
-    Parameters.ParamByName('SignalId').Value:=SignalId;
-    ExecSQL;
-    Active:=False;
-    if SignalType=ftBlackWord then
-     FBlackWordsTab.Requery;
-    if SignalType=ftWhiteWord then
-     FWhiteWordsTab.Requery;
-   end;
-end;
-
-procedure TFilterManager.ModifyStamp(StampId:Integer;Value:String;
-    Description:String; Status:boolean);
-begin
- Value:=Trim(Value);
- if StampId<1  then
-  Raise EInvalidFilterParams.Create('Invalid Stamp');
- if Value='' then
-  Raise EInvalidFilterParams.Create('Stamp cannot be empty');
-
- with adProc do
-   begin
-    Active:=False;
-    SQl.Text:='SELECT COUNT(Id) FROM StampFilter WHERE FValue=:Value AND Id<>:StampId ';
-    Parameters.ParamByName('Value').Value:=Value;
-    Parameters.ParamByName('StampId').Value:=StampId;
-    Active:=True;
-    if Fields[0].AsInteger>0 then
-     begin
-      Active:=False;
-      Raise EInvalidFilterParams.Create('Даннй штамп уже есть в таблице');
-     end;
-    Active:=False;
-    SQL.Text:='UPDATE StampFilter SET FValue=:Value,Description=:Description,Active=:Active '+
-              ' WHERE Id=:StampId';
-    Parameters.ParamByName('Value').Value:=Value;
-    Parameters.ParamByName('Description').Value:=Description;
-    Parameters.ParamByName('Active').Value:=Status;
-    Parameters.ParamByName('StampId').Value:=StampId;
-    ExecSQL;
-    FStampTab.Requery;
-   end;
-end;
-
-procedure TFilterManager.RemoveSender(SenderId:Integer);
-begin
-if SenderId<1 then
-  Raise EInvalidFilterParams.Create(' Неправильный id отправителя ');
-
- with adProc do
-   begin
-    Active:=False;
-    SQL.Text:='SELECT COUNT(Id) FROM SenderFilter WHERE Id=:Id';
-    Parameters.ParamByName('Id').Value:=SenderId;
-    Active:=True;
-    if Fields[0].AsInteger=0 then
-     begin
-      Active:=False;
-      Raise EInvalidFilterParams.Create('Отправитель с данными id не существует ');
-     end;
-    Active:=False;
-    SQl.Text:='DELETE FROM SenderFilter WHERE id=:Id';
-    Parameters.ParamByName('Id').Value:=SenderId;
-    ExecSQL;
-    Active:=False;
-   end;
-end;
-
-procedure TFilterManager.RemoveSignal(SignalId:Integer);
-begin
- if SignalId<1 then
-  Raise EInvalidFilterParams.Create(' Неправильный id сигнала ');
-
- with adProc do
-   begin
-    Active:=False;
-    SQL.Text:='SELECT COUNT(Id) FROM SignalFilter WHERE Id=:Id';
-    Parameters.ParamByName('Id').Value:=SignalId;
-    Active:=True;
-    if Fields[0].AsInteger=0 then
-     begin
-      Active:=False;
-      Raise EInvalidFilterParams.Create('Сигнала с данными id не существует ');
-     end;
-    Active:=False;
-    SQl.Text:='DELETE FROM SignalFilter WHERE id=:Id';
-    Parameters.ParamByName('Id').Value:=SignalId;
-    ExecSQL;
-    Active:=False;
-   end;
-end;
-
-procedure TFilterManager.RemoveStamp(StampId:Integer);
-begin
- if StampId<1  then
-  Raise EInvalidFilterParams.Create('Invalid Stamp');
-
- with adProc do
-   begin
-    Active:=False;
-    SQL.Text:='SELECT COUNT(Id) FROM StampFilter WHERE Id=:StampId ';
-    Parameters.ParamByName('StampId').Value:=StampId;
-    Active:=True;
-    if Fields[0].AsInteger=0 then
-     begin
-      Close;
-      Raise EInvalidFilterParams.Create(' Данный штамп в таблице не обнаружен ');
-     end;
-    Active:=False;
-   end;
-
+ ElementValue:=Trim(ElementValue);
+ Result:=False;
  with adProc do
   begin
    Active:=False;
-   SQL.Text:='DELETE  FROM StampFilter WHERE Id=:StampId ';
-   Parameters.ParamByName('StampId').Value:=StampId;
-   ExecSQL;
+   SQL.Text:='SELECT COUNT(id) FROM FiltersParams WHERE  id<>:id AND mid=:mid AND FValue=:Value ';
+   Parameters.ParamByName('id').Value:=ElementId;
+   Parameters.ParamByName('mid').Value:=MidByFilterType(FilterType);
+   Parameters.ParamByName('Value').Value:=ElementValue;
+   Active:=True;
+   if Fields[0].AsInteger>0 then
+    Result:=True
+    else Result:=False;
+   Active:=False;
   end;
 end;
 
-procedure TFilterManager.SetStampStatus(StampsId: Array of Integer;
-    Status:boolean);
+procedure TFilterManager.FilterStatus(FilterType:TFilterType;Status:boolean);
+begin
+ with adProc do
+   begin
+    Active:=False;
+    SQL.Text:='UPDATE Filters SET Active=:Status WHERE Type=:FilterType ';
+    Parameters.ParamByName('Status').Value:=Status;
+    Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
+    ExecSQL;
+    Active:=False;
+   end;
+end;
+
+function TFilterManager.MidByFilterType(FilterType:TFilterType): Integer;
+begin
+ with adProc do
+   begin
+    Active:=False;
+    SQL.Text:='SELECT id FROM Filters WHERE Type=:FilterType';
+    Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
+    Active:=True;
+    if RecordCount=0 then
+       Result:=-1
+    else
+     Result:=Fields[0].AsInteger;
+    Active:=False;
+   end;
+end;
+
+procedure TFilterManager.Modify(ElementId:Integer;ElementValue:String;
+    FilterType:TFilterType; Description:String; Status:Boolean;Params:Variant);
+begin
+ with adProc do
+   begin
+    Active:=False;
+    SQL.Text:='UPDATE FilterParams SET mid=:mid,FValue=:Value,Description=:Description,Active=:Status,Params=:Params) ' +
+               ' WHERE id=:id ';
+    Parameters.ParamByName('mid').Value:=MidByFilterType(FilterType);
+    Parameters.ParamByName('Value').Value:=ElementValue;
+    Parameters.ParamByName('Description').Value:=Description;
+    Parameters.ParamByName('Active').Value:=Status;
+    Parameters.ParamByName('Params').Value:=Params;
+    Parameters.ParamByName('id').Value:=ElementId;
+    ExecSQL;
+    Active:=False;
+   end;
+end;
+
+procedure TFilterManager.ModifyElement(ElementId:Integer;ElementValue:String;
+    FilterType:TFilterType; Description:String; Status:Boolean;Params:Variant);
+var
+ tFilter:TFilterType;
+begin
+ ElementValue:=Trim(ElementValue);
+ if ElementValue='' then
+  Raise EInvalidFilterParams.Create('Фильтр не может быть пустым');
+ if not (FilterType in [ftBlackEmail,ftWhiteEmail,ftStamp,ftBlackWord,ftWhiteWord,
+               ftBlackAttach,ftWhiteAttach,ftSpamWord]) then
+   Raise EInvalidFilterParams.Create('Неправильный тип фильтра');
+ if (FilterType=ftWhiteWord) or (FilterType=ftBlackWord) and not( TSignalLocation(GetEnumValue(TypeInfo(TSignalLocation),Params)) in[slAnywhere,slSubject,slBody] ) then
+   Raise EInvalidFilterParams.Create('Неправильное расположение спам-слова');
+ if ElementExists(ElementValue,ElementId,FilterType) then
+   Raise EInvalidFilterParams.Create('Фильтр уже есть в данной группе');
+ tFilter:=TwinFilter(FilterType);
+ if tFilter<>FilterType then
+  if ElementExists(ElementValue,ElementId,tFilter) then
+   Raise EInvalidFilterParams.Create(' Фильтр уже есть в противоположной группе ');
+ Modify(ElementId,ElementValue,FilterType,Description,Status,Params);
+
+end;
+
+procedure TFilterManager.RemoveElements(ElementsId:array of integer);
 var
  i:integer;
- RowSQL:String;
+ RowSQl:String;
 begin
  RowSQL:='';
- for i := Low(StampsId) to High(StampsId) do
-  begin
-   RowSQL:=RowSQL+ ' id='+IntToStr(StampsId[i]);
-   if i<>High(StampsId) then RowSQL:=RowSQl+' OR ';
-  end;
-
+ for i:=Low(ElementsId) to High(ElementsId) do
+   begin
+    RowSQL:=RowSQL+ ' id='+IntToStr(ElementsId[i]);
+    if i<>High(ElementsId) then RowSQL:=RowSQl+' OR ';
+   end;
+   
  with adProc do
   begin
    Active:=False;
-   SQL.Text:='UPDATE StampFilter SET Active=:Status WHERE ' + RowSQL;
-   Parameters.ParamByName('Status').Value:=Status;
+   SQL.Text:='DELETE FROM FiltersParams WHERE ' + RowSQL;
    ExecSQL;
   end;
- FStampTab.Requery;
 end;
 
-{
+function TFilterManager.TwinFilter(FilterType:TFilterType):TFilterType;
+var
+ buff:TFilterType;
+begin
+ buff:=FilterType;
+ if FilterType=ftBlackEmail then  buff:=ftWhiteEmail;
+ if FilterType=ftWhiteEmail then  buff:=ftBlackEmail;
+ if FilterType=ftBlackWord  then  buff:=ftWhiteWord;
+ if FilterType=ftWhiteWord then   buff:=ftBlackWord;
+ if FilterType=ftBlackAttach then buff:=ftWhiteAttach;
+ if FilterType=ftWhiteAttach then buff:=ftBlackAttach;
+   
+ Result:=buff;
+end;
 
-вынести проверку наличия в таблице в отдельные ф-ии
-
-}
 end.
+
