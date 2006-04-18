@@ -35,9 +35,6 @@ type
     STree: TcxTreeListColumn;
     stPages: TcxPageControl;
     cxTab_Accounts: TcxTabSheet;
-    cxTab_General: TcxTabSheet;
-    cbRun: TcxCheckBox;
-    LabeledEdit1: TLabeledEdit;
     cxAccountsGridLevel1: TcxGridLevel;
     cxAccountsGrid: TcxGrid;
     adAccounts: TADOTable;
@@ -82,55 +79,13 @@ type
     amAddAccount: TAction;
     amDeleteAccount: TAction;
     pbAddAccount: TdxBarButton;
-    cxTab_Stamp: TcxTabSheet;
-    dsStamp: TDataSource;
-    cxStamps: TcxGridDBTableView;
-    cxStampsGridLevel1: TcxGridLevel;
-    cxStampsGrid: TcxGrid;
-    cxStampsFValue: TcxGridDBColumn;
-    cxStampsDescription: TcxGridDBColumn;
-    cxStampsActive: TcxGridDBColumn;
     dxMFilters: TdxBarSubItem;
-    adTest: TADOQuery;
     amAddStamp: TAction;
-    cxTab_BlackWords: TcxTabSheet;
-    adBlackWords: TADOQuery;
-    dsBlackWords: TDataSource;
-    cxBlackWords: TcxGridDBTableView;
-    cxBlackWordsGridLevel1: TcxGridLevel;
-    cxBlackWordsGrid: TcxGrid;
-    adBlackWordsSignalFilterDescription: TWideStringField;
-    adBlackWordsTypesDescription: TWideStringField;
-    adBlackWordsFValue: TWideStringField;
-    adBlackWordsActive: TBooleanField;
-    cxBlackWordsFValue: TcxGridDBColumn;
-    cxBlackWordsSignalFilterDescription: TcxGridDBColumn;
-    cxBlackWordsTypesDescription: TcxGridDBColumn;
-    cxBlackWordsActive: TcxGridDBColumn;
-    adBlackWordsId: TAutoIncField;
-    cxBlackWordsId: TcxGridDBColumn;
-    cxTab_WhiteWords: TcxTabSheet;
-    adWhiteWords: TADOQuery;
-    dsWhiteWords: TDataSource;
-    cxWhiteWordsGrid: TcxGrid;
-    cxWhiteWords: TcxGridDBTableView;
-    cxGridLevel1: TcxGridLevel;
-    cxWhiteWordsId: TcxGridDBColumn;
-    cxWhiteWordsFValue: TcxGridDBColumn;
-    cxWhiteWordsSignalFilterDescription: TcxGridDBColumn;
-    cxWhiteWordsTypesDescription: TcxGridDBColumn;
-    cxWhiteWordsActive: TcxGridDBColumn;
     amModifyWord: TAction;
     amAddWord: TAction;
     dxBarButton1: TdxBarButton;
     amModifyStamp: TAction;
     dxBarButton4: TdxBarButton;
-    adStamp: TADOQuery;
-    adStampFValue: TWideStringField;
-    adStampDescription: TWideStringField;
-    adStampActive: TBooleanField;
-    adStampid: TAutoIncField;
-    cxStampsId: TcxGridDBColumn;
     dxFiltersStamps: TdxBarSubItem;
     dxFiltersStampsAdd: TdxBarButton;
     dxFiltersStampsDelete: TdxBarButton;
@@ -138,7 +93,6 @@ type
     amRemoveStamp: TAction;
     dxPopupStampEdit: TdxBarButton;
     dxBarButton6: TdxBarButton;
-    dxStampsPopup: TdxBarPopupMenu;
     dxpFiltersStampsEdit: TdxBarButton;
     dxpFiltersRevomeStamp: TdxBarButton;
     dxpFiltersStampsAdd: TdxBarButton;
@@ -148,7 +102,6 @@ type
     amSetStampsStatusToNonActive: TAction;
     dxpFiltersStampSetToNonActive: TdxBarButton;
     dxFiltersStampSetToNonActive: TdxBarButton;
-    Button1: TButton;
     dxBarButton2: TdxBarButton;
     dxFiltersBlackWords: TdxBarSubItem;
     dxFiltersBlackWordsAdd: TdxBarButton;
@@ -166,92 +119,41 @@ type
     dxBarButton19: TdxBarButton;
     dxBarLargeButton1: TdxBarLargeButton;
     dxBarStatic1: TdxBarStatic;
-    Button2: TButton;
-    adWhiteSenders: TADOQuery;
-    dsWhiteSenders: TDataSource;
-    dsBlackSenders: TDataSource;
-    adBlackSenders: TADOQuery;
-    adWhiteSendersid: TAutoIncField;
-    adWhiteSendersFValue: TWideStringField;
-    adWhiteSendersDescription: TWideStringField;
-    adWhiteSendersActive: TBooleanField;
-    cxTab_WhiteSenders: TcxTabSheet;
-    cxTab_BlackSenders: TcxTabSheet;
-    cxWhiteSenders: TcxGridDBTableView;
-    cxWhiteSendersGridLevel1: TcxGridLevel;
-    cxWhiteSendersGrid: TcxGrid;
-    cxWhiteSendersid: TcxGridDBColumn;
-    cxWhiteSendersFValue: TcxGridDBColumn;
-    cxWhiteSendersDescription: TcxGridDBColumn;
-    cxWhiteSendersActive: TcxGridDBColumn;
-    cxBlackSenders: TcxGridDBTableView;
-    cxBlackSendersGridLevel1: TcxGridLevel;
-    cxBlackSendersGrid: TcxGrid;
-    cxBlackSendersid: TcxGridDBColumn;
-    cxBlackSendersFValue: TcxGridDBColumn;
-    cxBlackSendersDescription: TcxGridDBColumn;
-    cxBlackSendersActive: TcxGridDBColumn;
-    adBlackSendersid: TAutoIncField;
-    adBlackSendersFValue: TWideStringField;
-    adBlackSendersDescription: TWideStringField;
-    adBlackSendersActive: TBooleanField;
-    adWhiteExt: TADOQuery;
-    adBlackExt: TADOQuery;
-    dsWhiteExt: TDataSource;
-    dsBlackExt: TDataSource;
-    cxTab_WhiteExt: TcxTabSheet;
-    cxTab_BlackExt: TcxTabSheet;
-    cxWhiteExt: TcxGridDBTableView;
-    cxWhiteExtGridLevel1: TcxGridLevel;
-    cxWhiteExtGrid: TcxGrid;
-    cxWhiteExtid: TcxGridDBColumn;
-    cxWhiteExtFValue: TcxGridDBColumn;
-    cxWhiteExtDescription: TcxGridDBColumn;
-    cxWhiteExtActive: TcxGridDBColumn;
-    cxBlackExt: TcxGridDBTableView;
-    cxBlackExtGridLevel1: TcxGridLevel;
-    cxBlackExtGrid: TcxGrid;
-    cxBlackExtid: TcxGridDBColumn;
-    cxBlackExtFValue: TcxGridDBColumn;
-    cxBlackExtDescription: TcxGridDBColumn;
-    cxBlackExtActive: TcxGridDBColumn;
-    Button5: TButton;
-    Button6: TButton;
-    Button7: TButton;
+    cxTab_Filters: TcxTabSheet;
+    cxFilters: TcxGridDBTableView;
+    cxFiltersGridLevel1: TcxGridLevel;
+    cxFiltersGrid: TcxGrid;
     dxBarButton3: TdxBarButton;
     cxStyleRepository1: TcxStyleRepository;
     cxStyle1: TcxStyle;
     cxStyleRepository2: TcxStyleRepository;
     cxStyle2: TcxStyle;
+    adFilters: TADOQuery;
+    dsFilters: TDataSource;
+    adFiltersid: TAutoIncField;
+    adFiltersFValue: TWideStringField;
+    adFiltersDescription: TWideStringField;
+    adFiltersParams: TWideStringField;
+    adFiltersActive: TBooleanField;
+    cxFiltersid: TcxGridDBColumn;
+    cxFiltersFValue: TcxGridDBColumn;
+    cxFiltersDescription: TcxGridDBColumn;
+    cxFiltersParams: TcxGridDBColumn;
+    cxFiltersActive: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure amDeleteAccountExecute(Sender: TObject);
-    procedure cxTab_BlackWordsShow(Sender: TObject);
-    procedure cxTab_StampShow(Sender: TObject);
-    procedure cxTab_WhiteSendersShow(Sender: TObject);
-    procedure cxTab_BlackSendersShow(Sender: TObject);
-    procedure cxTab_WhiteExtShow(Sender: TObject);
-    procedure cxTab_BlackExtShow(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
   private
-    Reg: TRegistry;
     NodeList:TNodeParamsList;
-    Coder:TBFCoder;
     CurrNode:TcxTreeListNode;
     { Private declarations }
   public
-    CurrentGrid:TcxGridDBTableView; // ссылка на текущую таблицу
     CurrentFilterType:TFilterType;  // тип текущего фильтра
 
  //   PSManager: TPostManager;
-    WordsTable:TFilterType;
     FManager:TFilterManager;
-    cxWordsGrid:TcxGridDBTableView;
-    cxWordsActive:TcxGridDBColumn;
-    cxWordsFValue:TcxGridDBColumn;
-    cxWordsId:TcxGridDBColumn;
-    cxWordSignalFilterDescription:TcxGridDBColumn;
-    cxWordsTypesDescription:TcxGridDBcolumn;
     function IndexByCaption(ColumnCaption:String): Integer;
     procedure RunOnStartup(Run:boolean);
 
@@ -326,42 +228,12 @@ begin
   end;
 end;
 
-procedure TFMain.cxTab_BlackWordsShow(Sender: TObject);
-begin
- SetCurrentParams(cxBlackWords,ftBlackWord);
-end;
-
-procedure TFMain.cxTab_StampShow(Sender: TObject);
-begin
- SetCurrentParams(cxWhiteWords,ftWhiteWord);
-end;
-
-procedure TFMain.cxTab_WhiteSendersShow(Sender: TObject);
-begin
- SetCurrentParams(cxWhiteSenders,ftWhiteEmail);
-end;
-
-procedure TFMain.cxTab_BlackSendersShow(Sender: TObject);
-begin
- SetCurrentParams(cxBlackSenders,ftBlackEmail);
-end;
-
-procedure TFMain.cxTab_WhiteExtShow(Sender: TObject);
-begin
- SetCurrentParams(cxWhiteExt,ftWhiteAttach);
-end;
-
-procedure TFMain.cxTab_BlackExtShow(Sender: TObject);
-begin
- SetCurrentParams(cxBlackExt,ftBlackAttach);
-end;
-
 procedure TFMain.SettingsTreeSelectionChanged(Sender: TObject);
 var
  NodeIndex:Integer;
 begin
  NodeIndex:=STree.TreeList.FocusedNode.AbsoluteIndex;
- if not DragState then
+{ if not DragState then
  case NodeIndex of
    0: cxTab_General.Show;
    1: cxTab_Accounts.Show;
@@ -375,7 +247,7 @@ begin
    10:cxTab_BlackSenders.Show;
    11:cxTab_BlackExt.Show;
  end;
-
+}
 end;
 
 procedure TFMain.SetCurrentParams(Grid:TcxGridDBTableView;Filter:TFilterType);
@@ -419,6 +291,11 @@ begin
  buf:=List.Items[i];
  Dispose(buf);
  List.Items[i]:=nil;
+end;
+
+procedure TFMain.FormKeyPress(Sender: TObject; var Key: Char);
+begin
+ ShowMessage('');
 end;
 
 end.

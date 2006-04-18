@@ -1,5 +1,5 @@
 object FMain: TFMain
-  Left = 213
+  Left = 191
   Top = 157
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
@@ -12,9 +12,11 @@ object FMain: TFMain
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
+  HelpFile = 'c:\d7.hlp'
   OldCreateOrder = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyPress = FormKeyPress
   PixelsPerInch = 96
   TextHeight = 13
   object stBar: TdxStatusBar
@@ -107,7 +109,7 @@ object FMain: TFMain
     Top = 25
     Width = 586
     Height = 370
-    ActivePage = cxTab_BlackExt
+    ActivePage = cxTab_Filters
     Align = alClient
     DragMode = dmAutomatic
     LookAndFeel.Kind = lfStandard
@@ -174,37 +176,6 @@ object FMain: TFMain
         end
       end
     end
-    object cxTab_General: TcxTabSheet
-      Caption = 'cxTab_General'
-      ImageIndex = 2
-      object cbRun: TcxCheckBox
-        Left = 8
-        Top = 16
-        Caption = 'Run program on statrtup'
-        State = cbsChecked
-        Style.LookAndFeel.Kind = lfOffice11
-        Style.LookAndFeel.NativeStyle = True
-        StyleDisabled.LookAndFeel.Kind = lfOffice11
-        StyleDisabled.LookAndFeel.NativeStyle = True
-        StyleFocused.LookAndFeel.Kind = lfOffice11
-        StyleFocused.LookAndFeel.NativeStyle = True
-        StyleHot.LookAndFeel.Kind = lfOffice11
-        StyleHot.LookAndFeel.NativeStyle = True
-        TabOrder = 0
-        Width = 145
-      end
-      object LabeledEdit1: TLabeledEdit
-        Left = 8
-        Top = 40
-        Width = 41
-        Height = 21
-        EditLabel.Width = 55
-        EditLabel.Height = 13
-        EditLabel.Caption = ' Server port'
-        LabelPosition = lpRight
-        TabOrder = 1
-      end
-    end
     object cxTab_Log: TcxTabSheet
       Caption = 'cxTab_Log'
       ImageIndex = 3
@@ -256,205 +227,21 @@ object FMain: TFMain
         end
       end
     end
-    object cxTab_Stamp: TcxTabSheet
-      Caption = 'cxTab_Stamp'
-      ImageIndex = 3
-      OnShow = cxTab_StampShow
-      object cxStampsGrid: TcxGrid
+    object cxTab_Filters: TcxTabSheet
+      Caption = 'cxTab_Filters'
+      ImageIndex = 9
+      object cxFiltersGrid: TcxGrid
         Left = 0
         Top = 0
         Width = 580
         Height = 344
         Align = alClient
         TabOrder = 0
-        LookAndFeel.Kind = lfStandard
         LookAndFeel.NativeStyle = True
-        object cxStamps: TcxGridDBTableView
-          PopupMenu = dxStampsPopup
-          NavigatorButtons.ConfirmDelete = False
-          DataController.DataSource = dsStamp
-          DataController.Summary.DefaultGroupSummaryItems = <>
-          DataController.Summary.FooterSummaryItems = <>
-          DataController.Summary.SummaryGroups = <>
-          OptionsData.DeletingConfirmation = False
-          OptionsSelection.InvertSelect = False
-          OptionsSelection.MultiSelect = True
-          OptionsView.ColumnAutoWidth = True
-          OptionsView.GroupByBox = False
-          object cxStampsFValue: TcxGridDBColumn
-            Caption = 'Stamp'
-            DataBinding.FieldName = 'FValue'
-            Options.Editing = False
-            Width = 211
-          end
-          object cxStampsDescription: TcxGridDBColumn
-            DataBinding.FieldName = 'Description'
-            Options.Editing = False
-            Width = 299
-          end
-          object cxStampsActive: TcxGridDBColumn
-            DataBinding.FieldName = 'Active'
-            Width = 68
-          end
-          object cxStampsId: TcxGridDBColumn
-            DataBinding.FieldName = 'id'
-            Visible = False
-          end
-        end
-        object cxStampsGridLevel1: TcxGridLevel
-          GridView = cxStamps
-        end
-      end
-    end
-    object cxTab_BlackWords: TcxTabSheet
-      Caption = 'cxTab_BlackWords'
-      ImageIndex = 4
-      OnShow = cxTab_BlackWordsShow
-      object cxBlackWordsGrid: TcxGrid
-        Left = 0
-        Top = 0
-        Width = 580
-        Height = 344
-        Align = alClient
-        DragMode = dmAutomatic
-        TabOrder = 0
-        LookAndFeel.Kind = lfStandard
-        LookAndFeel.NativeStyle = True
-        object cxBlackWords: TcxGridDBTableView
+        object cxFilters: TcxGridDBTableView
           DragMode = dmAutomatic
           NavigatorButtons.ConfirmDelete = False
-          DataController.DataSource = dsBlackWords
-          DataController.Summary.DefaultGroupSummaryItems = <>
-          DataController.Summary.FooterSummaryItems = <>
-          DataController.Summary.SummaryGroups = <>
-          OptionsData.DeletingConfirmation = False
-          OptionsSelection.InvertSelect = False
-          OptionsSelection.MultiSelect = True
-          OptionsView.ColumnAutoWidth = True
-          OptionsView.GroupByBox = False
-          object cxBlackWordsFValue: TcxGridDBColumn
-            Caption = 'Word'
-            DataBinding.FieldName = 'FValue'
-            Options.Editing = False
-            Width = 176
-          end
-          object cxBlackWordsSignalFilterDescription: TcxGridDBColumn
-            Caption = 'Description'
-            DataBinding.FieldName = 'SignalFilter.Description'
-            Options.Editing = False
-            Width = 199
-          end
-          object cxBlackWordsTypesDescription: TcxGridDBColumn
-            Caption = 'Location'
-            DataBinding.FieldName = 'Types.Description'
-            Options.Editing = False
-            Width = 153
-          end
-          object cxBlackWordsActive: TcxGridDBColumn
-            DataBinding.FieldName = 'Active'
-            Options.Editing = False
-            Width = 58
-          end
-          object cxBlackWordsId: TcxGridDBColumn
-            DataBinding.FieldName = 'Id'
-            Visible = False
-          end
-        end
-        object cxBlackWordsGridLevel1: TcxGridLevel
-          GridView = cxBlackWords
-        end
-      end
-      object Button1: TButton
-        Left = 128
-        Top = 144
-        Width = 75
-        Height = 25
-        Caption = 'Button1'
-        TabOrder = 1
-      end
-      object Button2: TButton
-        Left = 376
-        Top = 176
-        Width = 75
-        Height = 25
-        Caption = 'Button2'
-        TabOrder = 2
-      end
-    end
-    object cxTab_WhiteWords: TcxTabSheet
-      Caption = 'cxTab_WhiteWords'
-      ImageIndex = 5
-      object cxWhiteWordsGrid: TcxGrid
-        Left = 0
-        Top = 0
-        Width = 580
-        Height = 344
-        Align = alClient
-        TabOrder = 0
-        LookAndFeel.Kind = lfStandard
-        LookAndFeel.NativeStyle = True
-        object cxWhiteWords: TcxGridDBTableView
-          DragMode = dmAutomatic
-          NavigatorButtons.ConfirmDelete = False
-          DataController.DataSource = dsWhiteWords
-          DataController.Summary.DefaultGroupSummaryItems = <>
-          DataController.Summary.FooterSummaryItems = <>
-          DataController.Summary.SummaryGroups = <>
-          OptionsData.DeletingConfirmation = False
-          OptionsSelection.InvertSelect = False
-          OptionsSelection.MultiSelect = True
-          OptionsView.ColumnAutoWidth = True
-          OptionsView.GroupByBox = False
-          object cxWhiteWordsFValue: TcxGridDBColumn
-            Caption = 'Word'
-            DataBinding.FieldName = 'FValue'
-            Options.Editing = False
-            Width = 201
-          end
-          object cxWhiteWordsSignalFilterDescription: TcxGridDBColumn
-            Caption = 'Description'
-            DataBinding.FieldName = 'SignalFilter.Description'
-            Options.Editing = False
-            Width = 176
-          end
-          object cxWhiteWordsTypesDescription: TcxGridDBColumn
-            Caption = 'Location'
-            DataBinding.FieldName = 'Types.Description'
-            Options.Editing = False
-            Width = 96
-          end
-          object cxWhiteWordsActive: TcxGridDBColumn
-            DataBinding.FieldName = 'Active'
-            Width = 46
-          end
-          object cxWhiteWordsId: TcxGridDBColumn
-            DataBinding.FieldName = 'Id'
-            Visible = False
-            Options.Editing = False
-            Width = 59
-          end
-        end
-        object cxGridLevel1: TcxGridLevel
-          GridView = cxWhiteWords
-        end
-      end
-    end
-    object cxTab_WhiteSenders: TcxTabSheet
-      Caption = 'cxTab_WhiteSenders'
-      ImageIndex = 6
-      OnShow = cxTab_WhiteSendersShow
-      object cxWhiteSendersGrid: TcxGrid
-        Left = 0
-        Top = 0
-        Width = 580
-        Height = 344
-        Align = alClient
-        TabOrder = 0
-        LookAndFeel.Kind = lfStandard
-        LookAndFeel.NativeStyle = True
-        object cxWhiteSenders: TcxGridDBTableView
-          NavigatorButtons.ConfirmDelete = False
-          DataController.DataSource = dsWhiteSenders
+          DataController.DataSource = dsFilters
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <>
           DataController.Summary.SummaryGroups = <>
@@ -463,186 +250,30 @@ object FMain: TFMain
           OptionsSelection.MultiSelect = True
           OptionsView.ColumnAutoWidth = True
           OptionsView.GroupByBox = False
-          object cxWhiteSendersid: TcxGridDBColumn
+          object cxFiltersid: TcxGridDBColumn
             DataBinding.FieldName = 'id'
-            Visible = False
             Width = 53
           end
-          object cxWhiteSendersFValue: TcxGridDBColumn
+          object cxFiltersFValue: TcxGridDBColumn
             DataBinding.FieldName = 'FValue'
-            Width = 267
+            Width = 168
           end
-          object cxWhiteSendersDescription: TcxGridDBColumn
+          object cxFiltersDescription: TcxGridDBColumn
             DataBinding.FieldName = 'Description'
-            Width = 251
+            Width = 168
           end
-          object cxWhiteSendersActive: TcxGridDBColumn
+          object cxFiltersParams: TcxGridDBColumn
+            DataBinding.FieldName = 'Params'
+            Width = 123
+          end
+          object cxFiltersActive: TcxGridDBColumn
             DataBinding.FieldName = 'Active'
-            Width = 60
+            Width = 66
           end
         end
-        object cxWhiteSendersGridLevel1: TcxGridLevel
-          GridView = cxWhiteSenders
+        object cxFiltersGridLevel1: TcxGridLevel
+          GridView = cxFilters
         end
-      end
-    end
-    object cxTab_BlackSenders: TcxTabSheet
-      Caption = 'cxTab_BlackSenders'
-      DragMode = dmAutomatic
-      ImageIndex = 7
-      OnShow = cxTab_BlackSendersShow
-      object cxBlackSendersGrid: TcxGrid
-        Left = 0
-        Top = 0
-        Width = 580
-        Height = 344
-        Align = alClient
-        DragMode = dmAutomatic
-        TabOrder = 0
-        LookAndFeel.Kind = lfStandard
-        LookAndFeel.NativeStyle = True
-        object cxBlackSenders: TcxGridDBTableView
-          NavigatorButtons.ConfirmDelete = False
-          DataController.DataSource = dsBlackSenders
-          DataController.Summary.DefaultGroupSummaryItems = <>
-          DataController.Summary.FooterSummaryItems = <>
-          DataController.Summary.SummaryGroups = <>
-          OptionsSelection.CellSelect = False
-          OptionsSelection.InvertSelect = False
-          OptionsSelection.MultiSelect = True
-          OptionsView.ColumnAutoWidth = True
-          OptionsView.GroupByBox = False
-          object cxBlackSendersid: TcxGridDBColumn
-            DataBinding.FieldName = 'id'
-            Visible = False
-            Width = 20
-          end
-          object cxBlackSendersFValue: TcxGridDBColumn
-            DataBinding.FieldName = 'FValue'
-            Width = 309
-          end
-          object cxBlackSendersDescription: TcxGridDBColumn
-            DataBinding.FieldName = 'Description'
-            Width = 137
-          end
-          object cxBlackSendersActive: TcxGridDBColumn
-            DataBinding.FieldName = 'Active'
-            Width = 112
-          end
-        end
-        object cxBlackSendersGridLevel1: TcxGridLevel
-          GridView = cxBlackSenders
-        end
-      end
-    end
-    object cxTab_WhiteExt: TcxTabSheet
-      Caption = 'cxTab_WhiteExt'
-      ImageIndex = 8
-      OnShow = cxTab_WhiteExtShow
-      object cxWhiteExtGrid: TcxGrid
-        Left = 0
-        Top = 0
-        Width = 580
-        Height = 344
-        Align = alClient
-        TabOrder = 0
-        LookAndFeel.Kind = lfStandard
-        LookAndFeel.NativeStyle = True
-        object cxWhiteExt: TcxGridDBTableView
-          NavigatorButtons.ConfirmDelete = False
-          DataController.DataSource = dsWhiteExt
-          DataController.Summary.DefaultGroupSummaryItems = <>
-          DataController.Summary.FooterSummaryItems = <>
-          DataController.Summary.SummaryGroups = <>
-          OptionsSelection.CellSelect = False
-          OptionsSelection.InvertSelect = False
-          OptionsSelection.MultiSelect = True
-          OptionsView.ColumnAutoWidth = True
-          OptionsView.GroupByBox = False
-          object cxWhiteExtid: TcxGridDBColumn
-            DataBinding.FieldName = 'id'
-            Visible = False
-          end
-          object cxWhiteExtFValue: TcxGridDBColumn
-            DataBinding.FieldName = 'FValue'
-          end
-          object cxWhiteExtDescription: TcxGridDBColumn
-            DataBinding.FieldName = 'Description'
-          end
-          object cxWhiteExtActive: TcxGridDBColumn
-            DataBinding.FieldName = 'Active'
-          end
-        end
-        object cxWhiteExtGridLevel1: TcxGridLevel
-          GridView = cxWhiteExt
-        end
-      end
-      object Button5: TButton
-        Left = 312
-        Top = 176
-        Width = 75
-        Height = 25
-        Caption = 'Button5'
-        TabOrder = 1
-      end
-      object Button6: TButton
-        Left = 64
-        Top = 136
-        Width = 75
-        Height = 25
-        Caption = 'Button6'
-        TabOrder = 2
-      end
-    end
-    object cxTab_BlackExt: TcxTabSheet
-      Caption = 'cxTab_BlackExt'
-      ImageIndex = 9
-      OnShow = cxTab_BlackExtShow
-      object cxBlackExtGrid: TcxGrid
-        Left = 0
-        Top = 0
-        Width = 580
-        Height = 344
-        Align = alClient
-        TabOrder = 0
-        LookAndFeel.NativeStyle = True
-        object cxBlackExt: TcxGridDBTableView
-          DragMode = dmAutomatic
-          NavigatorButtons.ConfirmDelete = False
-          DataController.DataSource = dsBlackExt
-          DataController.Summary.DefaultGroupSummaryItems = <>
-          DataController.Summary.FooterSummaryItems = <>
-          DataController.Summary.SummaryGroups = <>
-          OptionsSelection.CellSelect = False
-          OptionsSelection.InvertSelect = False
-          OptionsSelection.MultiSelect = True
-          OptionsView.ColumnAutoWidth = True
-          OptionsView.GroupByBox = False
-          object cxBlackExtid: TcxGridDBColumn
-            DataBinding.FieldName = 'id'
-            Visible = False
-          end
-          object cxBlackExtFValue: TcxGridDBColumn
-            DataBinding.FieldName = 'FValue'
-          end
-          object cxBlackExtDescription: TcxGridDBColumn
-            DataBinding.FieldName = 'Description'
-          end
-          object cxBlackExtActive: TcxGridDBColumn
-            DataBinding.FieldName = 'Active'
-          end
-        end
-        object cxBlackExtGridLevel1: TcxGridLevel
-          GridView = cxBlackExt
-        end
-      end
-      object Button7: TButton
-        Left = 136
-        Top = 208
-        Width = 75
-        Height = 25
-        Caption = 'Button7'
-        TabOrder = 1
       end
     end
   end
@@ -650,8 +281,7 @@ object FMain: TFMain
     Connection = adCon
     CursorType = ctStatic
     TableName = 'Accounts'
-    Left = 8
-    Top = 192
+    Top = 272
     object adAccountsid: TAutoIncField
       FieldName = 'id'
       ReadOnly = True
@@ -681,8 +311,8 @@ object FMain: TFMain
   end
   object dsAccounts: TDataSource
     DataSet = adAccounts
-    Left = 40
-    Top = 192
+    Left = 32
+    Top = 272
   end
   object adCon: TADOConnection
     Connected = True
@@ -692,13 +322,12 @@ object FMain: TFMain
     LoginPrompt = False
     Mode = cmShareDenyNone
     Provider = 'Microsoft.Jet.OLEDB.4.0'
-    Left = 96
     Top = 368
   end
   object dsLog: TDataSource
     DataSet = adLog
-    Left = 40
-    Top = 224
+    Left = 32
+    Top = 304
   end
   object adLog: TADOQuery
     Active = True
@@ -710,8 +339,7 @@ object FMain: TFMain
         'SELECT Log.Id,Accounts.AccountName,ErrorType,Log.Message,ErrorTi' +
         'me  FROM Log,Accounts'
       'WHERE  Accounts.Id=log.mid')
-    Left = 8
-    Top = 224
+    Top = 304
     object adLogId: TAutoIncField
       FieldName = 'Id'
       ReadOnly = True
@@ -779,13 +407,10 @@ object FMain: TFMain
         Control = cxAccountsGrid
       end
       item
-        Control = cxStampsGrid
       end
       item
-        Control = cxBlackWordsGrid
       end
       item
-        Control = cxWhiteWordsGrid
       end>
     Style = bmsFlat
     SunkenBorder = True
@@ -1088,8 +713,8 @@ object FMain: TFMain
     end
   end
   object aMan: TActionManager
-    Left = 96
-    Top = 168
+    Left = 152
+    Top = 152
     StyleName = 'XP Style'
     object amAddAccount: TAction
       Caption = 'amAddAccount'
@@ -1120,243 +745,6 @@ object FMain: TFMain
       Caption = 'Set To nonActive'
     end
   end
-  object dsStamp: TDataSource
-    DataSet = adStamp
-    Left = 40
-    Top = 256
-  end
-  object adTest: TADOQuery
-    Connection = adCon
-    Parameters = <>
-    Left = 128
-    Top = 368
-  end
-  object adBlackWords: TADOQuery
-    Active = True
-    Connection = adCon
-    CursorType = ctStatic
-    Parameters = <>
-    SQL.Strings = (
-      
-        'SELECT SignalFilter.Id, SignalFilter.FValue,SignalFilter.Descrip' +
-        'tion,Types.Description,SignalFilter.Active  FROM SignalFilter,Ty' +
-        'pes'
-      'WHERE SignalFilter.Location=Types.Type'
-      'AND'
-      'mid=('
-      '          SELECT id FROM Filters'
-      '          WHERE Type='#39'ftBlackWord'#39
-      '         )')
-    Left = 8
-    Top = 288
-    object adBlackWordsId: TAutoIncField
-      FieldName = 'Id'
-      ReadOnly = True
-    end
-    object adBlackWordsFValue: TWideStringField
-      FieldName = 'FValue'
-      Size = 255
-    end
-    object adBlackWordsSignalFilterDescription: TWideStringField
-      FieldName = 'SignalFilter.Description'
-      Size = 255
-    end
-    object adBlackWordsTypesDescription: TWideStringField
-      FieldName = 'Types.Description'
-      Size = 50
-    end
-    object adBlackWordsActive: TBooleanField
-      FieldName = 'Active'
-    end
-  end
-  object dsBlackWords: TDataSource
-    DataSet = adBlackWords
-    Left = 40
-    Top = 288
-  end
-  object adWhiteWords: TADOQuery
-    Active = True
-    Connection = adCon
-    CursorType = ctStatic
-    Parameters = <>
-    SQL.Strings = (
-      
-        'SELECT SignalFilter.Id, SignalFilter.FValue,SignalFilter.Descrip' +
-        'tion,Types.Description,SignalFilter.Active  FROM SignalFilter,Ty' +
-        'pes'
-      'WHERE SignalFilter.Location=Types.Type'
-      'AND'
-      'mid=('
-      '          SELECT id FROM Filters'
-      '          WHERE Type='#39'ftWhiteWord'#39
-      '         )')
-    Left = 8
-    Top = 320
-  end
-  object dsWhiteWords: TDataSource
-    DataSet = adWhiteWords
-    Left = 40
-    Top = 320
-  end
-  object adStamp: TADOQuery
-    Active = True
-    Connection = adCon
-    CursorType = ctStatic
-    Parameters = <>
-    SQL.Strings = (
-      'SELECT id,FValue,Description,Active'
-      'FROM StampFilter')
-    Left = 8
-    Top = 256
-    object adStampFValue: TWideStringField
-      FieldName = 'FValue'
-      Size = 255
-    end
-    object adStampDescription: TWideStringField
-      FieldName = 'Description'
-      Size = 255
-    end
-    object adStampActive: TBooleanField
-      FieldName = 'Active'
-    end
-    object adStampid: TAutoIncField
-      FieldName = 'id'
-      ReadOnly = True
-    end
-  end
-  object dxStampsPopup: TdxBarPopupMenu
-    BarManager = dxBarManager1
-    ItemLinks = <
-      item
-        Item = dxpFiltersStampsEdit
-        Visible = True
-      end
-      item
-        Item = dxpFiltersStampsAdd
-        Visible = True
-      end
-      item
-        Item = dxpFiltersRevomeStamp
-        Visible = True
-      end
-      item
-        Item = dxpFiltersStampSetToActive
-        Visible = True
-      end
-      item
-        Item = dxpFiltersStampSetToNonActive
-        Visible = True
-      end>
-    UseOwnFont = False
-    Left = 192
-    Top = 200
-  end
-  object adWhiteSenders: TADOQuery
-    Active = True
-    Connection = adCon
-    CursorType = ctStatic
-    Parameters = <>
-    SQL.Strings = (
-      'SELECT id,FValue,Description,Active FROM SenderFilter'
-      'WHERE mid=('
-      '          SELECT id FROM Filters'
-      '          WHERE Type='#39'ftWhiteEMail'#39
-      '         )')
-    Left = 8
-    Top = 352
-    object adWhiteSendersid: TAutoIncField
-      FieldName = 'id'
-      ReadOnly = True
-    end
-    object adWhiteSendersFValue: TWideStringField
-      FieldName = 'FValue'
-      Size = 255
-    end
-    object adWhiteSendersDescription: TWideStringField
-      FieldName = 'Description'
-      Size = 50
-    end
-    object adWhiteSendersActive: TBooleanField
-      FieldName = 'Active'
-    end
-  end
-  object dsWhiteSenders: TDataSource
-    DataSet = adWhiteSenders
-    Left = 40
-    Top = 352
-  end
-  object dsBlackSenders: TDataSource
-    DataSet = adBlackSenders
-    Left = 40
-    Top = 384
-  end
-  object adBlackSenders: TADOQuery
-    Active = True
-    Connection = adCon
-    CursorType = ctStatic
-    Parameters = <>
-    SQL.Strings = (
-      'SELECT id,FValue,Description,Active FROM SenderFilter'
-      'WHERE mid=('
-      '          SELECT id FROM Filters'
-      '          WHERE Type='#39'ftBlackEMail'#39
-      '         )')
-    Left = 8
-    Top = 384
-    object adBlackSendersid: TAutoIncField
-      FieldName = 'id'
-      ReadOnly = True
-    end
-    object adBlackSendersFValue: TWideStringField
-      FieldName = 'FValue'
-      Size = 255
-    end
-    object adBlackSendersDescription: TWideStringField
-      FieldName = 'Description'
-      Size = 50
-    end
-    object adBlackSendersActive: TBooleanField
-      FieldName = 'Active'
-    end
-  end
-  object adWhiteExt: TADOQuery
-    Active = True
-    Connection = adCon
-    CursorType = ctStatic
-    Parameters = <>
-    SQL.Strings = (
-      'SELECT id,FValue,Description,Active FROM AttachmentExtFilter'
-      'WHERE mid=('
-      '          SELECT id FROM Filters'
-      '          WHERE Type='#39'ftWhiteAttachExtFilter'#39
-      '         )')
-    Left = 8
-    Top = 160
-  end
-  object adBlackExt: TADOQuery
-    Active = True
-    Connection = adCon
-    CursorType = ctStatic
-    Parameters = <>
-    SQL.Strings = (
-      'SELECT id,FValue,Description,Active FROM AttachmentExtFilter'
-      'WHERE mid=('
-      '          SELECT id FROM Filters'
-      '          WHERE Type='#39'ftBlackAttachExtFilter'#39
-      '         )')
-    Left = 8
-    Top = 128
-  end
-  object dsWhiteExt: TDataSource
-    DataSet = adWhiteExt
-    Left = 40
-    Top = 160
-  end
-  object dsBlackExt: TDataSource
-    DataSet = adBlackExt
-    Left = 40
-    Top = 128
-  end
   object cxStyleRepository1: TcxStyleRepository
     object cxStyle1: TcxStyle
     end
@@ -1372,5 +760,39 @@ object FMain: TFMain
       Font.Style = []
       TextColor = clWhite
     end
+  end
+  object adFilters: TADOQuery
+    Active = True
+    Connection = adCon
+    CursorType = ctStatic
+    Parameters = <>
+    SQL.Strings = (
+      'SELECT id,FValue,Description,Active,Params'
+      'FROM FiltersParams')
+    Top = 240
+    object adFiltersid: TAutoIncField
+      FieldName = 'id'
+      ReadOnly = True
+    end
+    object adFiltersFValue: TWideStringField
+      FieldName = 'FValue'
+      Size = 50
+    end
+    object adFiltersDescription: TWideStringField
+      FieldName = 'Description'
+      Size = 50
+    end
+    object adFiltersParams: TWideStringField
+      FieldName = 'Params'
+      Size = 50
+    end
+    object adFiltersActive: TBooleanField
+      FieldName = 'Active'
+    end
+  end
+  object dsFilters: TDataSource
+    DataSet = adFilters
+    Left = 32
+    Top = 240
   end
 end

@@ -12,13 +12,16 @@ uses
   RegExpr in '..\Libs\RegExpr.pas',
   PerlRegEx in '..\Libs\RegExp\PerlRegEx.pas',
   FilterManager in '..\Shared\FilterManager.pas',
-  test in 'test.pas' {Form1};
+  test in 'test.pas' {Form1},
+  CustomEditor in 'CustomEditor.pas' {FCustomEditor};
 
 {$R *.res}
 
 begin
   Application.Initialize;
+  Application.HelpFile := 'C:\Program Files\Borland\BDS\3.0\Help\Win32\DBEXPLR3.HLP';
   Application.CreateForm(TFMain, FMain);
   Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TFCustomEditor, FCustomEditor);
   Application.Run;
 end.
