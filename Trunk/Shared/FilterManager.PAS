@@ -70,7 +70,7 @@ begin
  ElementValue:=Trim(ElementValue);
  if ElementValue='' then
   Raise EInvalidFilterParams.Create('Фильтр не может быть пустым');
- if not (FilterType in [ftBlackEmail,ftWhiteEmail,ftStamp,ftBlackWord,ftWhiteWord,
+ if not (FilterType in [ftBlackSender,ftWhiteSender,ftStamp,ftBlackWord,ftWhiteWord,
                ftBlackAttach,ftWhiteAttach,ftSpamWord]) then
    Raise EInvalidFilterParams.Create('Неправильный тип фильтра');
  if (FilterType=ftWhiteWord) or (FilterType=ftBlackWord) and not( TSignalLocation(GetEnumValue(TypeInfo(TSignalLocation),Params)) in[slAnywhere,slSubject,slBody] ) then
@@ -185,7 +185,7 @@ begin
  ElementValue:=Trim(ElementValue);
  if ElementValue='' then
   Raise EInvalidFilterParams.Create('Фильтр не может быть пустым');
- if not (FilterType in [ftBlackEmail,ftWhiteEmail,ftStamp,ftBlackWord,ftWhiteWord,
+ if not (FilterType in [ftBlackSender,ftWhiteSender,ftStamp,ftBlackWord,ftWhiteWord,
                ftBlackAttach,ftWhiteAttach,ftSpamWord]) then
    Raise EInvalidFilterParams.Create('Неправильный тип фильтра');
  if (FilterType=ftWhiteWord) or (FilterType=ftBlackWord) and not( TSignalLocation(GetEnumValue(TypeInfo(TSignalLocation),Params)) in[slAnywhere,slSubject,slBody] ) then
@@ -225,8 +225,8 @@ var
  buff:TFilterType;
 begin
  buff:=FilterType;
- if FilterType=ftBlackEmail then  buff:=ftWhiteEmail;
- if FilterType=ftWhiteEmail then  buff:=ftBlackEmail;
+ if FilterType=ftBlackSender then  buff:=ftWhiteSender;
+ if FilterType=ftWhiteSender then  buff:=ftBlackSender;
  if FilterType=ftBlackWord  then  buff:=ftWhiteWord;
  if FilterType=ftWhiteWord then   buff:=ftBlackWord;
  if FilterType=ftBlackAttach then buff:=ftWhiteAttach;

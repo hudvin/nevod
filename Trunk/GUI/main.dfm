@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 191
-  Top = 157
+  Left = 498
+  Top = 641
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -16,7 +16,6 @@ object FMain: TFMain
   OldCreateOrder = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  OnKeyPress = FormKeyPress
   PixelsPerInch = 96
   TextHeight = 13
   object stBar: TdxStatusBar
@@ -252,6 +251,7 @@ object FMain: TFMain
           OptionsView.GroupByBox = False
           object cxFiltersid: TcxGridDBColumn
             DataBinding.FieldName = 'id'
+            Visible = False
             Width = 53
           end
           object cxFiltersFValue: TcxGridDBColumn
@@ -274,6 +274,15 @@ object FMain: TFMain
         object cxFiltersGridLevel1: TcxGridLevel
           GridView = cxFilters
         end
+      end
+      object Button1: TButton
+        Left = 152
+        Top = 176
+        Width = 75
+        Height = 25
+        Caption = 'Button1'
+        TabOrder = 1
+        OnClick = Button1Click
       end
     end
   end

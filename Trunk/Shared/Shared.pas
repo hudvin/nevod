@@ -49,8 +49,8 @@ type
   TLogType=(ltPOP3Server,ltPostReceiver);
 
 type
-  TFilterType=(ftBlackEmail,ftWhiteEmail,ftStamp,ftBlackWord,ftWhiteWord,ftImageFilter,ftLinkFilter,
-               ftBlackAttach,ftWhiteAttach,ftMessSize,ftSpamWord);
+  TFilterType=(ftBlackSender,ftWhiteSender,ftStamp,ftBlackWord,ftWhiteWord,ftImageFilter,ftLinkFilter,
+               ftBlackAttach,ftWhiteAttach,ftMessSize,ftSpamWord,ftNone);
 
 type
   TBodyType=(btText,btHtml);  // тип тела сообщения
@@ -110,9 +110,18 @@ type
   Grid:TcxGridDBTableView;
 end;
 
+  TSNConvert = record
+ 
+    Caption: string;
+    FilterType: TFilterType;
+    NodeIndex: Integer;
+    SelectionIndex: Integer;
+  end;
+
 type
   PAccountParams = ^TAccountParams;
-
+type
+  PSNConvert=^TSNConvert;
 type
   TStringSeacher = class(TObject)
   private
@@ -185,28 +194,6 @@ type
     function SetValue(SettingName,Value:string): Boolean;
   end;
 
-  TAccountContext = class
-  private
-    FAccountId: Integer;
-  public
-    MessProc: TADOQuery;
-    constructor Create(AccountId:Integer;ADOCon:TADOConnection);
-    destructor Destroy; override;
-    property AccountId: Integer read FAccountId;
-  end;
-
-  TAccountContextList = class(TList)
-  private
-    CS: RTL_CRITICAL_SECTION;
-    FADOCon: TADOConnection;
-  public
-    constructor Create(ADOCon:TADOConnection);
-    destructor Destroy; override;
-    procedure AddContext(AccountId:integer);
-    procedure DeleteContext(AccountId:integer);
-    function GetContext(AccountId:integer): TAccountContext;
-  end;
-
   TSQLProcs = class(TObject)
   private
     SQLStrings: THashedStringList;
@@ -241,6 +228,18 @@ type
     function LocationByDescription(Description:String): TSignalLocation;
     property Count: Integer read GetCount;
     property Index[Index: Integer]: TSignalTypeDescriptor read GetIndex;
+  end;
+
+  TSNIndexConverter = class
+  private
+    List: TList;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    procedure Add(NodeIndex:Integer;SelectionIndex:Integer;FilterType:TFilterType;
+        Caption:String);
+    function NIndex2SIndex(NodeIndex:Integer): Integer;
+    function SIndex2NIndex(SelectionIndex:Integer): Integer;
   end;
 
 
@@ -760,83 +759,6 @@ begin
   end;
 end;
 
-constructor TAccountContext.Create(AccountId:Integer;ADOCon:TADOConnection);
-begin
- FAccountId:=AccountId;
- MessProc:=TADOQuery.Create(nil);
- MessProc.Connection:=ADOCon;
-end;
-
-destructor TAccountContext.Destroy;
-begin
- MessProc.Free;
-end;
-
-constructor TAccountContextList.Create(ADOCon:TADOConnection);
-begin
-  inherited Create;
-  InitializeCriticalSection(CS);
-  FADOCon:=ADOCon;
-end;
-
-destructor TAccountContextList.Destroy;
-var
- i:integer;
-begin
-  for I := 0 to Count - 1 do
-   TAccountContext(Items[i]).Free;
-  DeleteCriticalSection(CS);
-  inherited Destroy;
-end;
-
-procedure TAccountContextList.AddContext(AccountId:integer);
-begin
-  EnterCriticalSection(CS);
-   Add(TAccountContext.Create(AccountId,FADOCon));
-  LeaveCriticalSection(CS);
-end;
-
-procedure TAccountContextList.DeleteContext(AccountId:integer);
-var
- i:integer;
- Flag:boolean;
-begin
- Flag:=True;
- i:=0;
- EnterCriticalSection(CS);
-  while (Flag)and (i<Count) do
-   begin
-    if TAccountContext(Items[i]).AccountId=AccountId  then
-     begin
-      Flag:=False;
-      TAccountContext(Items[i]).Free;
-      Items[i]:=nil;
-      Pack;
-     end;
-    inc(i);
-   end;
- LeaveCriticalSection(CS);
-end;
-
-function TAccountContextList.GetContext(AccountId:integer): TAccountContext;
-var
-  i:integer;
-  Flag:boolean;
-begin
- Flag:=True;
- i:=0;
- while (Flag)and (i<Count) do
-  begin
-   if TAccountContext(Items[i]).AccountId=AccountId  then
-    begin
-     Flag:=False;
-     Result:=TAccountContext(Items[i]);
-    end;
-   inc(i);
-  end;
- if Flag then Result:=nil;
-end;
-
 constructor TSQLProcs.Create;
 begin
  SQlStrings:=THashedStringList.Create;
@@ -987,6 +909,74 @@ begin
       Result:=PSignalTypeDescriptor(List.Items[i]).Location;
      end
     else inc(i);
+end;
+
+constructor TSNIndexConverter.Create;
+begin
+ List:=TList.Create;
+end;
+
+destructor TSNIndexConverter.Destroy;
+var
+ i:integer;
+ DelRecord:PSNConvert;
+begin
+ for I := 0 to List.Count - 1 do
+   begin
+     DelRecord:=List.Items[i];
+     Dispose(DelRecord);
+   end;
+end;
+
+procedure TSNIndexConverter.Add(NodeIndex:Integer;SelectionIndex:Integer;
+    FilterType:TFilterType;Caption:String);
+var
+ NewItem:PSNConvert;
+begin
+ New(NewItem);
+ NewItem.NodeIndex:=NodeIndex;
+ NewItem.SelectionIndex:=SelectionIndex;
+ NewItem.FilterType:=FilterType;
+ NewItem.Caption:=Caption;
+ List.Add(NewItem);
+end;
+
+function TSNIndexConverter.NIndex2SIndex(NodeIndex:Integer): Integer;
+var
+ i:integer;
+ Flag:boolean;
+begin
+ i:=0;
+ Flag:=False;
+ while (not Flag) and (i<List.Count) do
+   begin
+    if PSNConvert(List.Items[i]).NodeIndex=NodeIndex then
+     begin
+      Result:=PSNConvert(List.Items[i]).SelectionIndex;
+      Flag:=True;
+     end
+      else inc(i);
+   end;
+ if not Flag then Result:=-1;
+end;
+
+function TSNIndexConverter.SIndex2NIndex(SelectionIndex:Integer): Integer;
+var
+ i:integer;
+ Flag:boolean;
+begin
+ i:=0;
+ Flag:=False;
+ while (not Flag) and (i<List.Count) do
+   begin
+    if PSNConvert(List.Items[i]).SelectionIndex=SelectionIndex then
+     begin
+      Result:=PSNConvert(List.Items[i]).NodeIndex;
+      Flag:=True;
+     end
+      else inc(i);
+   end;
+ if not Flag then Result:=-1;
 end;
 
 

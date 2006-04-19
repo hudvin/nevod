@@ -140,21 +140,21 @@ type
     cxFiltersDescription: TcxGridDBColumn;
     cxFiltersParams: TcxGridDBColumn;
     cxFiltersActive: TcxGridDBColumn;
+    Button1: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure amDeleteAccountExecute(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
-    procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure Button1Click(Sender: TObject);
   private
     NodeList:TNodeParamsList;
     CurrNode:TcxTreeListNode;
     { Private declarations }
   public
     CurrentFilterType:TFilterType;  // тип текущего фильтра
-
+    SNConverter:TSNIndexConverter;
  //   PSManager: TPostManager;
     FManager:TFilterManager;
-    function IndexByCaption(ColumnCaption:String): Integer;
     procedure RunOnStartup(Run:boolean);
 
     { Public declarations }
@@ -175,29 +175,13 @@ var
   DragState:boolean=False;
 implementation
 
+uses CustomEditor;
+
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
 
 
-function TFMain.IndexByCaption(ColumnCaption:String): Integer;
-var
- i:integer;
- Flag:boolean;
-begin
- Flag:=False;
- i:=0;
- while (not Flag) and (i<CurrentGrid.ColumnCount) do
-   begin
-    if CurrentGrid.Columns[i].Caption=ColumnCaption then
-     begin
-      Flag:=False;
-      Result:=CurrentGrid.Columns[i].Index;
-     end
-      else inc(i);
-   end;
- if Flag then Result:=-1; // нет колонки с таким именем
-end;
 
 procedure TFMain.RunOnStartup(Run:boolean);
 begin
@@ -206,7 +190,26 @@ end;
 procedure TFMain.FormCreate(Sender: TObject);
 begin
 
- NodeList:=TNodeParamsList.Create;
+ SNConverter:=TSNIndexConverter.Create;
+ with SNConverter do
+   begin
+    Add(6,0,ftWhiteSender,'Добавить адрес/домен в белый список'); //адрес в белый список
+    Add(9,1,ftBlackSender,'Добавить адрес/домен в черный списко'); //адрес в черный список
+    Add(7,2,ftWhiteAttach,'Добавить расширений приложенного файла в белый список'); // расширение в белый список
+    Add(11,3,ftBlackAttach,'Добавить расширений приложенного файла в черный список');// расширение в черный список
+    Add(4,4,ftWhiteWord,'Добавить слово в белый список'); // слово в белый список
+    Add(9,5,ftBlackWord,'Добавить слово в черный список'); // слово в черный список
+    Add(5,6,ftStamp,'Добавить штамп'); // штамп
+   end;
+
+
+
+
+
+
+
+
+
 
 // NodeList.Add(1,ftBlackEmail,cxTab_Accounts,cxBlackWords);
 // Coder.Key:=CriptKey;
@@ -217,7 +220,8 @@ end;
 
 procedure TFMain.FormDestroy(Sender: TObject);
 begin
- FManager.Free;
+ //FManager.Free;
+ SNConverter.Free;
 end;
 
 procedure TFMain.amDeleteAccountExecute(Sender: TObject);
@@ -231,28 +235,48 @@ end;
 procedure TFMain.SettingsTreeSelectionChanged(Sender: TObject);
 var
  NodeIndex:Integer;
+ FilterType:TFilterType;
+ RowSQL:String;
 begin
  NodeIndex:=STree.TreeList.FocusedNode.AbsoluteIndex;
-{ if not DragState then
- case NodeIndex of
-   0: cxTab_General.Show;
-   1: cxTab_Accounts.Show;
+ // устанавливать текущий тип фильтра или ftNone
+ case NodeIndex of    //
+   0: ;
+   1: cxTab_Accounts.Show ;
    2: ;
    3: ;
-   4: cxTab_WhiteWords.Show ;
-   5: cxTab_Stamp.Show ;
-   6: cxTab_WhiteExt.Show;
-   7: cxTab_WhiteSenders.Show ;
-   9: cxTab_BlackWords.Show ;
-   10:cxTab_BlackSenders.Show;
-   11:cxTab_BlackExt.Show;
+   4..7,9..11:
+    begin
+     case NodeIndex of
+       4: FilterType:=ftWhiteWord;
+       5: FilterType:=ftStamp;
+       6: FilterType:=ftWhiteSender;
+       7: FilterType:=ftWhiteAttach;
+       9: FilterType:=ftBlackWord;
+       10:FilterType:=ftBlackSender;
+       11:FilterType:=ftBlackAttach;
+     end;
+     with adFilters do
+       begin
+        Active:=False;
+        if FilterType in[ftWhiteWord,ftBlackWord] then
+         cxFiltersParams.Visible:=True
+          else
+           cxFiltersParams.Visible:=False;
+        SQL.Text:='SELECT id,FValue,Description,Active,Params '+
+                  ' FROM FiltersParams WHERE mid=(SELECT id FROM Filters WHERE Type=:FilterType) ' ;
+        Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
+        Active:=True;
+       end;
+
+    end;
+   8:;
+   12:;
  end;
-}
 end;
 
 procedure TFMain.SetCurrentParams(Grid:TcxGridDBTableView;Filter:TFilterType);
 begin
- CurrentGrid:=Grid;
  CurrentFilterType:=Filter;
 end;
 
@@ -293,17 +317,9 @@ begin
  List.Items[i]:=nil;
 end;
 
-procedure TFMain.FormKeyPress(Sender: TObject; var Key: Char);
+procedure TFMain.Button1Click(Sender: TObject);
 begin
- ShowMessage('');
+ FCustomEditor.Show(1);
 end;
 
 end.
-
-
-{
-
-при смене вкладки устанавливать ссылку на таблицу и тип фильтра
-изменить названия типов фильров (слишком длинные и некорректные)
-
-}
