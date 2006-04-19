@@ -1,10 +1,10 @@
 object FMain: TFMain
-  Left = 498
-  Top = 641
+  Left = 254
+  Top = 450
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
-  ClientHeight = 415
+  ClientHeight = 448
   ClientWidth = 771
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -20,7 +20,7 @@ object FMain: TFMain
   TextHeight = 13
   object stBar: TdxStatusBar
     Left = 0
-    Top = 395
+    Top = 428
     Width = 771
     Height = 20
     Panels = <
@@ -43,7 +43,7 @@ object FMain: TFMain
     Left = 0
     Top = 25
     Width = 177
-    Height = 370
+    Height = 403
     Styles.Inactive = cxStyle2
     Styles.HotTrack = cxStyle1
     Align = alLeft
@@ -69,22 +69,23 @@ object FMain: TFMain
     TabOrder = 1
     OnSelectionChanged = SettingsTreeSelectionChanged
     Data = {
-      02000400F50100000F00000044617461436F6E74726F6C6C6572310100000012
-      000000546378537472696E6756616C7565547970650D00000000000700000047
+      02000400120200000F00000044617461436F6E74726F6C6C6572310100000012
+      000000546378537472696E6756616C7565547970650E00000000000700000047
       656E6572616C00000700000046696C746572730000080000004163636F756E74
       73000005000000416C6C6F7700000400000044656E79000007000000436F6D70
       6C6578000005000000576F7264730000060000005374616D7073000007000000
       53656E6465727300000B0000004174746163686D656E7473000005000000576F
       72647300000700000053656E6465727300000B0000004174746163686D656E74
-      730300000000000000100000000000000000000000FFFFFFFF02000000100000
-      000000000000000000FFFFFFFF01000000040000000300000000000000000000
-      00FFFFFFFF0300000004000000040000000000000000000000FFFFFFFF060000
-      00100000000000000000000000FFFFFFFF070000001000000000000000000000
-      00FFFFFFFF08000000100000000000000000000000FFFFFFFF09000000100000
-      000000000000000000FFFFFFFF04000000040000000300000000000000000000
-      00FFFFFFFF0A000000100000000000000000000000FFFFFFFF0B000000100000
-      000000000000000000FFFFFFFF0C000000100000000000000000000000FFFFFF
-      FF05000000100000000000000000000000FFFFFFFF}
+      730000030000004C6F670300000000000000100000000000000000000000FFFF
+      FFFF02000000100000000000000000000000FFFFFFFF01000000040000000400
+      00000000000000000000FFFFFFFF030000000400000004000000000000000000
+      0000FFFFFFFF06000000100000000000000000000000FFFFFFFF070000001000
+      00000000000000000000FFFFFFFF08000000100000000000000000000000FFFF
+      FFFF09000000100000000000000000000000FFFFFFFF04000000040000000300
+      00000000000000000000FFFFFFFF0A000000100000000000000000000000FFFF
+      FFFF0B000000100000000000000000000000FFFFFFFF0C000000100000000000
+      000000000000FFFFFFFF05000000100000000000000000000000FFFFFFFF0D00
+      0000100000000000000000000000FFFFFFFF}
     object STree: TcxTreeListColumn
       DataBinding.ValueType = 'String'
       Options.Sorting = False
@@ -97,7 +98,7 @@ object FMain: TFMain
     Left = 177
     Top = 25
     Width = 8
-    Height = 370
+    Height = 403
     HotZoneClassName = 'TcxMediaPlayer9Style'
     AutoSnap = True
     ResizeUpdate = True
@@ -107,14 +108,14 @@ object FMain: TFMain
     Left = 185
     Top = 25
     Width = 586
-    Height = 370
+    Height = 403
     ActivePage = cxTab_Filters
     Align = alClient
     DragMode = dmAutomatic
     LookAndFeel.Kind = lfStandard
     LookAndFeel.NativeStyle = True
     TabOrder = 3
-    ClientRectBottom = 366
+    ClientRectBottom = 399
     ClientRectLeft = 2
     ClientRectRight = 582
     ClientRectTop = 22
@@ -125,7 +126,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 580
-        Height = 344
+        Height = 377
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
@@ -182,7 +183,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 580
-        Height = 344
+        Height = 377
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
@@ -233,7 +234,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 580
-        Height = 344
+        Height = 377
         Align = alClient
         TabOrder = 0
         LookAndFeel.NativeStyle = True
@@ -244,6 +245,7 @@ object FMain: TFMain
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <>
           DataController.Summary.SummaryGroups = <>
+          OptionsCustomize.ColumnFiltering = False
           OptionsSelection.CellSelect = False
           OptionsSelection.InvertSelect = False
           OptionsSelection.MultiSelect = True
@@ -284,6 +286,10 @@ object FMain: TFMain
         TabOrder = 1
         OnClick = Button1Click
       end
+    end
+    object cxTab_Settings: TcxTabSheet
+      Caption = 'cxTab_Settings'
+      ImageIndex = 3
     end
   end
   object adAccounts: TADOTable

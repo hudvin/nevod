@@ -19,9 +19,7 @@ uses
 
 begin
   Application.Initialize;
-  Application.HelpFile := 'C:\Program Files\Borland\BDS\3.0\Help\Win32\DBEXPLR3.HLP';
   Application.CreateForm(TFMain, FMain);
-  Application.CreateForm(TForm1, Form1);
   Application.CreateForm(TFCustomEditor, FCustomEditor);
   Application.Run;
 end.

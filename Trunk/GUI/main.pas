@@ -14,19 +14,6 @@ uses Forms,Windows, Dialogs, Registry, dxBar, cxStyles, Shared,
   XPStyleActnCtrls, ActnMan, ImgList, dxBarExtItems;
 
 
-
-type
- TNodeParamsList=class
-  List:TList;
-
- public
-  destructor Destroy; override;
-  constructor Create;
-  procedure Add(NodeIndex:Integer;FilterType:TFilterType;Sheet:TcxTabSheet;
-      Grid:TcxGridDBTableView;adTab:TADOQuery);
-  procedure Remove(i:integer);
-end;
-
 type
   TFMain = class(TForm)
     stBar: TdxStatusBar;
@@ -141,13 +128,13 @@ type
     cxFiltersParams: TcxGridDBColumn;
     cxFiltersActive: TcxGridDBColumn;
     Button1: TButton;
+    cxTab_Settings: TcxTabSheet;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure amDeleteAccountExecute(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
     procedure Button1Click(Sender: TObject);
   private
-    NodeList:TNodeParamsList;
     CurrNode:TcxTreeListNode;
     { Private declarations }
   public
@@ -156,6 +143,7 @@ type
  //   PSManager: TPostManager;
     FManager:TFilterManager;
     procedure RunOnStartup(Run:boolean);
+    procedure UpdateHeaders(Headers:TColumnsHeaders);
 
     { Public declarations }
   protected
@@ -188,30 +176,35 @@ begin
 end;
 
 procedure TFMain.FormCreate(Sender: TObject);
+var
+ Headers:TColumnsHeaders;
 begin
-
  SNConverter:=TSNIndexConverter.Create;
+ Headers.Active:='Active';
+ Headers.Description:='Description';
  with SNConverter do
    begin
-    Add(6,0,ftWhiteSender,'Добавить адрес/домен в белый список'); //адрес в белый список
-    Add(9,1,ftBlackSender,'Добавить адрес/домен в черный списко'); //адрес в черный список
-    Add(7,2,ftWhiteAttach,'Добавить расширений приложенного файла в белый список'); // расширение в белый список
-    Add(11,3,ftBlackAttach,'Добавить расширений приложенного файла в черный список');// расширение в черный список
-    Add(4,4,ftWhiteWord,'Добавить слово в белый список'); // слово в белый список
-    Add(9,5,ftBlackWord,'Добавить слово в черный список'); // слово в черный список
-    Add(5,6,ftStamp,'Добавить штамп'); // штамп
+    Headers.FValue:='Sender';
+    Add(6,0,ftWhiteSender,'Добавить адрес/домен в белый список',cxTab_Filters,Headers); //адрес в белый список
+    Add(10,1,ftBlackSender,'Добавить адрес/домен в черный список',cxTab_Filters,Headers); //адрес в черный список
+
+    Headers.FValue:='File Extension';
+    Add(7,2,ftWhiteAttach,'Добавить расширений приложенного файла в белый список',cxTab_Filters,Headers); // расширение в белый список
+    Add(11,3,ftBlackAttach,'Добавить расширений приложенного файла в черный список',cxTab_Filters,Headers);// расширение в черный список
+
+    Headers.Params:='Location';
+    Headers.FValue:='Word';
+    Add(4,4,ftWhiteWord,'Добавить слово в белый список',cxTab_Filters,Headers); // слово в белый список
+    Add(9,5,ftBlackWord,'Добавить слово в черный список',cxTab_Filters,Headers); // слово в черный список
+
+    Headers.FValue:='Nevod Stamp';
+    Add(5,6,ftStamp,'Добавить штамп',cxTab_Filters,Headers); // штамп
+    // добавление панелей не-фильтров
+   Add(0,-1,ftNone,'',cxTab_Settings);      // основные настройки
+   Add(1,-1,ftNone,'',cxTab_Accounts);      // учетные записи
+   Add(13,-1,ftNone,'',cxTab_Log);
    end;
 
-
-
-
-
-
-
-
-
-
-// NodeList.Add(1,ftBlackEmail,cxTab_Accounts,cxBlackWords);
 // Coder.Key:=CriptKey;
 
 // FManager:=TFilterManager.Create(adCon,adBlackWords,adWhiteWords,adStamp,adWhiteSenders,adBlackSenders,adBlackExt,adWhiteExt);
@@ -237,42 +230,26 @@ var
  NodeIndex:Integer;
  FilterType:TFilterType;
  RowSQL:String;
+ Res:TSNConvert;
 begin
  NodeIndex:=STree.TreeList.FocusedNode.AbsoluteIndex;
- // устанавливать текущий тип фильтра или ftNone
- case NodeIndex of    //
-   0: ;
-   1: cxTab_Accounts.Show ;
-   2: ;
-   3: ;
-   4..7,9..11:
+ if SNConverter.Find(NodeIndex,Res) then
+  Res.Sheet.Show;
+ if Res.FilterType<>ftNone then
+  begin
+   UpdateHeaders(Res.Headers);
+   if Res.FilterType in [ftWhiteWord,ftBlackWord] then
+    cxFiltersParams.Visible:=True
+     else cxFiltersParams.Visible:=False;
+   with adFilters do
     begin
-     case NodeIndex of
-       4: FilterType:=ftWhiteWord;
-       5: FilterType:=ftStamp;
-       6: FilterType:=ftWhiteSender;
-       7: FilterType:=ftWhiteAttach;
-       9: FilterType:=ftBlackWord;
-       10:FilterType:=ftBlackSender;
-       11:FilterType:=ftBlackAttach;
-     end;
-     with adFilters do
-       begin
-        Active:=False;
-        if FilterType in[ftWhiteWord,ftBlackWord] then
-         cxFiltersParams.Visible:=True
-          else
-           cxFiltersParams.Visible:=False;
-        SQL.Text:='SELECT id,FValue,Description,Active,Params '+
+     Active:=False;
+     SQL.Text:='SELECT id,FValue,Description,Active,Params '+
                   ' FROM FiltersParams WHERE mid=(SELECT id FROM Filters WHERE Type=:FilterType) ' ;
-        Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
-        Active:=True;
-       end;
-
+     Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(Res.FilterType));
+     Active:=True;
     end;
-   8:;
-   12:;
- end;
+  end;
 end;
 
 procedure TFMain.SetCurrentParams(Grid:TcxGridDBTableView;Filter:TFilterType);
@@ -280,46 +257,20 @@ begin
  CurrentFilterType:=Filter;
 end;
 
-destructor TNodeParamsList.Destroy;
-var
- i:integer;
-begin
- for I:=0 to List.Count-1 do
-    Remove(i);
- List.Free;
-end;
-
-constructor TNodeParamsList.Create;
-begin
- List:=TList.Create;
-end;
-
-procedure TNodeParamsList.Add(NodeIndex:Integer;FilterType:TFilterType;
-    Sheet:TcxTabSheet;Grid:TcxGridDBTableView;adTab:TADOQuery);
-var
- buf:PNodeParams;
-begin
- New(buf);
- buf.NodeIndex:=NodeIndex;
- buf.FilterType:=FilterType;
- buf.Sheet:=Sheet;
- buf.Grid:=Grid;
- buf.adTab:=adTab;
- List.Add(buf);
-end;
-
-procedure TNodeParamsList.Remove(i:integer);
-var
- buf:PNodeParams;
-begin
- buf:=List.Items[i];
- Dispose(buf);
- List.Items[i]:=nil;
-end;
-
 procedure TFMain.Button1Click(Sender: TObject);
 begin
  FCustomEditor.Show(1);
+end;
+
+procedure TFMain.UpdateHeaders(Headers:TColumnsHeaders);
+begin
+ with Headers do
+   begin
+    if Active<>'' then cxFiltersActive.Caption:=Active;
+    if Description<>'' then cxFiltersDescription.Caption:=Description;
+    if FValue<>'' then  cxFiltersFValue.Caption:=FValue;
+    if Params<>'' then cxFiltersParams.Caption:=Params;
+   end;
 end;
 
 end.

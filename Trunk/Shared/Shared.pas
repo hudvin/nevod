@@ -110,12 +110,21 @@ type
   Grid:TcxGridDBTableView;
 end;
 
+  TColumnsHeaders = record
+    Active: string;
+    Description: string;
+    FValue: string;
+    Params: string;
+  end;
+
   TSNConvert = record
  
     Caption: string;
     FilterType: TFilterType;
+    Headers: TColumnsHeaders;
     NodeIndex: Integer;
     SelectionIndex: Integer;
+    Sheet: TCxTabSheet;
   end;
 
 type
@@ -237,7 +246,10 @@ type
     constructor Create;
     destructor Destroy; override;
     procedure Add(NodeIndex:Integer;SelectionIndex:Integer;FilterType:TFilterType;
-        Caption:String);
+        Caption:String;Sheet:TcxTabSheet;Headers:TColumnsHeaders); overload;
+    procedure Add(NodeIndex:Integer;SelectionIndex:Integer;FilterType:TFilterType;
+        Caption:String;Sheet:TcxTabSheet); overload;
+    function Find(NodeIndex:Integer; var Res:TSNConvert): Boolean; overload;
     function NIndex2SIndex(NodeIndex:Integer): Integer;
     function SIndex2NIndex(SelectionIndex:Integer): Integer;
   end;
@@ -929,7 +941,8 @@ begin
 end;
 
 procedure TSNIndexConverter.Add(NodeIndex:Integer;SelectionIndex:Integer;
-    FilterType:TFilterType;Caption:String);
+    FilterType:TFilterType; Caption:String;Sheet:TcxTabSheet;
+    Headers:TColumnsHeaders);
 var
  NewItem:PSNConvert;
 begin
@@ -938,7 +951,34 @@ begin
  NewItem.SelectionIndex:=SelectionIndex;
  NewItem.FilterType:=FilterType;
  NewItem.Caption:=Caption;
+ NewItem.Sheet:=Sheet;
+ NewItem.Headers:=Headers;
  List.Add(NewItem);
+end;
+
+procedure TSNIndexConverter.Add(NodeIndex:Integer;SelectionIndex:Integer;
+    FilterType:TFilterType; Caption:String;Sheet:TcxTabSheet);
+var
+ ClearHeaders:TColumnsHeaders;
+begin
+  Add(NodeIndex,SelectionIndex,FilterType, Caption,Sheet,ClearHeaders);
+end;
+
+function TSNIndexConverter.Find(NodeIndex:Integer; var Res:TSNConvert): Boolean;
+var
+ i:integer;
+ Flag:boolean;
+begin
+ Flag:=False;
+ i:=0;
+ while (not Flag) and (i<List.Count) do
+  if PSNConvert(List.Items[i]).NodeIndex = NodeIndex then
+   begin
+    Flag:=True;
+    Res:=PSNConvert(List.Items[i])^;
+   end
+  else inc(i);
+ Result:=Flag;
 end;
 
 function TSNIndexConverter.NIndex2SIndex(NodeIndex:Integer): Integer;
