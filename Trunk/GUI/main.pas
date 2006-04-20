@@ -179,17 +179,17 @@ begin
  with SNConverter do
    begin
     Headers.FValue:='Sender';
-    Add(6,0,ftWhiteSender,'Добавить адрес/домен в белый список',cxTab_Filters,Headers); //адрес в белый список
-    Add(10,1,ftBlackSender,'Добавить адрес/домен в черный список',cxTab_Filters,Headers); //адрес в черный список
+    Add(6,2,ftWhiteSender,'Добавить адрес/домен в белый список',cxTab_Filters,Headers); //адрес в белый список
+    Add(10,3,ftBlackSender,'Добавить адрес/домен в черный список',cxTab_Filters,Headers); //адрес в черный список
 
     Headers.FValue:='File Extension';
-    Add(7,2,ftWhiteAttach,'Добавить расширений приложенного файла в белый список',cxTab_Filters,Headers); // расширение в белый список
-    Add(11,3,ftBlackAttach,'Добавить расширений приложенного файла в черный список',cxTab_Filters,Headers);// расширение в черный список
+    Add(7,1,ftWhiteAttach,'Добавить расширений приложенного файла в белый список',cxTab_Filters,Headers); // расширение в белый список
+    Add(11,0,ftBlackAttach,'Добавить расширений приложенного файла в черный список',cxTab_Filters,Headers);// расширение в черный список
 
     Headers.Params:='Location';
     Headers.FValue:='Word';
-    Add(4,4,ftWhiteWord,'Добавить слово в белый список',cxTab_Filters,Headers); // слово в белый список
-    Add(9,5,ftBlackWord,'Добавить слово в черный список',cxTab_Filters,Headers); // слово в черный список
+    Add(4,5,ftWhiteWord,'Добавить слово в белый список',cxTab_Filters,Headers); // слово в белый список
+    Add(9,4,ftBlackWord,'Добавить слово в черный список',cxTab_Filters,Headers); // слово в черный список
 
     Headers.FValue:='Nevod Stamp';
     Add(5,6,ftStamp,'Добавить штамп',cxTab_Filters,Headers); // штамп
@@ -255,7 +255,7 @@ end;
 
 procedure TFMain.Button1Click(Sender: TObject);
 begin
- FEditor.Show(1);
+ FEditor.ShowModal(STree.TreeList.FocusedNode.AbsoluteIndex);
 end;
 
 procedure TFMain.UpdateHeaders(Headers:TColumnsHeaders);
@@ -274,7 +274,7 @@ var
  fm:TFCustomEditor;
 begin
  fm:=TFCustomEditor.Create(nil);
- fm.Show(5);
+ fm.ShowModal(5);
 end;
 
 end.

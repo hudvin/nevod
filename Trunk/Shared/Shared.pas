@@ -969,6 +969,10 @@ var
  i:integer;
  Flag:boolean;
 begin
+{
+  три типа для поиска
+   
+}
  Flag:=False;
  i:=0;
  while (not Flag) and (i<List.Count) do
