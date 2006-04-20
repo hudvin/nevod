@@ -179,30 +179,30 @@ begin
  with SNConverter do
    begin
     Headers.FValue:='Sender';
-    Add(6,2,ftWhiteSender,'Добавить адрес/домен в белый список',cxTab_Filters,Headers); //адрес в белый список
-    Add(10,3,ftBlackSender,'Добавить адрес/домен в черный список',cxTab_Filters,Headers); //адрес в черный список
+    Add(6,ftWhiteSender,'Добавить адрес/домен в белый список',cxTab_Filters,Headers); //адрес в белый список
+    Add(10,ftBlackSender,'Добавить адрес/домен в черный список',cxTab_Filters,Headers); //адрес в черный список
 
     Headers.FValue:='File Extension';
-    Add(7,1,ftWhiteAttach,'Добавить расширений приложенного файла в белый список',cxTab_Filters,Headers); // расширение в белый список
-    Add(11,0,ftBlackAttach,'Добавить расширений приложенного файла в черный список',cxTab_Filters,Headers);// расширение в черный список
+    Add(7,ftWhiteAttach,'Добавить расширений приложенного файла в белый список',cxTab_Filters,Headers); // расширение в белый список
+    Add(11,ftBlackAttach,'Добавить расширений приложенного файла в черный список',cxTab_Filters,Headers);// расширение в черный список
 
     Headers.Params:='Location';
     Headers.FValue:='Word';
-    Add(4,5,ftWhiteWord,'Добавить слово в белый список',cxTab_Filters,Headers); // слово в белый список
-    Add(9,4,ftBlackWord,'Добавить слово в черный список',cxTab_Filters,Headers); // слово в черный список
+    Add(4,ftWhiteWord,'Добавить слово в белый список',cxTab_Filters,Headers); // слово в белый список
+    Add(9,ftBlackWord,'Добавить слово в черный список',cxTab_Filters,Headers); // слово в черный список
 
     Headers.FValue:='Nevod Stamp';
-    Add(5,6,ftStamp,'Добавить штамп',cxTab_Filters,Headers); // штамп
+    Add(5,ftStamp,'Добавить штамп',cxTab_Filters,Headers); // штамп
     // добавление панелей не-фильтров
-   Add(0,-1,ftNone,'',cxTab_Settings);      // основные настройки
-   Add(1,-1,ftNone,'',cxTab_Accounts);      // учетные записи
-   Add(13,-1,ftNone,'',cxTab_Log);
+   Add(0,ftNone,'',cxTab_Settings);      // основные настройки
+   Add(1,ftNone,'',cxTab_Accounts);      // учетные записи
+   Add(13,ftNone,'',cxTab_Log);
    end;
 
 // Coder.Key:=CriptKey;
 
 // FManager:=TFilterManager.Create(adCon,adBlackWords,adWhiteWords,adStamp,adWhiteSenders,adBlackSenders,adBlackExt,adWhiteExt);
- FEditor:=TFCustomEditor.Create(SNConverter);
+ FEditor:=TFCustomEditor.Create(SNConverter,FManager);
 end;
 
 

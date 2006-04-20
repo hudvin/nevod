@@ -122,6 +122,7 @@ end;
     Caption: string;
     FilterType: TFilterType;
     Headers: TColumnsHeaders;
+    Name: String;
     NodeIndex: Integer;
     SelectionIndex: Integer;
     Sheet: TCxTabSheet;
@@ -242,16 +243,22 @@ type
   TSNIndexConverter = class
   private
     List: TList;
+    function GetCount: Integer;
+    function GetItem(Index: Integer): TSNConvert;
   public
     constructor Create;
     destructor Destroy; override;
-    procedure Add(NodeIndex:Integer;SelectionIndex:Integer;FilterType:TFilterType;
-        Caption:String;Sheet:TcxTabSheet;Headers:TColumnsHeaders); overload;
-    procedure Add(NodeIndex:Integer;SelectionIndex:Integer;FilterType:TFilterType;
-        Caption:String;Sheet:TcxTabSheet); overload;
+    procedure Add(NodeIndex:Integer;FilterType:TFilterType; FilterName:String;
+        Sheet:TcxTabSheet;Headers:TColumnsHeaders); overload;
+    procedure Add(NodeIndex:Integer;FilterType:TFilterType; FilterName:String;
+        Sheet:TcxTabSheet); overload;
     function Find(NodeIndex:Integer; var Res:TSNConvert): Boolean; overload;
+    function FindByName(FilterName:string;var Res:TSNConvert): Boolean;
+    function FindIndex(FilterType:TFilterType): Integer;
     function NIndex2SIndex(NodeIndex:Integer): Integer;
     function SIndex2NIndex(SelectionIndex:Integer): Integer;
+    property Count: Integer read GetCount;
+    property Item[Index: Integer]: TSNConvert read GetItem;
   end;
 
 
@@ -940,28 +947,26 @@ begin
    end;
 end;
 
-procedure TSNIndexConverter.Add(NodeIndex:Integer;SelectionIndex:Integer;
-    FilterType:TFilterType; Caption:String;Sheet:TcxTabSheet;
-    Headers:TColumnsHeaders);
+procedure TSNIndexConverter.Add(NodeIndex:Integer;FilterType:TFilterType;
+    FilterName:String;Sheet:TcxTabSheet;Headers:TColumnsHeaders);
 var
  NewItem:PSNConvert;
 begin
  New(NewItem);
  NewItem.NodeIndex:=NodeIndex;
- NewItem.SelectionIndex:=SelectionIndex;
  NewItem.FilterType:=FilterType;
- NewItem.Caption:=Caption;
+ NewItem.Name:=FilterName;
  NewItem.Sheet:=Sheet;
  NewItem.Headers:=Headers;
  List.Add(NewItem);
 end;
 
-procedure TSNIndexConverter.Add(NodeIndex:Integer;SelectionIndex:Integer;
-    FilterType:TFilterType; Caption:String;Sheet:TcxTabSheet);
+procedure TSNIndexConverter.Add(NodeIndex:Integer;FilterType:TFilterType;
+    FilterName:String;Sheet:TcxTabSheet);
 var
  ClearHeaders:TColumnsHeaders;
 begin
-  Add(NodeIndex,SelectionIndex,FilterType, Caption,Sheet,ClearHeaders);
+  Add(NodeIndex,FilterType,FilterName,Sheet,ClearHeaders);
 end;
 
 function TSNIndexConverter.Find(NodeIndex:Integer; var Res:TSNConvert): Boolean;
@@ -969,10 +974,6 @@ var
  i:integer;
  Flag:boolean;
 begin
-{
-  три типа для поиска
-   
-}
  Flag:=False;
  i:=0;
  while (not Flag) and (i<List.Count) do
@@ -983,6 +984,51 @@ begin
    end
   else inc(i);
  Result:=Flag;
+end;
+
+function TSNIndexConverter.FindByName(FilterName:string;var Res:TSNConvert):
+    Boolean;
+var
+ i:integer;
+ Flag:boolean;
+begin
+ Flag:=False;
+ i:=0;
+ while (not Flag) and (i<List.Count) do
+  if PSNConvert(List.Items[i]).Name = FilterName then
+   begin
+    Flag:=True;
+    Res:=PSNConvert(List.Items[i])^;
+   end
+  else inc(i);
+ Result:=Flag;
+end;
+
+function TSNIndexConverter.FindIndex(FilterType:TFilterType): Integer;
+var
+ i:integer;
+ Flag:boolean;
+begin
+ Flag:=False;
+ i:=0;
+ Result:=-1;
+ while (not Flag) and (i<List.Count) do
+  if PSNConvert(List.Items[i]).FilterType = FilterType then
+   begin
+    Flag:=True;
+    Result:=i;
+   end
+  else inc(i);
+end;
+
+function TSNIndexConverter.GetCount: Integer;
+begin
+ Result:=List.Count
+end;
+
+function TSNIndexConverter.GetItem(Index: Integer): TSNConvert;
+begin
+ Result:=PSNConvert(List.Items[Index])^;
 end;
 
 function TSNIndexConverter.NIndex2SIndex(NodeIndex:Integer): Integer;
