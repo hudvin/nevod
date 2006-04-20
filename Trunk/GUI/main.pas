@@ -201,14 +201,14 @@ begin
 
 // Coder.Key:=CriptKey;
 
-// FManager:=TFilterManager.Create(adCon,adBlackWords,adWhiteWords,adStamp,adWhiteSenders,adBlackSenders,adBlackExt,adWhiteExt);
- FEditor:=TFCustomEditor.Create(SNConverter,FManager);
+ FManager:=TFilterManager.Create(adCon);
+ FEditor:=TFCustomEditor.Create(SNConverter,FManager,adFilters);
 end;
 
 
 procedure TFMain.FormDestroy(Sender: TObject);
 begin
- //FManager.Free;
+ FManager.Free;
  SNConverter.Free;
  FEditor.Free;
 end;

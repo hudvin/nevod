@@ -2,7 +2,7 @@ unit FilterManager;
 
 interface
 uses
- Windows,DB,Exceptions,Shared, ADODB,Typinfo, Messages,  SysUtils,
+ Windows,DB,Exceptions,Shared,Dialogs, ADODB,Typinfo, Messages,  SysUtils,
  Variants, Classes;
 
 type
@@ -15,7 +15,7 @@ type
     procedure Add(ElementValue:String;FilterType:TFilterType;Description:String;
         Status:Boolean;Params:Variant);
   public
-    constructor Create(adCon:TADOConnection);
+    constructor Create(adCon:TADOConnection); virtual;
     destructor Destroy; override;
     procedure AddElement(ElementValue:String;FilterType:TFilterType;
         Description:String; Status:Boolean;Params:Variant);
