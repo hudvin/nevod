@@ -10,8 +10,9 @@ uses Forms,Windows, Dialogs, Registry, dxBar, cxStyles, Shared,
   cxGridCustomView, cxGrid, Menus,
   cxGridCustomPopupMenu, cxGridPopupMenu, Classes, Controls,
   cxGridDBTableView, cxClasses, cxControls, cxPC, cxSplitter,
-  cxInplaceContainer, dxStatusBar, cxLookAndFeels, ActnList,
-  XPStyleActnCtrls, ActnMan, ImgList, dxBarExtItems;
+  cxInplaceContainer, dxStatusBar, cxLookAndFeels,CustomEditor, ActnList,
+  XPStyleActnCtrls, ActnMan, 
+  ImgList, dxBarExtItems;
 
 
 type
@@ -134,6 +135,7 @@ type
     procedure amDeleteAccountExecute(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
   private
     CurrNode:TcxTreeListNode;
     { Private declarations }
@@ -150,20 +152,12 @@ type
     procedure SetCurrentParams(Grid:TcxGridDBTableView;Filter:TFilterType);
   end;
 
-{
-
-при смене таблицы передавать в функцию параметры
- таблица, тип фильтра
-
-}
-
-
 var
   FMain: TFMain;
   DragState:boolean=False;
+  FEditor:TFCustomEditor;
 implementation
 
-uses CustomEditor;
 
 
 {$R *.dfm}
@@ -208,6 +202,7 @@ begin
 // Coder.Key:=CriptKey;
 
 // FManager:=TFilterManager.Create(adCon,adBlackWords,adWhiteWords,adStamp,adWhiteSenders,adBlackSenders,adBlackExt,adWhiteExt);
+ FEditor:=TFCustomEditor.Create(SNConverter);
 end;
 
 
@@ -215,6 +210,7 @@ procedure TFMain.FormDestroy(Sender: TObject);
 begin
  //FManager.Free;
  SNConverter.Free;
+ FEditor.Free;
 end;
 
 procedure TFMain.amDeleteAccountExecute(Sender: TObject);
@@ -259,7 +255,7 @@ end;
 
 procedure TFMain.Button1Click(Sender: TObject);
 begin
- FCustomEditor.Show(1);
+ FEditor.Show(1);
 end;
 
 procedure TFMain.UpdateHeaders(Headers:TColumnsHeaders);
@@ -271,6 +267,14 @@ begin
     if FValue<>'' then  cxFiltersFValue.Caption:=FValue;
     if Params<>'' then cxFiltersParams.Caption:=Params;
    end;
+end;
+
+procedure TFMain.Button2Click(Sender: TObject);
+var
+ fm:TFCustomEditor;
+begin
+ fm:=TFCustomEditor.Create(nil);
+ fm.Show(5);
 end;
 
 end.

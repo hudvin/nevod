@@ -20,6 +20,6 @@ uses
 begin
   Application.Initialize;
   Application.CreateForm(TFMain, FMain);
-  Application.CreateForm(TFCustomEditor, FCustomEditor);
+//  Application.CreateForm(TFCustomEditor, FCustomEditor);  // форма редактора фильтров
   Application.Run;
 end.
