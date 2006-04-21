@@ -777,7 +777,6 @@ object FMain: TFMain
     end
   end
   object adFilters: TADOQuery
-    Active = True
     Connection = adCon
     CursorType = ctStatic
     Parameters = <>
@@ -799,6 +798,7 @@ object FMain: TFMain
     end
     object adFiltersParams: TWideStringField
       FieldName = 'Params'
+      OnGetText = adFiltersParamsGetText
       Size = 50
     end
     object adFiltersActive: TBooleanField

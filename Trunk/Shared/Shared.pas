@@ -229,7 +229,7 @@ type
   private
     List: TList;
     function GetCount: Integer;
-    function GetIndex(Index: Integer): TSignalTypeDescriptor;
+    function GetItems(Index: Integer): TSignalTypeDescriptor;
   public
     constructor Create;
     destructor Destroy; override;
@@ -237,7 +237,7 @@ type
     function DescriptionByLocation(Location:TSignalLocation): string;
     function LocationByDescription(Description:String): TSignalLocation;
     property Count: Integer read GetCount;
-    property Index[Index: Integer]: TSignalTypeDescriptor read GetIndex;
+    property Items[Index: Integer]: TSignalTypeDescriptor read GetItems;
   end;
 
   TSNIndexConverter = class
@@ -907,7 +907,7 @@ begin
  Result:=List.Count;
 end;
 
-function TSignalDescriptorsList.GetIndex(Index: Integer): TSignalTypeDescriptor;
+function TSignalDescriptorsList.GetItems(Index: Integer): TSignalTypeDescriptor;
 begin
  Result.Description:=PSignalTypeDescriptor(List.Items[Index]).Description;
  Result.Location:=PSignalTypeDescriptor(List.Items[Index]).Location;

@@ -137,10 +137,13 @@ type
     procedure SettingsTreeSelectionChanged(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
+    procedure adFiltersParamsGetText(Sender: TField; var Text: String;
+      DisplayText: Boolean);
   private
     CurrNode:TcxTreeListNode;
     { Private declarations }
   public
+    SignList:TSignalDescriptorsList;
     CurrentFilterType:TFilterType;  // тип текущего фильтра
     SNConverter:TSNIndexConverter;
  //   PSManager: TPostManager;
@@ -175,6 +178,11 @@ var
  Headers:TColumnsHeaders;
 begin
  SNConverter:=TSNIndexConverter.Create;
+ SignList:=TSignalDescriptorsList.Create;
+ SignList.Add(slAnywhere,' в теле и в теме сообщения ');
+ SignList.Add(slSubject,' в теме сообщения ');
+ SignList.Add(slBody,' в теле сообщения ');
+
  Headers.Active:='Active';
  Headers.Description:='Description';
  with SNConverter do
@@ -203,7 +211,7 @@ begin
 // Coder.Key:=CriptKey;
 
  FManager:=TFilterManager.Create(adCon);
- FEditor:=TFCustomEditor.Create(SNConverter,FManager,adFilters);
+ FEditor:=TFCustomEditor.Create(SNConverter,FManager,adFilters,SignList);
 end;
 
 
@@ -212,6 +220,7 @@ begin
  FManager.Free;
  SNConverter.Free;
  FEditor.Free;
+ SignList.Free;
 end;
 
 procedure TFMain.amDeleteAccountExecute(Sender: TObject);
@@ -242,16 +251,16 @@ begin
     begin
      SQL.Clear;
      Active:=False;
-     if (FilterType in [ftBlackWord,ftWhiteWord]) then
+   //  if (FilterType in [ftBlackWord,ftWhiteWord]) then
      SQL.Text:='SELECT id,FValue,Description,Active,Params '+
-                  ' FROM FiltersParams WHERE mid=(SELECT id FROM Filters WHERE Type=:FilterType) '
-       else
+                  ' FROM FiltersParams WHERE mid=(SELECT id FROM Filters WHERE Type=:FilterType) ';
+    {   else
         begin
          SQL.Add('SELECT FiltersParams.Id, ');
          SQL.Add('FiltersParams.FValue,FiltersParams.Description,Types.Description,FiltersParams.Active  FROM ');
          SQL.Add('FiltersParams,Types WHERE FiltersParams.Params=Types.Type');
          SQL.Add('AND mid=( SELECT id FROM Filters  WHERE Type=:FilterType )');
-        end;
+        end;   }
      Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(Res.FilterType));
      Active:=True;
     end;
@@ -285,6 +294,19 @@ var
 begin
  fm:=TFCustomEditor.Create(nil);
  fm.ShowModal(5);
+end;
+
+procedure TFMain.adFiltersParamsGetText(Sender: TField; var Text: String;
+  DisplayText: Boolean);
+begin
+ Text:=SignList.DescriptionByLocation(TSignalLocation(GetEnumValue(TypeInfo(TSignalLocation),Sender.AsString)));
+
+{ if Trim(Sender.Value)='slSubject'
+   then  Text:=' в теме сообщения ';
+ if Trim(Sender.Value)='slAnywhere'
+   then  Text:=' в теме и в теле сообщения ';
+ if Trim(Sender.Value)='slBody'
+   then  Text:=' в теле сообщения ';  }
 end;
 
 end.
