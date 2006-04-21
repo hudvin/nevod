@@ -2,13 +2,14 @@ unit FilterManager;
 
 interface
 uses
- Windows,DB,Exceptions,Shared,Dialogs, ADODB,Typinfo, Messages,  SysUtils,
+ Windows,DB,Exceptions,Shared,Dialogs, ADODB,Typinfo,PerlRegEx, Messages,  SysUtils,
  Variants, Classes;
 
 type
   TFilterManager = class
   private
     adProc: TADOQuery;
+    Exp: TPerlRegEx;
     procedure Modify(ElementId:Integer;ElementValue:String;FilterType:TFilterType;
         Description:String; Status:Boolean;Params:Variant);
   protected
@@ -37,29 +38,42 @@ constructor TFilterManager.Create(adCon:TADOConnection);
 begin
  adProc:=TADOQuery.Create(nil);
  adProc.Connection:=adCon;
+ Exp:=TPerlRegEx.Create(nil);
 end;
 
 destructor TFilterManager.Destroy;
 begin
  adProc.Free;
+ Exp.Free;
 end;
 
 procedure TFilterManager.Add(ElementValue:String;FilterType:TFilterType;
     Description:String; Status:Boolean;Params:Variant);
+var
+ Proc:TADOQuery;
+ buf:String;
 begin
- with adProc do
+ Proc:=TADOQuery.Create(nil);
+ case TSignalLocation(Params) of
+    slSubject: buf:='slSubject' ;
+    slBody: buf:='slBody';
+    slAnywhere: buf:='slAnywhere';
+  end;
+ Proc.Connection:=adProc.Connection;
+ with Proc do
    begin
     Active:=False;
-    SQL.Text:='INSERT INTO FilterParams(mid,FValue,Description,Active,Params) ' +
-               'VALUES(:mid,:Value,:Description,:Active,:Params)';
+    SQL.Add('INSERT INTO FiltersParams (mid,FValue,Description,Active,Params)');
+    SQL.Add(' VALUES (:mid,:Value,:Description,:Active,:Params)');
     Parameters.ParamByName('mid').Value:=MidByFilterType(FilterType);
     Parameters.ParamByName('Value').Value:=ElementValue;
     Parameters.ParamByName('Description').Value:=Description;
     Parameters.ParamByName('Active').Value:=Status;
-    Parameters.ParamByName('Params').Value:=Params;
+    Parameters.ParamByName('Params').Value:=buf;
     ExecSQL;
     Active:=False;
    end;
+ Proc.Free;
 end;
 
 procedure TFilterManager.AddElement(ElementValue:String;FilterType:TFilterType;
@@ -76,6 +90,13 @@ begin
                ftBlackAttach,ftWhiteAttach,ftSpamWord]) then
    Raise EInvalidFilterParams.Create('Неправильный тип фильтра');
 
+ if FilterType in [ftWhiteSender,ftBlackSender] then
+  begin
+   Exp.RegEx:='[_a-zA-Z\d\-\.\*]+@([_a-zA-Z\d\-]+(\.[_a-zA-Z\d\-]+)+)';
+   Exp.Subject:=ElementValue;
+   if not Exp.Match then
+    Raise EInvalidFilterParams.Create('Адрес отправителя некорректен');
+  end;
  // разобраться с преобразованиями  
  if ((FilterType=ftWhiteWord) or (FilterType=ftBlackWord)) and not( (Params=slAnywhere) or (Params=slSubject)  or (Params=slBody) ) then
    Raise EInvalidFilterParams.Create('Неправильное расположение спам-слова');
@@ -86,7 +107,7 @@ begin
   if ElementExists(ElementValue,tFilter) then
    Raise EInvalidFilterParams.Create(' Фильтр уже есть в противоположной группе ');
    
- AddElement(ElementValue,FilterType,Description,Status,Params);
+ Add(ElementValue,FilterType,Description,Status,Params);
 
 end;
 

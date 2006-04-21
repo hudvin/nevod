@@ -1,6 +1,6 @@
 object FCustomEditor: TFCustomEditor
-  Left = 431
-  Top = 330
+  Left = 464
+  Top = 221
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'FCustomEditor'
@@ -112,6 +112,7 @@ object FCustomEditor: TFCustomEditor
       Height = 25
       Caption = 'Cancel'
       TabOrder = 5
+      OnClick = btCancelClick
     end
     object cCBLocation: TcxComboBox
       Left = 120

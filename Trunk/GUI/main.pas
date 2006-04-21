@@ -130,6 +130,7 @@ type
     cxFiltersActive: TcxGridDBColumn;
     Button1: TButton;
     cxTab_Settings: TcxTabSheet;
+    ADOQuery1: TADOQuery;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure amDeleteAccountExecute(Sender: TObject);
@@ -239,9 +240,18 @@ begin
      else cxFiltersParams.Visible:=False;
    with adFilters do
     begin
+     SQL.Clear;
      Active:=False;
+     if (FilterType in [ftBlackWord,ftWhiteWord]) then
      SQL.Text:='SELECT id,FValue,Description,Active,Params '+
-                  ' FROM FiltersParams WHERE mid=(SELECT id FROM Filters WHERE Type=:FilterType) ' ;
+                  ' FROM FiltersParams WHERE mid=(SELECT id FROM Filters WHERE Type=:FilterType) '
+       else
+        begin
+         SQL.Add('SELECT FiltersParams.Id, ');
+         SQL.Add('FiltersParams.FValue,FiltersParams.Description,Types.Description,FiltersParams.Active  FROM ');
+         SQL.Add('FiltersParams,Types WHERE FiltersParams.Params=Types.Type');
+         SQL.Add('AND mid=( SELECT id FROM Filters  WHERE Type=:FilterType )');
+        end;
      Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(Res.FilterType));
      Active:=True;
     end;

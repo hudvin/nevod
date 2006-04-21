@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 267
-  Top = -22
+  Left = 148
+  Top = 185
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -809,5 +809,60 @@ object FMain: TFMain
     DataSet = adFilters
     Left = 32
     Top = 240
+  end
+  object ADOQuery1: TADOQuery
+    Connection = adCon
+    Parameters = <
+      item
+        Name = 'mid'
+        Attributes = [paNullable]
+        DataType = ftWideString
+        NumericScale = 255
+        Precision = 255
+        Size = 510
+        Value = Null
+      end
+      item
+        Name = 'Value'
+        Attributes = [paNullable]
+        DataType = ftWideString
+        NumericScale = 255
+        Precision = 255
+        Size = 510
+        Value = Null
+      end
+      item
+        Name = 'Description'
+        Attributes = [paNullable]
+        DataType = ftWideString
+        NumericScale = 255
+        Precision = 255
+        Size = 510
+        Value = Null
+      end
+      item
+        Name = 'Active'
+        Attributes = [paNullable]
+        DataType = ftWideString
+        NumericScale = 255
+        Precision = 255
+        Size = 510
+        Value = Null
+      end
+      item
+        Name = 'Params'
+        Attributes = [paNullable]
+        DataType = ftWideString
+        NumericScale = 255
+        Precision = 255
+        Size = 510
+        Value = Null
+      end>
+    Prepared = True
+    SQL.Strings = (
+      'INSERT INTO FiltersParams (mid,FValue,Description,Active,Params)'
+      'VALUES (:mid,:Value,:Description,:Active,:Params)')
+    Left = 283
+    Top = 183
   end
 end
