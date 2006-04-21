@@ -67,13 +67,17 @@ procedure TFilterManager.AddElement(ElementValue:String;FilterType:TFilterType;
 var
  tFilter:TFilterType;
 begin
+// if Params=slAnywhere then ShowMessage('');
+   
  ElementValue:=Trim(ElementValue);
  if ElementValue='' then
   Raise EInvalidFilterParams.Create('Фильтр не может быть пустым');
  if not (FilterType in [ftBlackSender,ftWhiteSender,ftStamp,ftBlackWord,ftWhiteWord,
                ftBlackAttach,ftWhiteAttach,ftSpamWord]) then
    Raise EInvalidFilterParams.Create('Неправильный тип фильтра');
- if (FilterType=ftWhiteWord) or (FilterType=ftBlackWord) and not( TSignalLocation(GetEnumValue(TypeInfo(TSignalLocation),Params)) in[slAnywhere,slSubject,slBody] ) then
+
+ // разобраться с преобразованиями  
+ if ((FilterType=ftWhiteWord) or (FilterType=ftBlackWord)) and not( (Params=slAnywhere) or (Params=slSubject)  or (Params=slBody) ) then
    Raise EInvalidFilterParams.Create('Неправильное расположение спам-слова');
  if ElementExists(ElementValue,FilterType) then
    Raise EInvalidFilterParams.Create('Фильтр уже есть в данной группе');
