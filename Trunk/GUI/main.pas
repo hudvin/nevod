@@ -60,58 +60,11 @@ type
     cxAccountsPort: TcxGridColumn;
     cxAccountsTimeout: TcxGridColumn;
     cxAccountsStatus: TcxGridColumn;
-    dxBarButton10: TdxBarButton;
-    dxBarButton11: TdxBarButton;
-    dxBarButton12: TdxBarButton;
     aMan: TActionManager;
-    amAddAccount: TAction;
-    amDeleteAccount: TAction;
-    pbAddAccount: TdxBarButton;
-    dxMFilters: TdxBarSubItem;
-    amAddStamp: TAction;
-    amModifyWord: TAction;
-    amAddWord: TAction;
-    dxBarButton1: TdxBarButton;
-    amModifyStamp: TAction;
-    dxBarButton4: TdxBarButton;
-    dxFiltersStamps: TdxBarSubItem;
-    dxFiltersStampsAdd: TdxBarButton;
-    dxFiltersStampsDelete: TdxBarButton;
-    dxFiltersStampsEdit: TdxBarButton;
-    amRemoveStamp: TAction;
-    dxPopupStampEdit: TdxBarButton;
-    dxBarButton6: TdxBarButton;
-    dxpFiltersStampsEdit: TdxBarButton;
-    dxpFiltersRevomeStamp: TdxBarButton;
-    dxpFiltersStampsAdd: TdxBarButton;
-    amSetStampsStatusToActive: TAction;
-    dxpFiltersStampSetToActive: TdxBarButton;
-    dxFiltersStampsSetToActive: TdxBarButton;
-    amSetStampsStatusToNonActive: TAction;
-    dxpFiltersStampSetToNonActive: TdxBarButton;
-    dxFiltersStampSetToNonActive: TdxBarButton;
-    dxBarButton2: TdxBarButton;
-    dxFiltersBlackWords: TdxBarSubItem;
-    dxFiltersBlackWordsAdd: TdxBarButton;
-    dxFiltersBlackWordsDelete: TdxBarButton;
-    dxFiltersBlackWordsEdit: TdxBarButton;
-    dxFiltersBlackWordsSetToActive: TdxBarButton;
-    dxFiltersBlackWordsSetToNonActive: TdxBarButton;
-    dxFiltersWhiteWords: TdxBarSubItem;
-    dxFiltersWhiteWordsAdd: TdxBarButton;
-    dxFiltersWhiteWordsEdit: TdxBarButton;
-    dxFiltersWhiteWordsDelete: TdxBarButton;
-    dxFiltersWhiteWordsSetToActive: TdxBarButton;
-    dxFiltersWhiteWordsSetToNonActive: TdxBarButton;
-    dxBarButton18: TdxBarButton;
-    dxBarButton19: TdxBarButton;
-    dxBarLargeButton1: TdxBarLargeButton;
-    dxBarStatic1: TdxBarStatic;
     cxTab_Filters: TcxTabSheet;
     cxFilters: TcxGridDBTableView;
     cxFiltersGridLevel1: TcxGridLevel;
     cxFiltersGrid: TcxGrid;
-    dxBarButton3: TdxBarButton;
     cxStyleRepository1: TcxStyleRepository;
     cxStyle1: TcxStyle;
     cxStyleRepository2: TcxStyleRepository;
@@ -132,6 +85,8 @@ type
     cxTab_Settings: TcxTabSheet;
     ADOQuery1: TADOQuery;
     Button2: TButton;
+    Action1: TAction;
+    Button3: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure amDeleteAccountExecute(Sender: TObject);
@@ -140,6 +95,7 @@ type
     procedure Button2Click(Sender: TObject);
     procedure adFiltersParamsGetText(Sender: TField; var Text: String;
       DisplayText: Boolean);
+    procedure Button3Click(Sender: TObject);
   private
     CurrNode:TcxTreeListNode;
     { Private declarations }
@@ -149,6 +105,7 @@ type
     SNConverter:TSNIndexConverter;
  //   PSManager: TPostManager;
     FManager:TFilterManager;
+    procedure ActivateNode(NodeIndex:Integer);
     procedure RunOnStartup(Run:boolean);
     procedure UpdateHeaders(Headers:TColumnsHeaders);
 
@@ -290,9 +247,24 @@ begin
 end;
 
 procedure TFMain.Button2Click(Sender: TObject);
+var
+ id:Integer;
+ Params:Variant;
+ Value:String;
+ Active:boolean;
+ Description:String;
 begin
+ with cxFilters.Controller do
+  begin
+   id:=SelectedRows[0].Values[cxFiltersid.Index];
+   Value:=SelectedRows[0].Values[cxFiltersFValue.Index];
+   Description:=SelectedRows[0].Values[cxFiltersDescription.Index];
+   Params:=SelectedRows[0].Values[cxFiltersParams.Index];
+   Active:=SelectedRows[0].Values[cxFiltersActive.Index];
+
+  end;
  //cxFilters.Controller.SelectedRecords[];
- //FCustomEditor.ShowModal();
+ FEditor.ShowModal(id,Value,Description,Params,Active,STree.TreeList.FocusedNode.AbsoluteIndex);
 end;
 
 procedure TFMain.adFiltersParamsGetText(Sender: TField; var Text: String;
@@ -306,6 +278,29 @@ begin
    then  Text:=' в теме и в теле сообщения ';
  if Trim(Sender.Value)='slBody'
    then  Text:=' в теле сообщения ';  }
+end;
+
+procedure TFMain.ActivateNode(NodeIndex:Integer);
+var
+ i:integer;
+ Flag:boolean;
+begin
+ i:=0;
+ Flag:=False;
+ while (not Flag) and (i<STree.TreeList.LastNode.AbsoluteIndex) do
+  if STree.TreeList.Items[i].AbsoluteIndex=NodeIndex then
+   begin
+    Stree.TreeList.Select(STree.TreeList.Items[i]);
+    Flag:=True;
+   end
+  else inc(i);
+end;
+
+procedure TFMain.Button3Click(Sender: TObject);
+begin
+ 
+ ShowMessage(IntToStr(SettingsTree.Nodes.Count));
+// ActivateNode(5);
 end;
 
 end.

@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 148
-  Top = 185
+  Left = 221
+  Top = 123
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -41,9 +41,9 @@ object FMain: TFMain
   end
   object SettingsTree: TcxTreeList
     Left = 0
-    Top = 25
+    Top = 28
     Width = 177
-    Height = 403
+    Height = 400
     Styles.Inactive = cxStyle2
     Styles.HotTrack = cxStyle1
     Align = alLeft
@@ -96,9 +96,9 @@ object FMain: TFMain
   end
   object cxSplitter1: TcxSplitter
     Left = 177
-    Top = 25
+    Top = 28
     Width = 8
-    Height = 403
+    Height = 400
     HotZoneClassName = 'TcxMediaPlayer9Style'
     AutoSnap = True
     ResizeUpdate = True
@@ -106,16 +106,16 @@ object FMain: TFMain
   end
   object stPages: TcxPageControl
     Left = 185
-    Top = 25
+    Top = 28
     Width = 586
-    Height = 403
-    ActivePage = cxTab_Filters
+    Height = 400
+    ActivePage = cxTab_Settings
     Align = alClient
     DragMode = dmAutomatic
     LookAndFeel.Kind = lfStandard
     LookAndFeel.NativeStyle = True
     TabOrder = 3
-    ClientRectBottom = 399
+    ClientRectBottom = 396
     ClientRectLeft = 2
     ClientRectRight = 582
     ClientRectTop = 22
@@ -126,7 +126,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 580
-        Height = 377
+        Height = 374
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
@@ -183,7 +183,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 580
-        Height = 377
+        Height = 374
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
@@ -234,7 +234,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 580
-        Height = 377
+        Height = 374
         Align = alClient
         TabOrder = 0
         LookAndFeel.NativeStyle = True
@@ -300,6 +300,15 @@ object FMain: TFMain
       Caption = 'cxTab_Settings'
       ImageIndex = 3
     end
+  end
+  object Button3: TButton
+    Left = 128
+    Top = 344
+    Width = 75
+    Height = 25
+    Caption = 'Button3'
+    TabOrder = 8
+    OnClick = Button3Click
   end
   object adAccounts: TADOTable
     Connection = adCon
@@ -402,11 +411,7 @@ object FMain: TFMain
         FloatClientWidth = 0
         FloatClientHeight = 0
         IsMainMenu = True
-        ItemLinks = <
-          item
-            Item = dxMFilters
-            Visible = True
-          end>
+        ItemLinks = <>
         MultiLine = True
         Name = 'Custom 1'
         OneOnRow = True
@@ -444,336 +449,26 @@ object FMain: TFMain
     DockControlHeights = (
       0
       0
-      25
+      28
       0)
-    object dxBarButton10: TdxBarButton
-      Action = amAddAccount
-      Caption = 'Add Account ...'
-      Category = 0
-      Hint = 'Add Account '
-    end
-    object dxBarButton11: TdxBarButton
-      Caption = 'Edit ...'
-      Category = 0
-      Hint = 'Edit '
-      Visible = ivAlways
-    end
-    object dxBarButton12: TdxBarButton
-      Action = amDeleteAccount
-      Caption = 'Delete ...'
-      Category = 0
-      Hint = 'Delete '
-    end
-    object pbAddAccount: TdxBarButton
-      Action = amAddAccount
-      Caption = 'Add Account ...'
-      Category = 0
-      Hint = 'Add Account '
-    end
-    object dxMFilters: TdxBarSubItem
-      Caption = 'Filters'
-      Category = 0
-      Visible = ivAlways
-      ItemLinks = <
-        item
-          Item = dxFiltersStamps
-          Visible = True
-        end
-        item
-          Item = dxFiltersBlackWords
-          Visible = True
-        end
-        item
-          Item = dxFiltersWhiteWords
-          Visible = True
-        end>
-    end
-    object dxBarButton1: TdxBarButton
-      Action = amModifyWord
-      Category = 0
-    end
-    object dxBarButton4: TdxBarButton
-      Action = amModifyWord
-      Category = 0
-    end
-    object dxFiltersStamps: TdxBarSubItem
-      Caption = 'Stamps'
-      Category = 0
-      Visible = ivAlways
-      ItemLinks = <
-        item
-          Item = dxFiltersStampsAdd
-          Visible = True
-        end
-        item
-          Item = dxFiltersStampsDelete
-          Visible = True
-        end
-        item
-          Item = dxFiltersStampsEdit
-          Visible = True
-        end
-        item
-          Item = dxFiltersStampsSetToActive
-          Visible = True
-        end
-        item
-          Item = dxFiltersStampSetToNonActive
-          Visible = True
-        end>
-    end
-    object dxFiltersStampsAdd: TdxBarButton
-      Action = amAddStamp
-      Caption = 'Add'
-      Category = 0
-      Hint = 'Add'
-    end
-    object dxFiltersStampsDelete: TdxBarButton
-      Action = amRemoveStamp
-      Caption = 'Delete'
-      Category = 0
-      Hint = 'Delete'
-    end
-    object dxFiltersStampsEdit: TdxBarButton
-      Action = amModifyStamp
-      Caption = 'Edit Stamp'
-      Category = 0
-      Hint = 'Edit Stamp'
-    end
-    object dxPopupStampEdit: TdxBarButton
-      Action = amModifyStamp
-      Caption = 'Edit Stamp'
-      Category = 0
-      Enabled = False
-      Hint = 'Edit Stamp'
-    end
-    object dxBarButton6: TdxBarButton
-      Action = amModifyStamp
-      Category = 0
-    end
-    object dxpFiltersStampsEdit: TdxBarButton
-      Action = amModifyStamp
-      Caption = 'Edit Stamp'
-      Category = 0
-      Hint = 'Edit Stamp'
-    end
-    object dxpFiltersRevomeStamp: TdxBarButton
-      Action = amRemoveStamp
-      Caption = 'Remove Stamp'
-      Category = 0
-      Hint = 'Remove Stamp'
-    end
-    object dxpFiltersStampsAdd: TdxBarButton
-      Action = amAddStamp
-      Caption = 'Add Stamp'
-      Category = 0
-      Hint = 'Add Stamp'
-    end
-    object dxpFiltersStampSetToActive: TdxBarButton
-      Action = amSetStampsStatusToActive
-      Category = 0
-    end
-    object dxFiltersStampsSetToActive: TdxBarButton
-      Action = amSetStampsStatusToActive
-      Category = 0
-    end
-    object dxpFiltersStampSetToNonActive: TdxBarButton
-      Action = amSetStampsStatusToNonActive
-      Category = 0
-    end
-    object dxFiltersStampSetToNonActive: TdxBarButton
-      Action = amSetStampsStatusToNonActive
-      Category = 0
-    end
-    object dxBarButton2: TdxBarButton
-      Caption = 'BlackWords'
-      Category = 0
-      Hint = 'BlackWords'
-      Visible = ivAlways
-    end
-    object dxFiltersBlackWords: TdxBarSubItem
-      Caption = 'BlackWords'
-      Category = 0
-      Visible = ivAlways
-      ItemLinks = <
-        item
-          Item = dxFiltersBlackWordsAdd
-          Visible = True
-        end
-        item
-          Item = dxFiltersBlackWordsEdit
-          Visible = True
-        end
-        item
-          Item = dxFiltersBlackWordsDelete
-          Visible = True
-        end
-        item
-          Item = dxFiltersBlackWordsSetToActive
-          Visible = True
-        end
-        item
-          Item = dxFiltersBlackWordsSetToNonActive
-          Visible = True
-        end>
-    end
-    object dxFiltersBlackWordsAdd: TdxBarButton
-      Caption = 'Add'
-      Category = 0
-      Hint = 'Add'
-      Visible = ivAlways
-    end
-    object dxFiltersBlackWordsDelete: TdxBarButton
-      Caption = 'Delete'
-      Category = 0
-      Hint = 'Delete'
-      Visible = ivAlways
-    end
-    object dxFiltersBlackWordsEdit: TdxBarButton
-      Caption = 'Edit'
-      Category = 0
-      Hint = 'Edit'
-      Visible = ivAlways
-    end
-    object dxFiltersBlackWordsSetToActive: TdxBarButton
-      Caption = 'Set To Active'
-      Category = 0
-      Hint = 'Set To Active'
-      Visible = ivAlways
-    end
-    object dxFiltersBlackWordsSetToNonActive: TdxBarButton
-      Caption = 'Set To nonActive'
-      Category = 0
-      Hint = 'Set To nonActive'
-      Visible = ivAlways
-    end
-    object dxFiltersWhiteWords: TdxBarSubItem
-      Caption = 'WhiteWords'
-      Category = 0
-      Visible = ivAlways
-      ItemLinks = <
-        item
-          Item = dxFiltersWhiteWordsAdd
-          Visible = True
-        end
-        item
-          Item = dxFiltersWhiteWordsEdit
-          Visible = True
-        end
-        item
-          Item = dxFiltersWhiteWordsDelete
-          Visible = True
-        end
-        item
-          Item = dxFiltersWhiteWordsSetToActive
-          Visible = True
-        end
-        item
-          Item = dxFiltersWhiteWordsSetToNonActive
-          Visible = True
-        end>
-    end
-    object dxFiltersWhiteWordsAdd: TdxBarButton
-      Caption = 'Add'
-      Category = 0
-      Hint = 'Add'
-      Visible = ivAlways
-    end
-    object dxFiltersWhiteWordsEdit: TdxBarButton
-      Caption = 'Edit'
-      Category = 0
-      Hint = 'Edit'
-      Visible = ivAlways
-    end
-    object dxFiltersWhiteWordsDelete: TdxBarButton
-      Caption = 'Delete'
-      Category = 0
-      Hint = 'Delete'
-      Visible = ivAlways
-    end
-    object dxFiltersWhiteWordsSetToActive: TdxBarButton
-      Caption = 'Set To Active'
-      Category = 0
-      Hint = 'Set To Active'
-      Visible = ivAlways
-    end
-    object dxFiltersWhiteWordsSetToNonActive: TdxBarButton
-      Caption = 'Set To nonActive'
-      Category = 0
-      Hint = 'Set To nonActive'
-      Visible = ivAlways
-    end
-    object dxBarButton18: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-      PaintStyle = psCaptionInMenu
-    end
-    object dxBarButton19: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-      PaintStyle = psCaptionGlyph
-    end
-    object dxBarLargeButton1: TdxBarLargeButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-    end
-    object dxBarStatic1: TdxBarStatic
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-    end
-    object dxBarButton3: TdxBarButton
-      Caption = 'Black Extensions'
-      Category = 0
-      Hint = 'Black Extensions'
-      Visible = ivAlways
-    end
   end
   object aMan: TActionManager
     Left = 152
     Top = 152
     StyleName = 'XP Style'
-    object amAddAccount: TAction
-      Caption = 'amAddAccount'
-    end
-    object amDeleteAccount: TAction
-      Caption = 'amDeleteAccount'
-      OnExecute = amDeleteAccountExecute
-    end
-    object amAddStamp: TAction
-      Caption = 'amAddStamp'
-    end
-    object amModifyWord: TAction
-      Caption = 'amModifyWord'
-    end
-    object amAddWord: TAction
-      Caption = 'amAddWord'
-    end
-    object amModifyStamp: TAction
-      Caption = 'Modify Stamp'
-    end
-    object amRemoveStamp: TAction
-      Caption = 'amRemoveStamp'
-    end
-    object amSetStampsStatusToActive: TAction
-      Caption = 'Set To Active'
-    end
-    object amSetStampsStatusToNonActive: TAction
-      Caption = 'Set To nonActive'
+    object Action1: TAction
+      Caption = 'Action1'
     end
   end
   object cxStyleRepository1: TcxStyleRepository
+    Left = 104
+    Top = 392
     object cxStyle1: TcxStyle
     end
   end
   object cxStyleRepository2: TcxStyleRepository
+    Left = 72
+    Top = 392
     object cxStyle2: TcxStyle
       AssignedValues = [svColor, svFont, svTextColor]
       Color = clHighlight

@@ -136,13 +136,17 @@ end;
 
 function TFilterManager.ElementExists(ElementValue:String;ElementId:integer;
     FilterType:TFilterType): Boolean;
+var
+ Proc:TADOQuery;
 begin
  ElementValue:=Trim(ElementValue);
  Result:=False;
- with adProc do
+ Proc:=TADOQuery.Create(nil);
+ Proc.Connection:=adProc.Connection;
+ with Proc do
   begin
    Active:=False;
-   SQL.Text:='SELECT COUNT(id) FROM FiltersParams WHERE  id<>:id AND mid=:mid AND FValue=:Value ';
+   SQL.Text:='SELECT COUNT(id) FROM FiltersParams WHERE  (id<>:id) AND (mid=:mid) AND (FValue=:Value) ';
    Parameters.ParamByName('id').Value:=ElementId;
    Parameters.ParamByName('mid').Value:=MidByFilterType(FilterType);
    Parameters.ParamByName('Value').Value:=ElementValue;
@@ -152,6 +156,7 @@ begin
     else Result:=False;
    Active:=False;
   end;
+ Proc.Free;
 end;
 
 procedure TFilterManager.FilterStatus(FilterType:TFilterType;Status:boolean);
@@ -185,21 +190,33 @@ end;
 
 procedure TFilterManager.Modify(ElementId:Integer;ElementValue:String;
     FilterType:TFilterType; Description:String; Status:Boolean;Params:Variant);
+var
+ Proc:TADOQuery;
+ buf:String;
 begin
- with adProc do
+ Proc:=TADOQuery.Create(nil);
+ Proc.Connection:=adProc.Connection;
+ case TSignalLocation(Params) of
+    slSubject: buf:='slSubject' ;
+    slBody: buf:='slBody';
+    slAnywhere: buf:='slAnywhere';
+  end;
+
+ with Proc do
    begin
     Active:=False;
-    SQL.Text:='UPDATE FilterParams SET mid=:mid,FValue=:Value,Description=:Description,Active=:Status,Params=:Params) ' +
+    SQL.Text:='UPDATE FiltersParams SET mid=:mid,FValue=:Value,Description=:Description,Active=:Status,Params=:Params ' +
                ' WHERE id=:id ';
     Parameters.ParamByName('mid').Value:=MidByFilterType(FilterType);
     Parameters.ParamByName('Value').Value:=ElementValue;
     Parameters.ParamByName('Description').Value:=Description;
-    Parameters.ParamByName('Active').Value:=Status;
-    Parameters.ParamByName('Params').Value:=Params;
+    Parameters.ParamByName('Status').Value:=Status;
+    Parameters.ParamByName('Params').Value:=buf;
     Parameters.ParamByName('id').Value:=ElementId;
     ExecSQL;
     Active:=False;
    end;
+ Proc.Free;
 end;
 
 procedure TFilterManager.ModifyElement(ElementId:Integer;ElementValue:String;
@@ -213,8 +230,10 @@ begin
  if not (FilterType in [ftBlackSender,ftWhiteSender,ftStamp,ftBlackWord,ftWhiteWord,
                ftBlackAttach,ftWhiteAttach,ftSpamWord]) then
    Raise EInvalidFilterParams.Create('Неправильный тип фильтра');
- if (FilterType=ftWhiteWord) or (FilterType=ftBlackWord) and not( TSignalLocation(GetEnumValue(TypeInfo(TSignalLocation),Params)) in[slAnywhere,slSubject,slBody] ) then
+
+ if ((FilterType=ftWhiteWord) or (FilterType=ftBlackWord)) and not( (Params=slAnywhere) or (Params=slSubject)  or (Params=slBody) ) then
    Raise EInvalidFilterParams.Create('Неправильное расположение спам-слова');
+
  if ElementExists(ElementValue,ElementId,FilterType) then
    Raise EInvalidFilterParams.Create('Фильтр уже есть в данной группе');
  tFilter:=TwinFilter(FilterType);
