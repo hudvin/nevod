@@ -275,9 +275,15 @@ begin
  if FilterType=ftWhiteWord then   buff:=ftBlackWord;
  if FilterType=ftBlackAttach then buff:=ftWhiteAttach;
  if FilterType=ftWhiteAttach then buff:=ftBlackAttach;
+ if FilterType=ftStamp then buff:=ftNone;
+   
    
  Result:=buff;
 end;
+ {
 
+ все управление фильтрами перенести в один класс
+
+ }
 end.
 

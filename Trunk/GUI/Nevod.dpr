@@ -12,14 +12,15 @@ uses
   RegExpr in '..\Libs\RegExpr.pas',
   PerlRegEx in '..\Libs\RegExp\PerlRegEx.pas',
   FilterManager in '..\Shared\FilterManager.pas',
-  test in 'test.pas' {Form1},
   CustomEditor in 'CustomEditor.pas' {FCustomEditor};
+ // AddAccount in 'AddAccount.pas' {FAddAccount};
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.CreateForm(TFMain, FMain);
-//  Application.CreateForm(TFCustomEditor, FCustomEditor);  // форма редактора фильтров
+  //Application.CreateForm(TFAddAccount, FAddAccount);
+  //  Application.CreateForm(TFCustomEditor, FCustomEditor);  // форма редактора фильтров
   Application.Run;
 end.

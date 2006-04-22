@@ -67,6 +67,8 @@ object FMain: TFMain
     OptionsView.TreeLineStyle = tllsSolid
     ParentFont = False
     TabOrder = 1
+    OnDragDrop = SettingsTreeDragDrop
+    OnDragOver = SettingsTreeDragOver
     OnSelectionChanged = SettingsTreeSelectionChanged
     Data = {
       02000400120200000F00000044617461436F6E74726F6C6C6572310100000012
@@ -109,7 +111,7 @@ object FMain: TFMain
     Top = 28
     Width = 586
     Height = 400
-    ActivePage = cxTab_Settings
+    ActivePage = cxTab_Filters
     Align = alClient
     DragMode = dmAutomatic
     LookAndFeel.Kind = lfStandard
@@ -240,6 +242,8 @@ object FMain: TFMain
         LookAndFeel.NativeStyle = True
         object cxFilters: TcxGridDBTableView
           DragMode = dmAutomatic
+          OnEndDrag = cxFiltersEndDrag
+          OnStartDrag = cxFiltersStartDrag
           NavigatorButtons.ConfirmDelete = False
           DataController.DataSource = dsFilters
           DataController.Summary.DefaultGroupSummaryItems = <>

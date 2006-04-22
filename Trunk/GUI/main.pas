@@ -96,16 +96,24 @@ type
     procedure adFiltersParamsGetText(Sender: TField; var Text: String;
       DisplayText: Boolean);
     procedure Button3Click(Sender: TObject);
+    procedure SettingsTreeDragOver(Sender, Source: TObject; X, Y: Integer;
+      State: TDragState; var Accept: Boolean);
+    procedure cxFiltersEndDrag(Sender, Target: TObject; X, Y: Integer);
+    procedure cxFiltersStartDrag(Sender: TObject;
+      var DragObject: TDragObject);
+    procedure SettingsTreeDragDrop(Sender, Source: TObject; X, Y: Integer);
   private
     CurrNode:TcxTreeListNode;
     { Private declarations }
   public
     SignList:TSignalDescriptorsList;
     CurrentFilterType:TFilterType;  // тип текущего фильтра
+    TwinFilterType:TFilterType;
     SNConverter:TSNIndexConverter;
  //   PSManager: TPostManager;
     FManager:TFilterManager;
     procedure ActivateNode(NodeIndex:Integer);
+    procedure MoveElements(NewType:TFilterType);
     procedure RunOnStartup(Run:boolean);
     procedure UpdateHeaders(Headers:TColumnsHeaders);
 
@@ -196,6 +204,8 @@ var
  RowSQL:String;
  Res:TSNConvert;
 begin
+ if not DragState then
+  begin
  NodeIndex:=STree.TreeList.FocusedNode.AbsoluteIndex;
  if SNConverter.Find(NodeIndex,Res) then
   Res.Sheet.Show;
@@ -209,19 +219,12 @@ begin
     begin
      SQL.Clear;
      Active:=False;
-   //  if (FilterType in [ftBlackWord,ftWhiteWord]) then
      SQL.Text:='SELECT id,FValue,Description,Active,Params '+
                   ' FROM FiltersParams WHERE mid=(SELECT id FROM Filters WHERE Type=:FilterType) ';
-    {   else
-        begin
-         SQL.Add('SELECT FiltersParams.Id, ');
-         SQL.Add('FiltersParams.FValue,FiltersParams.Description,Types.Description,FiltersParams.Active  FROM ');
-         SQL.Add('FiltersParams,Types WHERE FiltersParams.Params=Types.Type');
-         SQL.Add('AND mid=( SELECT id FROM Filters  WHERE Type=:FilterType )');
-        end;   }
      Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(Res.FilterType));
      Active:=True;
     end;
+  end;
   end;
 end;
 
@@ -271,13 +274,6 @@ procedure TFMain.adFiltersParamsGetText(Sender: TField; var Text: String;
   DisplayText: Boolean);
 begin
  Text:=SignList.DescriptionByLocation(TSignalLocation(GetEnumValue(TypeInfo(TSignalLocation),Sender.AsString)));
-
-{ if Trim(Sender.Value)='slSubject'
-   then  Text:=' в теме сообщения ';
- if Trim(Sender.Value)='slAnywhere'
-   then  Text:=' в теме и в теле сообщения ';
- if Trim(Sender.Value)='slBody'
-   then  Text:=' в теле сообщения ';  }
 end;
 
 procedure TFMain.ActivateNode(NodeIndex:Integer);
@@ -301,6 +297,75 @@ begin
  
  ShowMessage(IntToStr(SettingsTree.Nodes.Count));
 // ActivateNode(5);
+end;
+
+procedure TFMain.SettingsTreeDragOver(Sender, Source: TObject; X,
+  Y: Integer; State: TDragState; var Accept: Boolean);
+var
+ buf:TSNConvert;
+begin
+ SNConverter.Find(STree.TreeList.FocusedNode.AbsoluteIndex,buf);
+ if buf.FilterType=TwinFilterType then
+  Accept:=True
+   else Accept:=False;
+end;
+
+procedure TFMain.cxFiltersEndDrag(Sender, Target: TObject; X, Y: Integer);
+begin
+ // ShowMessage('');
+ {
+ окончание перетаскивания
+
+ }
+ DragState:=False;
+end;
+
+procedure TFMain.cxFiltersStartDrag(Sender: TObject;
+  var DragObject: TDragObject);
+var
+ buf:TSNConvert;
+begin
+ // начало перетаскивания
+ DragState:=True;
+ SNConverter.Find(STree.TreeList.FocusedNode.AbsoluteIndex,buf);
+ CurrentFilterType:=buf.FilterType;
+ TwinFilterType:=FManager.TwinFilter(CurrentFilterType);
+end;
+
+procedure TFMain.MoveElements(NewType:TFilterType);
+var
+ Elementid:Integer;
+ Params:Variant;
+ FValue:String;
+ Active:boolean;
+ Description:String;
+ i:integer;
+ Location:TSignalLocation;
+begin
+ with cxFilters.Controller do
+  for i:=0 to SelectedRowCount-1 do
+   begin
+    ElementId:=SelectedRows[0].Values[cxFiltersid.Index];
+    FValue:=SelectedRows[0].Values[cxFiltersFValue.Index];
+    Description:=SelectedRows[0].Values[cxFiltersDescription.Index];
+    Params:=SelectedRows[0].Values[cxFiltersParams.Index];
+    Active:=SelectedRows[0].Values[cxFiltersActive.Index];
+
+    Location:=TSignalLocation(GetEnumValue(TypeInfo(TSignalLocation),Params));
+    FManager.ModifyElement(ElementId,FValue,NewType,Description,Active,Location);
+    adFilters.Requery;
+   end;
+ {
+
+ перебрать все выделеные записи и присвоить новый тип
+
+ }
+end;
+
+procedure TFMain.SettingsTreeDragDrop(Sender, Source: TObject; X,
+  Y: Integer);
+begin
+ MoveElements(TwinFilterType);
 end;
 
 end.
