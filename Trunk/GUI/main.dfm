@@ -286,6 +286,15 @@ object FMain: TFMain
         TabOrder = 1
         OnClick = Button1Click
       end
+      object Button2: TButton
+        Left = 264
+        Top = 184
+        Width = 217
+        Height = 49
+        Caption = 'Button2'
+        TabOrder = 2
+        OnClick = Button2Click
+      end
     end
     object cxTab_Settings: TcxTabSheet
       Caption = 'cxTab_Settings'

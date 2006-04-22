@@ -131,6 +131,7 @@ type
     Button1: TButton;
     cxTab_Settings: TcxTabSheet;
     ADOQuery1: TADOQuery;
+    Button2: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure amDeleteAccountExecute(Sender: TObject);
@@ -289,11 +290,9 @@ begin
 end;
 
 procedure TFMain.Button2Click(Sender: TObject);
-var
- fm:TFCustomEditor;
 begin
- fm:=TFCustomEditor.Create(nil);
- fm.ShowModal(5);
+ //cxFilters.Controller.SelectedRecords[];
+ //FCustomEditor.ShowModal();
 end;
 
 procedure TFMain.adFiltersParamsGetText(Sender: TField; var Text: String;
