@@ -23,7 +23,6 @@ type
     STree: TcxTreeListColumn;
     stPages: TcxPageControl;
     cxTab_Accounts: TcxTabSheet;
-    cxAccountsGridLevel1: TcxGridLevel;
     cxAccountsGrid: TcxGrid;
     dsAccounts: TDataSource;
     adCon: TADOConnection;
@@ -44,14 +43,6 @@ type
     adLogId: TAutoIncField;
     cxGrid2DBTableView1Id: TcxGridDBColumn;
     dxBarManager1: TdxBarManager;
-    cxAccounts: TcxGridTableView;
-    cxAccountsAccountName: TcxGridColumn;
-    cxAccountsUsername: TcxGridColumn;
-    cxAccountsPassword: TcxGridColumn;
-    cxAccountsServer: TcxGridColumn;
-    cxAccountsPort: TcxGridColumn;
-    cxAccountsTimeout: TcxGridColumn;
-    cxAccountsStatus: TcxGridColumn;
     aMan: TActionManager;
     cxTab_Filters: TcxTabSheet;
     cxFilters: TcxGridDBTableView;
@@ -75,7 +66,6 @@ type
     cxFiltersActive: TcxGridDBColumn;
     Button1: TButton;
     cxTab_Settings: TcxTabSheet;
-    ADOQuery1: TADOQuery;
     Button2: TButton;
     Action1: TAction;
     Button3: TButton;
@@ -92,6 +82,16 @@ type
     adAccountsport: TIntegerField;
     adAccountsTimeout: TIntegerField;
     adAccountsstatus: TWideStringField;
+    cxAccounts: TcxGridDBTableView;
+    cxAccountsGridLevel1: TcxGridLevel;
+    cxAccountsid: TcxGridDBColumn;
+    cxAccountsAccountName: TcxGridDBColumn;
+    cxAccountsusername: TcxGridDBColumn;
+    cxAccountspass: TcxGridDBColumn;
+    cxAccountshost: TcxGridDBColumn;
+    cxAccountsport: TcxGridDBColumn;
+    cxAccountsTimeout: TcxGridDBColumn;
+    cxAccountsstatus: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure amDeleteAccountExecute(Sender: TObject);
@@ -108,6 +108,12 @@ type
       var DragObject: TDragObject);
     procedure SettingsTreeDragDrop(Sender, Source: TObject; X, Y: Integer);
     procedure dxBarLargeButton1Click(Sender: TObject);
+    procedure adAccountspassGetText(Sender: TField; var Text: String;
+      DisplayText: Boolean);
+    procedure adAccountsTimeoutGetText(Sender: TField; var Text: String;
+      DisplayText: Boolean);
+    procedure adAccountsstatusGetText(Sender: TField; var Text: String;
+      DisplayText: Boolean);
   private
     CurrNode:TcxTreeListNode;
     { Private declarations }
@@ -133,7 +139,7 @@ var
   DragState:boolean=False;
   FEditor:TFCustomEditor;
   FAccountEditor:TFAccountEditor;
-
+  Coder:TBFCoder;
   AccountManager:TAccountManager;
  // FAddAccount:TFAddAccount;
 //  PSManager:T
@@ -153,6 +159,9 @@ procedure TFMain.FormCreate(Sender: TObject);
 var
  Headers:TColumnsHeaders;
 begin
+ Coder:=TBFCoder.Create;
+ Coder.Key:=CriptKey;
+
  SNConverter:=TSNIndexConverter.Create;
  SignList:=TSignalDescriptorsList.Create;
  SignList.Add(slAnywhere,' в теле и в теме сообщения ');
@@ -184,17 +193,16 @@ begin
    Add(13,ftNone,'',cxTab_Log);
    end;
 
-// Coder.Key:=CriptKey;
+
 
  FManager:=TFilterManager.Create(adCon);
  AccountManager:=TAccountManager.Create(adAccounts);
- 
+
  FEditor:=TFCustomEditor.Create(SNConverter,FManager,adFilters,SignList);
  FAccountEditor:=TFAccountEditor.Create(adAccounts,AccountManager);
 
- 
+ adAccounts.Active:=True;
 
-// FAddAccount:=TFAddAccount.Create();
 end;
 
 
@@ -206,6 +214,7 @@ begin
  SignList.Free;
  AccountManager.Free;
  FAccountEditor.Free;
+ Coder.Free;
 end;
 
 procedure TFMain.amDeleteAccountExecute(Sender: TObject);
@@ -331,11 +340,6 @@ end;
 
 procedure TFMain.cxFiltersEndDrag(Sender, Target: TObject; X, Y: Integer);
 begin
- // ShowMessage('');
- {
- окончание перетаскивания
-
- }
  DragState:=False;
 end;
 
@@ -385,6 +389,31 @@ end;
 procedure TFMain.dxBarLargeButton1Click(Sender: TObject);
 begin
  //FAddAccount.ShowModal;
+end;
+
+procedure TFMain.adAccountspassGetText(Sender: TField; var Text: String;
+  DisplayText: Boolean);
+begin
+ Text:=Coder.DeCrypt(Trim(Sender.Value))
+end;
+
+procedure TFMain.adAccountsTimeoutGetText(Sender: TField; var Text: String;
+  DisplayText: Boolean);
+begin
+ Text:=FloatToStr(Sender.AsInteger/(60*1000)); // не допускать ввод нулевых значений
+end;
+
+procedure TFMain.adAccountsstatusGetText(Sender: TField; var Text: String;
+  DisplayText: Boolean);
+var
+ AStatus:TAccountStatus;
+begin
+ AStatus:=TAccountStatus(GetEnumValue(TypeInfo(TAccountStatus),Sender.Value));
+ case AStatus of    //
+   asFree: Text:='свободен' ;
+   asClient:Text:='загружается почта ' ;
+   asServer: Text:='подключен локальный клиент' ;
+ end;
 end;
 
 end.

@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 440
-  Top = 280
+  Left = 253
+  Top = 145
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -133,46 +133,54 @@ object FMain: TFMain
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
         LookAndFeel.NativeStyle = True
-        object cxAccounts: TcxGridTableView
+        object cxAccounts: TcxGridDBTableView
           NavigatorButtons.ConfirmDelete = False
+          DataController.DataSource = dsAccounts
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <>
           DataController.Summary.SummaryGroups = <>
           OptionsCustomize.ColumnFiltering = False
           OptionsCustomize.ColumnGrouping = False
+          OptionsData.Editing = False
           OptionsSelection.CellSelect = False
+          OptionsSelection.InvertSelect = False
+          OptionsSelection.MultiSelect = True
           OptionsView.ColumnAutoWidth = True
           OptionsView.GroupByBox = False
-          object cxAccountsAccountName: TcxGridColumn
-            Caption = 'Account Name'
-            Width = 117
+          object cxAccountsid: TcxGridDBColumn
+            DataBinding.FieldName = 'id'
+            Visible = False
           end
-          object cxAccountsUsername: TcxGridColumn
-            Caption = 'Username'
-            Width = 112
+          object cxAccountsAccountName: TcxGridDBColumn
+            DataBinding.FieldName = 'AccountName'
+            Width = 125
           end
-          object cxAccountsPassword: TcxGridColumn
-            Caption = 'Password'
+          object cxAccountsusername: TcxGridDBColumn
+            DataBinding.FieldName = 'username'
+            Width = 85
+          end
+          object cxAccountspass: TcxGridDBColumn
+            DataBinding.FieldName = 'pass'
             PropertiesClassName = 'TcxTextEditProperties'
             Properties.EchoMode = eemPassword
             Properties.PasswordChar = '*'
-            Width = 104
+            Width = 79
           end
-          object cxAccountsServer: TcxGridColumn
-            Caption = 'Server'
-            Width = 104
+          object cxAccountshost: TcxGridDBColumn
+            DataBinding.FieldName = 'host'
+            Width = 89
           end
-          object cxAccountsPort: TcxGridColumn
-            Caption = 'Port'
-            Width = 47
+          object cxAccountsport: TcxGridDBColumn
+            DataBinding.FieldName = 'port'
+            Width = 59
           end
-          object cxAccountsTimeout: TcxGridColumn
-            Caption = 'Timeout'
-            Width = 51
+          object cxAccountsTimeout: TcxGridDBColumn
+            DataBinding.FieldName = 'Timeout'
+            Width = 78
           end
-          object cxAccountsStatus: TcxGridColumn
-            Caption = 'Status'
-            Width = 51
+          object cxAccountsstatus: TcxGridDBColumn
+            DataBinding.FieldName = 'status'
+            Width = 63
           end
         end
         object cxAccountsGridLevel1: TcxGridLevel
@@ -317,6 +325,7 @@ object FMain: TFMain
     OnClick = Button3Click
   end
   object dsAccounts: TDataSource
+    DataSet = adAccounts
     Left = 32
     Top = 272
   end
@@ -908,61 +917,6 @@ object FMain: TFMain
     Left = 32
     Top = 240
   end
-  object ADOQuery1: TADOQuery
-    Connection = adCon
-    Parameters = <
-      item
-        Name = 'mid'
-        Attributes = [paNullable]
-        DataType = ftWideString
-        NumericScale = 255
-        Precision = 255
-        Size = 510
-        Value = Null
-      end
-      item
-        Name = 'Value'
-        Attributes = [paNullable]
-        DataType = ftWideString
-        NumericScale = 255
-        Precision = 255
-        Size = 510
-        Value = Null
-      end
-      item
-        Name = 'Description'
-        Attributes = [paNullable]
-        DataType = ftWideString
-        NumericScale = 255
-        Precision = 255
-        Size = 510
-        Value = Null
-      end
-      item
-        Name = 'Active'
-        Attributes = [paNullable]
-        DataType = ftWideString
-        NumericScale = 255
-        Precision = 255
-        Size = 510
-        Value = Null
-      end
-      item
-        Name = 'Params'
-        Attributes = [paNullable]
-        DataType = ftWideString
-        NumericScale = 255
-        Precision = 255
-        Size = 510
-        Value = Null
-      end>
-    Prepared = True
-    SQL.Strings = (
-      'INSERT INTO FiltersParams (mid,FValue,Description,Active,Params)'
-      'VALUES (:mid,:Value,:Description,:Active,:Params)')
-    Left = 283
-    Top = 183
-  end
   object ImageList1: TImageList
     Left = 267
     Top = 292
@@ -1106,7 +1060,6 @@ object FMain: TFMain
       FFFF000000000000FFFF000000000000}
   end
   object adAccounts: TADOQuery
-    Active = True
     Connection = adCon
     CursorType = ctStatic
     Parameters = <>
@@ -1127,6 +1080,7 @@ object FMain: TFMain
     end
     object adAccountspass: TWideStringField
       FieldName = 'pass'
+      OnGetText = adAccountspassGetText
       Size = 50
     end
     object adAccountshost: TWideStringField
@@ -1138,9 +1092,11 @@ object FMain: TFMain
     end
     object adAccountsTimeout: TIntegerField
       FieldName = 'Timeout'
+      OnGetText = adAccountsTimeoutGetText
     end
     object adAccountsstatus: TWideStringField
       FieldName = 'status'
+      OnGetText = adAccountsstatusGetText
       Size = 10
     end
   end

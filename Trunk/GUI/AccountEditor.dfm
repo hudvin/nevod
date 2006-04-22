@@ -84,6 +84,7 @@ object FAccountEditor: TFAccountEditor
       LabelPosition = lpLeft
       TabOrder = 4
       Text = '110'
+      OnKeyPress = lePortKeyPress
     end
     object leTimeout: TLabeledEdit
       Left = 88
@@ -96,6 +97,7 @@ object FAccountEditor: TFAccountEditor
       LabelPosition = lpLeft
       TabOrder = 5
       Text = '60'
+      OnKeyPress = leTimeoutKeyPress
     end
     object btOK: TButton
       Left = 40

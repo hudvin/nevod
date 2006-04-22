@@ -24,6 +24,8 @@ type
     procedure btCancelClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btOKClick(Sender: TObject);
+    procedure lePortKeyPress(Sender: TObject; var Key: Char);
+    procedure leTimeoutKeyPress(Sender: TObject; var Key: Char);
   private
     FAccountManager: TAccountManager;
     FadAccounts: TADOQuery;
@@ -120,6 +122,7 @@ begin
       end;
     FAccountManager.AddAccount(FAccountParams);
     FAdAccounts.Requery;
+    Close;
    end;
     
 
@@ -128,6 +131,25 @@ begin
     Showmessage(E.Message);
  end;
 
+end;
+
+procedure TFAccountEditor.lePortKeyPress(Sender: TObject; var Key: Char);
+begin
+if not (Key  in ['0'..'9',#8]) then
+  begin
+   Key := #0;
+   Beep;
+  end;
+end;
+
+procedure TFAccountEditor.leTimeoutKeyPress(Sender: TObject;
+  var Key: Char);
+begin
+if not (Key  in ['0'..'9',#8]) then
+  begin
+   Key := #0;
+   Beep;
+  end;
 end;
 
 end.

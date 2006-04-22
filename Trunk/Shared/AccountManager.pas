@@ -127,6 +127,8 @@ begin
   Result:=False;
   if Trim(Account.AccountName)='' then
     Raise EInvalidAccountParams.Create('Incorrect AccountName');
+  if Account.Timeout<1 then
+    Raise EInvalidAccountParams.Create('Значение таймаута должно быть больше 1');  
   with adProc  do
    begin
     if NewAccount then   // если новая учетная запись
