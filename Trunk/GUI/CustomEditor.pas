@@ -7,8 +7,7 @@ uses  Shared,   FilterManager, TypInfo,
   Dialogs,   StdCtrls, cxContainer, cxEdit, cxTextEdit, cxMaskEdit,
   cxDropDownEdit, ExtCtrls, cxCheckBox, cxButtons;
 
-type
- TEditorMode=(emEdit,emAdd);
+
 
 type
   TFCustomEditor = class(TForm)

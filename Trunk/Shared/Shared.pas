@@ -63,6 +63,9 @@ type
   TSearchType=(stSubject,stBody,stBoth);
 
 type
+ TEditorMode=(emEdit,emAdd);  
+
+type
   TIntVect = array[0..255] of Integer;
   TBMTable = array[0..0] of TIntVect;
   PBMTable = ^TBMTable;

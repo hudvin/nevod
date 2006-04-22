@@ -1,11 +1,11 @@
-object FAddAccount: TFAddAccount
-  Left = 516
-  Top = 217
+object FAccountEditor: TFAccountEditor
+  Left = 553
+  Top = 106
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
-  Caption = 'Add New Account'
-  ClientHeight = 215
-  ClientWidth = 261
+  Caption = 'FAccountEditor'
+  ClientHeight = 210
+  ClientWidth = 278
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,22 +13,21 @@ object FAddAccount: TFAddAccount
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  OnCloseQuery = FormCloseQuery
-  OnShow = FormShow
+  OnClose = FormClose
   PixelsPerInch = 96
   TextHeight = 13
-  object cxTabControl1: TcxTabControl
+  object cxTab: TcxTabControl
     Left = 0
     Top = 0
-    Width = 261
-    Height = 215
+    Width = 278
+    Height = 210
     Align = alClient
     LookAndFeel.Kind = lfStandard
     LookAndFeel.NativeStyle = True
     TabOrder = 0
-    ClientRectBottom = 211
+    ClientRectBottom = 206
     ClientRectLeft = 2
-    ClientRectRight = 257
+    ClientRectRight = 274
     ClientRectTop = 2
     object leAccountName: TLabeledEdit
       Left = 88
@@ -85,7 +84,6 @@ object FAddAccount: TFAddAccount
       LabelPosition = lpLeft
       TabOrder = 4
       Text = '110'
-      OnKeyPress = lePortKeyPress
     end
     object leTimeout: TLabeledEdit
       Left = 88
@@ -98,25 +96,24 @@ object FAddAccount: TFAddAccount
       LabelPosition = lpLeft
       TabOrder = 5
       Text = '60'
-      OnKeyPress = leTimeoutKeyPress
     end
-    object Button1: TButton
+    object btOK: TButton
       Left = 40
       Top = 168
       Width = 75
       Height = 25
       Caption = 'Add'
       TabOrder = 6
-      OnClick = Button1Click
+      OnClick = btOKClick
     end
-    object Button2: TButton
+    object btCancel: TButton
       Left = 152
       Top = 168
       Width = 75
       Height = 25
       Caption = 'Cancel'
       TabOrder = 7
-      OnClick = Button2Click
+      OnClick = btCancelClick
     end
   end
 end

@@ -5,13 +5,13 @@ interface
 uses Forms,Windows, Dialogs, Registry, dxBar, cxStyles, Shared,
   cxTL, DB, ADODB,  StdCtrls, ExtCtrls, cxContainer, cxEdit,
   cxCheckBox, cxGridLevel, cxGridCustomTableView, cxGridTableView,
-  SysUtils, Typinfo, FilterManager, AccountManager,
+  SysUtils, Typinfo, FilterManager, AccountManager,  AccountEditor,
 
   cxGridCustomView, cxGrid, Menus,
   cxGridCustomPopupMenu, cxGridPopupMenu, Classes, Controls,
   cxGridDBTableView, cxClasses, cxControls, cxPC, cxSplitter,
   cxInplaceContainer, dxStatusBar, cxLookAndFeels,CustomEditor, ActnList,
-  XPStyleActnCtrls, ActnMan, 
+  XPStyleActnCtrls, ActnMan,
   ImgList, dxBarExtItems;
 
 
@@ -132,6 +132,8 @@ var
   FMain: TFMain;
   DragState:boolean=False;
   FEditor:TFCustomEditor;
+  FAccountEditor:TFAccountEditor;
+
   AccountManager:TAccountManager;
  // FAddAccount:TFAddAccount;
 //  PSManager:T
@@ -185,10 +187,12 @@ begin
 // Coder.Key:=CriptKey;
 
  FManager:=TFilterManager.Create(adCon);
-
- FEditor:=TFCustomEditor.Create(SNConverter,FManager,adFilters,SignList);
-
  AccountManager:=TAccountManager.Create(adAccounts);
+ 
+ FEditor:=TFCustomEditor.Create(SNConverter,FManager,adFilters,SignList);
+ FAccountEditor:=TFAccountEditor.Create(adAccounts,AccountManager);
+
+ 
 
 // FAddAccount:=TFAddAccount.Create();
 end;
@@ -201,6 +205,7 @@ begin
  FEditor.Free;
  SignList.Free;
  AccountManager.Free;
+ FAccountEditor.Free;
 end;
 
 procedure TFMain.amDeleteAccountExecute(Sender: TObject);
@@ -308,8 +313,8 @@ end;
 
 procedure TFMain.Button3Click(Sender: TObject);
 begin
- 
- ShowMessage(IntToStr(SettingsTree.Nodes.Count));
+  FAccountEditor.ShowModal;
+ //ShowMessage(IntToStr(SettingsTree.Nodes.Count));
 // ActivateNode(5);
 end;
 

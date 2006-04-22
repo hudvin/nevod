@@ -47,6 +47,8 @@ begin
   AccountTable.Connection:=FadAccounts.Connection;
   adProc:=TADOQuery.Create(nil);
   adProc.Connection:=FadAccounts.Connection;
+
+
   SetKey(Shared.CriptKey);
 end;
 

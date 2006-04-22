@@ -13,14 +13,17 @@ uses
   PerlRegEx in '..\Libs\RegExp\PerlRegEx.pas',
   FilterManager in '..\Shared\FilterManager.pas',
   CustomEditor in 'CustomEditor.pas' {FCustomEditor},
-  AccountManager in '..\Shared\AccountManager.pas';
-
+  AccountManager in '..\Shared\AccountManager.pas',
+  AddAccount in 'AddAccount.pas' {FAddAccount},
+  AccountEditor in 'AccountEditor.pas' {FAccountEditor};
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.CreateForm(TFMain, FMain);
+ // Application.CreateForm(TFAccountEditor, FAccountEditor);
+  // Application.CreateForm(TFAddAccount, FAddAccount);
   // Application.CreateForm(TFAddAccount, FAddAccount);
   //  Application.CreateForm(TFCustomEditor, FCustomEditor);  // форма редактора фильтров
   Application.Run;
