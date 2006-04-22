@@ -10,39 +10,26 @@ type
   TAccountManager = class(TBFCoder)
   private
     AccountTable: TADOTable;
-    cxAccountAccountName: TcxGridColumn;
-    cxAccountPassword: TcxGridColumn;
-    cxAccountPort: TcxGridColumn;
-    cxAccountServer: TcxGridColumn;
-    cxAccountStatus: TcxGridColumn;
-    cxAccountTimeout: TcxGridColumn;
-    cxAccountUsername: TcxGridColumn;
-    FADOCon: TADOConnection;
-    DBProc: TADOQuery;
-    FAccountsGrid: TcxGridTableView;
+    adProc: TADOQuery;
+    FadAccounts: TADOQuery;
     function GetAccountById(AccountId:integer): TAccountParams;
     function GetItems(Index: Integer): TAccountParams;
     function GetCount: Integer;
-    procedure LoadAccount2Grid;
-    procedure ModifyAccounstGrid(Params:TAccountParams);
     procedure SetAccountById(AccountId:integer; Value: TAccountParams);
   protected
     function AccountIdExists(AccountId:integer): Boolean;
     function AccountNameExists(AccountName:String): Boolean;
-    procedure AddAccountToGrid(Account:TAccountParams);
   public
-    constructor Create(ADOCon:TADOConnection;AccountsGrid:TcxGridTableView);
-        virtual;
+    constructor Create(adAccounts:TADOQuery); virtual;
     destructor Destroy; override;
     function AccountName2Id(AccountName:String): Integer;
     procedure AddAccount(NewAccount:TAccountParams);
     function CheckParams(Account:TAccountParams;NewAccount:boolean=False): Boolean;
     function CheckStatus(Status:TAccountStatus;AccountId:Integer): Boolean;
-    procedure DeleteAccount(AccountId:Integer);
+    procedure DeleteAccount(AccountsId:array of Integer);
     function Id2AccountName(AccountId:integer): string;
     procedure ModifyAccount(Params:TAccountParams);
     procedure SetStatus(AccountId:integer;AccountStatus:TAccountStatus);
-    procedure UpdateAccountTable;
     property AccountById[AccountId:integer]: TAccountParams read GetAccountById
         write SetAccountById;
     property Items[Index: Integer]: TAccountParams read GetItems;
@@ -50,44 +37,30 @@ type
   end;
 
 implementation
-uses main, cxCustomData;
-constructor TAccountManager.Create(ADOCon:TADOConnection;
-    AccountsGrid:TcxGridTableView);
+
+
+constructor TAccountManager.Create(adAccounts:TADOQuery);
 begin
   inherited Create;
-  FADOCon:=ADOCon;
-  FAccountsGrid:=AccountsGrid;
+  FadAccounts:=adAccounts;
   AccountTable:=TADOTable.Create(nil);
-  AccountTable.Connection:=FADOCon;
-  AccountTable.TableName:='Accounts';
-  UpdateAccountTable;
-  DBProc:=TADOQuery.Create(nil);
-  DBProc.Connection:=FADOCon;
+  AccountTable.Connection:=FadAccounts.Connection;
+  adProc:=TADOQuery.Create(nil);
+  adProc.Connection:=FadAccounts.Connection;
   SetKey(Shared.CriptKey);
-  with main.FMain do
-   begin
-    cxAccountAccountName:=cxAccountsAccountName;
-    cxAccountUsername:=cxAccountsUsername;
-    cxAccountPassword:=cxAccountsPassword;
-    cxAccountServer:=cxAccountsServer;
-    cxAccountPort:=cxAccountsPort;
-    cxAccountStatus:=cxAccountsStatus;
-    cxAccountTimeout:=cxAccountsTimeout;
-   end;
- LoadAccount2Grid;
 end;
 
 destructor TAccountManager.Destroy;
 begin
   inherited Destroy ;
   AccountTable.Free;
-  DBProc.Free;
-  FADOCon:=nil;
+  adProc.Free;
+  FadAccounts:=nil;
 end;
 
 function TAccountManager.AccountIdExists(AccountId:integer): Boolean;
 begin
-  with DBProc do
+  with adProc do
    begin
     SQL.Text:='SELECT COUNT(Id) FROM Accounts WHEHE Id=:AccountId';
     Parameters.ParamByName('AccountId').Value:=AccountId;
@@ -101,7 +74,7 @@ end;
 function TAccountManager.AccountName2Id(AccountName:String): Integer;
 begin
  if AccountNameExists(AccountName) then
-  with DBProc  do
+  with adProc  do
    begin
     SQl.Text:='SELECT Id FROM Accounts WHERE AccountName=:AccountName';
     Parameters.ParamByName('AccountName').Value:=AccountName;
@@ -115,7 +88,7 @@ end;
 
 function TAccountManager.AccountNameExists(AccountName:String): Boolean;
 begin
-  with DBProc do
+  with adProc do
    begin
     SQL.Text:='SELECT COUNT(Id) FROM Accounts WHERE AccountName=:AccountName';
     Parameters.ParamByName('AccountName').Value:=AccountName;
@@ -130,9 +103,9 @@ end;
 procedure TAccountManager.AddAccount(NewAccount:TAccountParams);
 begin
   if CheckParams(NewAccount,True) then
-   with DBProc.Parameters do
+   with adProc.Parameters do
     begin
-     DBProc.SQL.Text:=' INSERT INTO Accounts (AccountName,Username,Pass,Host,Port,Timeout) '+
+     adProc.SQL.Text:=' INSERT INTO Accounts (AccountName,Username,Pass,Host,Port,Timeout) '+
                       'VALUES(:AccountName,:Username,:Pass,:Host,:Port,:Timeout)';
      ParamByName('AccountName').Value:=NewAccount.AccountName;
      ParamByName('Username').Value:=NewAccount.Username;
@@ -140,35 +113,10 @@ begin
      ParamByName('Host').Value:=NewAccount.Host;
      ParamByName('Port').Value:=NewAccount.Port;
      ParamByName('Timeout').Value:=NewAccount.Timeout;
-     DBProc.ExecSQL;
-     UpdateAccountTable;
-     AddAccountToGrid(NewAccount);
+     adProc.ExecSQL;
+     FadAccounts.Requery;
     end;
 
-end;
-
-procedure TAccountManager.AddAccountToGrid(Account:TAccountParams);
-var
- Count:Integer;
- Status:String;
-begin
- FAccountsGrid.DataController.RecordCount:=FAccountsGrid.DataController.RecordCount+1;
- Count:=FAccountsGrid.DataController.RecordCount-1;
- with FAccountsGrid.DataController do
-  begin
-   SetValue(Count,cxAccountAccountName.Index,Account.AccountName);
-   SetValue(Count,cxAccountUsername.Index,Account.Username);
-   SetValue(Count,cxAccountServer.Index,Account.Host);
-   SetValue(Count,cxAccountPort.Index,Account.Port);
-   SetValue(Count,cxAccountTimeout.Index,Account.Timeout);
-   SetValue(Count,cxAccountPassword.Index,Account.Password);
-   case Account.Status of
-     asFree: Status:='Free' ;
-     asClient: Status:='Client Loading mail' ;
-     asServer: Status:='Loading mail from server' ;
-   end;
-   SetValue(Count,cxAccountStatus.Index,Status);
-  end;
 end;
 
 function TAccountManager.CheckParams(Account:TAccountParams;
@@ -177,7 +125,7 @@ begin
   Result:=False;
   if Trim(Account.AccountName)='' then
     Raise EInvalidAccountParams.Create('Incorrect AccountName');
-  with DBProc  do
+  with adProc  do
    begin
     if NewAccount then   // если новая учетная запись
      begin       // искать аккаунт с данным именем - в виде подзапроса
@@ -222,7 +170,7 @@ end;
 function TAccountManager.CheckStatus(Status:TAccountStatus;AccountId:Integer):
     Boolean;
 begin
- with DBProc do
+ with adProc do
   begin
     SQL.Text:='SELECT COUNT(Id) FROM Accounts WHERE Id=:AccountId AND Status=:Status ';
     Parameters.ParamByName('AccountId').Value:=AccountId;
@@ -235,34 +183,35 @@ begin
   end;
 end;
 
-procedure TAccountManager.DeleteAccount(AccountId:Integer);
+procedure TAccountManager.DeleteAccount(AccountsId:array of Integer);
+var
+ i:integer;
+ RowSQL:String;
 begin
-  with DBProc do
-   begin     // проверка есть в другом месте
-    SQL.Text:='SELECT COUNT(Id) FROM Accounts WHERE Id=:AccountId ';
-    Parameters.ParamByName('AccountId').Value:=AccountId;
-    ExecSQL;
-    Open;
-    if Fields[0].AsInteger=0  then    // если нет такого id в таблице
-     begin
-      Close;
-      Raise EInvalidAccount.Create(' No such Account ');
-     end
-    else
-     begin
-      Close;
-      SQL.Text:='DELETE FROM Accounts WHERE Id=:AccountId';
-      Parameters.ParamByName('AccountId').Value:=AccountId;
-      ExecSQL;
-      UpdateAccountTable;
-      FAccountsGrid.DataController.DeleteSelection;
-     end;
-   end;
+ for i:=Low(AccountsId) to High(AccountsId) do
+   if not AccountIdExists(AccountsId[i]) then
+    Raise EInvalidAccount.Create(' Аккаунт не существует ');
+
+ RowSQL:='';
+ for i:=Low(AccountsId) to High(AccountsId) do
+  begin
+   RowSQL:=RowSQL+ ' id='+IntToStr(AccountsId[i]);
+   if i<>High(AccountsId) then RowSQL:=RowSQl+' OR ';
+  end;
+
+ with adProc do
+  begin
+   Active:=False;
+   SQL.Text:='DELETE FROM FiltersParams WHERE ' + RowSQL;
+   ExecSQL;
+  end;
+ FadAccounts.Requery;
 end;
+
 
 function TAccountManager.GetAccountById(AccountId:integer): TAccountParams;
 begin
- with DBProc  do
+ with adProc  do
    begin
       SQL.Text :=' SELECT * FROM Accounts WHERE Id=:AccountId' ;
       Parameters.ParamByName('AccountId').Value:=AccountId;
@@ -329,7 +278,7 @@ end;
 
 function TAccountManager.GetCount: Integer;
 begin
- with DBProc do
+ with adProc do
   begin
     SQL.Text:='SELECT COUNT (Id) FROM Accounts ';
     ExecSQL;
@@ -342,7 +291,7 @@ end;
 function TAccountManager.Id2AccountName(AccountId:integer): string;
 begin
   if AccountIdExists(AccountId) then
-   with DBProc  do
+   with adProc  do
     begin
       SQl.Text:='SELECT AccountName FROM Accounts WHERE Id=:AccountId';
       Parameters.ParamByName('AccountId').Value:=AccountId;
@@ -354,46 +303,9 @@ begin
    else Result:='';
 end;
 
-procedure TAccountManager.LoadAccount2Grid;
-var
- i:integer;
-begin
- for i := 0 to Count-1 do  // проход по строкам
-  AddAccountToGrid(Items[i+1]);
-end;
-
-procedure TAccountManager.ModifyAccounstGrid(Params:TAccountParams);
-var
-  AName:String;
-  i:integer;
-  Flag:boolean;
-begin
- {
-  получить имя записи (старое - из базы)
-   найти в гриде и поменять данные
- }   // if cxAccounts.Controller.SelectedRecords[0].Values[cxAccountsAccountName.VisibleIndex]; then
- AName:=AccountById[Params.Id].AccountName;
- i:=0;
- Flag:=false;
- while (not Flag) and (i<FAccountsGrid.DataController.RecordCount)  do
-    with FAccountsGrid.DataController do
-       if GetValue(i,cxAccountAccountName.VisibleIndex)=AName then
-        begin
-         Flag:=True;
-         SetValue(i,cxAccountAccountName.Index,Params.AccountName);
-         SetValue(i,cxAccountAccountName.Index,Params.AccountName);
-         SetValue(i,cxAccountUsername.Index,Params.Username);
-         SetValue(i,cxAccountServer.Index,Params.Host);
-         SetValue(i,cxAccountPort.Index,Params.Port);
-         SetValue(i,cxAccountTimeout.Index,Params.Timeout);
-         SetValue(i,cxAccountPassword.Index,params.Password);
-        end else inc(i);
-end;
-
 procedure TAccountManager.ModifyAccount(Params:TAccountParams);
 begin
  CheckParams(Params);
- ModifyAccounstGrid(Params);
  AccountById[Params.Id]:=Params;
 end;
 
@@ -401,9 +313,9 @@ procedure TAccountManager.SetAccountById(AccountId:integer; Value:
     TAccountParams);
 begin
  if CheckParams(Value) then
-  with DBProc.Parameters  do
+  with adProc.Parameters  do
    begin
-      DBProc.SQL.Text :='UPDATE Accounts SET  AccountName=:AccountName, Username=:Username,'+
+      adProc.SQL.Text :='UPDATE Accounts SET  AccountName=:AccountName, Username=:Username,'+
                     'Pass=:Pass,Host=:Host,Port=:Port,Timeout=:Timeout WHERE Id=:AccountId ';
       ParamByName('AccountName').Value:=Value.AccountName;
       ParamByName('Username').Value:=Value.Username;
@@ -412,26 +324,20 @@ begin
       ParamByName('Port').Value:=value.Port;
       ParamByName('Timeout').Value:=value.Timeout;
       ParamByName('AccountId').Value:=Value.Id;
-      DBProc.ExecSQL;
+      adProc.ExecSQL;
    end;
 end;
 
 procedure TAccountManager.SetStatus(AccountId:integer;
     AccountStatus:TAccountStatus);
 begin
-  with DBProc do
+  with adProc do
    begin
     SQL.Text:='UPDATE Accounts SET Status=:AccountStatus WHERE Id=:AccountId';
     Parameters.ParamByName('AccountStatus').Value:=GetEnumName(TypeInfo(TAccountStatus), Ord(AccountStatus));
     Parameters.ParamByName('AccountId').Value:=AccountId;
     ExecSQL;
    end;
-end;
-
-procedure TAccountManager.UpdateAccountTable;
-begin
-  if NOT  AccountTable.Active then   AccountTable.Open;
-  AccountTable.Requery();
 end;
 
 end.

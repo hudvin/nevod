@@ -2,7 +2,7 @@ unit AddAccount;
 
 interface
 
-uses
+uses   AccountManager,
   Windows, Messages,Exceptions, StdCtrls, ExtCtrls, Classes, Controls,
   cxControls, cxPC ,SysUtils, Variants,  Graphics,  Forms,
   Dialogs,  IdBaseComponent,
@@ -28,7 +28,9 @@ type
     procedure Button1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
+    FAccountManager: TAccountManager;
   public
+    procedure Create(AccountManager:TAccountManager); reintroduce; overload;
     { Public declarations }
   end;
 
@@ -118,12 +120,19 @@ begin
   then Params.Timeout:=StrToInt(leTimeout.Text)
    else  Params.Timeout:=-2;
  try
- main.FMain.PSManager.AccountManager.AddAccount(Params);
- Close;
+ // main.FMain.PSManager.AccountManager.AddAccount(Params);
+  Close;
  except
   on e: Exception do
     ShowMessage(E.Message);
  end;
+end;
+
+procedure TFAddAccount.Create(AccountManager:TAccountManager);
+begin
+ FAccountManager:=AccountManager;
+ inherited Create(nil);
+
 end;
 
 procedure TFAddAccount.FormShow(Sender: TObject);

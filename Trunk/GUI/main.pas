@@ -5,7 +5,7 @@ interface
 uses Forms,Windows, Dialogs, Registry, dxBar, cxStyles, Shared,
   cxTL, DB, ADODB,  StdCtrls, ExtCtrls, cxContainer, cxEdit,
   cxCheckBox, cxGridLevel, cxGridCustomTableView, cxGridTableView,
-  SysUtils, Typinfo, FilterManager,
+  SysUtils, Typinfo, FilterManager, AccountManager,
 
   cxGridCustomView, cxGrid, Menus,
   cxGridCustomPopupMenu, cxGridPopupMenu, Classes, Controls,
@@ -25,16 +25,8 @@ type
     cxTab_Accounts: TcxTabSheet;
     cxAccountsGridLevel1: TcxGridLevel;
     cxAccountsGrid: TcxGrid;
-    adAccounts: TADOTable;
     dsAccounts: TDataSource;
     adCon: TADOConnection;
-    adAccountsid: TAutoIncField;
-    adAccountsAccountName: TWideStringField;
-    adAccountsusername: TWideStringField;
-    adAccountspass: TWideStringField;
-    adAccountshost: TWideStringField;
-    adAccountsport: TIntegerField;
-    adAccountsTimeout: TIntegerField;
     dsLog: TDataSource;
     adLog: TADOQuery;
     cxTab_Log: TcxTabSheet;
@@ -87,6 +79,19 @@ type
     Button2: TButton;
     Action1: TAction;
     Button3: TButton;
+    dxBarButton1: TdxBarButton;
+    dxBarLargeButton1: TdxBarLargeButton;
+    dxBarStatic1: TdxBarStatic;
+    ImageList1: TImageList;
+    adAccounts: TADOQuery;
+    adAccountsid: TAutoIncField;
+    adAccountsAccountName: TWideStringField;
+    adAccountsusername: TWideStringField;
+    adAccountspass: TWideStringField;
+    adAccountshost: TWideStringField;
+    adAccountsport: TIntegerField;
+    adAccountsTimeout: TIntegerField;
+    adAccountsstatus: TWideStringField;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure amDeleteAccountExecute(Sender: TObject);
@@ -102,6 +107,7 @@ type
     procedure cxFiltersStartDrag(Sender: TObject;
       var DragObject: TDragObject);
     procedure SettingsTreeDragDrop(Sender, Source: TObject; X, Y: Integer);
+    procedure dxBarLargeButton1Click(Sender: TObject);
   private
     CurrNode:TcxTreeListNode;
     { Private declarations }
@@ -126,8 +132,10 @@ var
   FMain: TFMain;
   DragState:boolean=False;
   FEditor:TFCustomEditor;
+  AccountManager:TAccountManager;
+ // FAddAccount:TFAddAccount;
+//  PSManager:T
 implementation
-
 
 
 {$R *.dfm}
@@ -177,7 +185,12 @@ begin
 // Coder.Key:=CriptKey;
 
  FManager:=TFilterManager.Create(adCon);
+
  FEditor:=TFCustomEditor.Create(SNConverter,FManager,adFilters,SignList);
+
+ AccountManager:=TAccountManager.Create(adAccounts);
+
+// FAddAccount:=TFAddAccount.Create();
 end;
 
 
@@ -187,6 +200,7 @@ begin
  SNConverter.Free;
  FEditor.Free;
  SignList.Free;
+ AccountManager.Free;
 end;
 
 procedure TFMain.amDeleteAccountExecute(Sender: TObject);
@@ -355,17 +369,17 @@ begin
     FManager.ModifyElement(ElementId,FValue,NewType,Description,Active,Location);
     adFilters.Requery;
    end;
- {
-
- перебрать все выделеные записи и присвоить новый тип
-
- }
 end;
 
 procedure TFMain.SettingsTreeDragDrop(Sender, Source: TObject; X,
   Y: Integer);
 begin
  MoveElements(TwinFilterType);
+end;
+
+procedure TFMain.dxBarLargeButton1Click(Sender: TObject);
+begin
+ //FAddAccount.ShowModal;
 end;
 
 end.

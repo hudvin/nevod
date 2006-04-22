@@ -4,12 +4,11 @@ interface
 uses
     Shared,Windows,Dialogs,Classes, Messages, SysUtils,IdContext, StdCtrls,
      ADODB, IdBaseComponent, IdComponent, Math, IdCommandHandlers,
-     IdTCPServer, IdPOP3Server, Settings, AccountManager,DBTables;
+     IdTCPServer, IdPOP3Server,  AccountManager,DBTables;
 
 type
  TPOPServer=class
   private
-   ContextProcs: TAccountContextList;
    FAccountManager: TAccountManager;
    FADOCon: TADOConnection;
    FDefaultPort: Integer;
@@ -40,7 +39,6 @@ constructor TPOPServer.Create(ADOCon:TADOConnection;
 begin
  Mutex:=CreateMutex(nil,False,MutexName);
  FADOCon:=ADOCon;
- ContextProcs:=TAccountContextList.Create(FADOCon);
  FDefaultPort:=ServerPort;
  FAccountManager:=AccountManager;
  pop:=TIdPOP3Server.Create(nil);
@@ -64,7 +62,6 @@ destructor TPOPServer.Destroy();
 begin
  pop.Active:=False;
  pop.Free;
- ContextProcs.Free;
  FADOCon:=nil;
  CloseHandle(Mutex);
 end;
