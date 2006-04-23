@@ -2,17 +2,17 @@ unit main;
 
 interface
 
-uses Forms,Windows, Dialogs, Registry, dxBar, cxStyles, Shared,
+uses Commctrl, Forms,Windows, Dialogs, Registry, dxBar, cxStyles, Shared,
   cxTL, DB, ADODB,  StdCtrls, ExtCtrls, cxContainer, cxEdit,
-  cxCheckBox, cxGridLevel, cxGridCustomTableView, cxGridTableView,
-  SysUtils, Typinfo, FilterManager, AccountManager,  AccountEditor,
+  cxCheckBox, cxGridLevel, cxGridCustomTableView, cxGridTableView, ShellAPI,
+  SysUtils, Typinfo, FilterManager, AccountManager,  AccountEditor,  Graphics,
 
-  cxGridCustomView, cxGrid, Menus,
+  cxGridCustomView, cxGrid, Menus,   Messages,
   cxGridCustomPopupMenu, cxGridPopupMenu, Classes, Controls,
   cxGridDBTableView, cxClasses, cxControls, cxPC, cxSplitter,
   cxInplaceContainer, dxStatusBar, cxLookAndFeels,CustomEditor, ActnList,
-  XPStyleActnCtrls, ActnMan,
-  ImgList, dxBarExtItems;
+  XPStyleActnCtrls, ActnMan,  Clipbrd, PerlRegEx,
+  ImgList, dxBarExtItems, CoolTrayIcon;
 
 
 type
@@ -92,6 +92,7 @@ type
     cxAccountsport: TcxGridDBColumn;
     cxAccountsTimeout: TcxGridDBColumn;
     cxAccountsstatus: TcxGridDBColumn;
+    tray: TCoolTrayIcon;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure amDeleteAccountExecute(Sender: TObject);
@@ -114,8 +115,19 @@ type
       DisplayText: Boolean);
     procedure adAccountsstatusGetText(Sender: TField; var Text: String;
       DisplayText: Boolean);
+    procedure trayClick(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure trayBalloonHintShow(Sender: TObject);
   private
     CurrNode:TcxTreeListNode;
+    PrevHwnd: Hwnd;
+    Exp:TPerlRegEx;
+    procedure WMChangeCBChain(var Msg: TWMChangeCBChain);
+    message WM_CHANGECBCHAIN;
+
+  procedure WMDrawClipboard(var Msg: TWMDrawClipboard);
+    message WM_DRAWCLIPBOARD;
+
     { Private declarations }
   public
     SignList:TSignalDescriptorsList;
@@ -134,6 +146,7 @@ type
     procedure SetCurrentParams(Grid:TcxGridDBTableView;Filter:TFilterType);
   end;
 
+
 var
   FMain: TFMain;
   DragState:boolean=False;
@@ -143,11 +156,50 @@ var
   AccountManager:TAccountManager;
  // FAddAccount:TFAddAccount;
 //  PSManager:T
-implementation
 
+
+implementation
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
+
+
+procedure TFMain.WMChangeCBChain(var Msg: TWMChangeCBChain);
+begin
+  if PrevHWnd = Msg.Remove then
+    PrevHWnd := Msg.Next;
+  if Msg.Remove <> Handle then
+    SendMessage(PrevHWnd, WM_CHANGECBCHAIN, Msg.Remove, Msg.Next);
+end;
+
+procedure TFMain.WMDrawClipboard(var Msg: TWMDrawClipboard);
+var
+  P: PChar;
+  H: THandle;
+  Len:integer;
+begin
+  SendMessage(PrevHWnd, WM_DRAWCLIPBOARD, 0, 0);
+  if Clipboard.HasFormat(CF_TEXT) then
+  begin
+    H := Clipboard.GetAsHandle(CF_TEXT);
+    Len := GlobalSize(H) + 1;
+    P := GlobalLock(H);
+  //  Memo1.SetTextBuf(P);
+  {
+  тестировать на наличие адресов и url
+  }
+   // if pos('@',P)<>0 then
+       
+    Exp.RegEx:='[_a-zA-Z\d\-\.\*]+@([_a-zA-Z\d\-]+(\.[_a-zA-Z\d\-]+)+)';
+    Exp.Subject:=p;
+    if  Exp.Match then
+      tray.ShowBalloonHint('Balloon hint',Exp.MatchedExpression, bitInfo, 10);
+
+    GlobalUnlock(H);
+  end;
+  Msg.Result := 0;
+end;
+
 
 
 
@@ -159,6 +211,9 @@ procedure TFMain.FormCreate(Sender: TObject);
 var
  Headers:TColumnsHeaders;
 begin
+ Exp:=TPerlRegEx.Create(nil);
+
+ PrevHwnd := SetClipboardViewer(Handle);
  Coder:=TBFCoder.Create;
  Coder.Key:=CriptKey;
 
@@ -215,6 +270,7 @@ begin
  AccountManager.Free;
  FAccountEditor.Free;
  Coder.Free;
+ Exp.Free;
 end;
 
 procedure TFMain.amDeleteAccountExecute(Sender: TObject);
@@ -414,6 +470,21 @@ begin
    asClient:Text:='загружается почта ' ;
    asServer: Text:='подключен локальный клиент' ;
  end;
+end;
+
+procedure TFMain.trayClick(Sender: TObject);
+begin
+ tray.ShowMainForm;
+end;
+
+procedure TFMain.Timer1Timer(Sender: TObject);
+begin
+tray.ShowBalloonHint('fsdgsgs','fdsafa',bitInfo,10);
+end;
+
+procedure TFMain.trayBalloonHintShow(Sender: TObject);
+begin
+ Caption:='';
 end;
 
 end.

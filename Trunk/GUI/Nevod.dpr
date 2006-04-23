@@ -22,7 +22,7 @@ uses
 begin
   Application.Initialize;
   Application.CreateForm(TFMain, FMain);
- // Application.CreateForm(TFAccountEditor, FAccountEditor);
+  // Application.CreateForm(TFAccountEditor, FAccountEditor);
   // Application.CreateForm(TFAddAccount, FAddAccount);
   // Application.CreateForm(TFAddAccount, FAddAccount);
   //  Application.CreateForm(TFCustomEditor, FCustomEditor);  // форма редактора фильтров
