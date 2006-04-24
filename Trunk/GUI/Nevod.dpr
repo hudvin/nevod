@@ -15,13 +15,16 @@ uses
   CustomEditor in 'CustomEditor.pas' {FCustomEditor},
   AccountManager in '..\Shared\AccountManager.pas',
   AddAccount in 'AddAccount.pas' {FAddAccount},
-  AccountEditor in 'AccountEditor.pas' {FAccountEditor};
+  AccountEditor in 'AccountEditor.pas' {FAccountEditor},
+  AddHooked in 'AddHooked.pas' {FAddHooked},
+  ClbHook in '..\Shared\ClbHook.pas';
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.CreateForm(TFMain, FMain);
+  Application.CreateForm(TFAddHooked, FAddHooked);
   // Application.CreateForm(TFAccountEditor, FAccountEditor);
   // Application.CreateForm(TFAddAccount, FAddAccount);
   // Application.CreateForm(TFAddAccount, FAddAccount);

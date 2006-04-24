@@ -7,7 +7,7 @@ uses Commctrl, Forms,Windows, Dialogs, Registry, dxBar, cxStyles, Shared,
   cxCheckBox, cxGridLevel, cxGridCustomTableView, cxGridTableView, ShellAPI,
   SysUtils, Typinfo, FilterManager, AccountManager,  AccountEditor,  Graphics,
 
-  cxGridCustomView, cxGrid, Menus,   Messages,
+  cxGridCustomView, cxGrid, Menus,   Messages, ClbHook,
   cxGridCustomPopupMenu, cxGridPopupMenu, Classes, Controls,
   cxGridDBTableView, cxClasses, cxControls, cxPC, cxSplitter,
   cxInplaceContainer, dxStatusBar, cxLookAndFeels,CustomEditor, ActnList,
@@ -143,6 +143,8 @@ type
 
     { Public declarations }
   protected
+    SProvider:TSettings;
+    ClbHookMode:TClbHookMode;
     procedure SetCurrentParams(Grid:TcxGridDBTableView;Filter:TFilterType);
   end;
 
@@ -154,11 +156,11 @@ var
   FAccountEditor:TFAccountEditor;
   Coder:TBFCoder;
   AccountManager:TAccountManager;
- // FAddAccount:TFAddAccount;
-//  PSManager:T
-
+  Hook:TClbHook;
 
 implementation
+
+uses Unit1, AddHooked;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
@@ -184,6 +186,24 @@ begin
     H := Clipboard.GetAsHandle(CF_TEXT);
     Len := GlobalSize(H) + 1;
     P := GlobalLock(H);
+    if ClbHookMode=chEmail  then
+     begin
+     {
+      поиск всех адресов в тексте
+     }
+     end;
+     
+
+    {
+
+
+      произвести поиск адресов email
+      проверить наличие в таблице
+      если нет - добавить с помощью метода Add формы редактора
+       проверить, нет ли совпадений
+    }
+
+
   //  Memo1.SetTextBuf(P);
   {
   тестировать на наличие адресов и url
@@ -212,6 +232,9 @@ var
  Headers:TColumnsHeaders;
 begin
  Exp:=TPerlRegEx.Create(nil);
+ SProvider:=TSettings.Create(adCon);
+ ClbHookMode:=TClbHookMode(GetEnumValue(TypeInfo(TCLbHookMode),SProvider.GetValue('ClbHookMode')));
+
 
  PrevHwnd := SetClipboardViewer(Handle);
  Coder:=TBFCoder.Create;
@@ -271,6 +294,7 @@ begin
  FAccountEditor.Free;
  Coder.Free;
  Exp.Free;
+ SProvider.Free;
 end;
 
 procedure TFMain.amDeleteAccountExecute(Sender: TObject);
@@ -378,7 +402,9 @@ end;
 
 procedure TFMain.Button3Click(Sender: TObject);
 begin
-  FAccountEditor.ShowModal;
+ FAddHooked.Show;
+//  FAccountEditor.ShowModal;
+
  //ShowMessage(IntToStr(SettingsTree.Nodes.Count));
 // ActivateNode(5);
 end;
@@ -479,7 +505,8 @@ end;
 
 procedure TFMain.Timer1Timer(Sender: TObject);
 begin
-tray.ShowBalloonHint('fsdgsgs','fdsafa',bitInfo,10);
+//tray.ShowBalloonHint('fsdgsgs','fdsafa',bitInfo,10);
+ Form1.Show;
 end;
 
 procedure TFMain.trayBalloonHintShow(Sender: TObject);

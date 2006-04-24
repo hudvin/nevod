@@ -38,6 +38,8 @@ const
   WaitTime=1000;      // время между проверками состояний
 
 
+type
+ TClbHookMode=(chEmail,chURL,chEmailURL);
 
 type
  TNodeGroup=(ndGeneral,ndAccounts,ndStamps);  
@@ -198,10 +200,9 @@ type
 
   TSettings = class(TObject)
   private
-    ACon: TADOConnection;
-    Ast: TADOStoredProc;
+    adProc: TADOQuery;
   public
-    constructor Create(ADOCon:TADOConnection); virtual;
+    constructor Create(adCon:TADOConnection); virtual;
     destructor Destroy; virtual;
     function GetValue(SettingName:string): string;
     function SetValue(SettingName,Value:string): Boolean;
@@ -645,29 +646,25 @@ end;
 {
 ********************************** TSettings ***********************************
 }
-constructor TSettings.Create(ADOCon:TADOConnection);
+constructor TSettings.Create(adCon:TADOConnection);
 begin
-  ACon:=ADOCon;
-  Ast:=TADOStoredProc.Create(nil);
-  Ast.Connection:=ACon;
+  adProc:=TADOQuery.Create(nil);
+  adProc.Connection:=adCon;
 end;
 
 destructor TSettings.Destroy;
 begin
-  ACon:=nil;
-  Ast.Free;
+  adProc.Free;
 end;
 
 function TSettings.GetValue(SettingName:string): string;
 begin
-  with Ast do
+  with adProc do
     begin
      Close;
-     ProcedureName:='GetSettingValue';
-     Parameters.Clear;
-     Parameters.AddParameter.Name:='SettingName';
+     SQL.Text:='SELECT Var FROM Settings WHERE Name=:SettingName';
      Parameters.ParamByName('SettingName').Value:=SettingName;
-     ExecProc;
+     ExecSQL;
      Open;
      if RecordCount>0 then Result:=Fields[0].AsString else Result:='Error';
      Close;
@@ -677,16 +674,14 @@ end;
 function TSettings.SetValue(SettingName,Value:string): Boolean;
 begin
   try
-   with ast do
+   with adProc do
     begin
      Close;
-     ProcedureName:='SetSettingValue';
-     Parameters.Clear;
+     SQL.Text:='UPDATE Settings SET Var=:Value WHERE Name=:SettingName ';
      Parameters.AddParameter.Name:='Value';
      Parameters.ParamByName('Value').Value:=Value;
-     Parameters.AddParameter.Name:='SettingName';
      Parameters.ParamByName('SettingName').Value:=SettingName;
-     ExecProc;
+     ExecSQL;
     end;
     Result:=True;
   except
