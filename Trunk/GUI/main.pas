@@ -7,12 +7,12 @@ uses Commctrl, Forms,Windows, Dialogs, Registry, dxBar, cxStyles, Shared,
   cxCheckBox, cxGridLevel, cxGridCustomTableView, cxGridTableView, ShellAPI,
   SysUtils, Typinfo, FilterManager, AccountManager,  AccountEditor,  Graphics,
 
-  cxGridCustomView, cxGrid, Menus,   Messages, ClbHook,
+  cxGridCustomView, cxGrid, Menus,   Messages, 
   cxGridCustomPopupMenu, cxGridPopupMenu, Classes, Controls,
   cxGridDBTableView, cxClasses, cxControls, cxPC, cxSplitter,
   cxInplaceContainer, dxStatusBar, cxLookAndFeels,CustomEditor, ActnList,
   XPStyleActnCtrls, ActnMan,  Clipbrd, PerlRegEx,
-  ImgList, dxBarExtItems, CoolTrayIcon;
+  ImgList, dxBarExtItems, CoolTrayIcon, ToolWin, ActnCtrls, ActnColorMaps;
 
 
 type
@@ -93,6 +93,11 @@ type
     cxAccountsTimeout: TcxGridDBColumn;
     cxAccountsstatus: TcxGridDBColumn;
     tray: TCoolTrayIcon;
+    dxBarButton2: TdxBarButton;
+    dxBarButton3: TdxBarButton;
+    TrayPopUp: TPopupMenu;
+    N1: TMenuItem;
+    N2: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure amDeleteAccountExecute(Sender: TObject);
@@ -119,6 +124,8 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure trayBalloonHintShow(Sender: TObject);
   private
+    adProc: TADOQuery;
+    LastHooked:String;  // содержит последний захваченный из буфера элемент 
     CurrNode:TcxTreeListNode;
     PrevHwnd: Hwnd;
     Exp:TPerlRegEx;
@@ -137,6 +144,7 @@ type
  //   PSManager: TPostManager;
     FManager:TFilterManager;
     procedure ActivateNode(NodeIndex:Integer);
+    function FindElement(Text:String;SType:TClbHookMode): string;
     procedure MoveElements(NewType:TFilterType);
     procedure RunOnStartup(Run:boolean);
     procedure UpdateHeaders(Headers:TColumnsHeaders);
@@ -145,6 +153,7 @@ type
   protected
     SProvider:TSettings;
     ClbHookMode:TClbHookMode;
+    AddClb:TFilterType;
     procedure SetCurrentParams(Grid:TcxGridDBTableView;Filter:TFilterType);
   end;
 
@@ -156,7 +165,6 @@ var
   FAccountEditor:TFAccountEditor;
   Coder:TBFCoder;
   AccountManager:TAccountManager;
-  Hook:TClbHook;
 
 implementation
 
@@ -164,6 +172,7 @@ uses Unit1, AddHooked;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
+
 
 
 procedure TFMain.WMChangeCBChain(var Msg: TWMChangeCBChain);
@@ -179,6 +188,8 @@ var
   P: PChar;
   H: THandle;
   Len:integer;
+  buf,Res:String;
+
 begin
   SendMessage(PrevHWnd, WM_DRAWCLIPBOARD, 0, 0);
   if Clipboard.HasFormat(CF_TEXT) then
@@ -186,34 +197,20 @@ begin
     H := Clipboard.GetAsHandle(CF_TEXT);
     Len := GlobalSize(H) + 1;
     P := GlobalLock(H);
-    if ClbHookMode=chEmail  then
+    if (Length(Trim(p))=Length(p) ) and (pos(' ',p)=0) then
      begin
-     {
-      поиск всех адресов в тексте
-     }
-     end;
-     
-
-    {
-
-
-      произвести поиск адресов email
-      проверить наличие в таблице
-      если нет - добавить с помощью метода Add формы редактора
-       проверить, нет ли совпадений
-    }
+      buf:=FindElement(P,CLbHookMode);
+      if buf<>'' then
+       if not FManager.ElementExists(buf,AddClb) then
+        begin
+         FManager.AddElement(buf,AddClb,'',True,'');
+         LastHooked:=buf;
+        end;
+     end
+      else LastHooked:='';
 
 
-  //  Memo1.SetTextBuf(P);
-  {
-  тестировать на наличие адресов и url
-  }
-   // if pos('@',P)<>0 then
-       
-    Exp.RegEx:='[_a-zA-Z\d\-\.\*]+@([_a-zA-Z\d\-]+(\.[_a-zA-Z\d\-]+)+)';
-    Exp.Subject:=p;
-    if  Exp.Match then
-      tray.ShowBalloonHint('Balloon hint',Exp.MatchedExpression, bitInfo, 10);
+   //   tray.ShowBalloonHint('Balloon hint',Exp.MatchedExpression, bitInfo, 10);
 
     GlobalUnlock(H);
   end;
@@ -231,10 +228,14 @@ procedure TFMain.FormCreate(Sender: TObject);
 var
  Headers:TColumnsHeaders;
 begin
+ FManager:=TFilterManager.Create(adCon);
  Exp:=TPerlRegEx.Create(nil);
  SProvider:=TSettings.Create(adCon);
+ AddClb:=TFilterType(GetEnumValue(TypeInfo(TFilterType),SProvider.GetValue('AddClb')));
  ClbHookMode:=TClbHookMode(GetEnumValue(TypeInfo(TCLbHookMode),SProvider.GetValue('ClbHookMode')));
 
+ adProc:=TADOQuery.Create(nil);
+ adProc.Connection:=adCon;
 
  PrevHwnd := SetClipboardViewer(Handle);
  Coder:=TBFCoder.Create;
@@ -273,7 +274,7 @@ begin
 
 
 
- FManager:=TFilterManager.Create(adCon);
+
  AccountManager:=TAccountManager.Create(adAccounts);
 
  FEditor:=TFCustomEditor.Create(SNConverter,FManager,adFilters,SignList);
@@ -295,6 +296,7 @@ begin
  Coder.Free;
  Exp.Free;
  SProvider.Free;
+ adProc.Free;
 end;
 
 procedure TFMain.amDeleteAccountExecute(Sender: TObject);
@@ -402,7 +404,10 @@ end;
 
 procedure TFMain.Button3Click(Sender: TObject);
 begin
- FAddHooked.Show;
+// FAddHooked.Show;
+
+//pop.SubMenuControl.Update
+
 //  FAccountEditor.ShowModal;
 
  //ShowMessage(IntToStr(SettingsTree.Nodes.Count));
@@ -485,6 +490,48 @@ begin
  Text:=FloatToStr(Sender.AsInteger/(60*1000)); // не допускать ввод нулевых значений
 end;
 
+function TFMain.FindElement(Text:String;SType:TClbHookMode): string;
+var
+ RegStr:String;
+begin
+ case SType of
+   chURL:
+    begin
+     Exp.Subject:=Text;
+     Exp.RegEx:='(?i)(http://www.|http://|www.)([_a-z\d\-]+(\.[_a-z\d\-]+)+)((/[ _a-z\d\-\\\.]+)+)*';
+     if  (Exp.Match) then
+       Result:='*@' +Exp.SubExpressions[2];
+    end;
+   chEmail:
+    begin
+     Exp.Subject:=Text;
+     Exp.RegEx:='[_a-zA-Z\d\-\.\*]+@([_a-zA-Z\d\-]+(\.[_a-zA-Z\d\-]+)+)';
+     if  (Exp.Match)  then
+       Result:=Exp.MatchedExpression;
+    end;
+   chEmailURL:
+    begin
+     Exp.Subject:=Text;
+     Exp.RegEx:='(?i)(http://www.|http://|www.)([_a-z\d\-]+(\.[_a-z\d\-]+)+)((/[ _a-z\d\-\\\.]+)+)*';
+     if  (Exp.Match)  then
+       Result:='*@'+Exp.SubExpressions[2]
+        else
+         begin
+          Exp.Subject:=Text;
+          Exp.RegEx:='[_a-zA-Z\d\-\.\*]+@([_a-zA-Z\d\-]+(\.[_a-zA-Z\d\-]+)+)';
+          if  (Exp.Match)  then
+           Result:=Exp.MatchedExpression;
+         end;
+
+    end;
+ end;
+ {
+
+ 
+
+ }
+end;
+
 procedure TFMain.adAccountsstatusGetText(Sender: TField; var Text: String;
   DisplayText: Boolean);
 var
@@ -500,13 +547,14 @@ end;
 
 procedure TFMain.trayClick(Sender: TObject);
 begin
- tray.ShowMainForm;
+// tray.ShowMainForm;
+
 end;
 
 procedure TFMain.Timer1Timer(Sender: TObject);
 begin
 //tray.ShowBalloonHint('fsdgsgs','fdsafa',bitInfo,10);
- Form1.Show;
+ //Form1.Show;
 end;
 
 procedure TFMain.trayBalloonHintShow(Sender: TObject);

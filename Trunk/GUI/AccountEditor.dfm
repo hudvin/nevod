@@ -1,6 +1,6 @@
 object FAccountEditor: TFAccountEditor
-  Left = 553
-  Top = 106
+  Left = 646
+  Top = 194
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'FAccountEditor'

@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 296
-  Top = 124
+  Left = 148
+  Top = 193
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -859,10 +859,27 @@ object FMain: TFMain
       Hint = 'New Item'
       Visible = ivAlways
     end
+    object dxBarButton2: TdxBarButton
+      Caption = 'New Item'
+      Category = 0
+      Hint = 'New Item'
+      Visible = ivAlways
+    end
+    object dxBarButton3: TdxBarButton
+      Caption = 'New Item'
+      Category = 0
+      Hint = 'New Item'
+      Visible = ivAlways
+    end
   end
   object aMan: TActionManager
+    ActionBars = <
+      item
+      end
+      item
+      end>
     Left = 152
-    Top = 152
+    Top = 160
     StyleName = 'XP Style'
     object Action1: TAction
       Caption = 'Action1'
@@ -4979,11 +4996,22 @@ object FMain: TFMain
       1DFFC0074FFFF01F65FFFFFF9DFF}
     IconVisible = True
     IconIndex = 0
+    PopupMenu = TrayPopUp
     WantEnterExitEvents = True
     MinimizeToTray = True
     OnClick = trayClick
     OnBalloonHintShow = trayBalloonHintShow
     Left = 227
     Top = 368
+  end
+  object TrayPopUp: TPopupMenu
+    Left = 731
+    Top = 288
+    object N1: TMenuItem
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1101#1083#1077#1084#1077#1085#1090' '
+    end
+    object N2: TMenuItem
+      Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1075#1083#1072#1074#1085#1086#1077' '#1086#1082#1085#1086
+    end
   end
 end

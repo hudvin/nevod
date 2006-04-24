@@ -16,8 +16,7 @@ uses
   AccountManager in '..\Shared\AccountManager.pas',
   AddAccount in 'AddAccount.pas' {FAddAccount},
   AccountEditor in 'AccountEditor.pas' {FAccountEditor},
-  AddHooked in 'AddHooked.pas' {FAddHooked},
-  ClbHook in '..\Shared\ClbHook.pas';
+  AddHooked in 'AddHooked.pas' {FAddHooked};
 
 {$R *.res}
 

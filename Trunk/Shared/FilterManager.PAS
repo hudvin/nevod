@@ -54,11 +54,13 @@ var
  buf:String;
 begin
  Proc:=TADOQuery.Create(nil);
- case TSignalLocation(Params) of
-    slSubject: buf:='slSubject' ;
-    slBody: buf:='slBody';
-    slAnywhere: buf:='slAnywhere';
-  end;
+ if FilterType in [ftBlackWord,ftWhiteWord]
+   then
+    case TSignalLocation(Params) of
+     slSubject: buf:='slSubject' ;
+     slBody: buf:='slBody';
+     slAnywhere: buf:='slAnywhere';
+    end;
  Proc.Connection:=adProc.Connection;
  with Proc do
    begin
@@ -82,7 +84,7 @@ var
  tFilter:TFilterType;
 begin
 // if Params=slAnywhere then ShowMessage('');
-   
+
  ElementValue:=Trim(ElementValue);
  if ElementValue='' then
   Raise EInvalidFilterParams.Create('Фильтр не может быть пустым');

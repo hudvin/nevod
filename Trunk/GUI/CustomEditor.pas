@@ -149,7 +149,6 @@ var
  Location:TSignalLocation;
 begin
  FSNConverter.FindByName(cCBFilter.Properties.Items.Strings[cCBFilter.SelectedItem],Res);
-
  if Res.FilterType in [ftBlackWord,ftWhiteWord] then
   Location:=FSignList.LocationByDescription(cCBFilter.Properties.Items.Strings[cCBFilter.SelectedItem]);
 
