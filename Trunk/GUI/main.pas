@@ -43,16 +43,10 @@ type
     cxGrid2DBTableView1ErrorTime: TcxGridDBColumn;
     adLogId: TAutoIncField;
     cxGrid2DBTableView1Id: TcxGridDBColumn;
-    dxBarManager1: TdxBarManager;
-    aMan: TActionManager;
     cxTab_Filters: TcxTabSheet;
     cxFilters: TcxGridDBTableView;
     cxFiltersGridLevel1: TcxGridLevel;
     cxFiltersGrid: TcxGrid;
-    cxStyleRepository1: TcxStyleRepository;
-    cxStyle1: TcxStyle;
-    cxStyleRepository2: TcxStyleRepository;
-    cxStyle2: TcxStyle;
     adFilters: TADOQuery;
     dsFilters: TDataSource;
     adFiltersid: TAutoIncField;
@@ -68,12 +62,6 @@ type
     Button1: TButton;
     cxTab_Settings: TcxTabSheet;
     Button2: TButton;
-    Action1: TAction;
-    Button3: TButton;
-    dxBarButton1: TdxBarButton;
-    dxBarLargeButton1: TdxBarLargeButton;
-    dxBarStatic1: TdxBarStatic;
-    ImageList1: TImageList;
     adAccounts: TADOQuery;
     adAccountsid: TAutoIncField;
     adAccountsAccountName: TWideStringField;
@@ -94,16 +82,17 @@ type
     cxAccountsTimeout: TcxGridDBColumn;
     cxAccountsstatus: TcxGridDBColumn;
     tray: TCoolTrayIcon;
-    dxBarButton2: TdxBarButton;
-    dxBarButton3: TdxBarButton;
-    TrayPopUp: TPopupMenu;
-    N1: TMenuItem;
-    N2: TMenuItem;
-    ActionList1: TActionList;
-    Action2: TAction;
-    PopupActionBarEx1: TPopupActionBarEx;
-    N3: TMenuItem;
-    N4: TMenuItem;
+    AList: TActionList;
+    alAddAccount: TAction;
+    dxBar: TdxBarManager;
+    msAccounts: TdxBarSubItem;
+    msAddAccount: TdxBarButton;
+    msEditAccount: TdxBarButton;
+    msDeleteAccount: TdxBarButton;
+    msAppExit: TdxBarButton;
+    alEditAccount: TAction;
+    alDeleteAccount: TAction;
+    alAppTerminate: TAction;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure amDeleteAccountExecute(Sender: TObject);
@@ -127,7 +116,12 @@ type
     procedure adAccountsstatusGetText(Sender: TField; var Text: String;
       DisplayText: Boolean);
     procedure trayClick(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
+    procedure alAddAccountExecute(Sender: TObject);
+    procedure msAccountsPopup(Sender: TObject);
+    procedure cxAccountsSelectionChanged(Sender: TcxCustomGridTableView);
+    procedure alEditAccountExecute(Sender: TObject);
+    procedure alDeleteAccountExecute(Sender: TObject);
+    procedure alAppTerminateExecute(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент 
@@ -323,25 +317,32 @@ var
 begin
  if not DragState then
   begin
- NodeIndex:=STree.TreeList.FocusedNode.AbsoluteIndex;
- if SNConverter.Find(NodeIndex,Res) then
-  Res.Sheet.Show;
- if Res.FilterType<>ftNone then
-  begin
-   UpdateHeaders(Res.Headers);
-   if Res.FilterType in [ftWhiteWord,ftBlackWord] then
-    cxFiltersParams.Visible:=True
-     else cxFiltersParams.Visible:=False;
-   with adFilters do
+   NodeIndex:=STree.TreeList.FocusedNode.AbsoluteIndex;
+   if SNConverter.Find(NodeIndex,Res) then
+    Res.Sheet.Show;
+
+   if Res.Sheet=cxTab_Accounts then
     begin
-     SQL.Clear;
-     Active:=False;
-     SQL.Text:='SELECT id,FValue,Description,Active,Params '+
-                  ' FROM FiltersParams WHERE mid=(SELECT id FROM Filters WHERE Type=:FilterType) ';
-     Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(Res.FilterType));
-     Active:=True;
+
     end;
-  end;
+
+
+   if Res.FilterType<>ftNone then
+    begin
+     UpdateHeaders(Res.Headers);
+     if Res.FilterType in [ftWhiteWord,ftBlackWord] then
+      cxFiltersParams.Visible:=True
+     else cxFiltersParams.Visible:=False;
+     with adFilters do
+      begin
+       SQL.Clear;
+       Active:=False;
+       SQL.Text:='SELECT id,FValue,Description,Active,Params '+
+                  ' FROM FiltersParams WHERE mid=(SELECT id FROM Filters WHERE Type=:FilterType) ';
+       Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(Res.FilterType));
+       Active:=True;
+      end;
+    end;
   end;
 end;
 
@@ -532,11 +533,6 @@ begin
 
     end;
  end;
- {
-
- 
-
- }
 end;
 
 procedure TFMain.adAccountsstatusGetText(Sender: TField; var Text: String;
@@ -554,14 +550,70 @@ end;
 
 procedure TFMain.trayClick(Sender: TObject);
 begin
-// tray.ShowMainForm;
-
+ tray.ShowMainForm;
 end;
 
-procedure TFMain.Timer1Timer(Sender: TObject);
+procedure TFMain.alAddAccountExecute(Sender: TObject);
 begin
-//tray.ShowBalloonHint('fsdgsgs','fdsafa',bitInfo,10);
- //Form1.Show;
+ FAccountEditor.ShowModal;
+end;
+
+procedure TFMain.msAccountsPopup(Sender: TObject);
+var
+ buf:TSNConvert;
+begin
+ SNConverter.Find(STree.TreeList.FocusedNode.AbsoluteIndex,buf);
+ if (buf.Sheet=cxTab_Accounts) and (cxAccounts.Controller.SelectedRowCount>0) then
+  begin
+   msEditAccount.Enabled:=True;
+   msDeleteAccount.Enabled:=True;
+  end
+   else
+    begin
+     msEditAccount.Enabled:=False;
+     msDeleteAccount.Enabled:=False;
+    end;
+end;
+
+procedure TFMain.cxAccountsSelectionChanged(
+  Sender: TcxCustomGridTableView);
+begin
+ {if cxTab_Accounts.Showing then  ShowMEssage('Active')
+  else ShowMessage('NActive');
+ if  (cxAccounts.Controller.SelectedRowCount>0) and (cxTab_Accounts.Showing) then
+  begin
+   msEditAccount.Enabled:=True;
+   msDeleteAccount.Enabled:=True;
+  end
+ else
+  begin
+   msEditAccount.Enabled:=False;
+   msDeleteAccount.Enabled:=False;
+  end;
+ }
+end;
+
+procedure TFMain.alEditAccountExecute(Sender: TObject);
+var
+ AccountId:integer;
+begin
+ AccountId:= cxAccounts.Controller.SelectedRows[0].Values[cxAccountsid.Index];
+ FAccountEditor.ShowModal(AccountId);
+end;
+
+procedure TFMain.alDeleteAccountExecute(Sender: TObject);
+var
+ AccountId:integer;
+begin
+ AccountId:= cxAccounts.Controller.SelectedRows[0].Values[cxAccountsid.Index];
+ if Application.MessageBox('Are you are sure ?','Deleting Account',MB_OKCANCEL)=IDOK then
+   AccountManager.DeleteAccount([AccountId]);
+   
+end;
+
+procedure TFMain.alAppTerminateExecute(Sender: TObject);
+begin
+ Application.Terminate;
 end;
 
 end.

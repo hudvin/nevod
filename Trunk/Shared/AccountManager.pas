@@ -64,12 +64,12 @@ function TAccountManager.AccountIdExists(AccountId:integer): Boolean;
 begin
   with adProc do
    begin
-    SQL.Text:='SELECT COUNT(Id) FROM Accounts WHEHE Id=:AccountId';
+    Active:=False;
+    SQL.Text:='SELECT COUNT(Id) FROM Accounts WHERE Id=:AccountId';
     Parameters.ParamByName('AccountId').Value:=AccountId;
-    ExecSQL;
-    Open;
+    Active:=True;
     if Fields[0].AsInteger>0 then Result:=True else Result:=False;
-    Close;
+    Active:=False;
    end;
 end;
 

@@ -204,10 +204,7 @@ begin
       PostReceivers[i]:=nil;
      end
     else
-     begin
-      //TBaseReceiver(PostReceivers[i]).Free;
       PostReceivers[i]:=nil;
-     end;
  ReleaseMutex(Mutex);
 end;
 

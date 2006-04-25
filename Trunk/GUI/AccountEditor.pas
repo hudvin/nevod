@@ -31,6 +31,7 @@ type
     FadAccounts: TADOQuery;
     FEditorMode:TEditorMode;
     FAccountParams:TAccountParams;
+    FAccountId:integer;
     { Private declarations }
   public
     constructor Create(adAccounts:TADOQuery;AccountManager:TAccountManager);
@@ -74,9 +75,22 @@ begin
  inherited ShowModal;
 end;
 
-procedure TFAccountEditor.ShowModal(AccountId:integer); // для редактирования параметров аккаунтов
+procedure TFAccountEditor.ShowModal(AccountId:integer);
+var
+ Params:TAccountParams;
 begin
  FEditorMode:=emEdit;
+ Params:=FAccountManager.AccountById[AccountId];
+ with Params do
+  begin
+   FAccountId:=Id;
+   leAccountName.Text:=AccountName;
+   leUsername.Text:=Username;
+   lePassword.Text:=Password;
+   leHost.Text:=Host;
+   lePort.Text:=IntToStr(Port);
+   leTimeout.Text:=FloatToStr(TimeOut/(60*1000));
+  end;
  SetCaptions;
  inherited ShowModal;
 end;
@@ -91,7 +105,7 @@ begin
  if FEditorMode=emEdit then
   begin
    Caption:='Изменение параметров аккаунта';
-   btCancel.Caption:='Изменить';
+   btOK.Caption:='Изменить';
   end
    else
     begin
@@ -110,6 +124,7 @@ procedure TFAccountEditor.btOKClick(Sender: TObject);
 begin
  with FAccountParams do
   begin
+   Id:=FAccountId;
    AccountName:=leAccountName.Text;
    Username:=leUsername.Text;
    Password:=lePassword.Text;
