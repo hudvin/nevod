@@ -108,23 +108,29 @@ end;
 
 procedure TFAccountEditor.btOKClick(Sender: TObject);
 begin
+ with FAccountParams do
+  begin
+   AccountName:=leAccountName.Text;
+   Username:=leUsername.Text;
+   Password:=lePassword.Text;
+   Host:=leHost.Text;
+   Port:=StrToInt(lePort.Text);
+   Timeout:=StrToInt(leTimeout.Text)*1000*60;
+  end;
+
  try
   if FEditorMode=emAdd then
    begin
-    with FAccountParams do
-      begin
-       AccountName:=leAccountName.Text;
-       Username:=leUsername.Text;
-       Password:=lePassword.Text;
-       Host:=leHost.Text;
-       Port:=StrToInt(lePort.Text);
-       Timeout:=StrToInt(leTimeout.Text)*1000*60;
-      end;
     FAccountManager.AddAccount(FAccountParams);
     FAdAccounts.Requery;
     Close;
+   end
+  else
+   begin
+    FAccountManager.ModifyAccount(FAccountParams);
+    FAdAccounts.Requery;
+    Close;
    end;
-    
 
  except
   on e: Exception do

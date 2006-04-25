@@ -2,7 +2,7 @@ unit PostReceiver;
 
 interface
 uses   Shared,
-  IdThread, IdMessage,Variants, Classes,  Controls,DBTables, Dialogs,
+  IdThread, IdMessage,Variants, Classes,DBTables, 
   IdPOP3,Windows, SysUtils, ADODB,DB, DateUtils,  ActiveX;
 
 
@@ -10,13 +10,11 @@ type
   TBaseReceiver = class(TIdThread)
   private
     FAccountParams:TAccountParams;
-    FADOCon: TADOConnection;
     FPackMessages: Boolean;
     FTimeout: Integer;
     Log: TLogger;
-    OldMessagesId: TADOStoredProc;
     RecMessage: TFMessage;
-    Saver: TADOQuery;
+    adProc: TADOQuery;
     procedure AddToOldMessagesId(Mess: TFMessage);
     function GetThreadsCount: Integer;
     function MessageIdExists(MsgId: string): Boolean;
@@ -52,15 +50,11 @@ constructor TBaseReceiver.Create(Account: TAccountParams; ADOCon:
 begin
   inherited Create(False);
   FreeOnTerminate:=False;
-
-  FADOCon:=ADOCon;
   FAccountParams:=Account;
   FPackMessages:=PackMessages;
-  Log:=TLogger.Create(FADOCon);
-  Saver:=TADOQuery.Create(nil);
-  Saver.Connection:=FADOCon;
-  OldMessagesId:=TADOStoredProc.Create(nil);
-  OldMessagesId.Connection:=FADOCon;
+  Log:=TLogger.Create(ADOCon);
+  adProc:=TADOQuery.Create(nil);
+  adProc.Connection:=ADOCon;
   RecMessage:=TFMessage.Create;
 end;
 
@@ -68,18 +62,16 @@ destructor TBaseReceiver.Destroy;
 begin
   inherited Destroy;
   Log.Free;
-  Saver.Free;
+  adProc.Free;
   RecMessage.Free;
-  OldMessagesId.Free;
-  FADOCon:=nil;
 end;
 
 procedure TBaseReceiver.AddToOldMessagesId(Mess: TFMessage);
 begin
   CoInitialize(nil);
-  with OldMessagesId do
+  with adProc do
    begin
-    ProcedureName:='AddOldMsgId';
+    SQL.Text:='INSERT INTO OldMessagesId ( mid, MessId ) VALUES (:AccountId, :MessId)';
     with Parameters do
      begin
       Clear;
@@ -89,7 +81,7 @@ begin
       AddParameter.Name:='MessId';
       ParamByName('MessId').Value:=Mess.MsgId;
      end;
-    ExecProc;
+    ExecSQL;
     Close;
    end;
   CoUninitialize;
@@ -106,16 +98,15 @@ var
 begin
   CoInitialize(nil);
   Flag:=False;
-  with OldMessagesId do
+  with adProc do
    begin
-    Close;
-    Parameters.Clear;
-    ProcedureName:='GetMessIdCount';
+    Active:=False;
+    SQL.Text:='SELECT COUNT(id) FROM OldMessagesId WHERE MessId=:MessId';
     Parameters.AddParameter.Name:='MessId';
     Parameters.ParamByName('MessId').Value:=MsgId;
-    Open;
+    Active:=True;
     if Fields[0].AsInteger>0 then Flag:=True;
-    Close;
+    Active:=False;
    end;
   Result:=Flag; //возврашает истину если идентификатор существует в таблице
   CoUninitialize;
@@ -130,20 +121,18 @@ end;
 procedure TBaseReceiver.SaveMessage(Mess: TFMessage;MessSize:integer);
 var
   MessStream: TMemoryStream;
-  rs:String;
-  ms:TMemoryStream;
 begin
   CoInitialize(nil);
 
   MessStream:=TMemoryStream.Create;
   if FPackMessages then    Mess.SaveToZStream(MessStream)
     else  Mess.SaveToStream(MessStream);
-  Saver.Close;
+  adProc.Close;
 
-  Saver.SQL.Text:='INSERT INTO messages (mid, message,messId,Address,CompressionLevel,MessSize)'+
+  adProc.SQL.Text:='INSERT INTO messages (mid, message,messId,Address,CompressionLevel,MessSize)'+
                   ' VALUES (:mid,:message,:messId,:Address,:CompressionLevel,:MessSize)';
-  Saver.Parameters.ParseSQL(Saver.sql.text,true);
-  with   Saver.Parameters do
+  adProc.Parameters.ParseSQL(adProc.sql.text,true);
+  with   adProc.Parameters do
     begin
       ParamByName('mid').Value:=FAccountParams.Id;
 
@@ -156,7 +145,7 @@ begin
       ParamByName('CompressionLevel').Value:=Mess.Compression;
       ParamByName('MessSize').Value:=MessSize;
   end;
-  Saver.ExecSQL;
+  adProc.ExecSQL;
   MessStream.Free;
   CoUninitialize;
 end;
@@ -211,13 +200,12 @@ begin
          end;
    POP3Client.Disconnect;
  //  CoInitialize(nil);
-   with OldMessagesId do
+   with adProc do
     begin
-     Parameters.Clear;
-     ProcedureName:='DeleteOldMessagesId';
+     SQL.Text:='DELETE FROM OldmessagesId WHERE mid=:AccountId';
      Parameters.AddParameter.Name:='AccountId';
      Parameters.ParamByName('AccountId').Value:=AccountId;
-     ExecProc;
+     ExecSQL;
     end;
   // CoUninitialize;
    except

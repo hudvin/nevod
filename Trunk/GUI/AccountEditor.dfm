@@ -1,5 +1,5 @@
 object FAccountEditor: TFAccountEditor
-  Left = 646
+  Left = 601
   Top = 194
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle

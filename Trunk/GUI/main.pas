@@ -12,7 +12,8 @@ uses Commctrl, Forms,Windows, Dialogs, Registry, dxBar, cxStyles, Shared,
   cxGridDBTableView, cxClasses, cxControls, cxPC, cxSplitter,
   cxInplaceContainer, dxStatusBar, cxLookAndFeels,CustomEditor, ActnList,
   XPStyleActnCtrls, ActnMan,  Clipbrd, PerlRegEx,
-  ImgList, dxBarExtItems, CoolTrayIcon, ToolWin, ActnCtrls, ActnColorMaps;
+  ImgList, dxBarExtItems, CoolTrayIcon, ToolWin, ActnCtrls, ActnColorMaps,
+  ActnPopupCtrl;
 
 
 type
@@ -98,6 +99,11 @@ type
     TrayPopUp: TPopupMenu;
     N1: TMenuItem;
     N2: TMenuItem;
+    ActionList1: TActionList;
+    Action2: TAction;
+    PopupActionBarEx1: TPopupActionBarEx;
+    N3: TMenuItem;
+    N4: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure amDeleteAccountExecute(Sender: TObject);
@@ -122,7 +128,6 @@ type
       DisplayText: Boolean);
     procedure trayClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
-    procedure trayBalloonHintShow(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент 
@@ -166,13 +171,13 @@ var
   Coder:TBFCoder;
   AccountManager:TAccountManager;
 
+
 implementation
 
 uses Unit1, AddHooked;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
-
 
 
 procedure TFMain.WMChangeCBChain(var Msg: TWMChangeCBChain);
@@ -228,6 +233,8 @@ procedure TFMain.FormCreate(Sender: TObject);
 var
  Headers:TColumnsHeaders;
 begin
+
+
  FManager:=TFilterManager.Create(adCon);
  Exp:=TPerlRegEx.Create(nil);
  SProvider:=TSettings.Create(adCon);
@@ -557,9 +564,13 @@ begin
  //Form1.Show;
 end;
 
-procedure TFMain.trayBalloonHintShow(Sender: TObject);
-begin
- Caption:='';
-end;
-
 end.
+
+
+
+{
+
+при нажатии для добавления нового элемента
+ просто выводить сообщение  о том, что фильтр будет перезаписан
+
+}

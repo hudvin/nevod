@@ -16,7 +16,9 @@ uses
   AccountManager in '..\Shared\AccountManager.pas',
   AddAccount in 'AddAccount.pas' {FAddAccount},
   AccountEditor in 'AccountEditor.pas' {FAccountEditor},
-  AddHooked in 'AddHooked.pas' {FAddHooked};
+  AddHooked in 'AddHooked.pas' {FAddHooked},
+  PostReceiver in '..\MailReceiver\PostReceiver.pas',
+  ThreadManager in '..\MailReceiver\ThreadManager.pas';
 
 {$R *.res}
 

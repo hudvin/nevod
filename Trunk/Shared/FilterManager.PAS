@@ -20,6 +20,7 @@ type
     destructor Destroy; override;
     procedure AddElement(ElementValue:String;FilterType:TFilterType;
         Description:String; Status:Boolean;Params:Variant);
+    procedure DeleteElement(ElementValue:String;FilterType:TFilterType);
     function ElementExists(ElementValue:String;FilterType:TFilterType): Boolean;
         overload;
     function ElementExists(ElementValue:String;ElementId:integer;
@@ -111,6 +112,25 @@ begin
    
  Add(ElementValue,FilterType,Description,Status,Params);
 
+end;
+
+procedure TFilterManager.DeleteElement(ElementValue:String;
+    FilterType:TFilterType);
+var
+ Proc:TADOQuery;
+begin
+ ElementValue:=Trim(ElementValue);
+ Proc:=TADOQuery.Create(nil);
+ Proc.Connection:=adProc.Connection;
+ with Proc do
+  begin
+   Active:=False;
+   SQL.Text:='DELETE  FROM FiltersParams WHERE  (mid=:mid) AND (FValue=:Value) ';
+   Parameters.ParamByName('mid').Value:=MidByFilterType(FilterType);
+   Parameters.ParamByName('Value').Value:=ElementValue;
+   ExecSQL;
+  end;
+ Proc.Free;
 end;
 
 function TFilterManager.ElementExists(ElementValue:String;

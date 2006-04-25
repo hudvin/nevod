@@ -1,5 +1,5 @@
 object FMain: TFMain
-  Left = 148
+  Left = 108
   Top = 193
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
@@ -4996,22 +4996,43 @@ object FMain: TFMain
       1DFFC0074FFFF01F65FFFFFF9DFF}
     IconVisible = True
     IconIndex = 0
-    PopupMenu = TrayPopUp
+    PopupMenu = PopupActionBarEx1
     WantEnterExitEvents = True
     MinimizeToTray = True
     OnClick = trayClick
-    OnBalloonHintShow = trayBalloonHintShow
     Left = 227
     Top = 368
   end
   object TrayPopUp: TPopupMenu
+    Images = ImageList1
+    OwnerDraw = True
     Left = 731
     Top = 288
     object N1: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1101#1083#1077#1084#1077#1085#1090' '
+      ImageIndex = 0
     end
     object N2: TMenuItem
       Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1075#1083#1072#1074#1085#1086#1077' '#1086#1082#1085#1086
+      ImageIndex = 0
+    end
+  end
+  object ActionList1: TActionList
+    Left = 395
+    Top = 176
+    object Action2: TAction
+      Caption = 'Action2'
+    end
+  end
+  object PopupActionBarEx1: TPopupActionBarEx
+    ActionManager = aMan
+    Left = 515
+    Top = 232
+    object N3: TMenuItem
+      Caption = #1072#1074#1092#1072#1099#1092
+    end
+    object N4: TMenuItem
+      Caption = #1072#1099#1092#1092#1099
     end
   end
 end

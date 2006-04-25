@@ -1,6 +1,6 @@
 object FAddAccount: TFAddAccount
-  Left = 516
-  Top = 217
+  Left = 474
+  Top = 198
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Add New Account'
