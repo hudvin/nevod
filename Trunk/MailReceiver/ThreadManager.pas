@@ -14,12 +14,13 @@ type
     FCanExecute: Boolean;
     FAccountManager: TAccountManager;
     FADOCon: TADOConnection;
-    FCheckInterval: Integer;
     Mutex: THandle;
     PostReceivers: TList;
+    SProvider: TSettings;
+    procedure CheckForConnection;
     procedure Clean;
     function GetActiveThreads: Integer;
-    procedure SetCheckInterval(const Value: Integer);
+    function GetCheckInterval: Integer;
   public
     constructor Create(ADOCon: TADOConnection; AccountManager:TAccountManager;
         CanExecute:Boolean=True);
@@ -30,7 +31,7 @@ type
     procedure StopAllThreads(Soft:boolean=False);
     procedure StopThread(AccountId: Integer); overload;
     property ActiveThreads: Integer read GetActiveThreads;
-    property CheckInterval: Integer read FCheckInterval write SetCheckInterval;
+    property CheckInterval: Integer read GetCheckInterval;
   end;
 
 
@@ -44,11 +45,11 @@ constructor TThreadManager.Create(ADOCon: TADOConnection;
     AccountManager:TAccountManager;CanExecute:Boolean=True);
 begin
   inherited Create(False);
-  FCheckInterval:=60000;
+  FADOCon:=ADOCon;
+  SProvider:=TSettings.Create(ADOCon);
   Mutex:=CreateMutex(nil,False,MutexName);
   FAccountManager:=AccountManager;
   PostReceivers:=TList.Create;
-  FADOCon:=ADOCon;
   FCanExecute:=CanExecute;
 end;
 
@@ -57,8 +58,18 @@ begin
   StopAllThreads();
   FADOCon:=nil;
   FAccountManager:=nil;
-  inherited Destroy;
   CloseHandle(Mutex);
+  SProvider.Free;
+  inherited Destroy;
+end;
+
+procedure TThreadManager.CheckForConnection;
+begin
+ if  StrToBool(SProvider.GetValue('CheckIfNotConnected')) then
+  FCanExecute:=True
+   else
+    if IsConnected then  FCanExecute:=True
+     else FCanExecute:=False;
 end;
 
 procedure TThreadManager.Clean;
@@ -87,10 +98,13 @@ begin
   while not Terminated do
    begin
     Counter:=Counter+WaitTime;
+    Clean;
+    // проверить можно ли проверять сообщения, если нет подключений
+    CheckForConnection();
     if FCanExecute then
      begin
       WaitForSingleObject(Mutex,WaitTime) ;
-      Clean();
+   //   Clean();     // очищать нужно в любом случае
       if Counter>=CheckInterval  then
        begin
         StartAllThreads; // запуск потоков для получения
@@ -111,18 +125,9 @@ begin
   ReleaseMutex(Mutex);
 end;
 
-procedure TThreadManager.SetCheckInterval(const Value: Integer);
-var
- Buff:boolean;
+function TThreadManager.GetCheckInterval: Integer;
 begin
-  if FCheckInterval <> Value then
-  begin
-    Buff:=FCanExecute;
-    if  Buff then FCanExecute:=False;
-    FCheckInterval := Value;
-    if Buff then
-       FCanExecute:=True;
-  end;
+ Result:=StrToInt(SProvider.GetValue('CheckInterval'));
 end;
 
 procedure TThreadManager.StartAllThreads(Intro:boolean=True);
@@ -208,5 +213,11 @@ begin
  ReleaseMutex(Mutex);
 end;
 
+{
+
+
+если нет соединения - не запускать потоки !
+
+}
 
 end.

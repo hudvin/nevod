@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 225
-  Top = 120
+  Left = 125
+  Top = 251
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -109,7 +109,7 @@ object FMain: TFMain
     Top = 23
     Width = 586
     Height = 405
-    ActivePage = cxTab_Accounts
+    ActivePage = cxTab_Log
     Align = alClient
     DragMode = dmAutomatic
     LookAndFeel.Kind = lfStandard
@@ -133,7 +133,6 @@ object FMain: TFMain
         LookAndFeel.NativeStyle = True
         object cxAccounts: TcxGridDBTableView
           NavigatorButtons.ConfirmDelete = False
-          OnSelectionChanged = cxAccountsSelectionChanged
           DataController.DataSource = dsAccounts
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <>
@@ -313,6 +312,24 @@ object FMain: TFMain
       Caption = 'cxTab_Settings'
       ImageIndex = 3
     end
+  end
+  object Button3: TButton
+    Left = 96
+    Top = 224
+    Width = 75
+    Height = 25
+    Caption = 'Button3'
+    TabOrder = 7
+    OnClick = Button3Click
+  end
+  object Button4: TButton
+    Left = 80
+    Top = 360
+    Width = 75
+    Height = 25
+    Caption = 'Button4'
+    TabOrder = 9
+    OnClick = Button4Click
   end
   object dsAccounts: TDataSource
     DataSet = adAccounts
@@ -4334,10 +4351,12 @@ object FMain: TFMain
     end
     object alEditAccount: TAction
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
+      Enabled = False
       OnExecute = alEditAccountExecute
     end
     object alDeleteAccount: TAction
       Caption = #1059#1076#1072#1083#1080#1090#1100
+      Enabled = False
       OnExecute = alDeleteAccountExecute
     end
     object alAppTerminate: TAction
@@ -4425,12 +4444,10 @@ object FMain: TFMain
     object msEditAccount: TdxBarButton
       Action = alEditAccount
       Category = 0
-      Enabled = False
     end
     object msDeleteAccount: TdxBarButton
       Action = alDeleteAccount
       Category = 0
-      Enabled = False
     end
     object msAppExit: TdxBarButton
       Action = alAppTerminate

@@ -93,6 +93,8 @@ type
     alEditAccount: TAction;
     alDeleteAccount: TAction;
     alAppTerminate: TAction;
+    Button3: TButton;
+    Button4: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure amDeleteAccountExecute(Sender: TObject);
@@ -101,7 +103,6 @@ type
     procedure Button2Click(Sender: TObject);
     procedure adFiltersParamsGetText(Sender: TField; var Text: String;
       DisplayText: Boolean);
-    procedure Button3Click(Sender: TObject);
     procedure SettingsTreeDragOver(Sender, Source: TObject; X, Y: Integer;
       State: TDragState; var Accept: Boolean);
     procedure cxFiltersEndDrag(Sender, Target: TObject; X, Y: Integer);
@@ -118,21 +119,24 @@ type
     procedure trayClick(Sender: TObject);
     procedure alAddAccountExecute(Sender: TObject);
     procedure msAccountsPopup(Sender: TObject);
-    procedure cxAccountsSelectionChanged(Sender: TcxCustomGridTableView);
     procedure alEditAccountExecute(Sender: TObject);
     procedure alDeleteAccountExecute(Sender: TObject);
     procedure alAppTerminateExecute(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
   private
     adProc: TADOQuery;
-    LastHooked:String;  // содержит последний захваченный из буфера элемент 
+    LastHooked:String;  // содержит последний захваченный из буфера элемент
     CurrNode:TcxTreeListNode;
     PrevHwnd: Hwnd;
     Exp:TPerlRegEx;
+    procedure ShowNewMail(var Msg: TMessage); message WM_BallonMessage;
     procedure WMChangeCBChain(var Msg: TWMChangeCBChain);
-    message WM_CHANGECBCHAIN;
-
-  procedure WMDrawClipboard(var Msg: TWMDrawClipboard);
+     message WM_CHANGECBCHAIN;
+    procedure WMDrawClipboard(var Msg: TWMDrawClipboard);
     message WM_DRAWCLIPBOARD;
+
+    procedure WMCopyData(var Msg: TWMCopyData); message WM_COPYDATA;
 
     { Private declarations }
   public
@@ -164,15 +168,23 @@ var
   FAccountEditor:TFAccountEditor;
   Coder:TBFCoder;
   AccountManager:TAccountManager;
-
+  Mutex:THandle;
 
 implementation
 
-uses Unit1, AddHooked;
+uses Unit1, AddHooked, USock;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
 
+
+
+procedure TFMain.ShowNewMail(var Msg: TMessage);
+begin
+ Randomize;
+ tray.ShowBalloonHint('Получена новая почта','В ящике ' +IntToStr(Random(1000)) +' новых сообщений',bitInfo,10);
+
+end;
 
 procedure TFMain.WMChangeCBChain(var Msg: TWMChangeCBChain);
 begin
@@ -227,7 +239,7 @@ procedure TFMain.FormCreate(Sender: TObject);
 var
  Headers:TColumnsHeaders;
 begin
-
+ Mutex:=CreateMutex(nil, False,MutexName);
 
  FManager:=TFilterManager.Create(adCon);
  Exp:=TPerlRegEx.Create(nil);
@@ -269,7 +281,7 @@ begin
     Add(5,ftStamp,'Добавить штамп',cxTab_Filters,Headers); // штамп
     // добавление панелей не-фильтров
    Add(0,ftNone,'',cxTab_Settings);      // основные настройки
-   Add(1,ftNone,'',cxTab_Accounts);      // учетные записи
+   Add(1,ftNone,'Accounts',cxTab_Accounts);      // учетные записи
    Add(13,ftNone,'',cxTab_Log);
    end;
 
@@ -298,6 +310,9 @@ begin
  Exp.Free;
  SProvider.Free;
  adProc.Free;
+
+ CloseHandle(Mutex);
+
 end;
 
 procedure TFMain.amDeleteAccountExecute(Sender: TObject);
@@ -404,22 +419,10 @@ begin
  while (not Flag) and (i<STree.TreeList.LastNode.AbsoluteIndex) do
   if STree.TreeList.Items[i].AbsoluteIndex=NodeIndex then
    begin
-    Stree.TreeList.Select(STree.TreeList.Items[i]);
+    Stree.TreeList.FocusedNode:=STree.TreeList.Items[i];
     Flag:=True;
    end
   else inc(i);
-end;
-
-procedure TFMain.Button3Click(Sender: TObject);
-begin
-// FAddHooked.Show;
-
-//pop.SubMenuControl.Update
-
-//  FAccountEditor.ShowModal;
-
- //ShowMessage(IntToStr(SettingsTree.Nodes.Count));
-// ActivateNode(5);
 end;
 
 procedure TFMain.SettingsTreeDragOver(Sender, Source: TObject; X,
@@ -554,7 +557,11 @@ begin
 end;
 
 procedure TFMain.alAddAccountExecute(Sender: TObject);
+var
+ buf:TSNConvert;
 begin
+ SNConverter.FindByName('Accounts',buf);
+ ActivateNode(buf.NodeIndex);
  FAccountEditor.ShowModal;
 end;
 
@@ -565,32 +572,14 @@ begin
  SNConverter.Find(STree.TreeList.FocusedNode.AbsoluteIndex,buf);
  if (buf.Sheet=cxTab_Accounts) and (cxAccounts.Controller.SelectedRowCount>0) then
   begin
-   msEditAccount.Enabled:=True;
-   msDeleteAccount.Enabled:=True;
+   alEditAccount.Enabled:=True;
+   alDeleteAccount.Enabled:=True;
   end
    else
     begin
-     msEditAccount.Enabled:=False;
-     msDeleteAccount.Enabled:=False;
+     alEditAccount.Enabled:=False;
+     alDeleteAccount.Enabled:=False;
     end;
-end;
-
-procedure TFMain.cxAccountsSelectionChanged(
-  Sender: TcxCustomGridTableView);
-begin
- {if cxTab_Accounts.Showing then  ShowMEssage('Active')
-  else ShowMessage('NActive');
- if  (cxAccounts.Controller.SelectedRowCount>0) and (cxTab_Accounts.Showing) then
-  begin
-   msEditAccount.Enabled:=True;
-   msDeleteAccount.Enabled:=True;
-  end
- else
-  begin
-   msEditAccount.Enabled:=False;
-   msDeleteAccount.Enabled:=False;
-  end;
- }
 end;
 
 procedure TFMain.alEditAccountExecute(Sender: TObject);
@@ -608,7 +597,6 @@ begin
  AccountId:= cxAccounts.Controller.SelectedRows[0].Values[cxAccountsid.Index];
  if Application.MessageBox('Are you are sure ?','Deleting Account',MB_OKCANCEL)=IDOK then
    AccountManager.DeleteAccount([AccountId]);
-   
 end;
 
 procedure TFMain.alAppTerminateExecute(Sender: TObject);
@@ -616,13 +604,50 @@ begin
  Application.Terminate;
 end;
 
-end.
+procedure TFMain.Button3Click(Sender: TObject);
+var
+   aCopyData: TCopyDataStruct;
+   sn:PNodeParams;
+begin
+ New(sn);
+ sn.FilterType:=ftBlackSender;
+ sn.adTab:=adAccounts;
+// if sn.Location=slAnywhere
+//  then ShowMessage('везде');
+ with aCopyData do
+  begin
+   dwData := 0;
+   cbData := SizeOf(PSignalTypeDescriptor);
+   lpData :=sn;
+  end;
+
+ SendMessage(Handle, WM_COPYDATA, Longint(Handle), Longint(@aCopyData))
+end;
+
+procedure TFMain.WMCopyData(var Msg: TWMCopyData);
+var
+ sn:PNodeParams;
+begin
+
+ sn:=Msg.CopyDataStruct.lpData;
+ if sn.FilterType=ftBlackSender then ShowMessage('');
+
+end;
 
 
 
 {
 
-при нажатии для добавления нового элемента
- просто выводить сообщение  о том, что фильтр будет перезаписан
+ procedure WMEndSession(var Msg: TWMEndSession); message WM_ENDSESSION;
+
+ вывод сообщения В ящике "" есть "" сообщений
 
 }
+
+procedure TFMain.Button4Click(Sender: TObject);
+begin
+ if StrToBool('False') then  ShowMessage('');
+   
+end;
+
+end.

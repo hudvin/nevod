@@ -18,7 +18,8 @@ uses
   AccountEditor in 'AccountEditor.pas' {FAccountEditor},
   AddHooked in 'AddHooked.pas' {FAddHooked},
   PostReceiver in '..\MailReceiver\PostReceiver.pas',
-  ThreadManager in '..\MailReceiver\ThreadManager.pas';
+  ThreadManager in '..\MailReceiver\ThreadManager.pas',
+  USock in 'USock.pas';
 
 {$R *.res}
 

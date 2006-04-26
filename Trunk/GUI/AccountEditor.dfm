@@ -113,7 +113,7 @@ object FAccountEditor: TFAccountEditor
       Top = 168
       Width = 75
       Height = 25
-      Caption = 'Cancel'
+      Caption = #1054#1090#1084#1077#1085#1072
       TabOrder = 7
       OnClick = btCancelClick
     end

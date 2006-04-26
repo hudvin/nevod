@@ -20,6 +20,14 @@ uses  PerlRegEx,
   DCPcrypt,Blowfish,Base64,IdHash,IdHashMessageDigest;
 
 const
+  SIO_GET_INTERFACE_LIST = $4004747F;
+  IFF_UP = $00000001;
+  IFF_BROADCAST = $00000002;
+  IFF_LOOPBACK = $00000004;
+  IFF_POINTTOPOINT = $00000008;
+  IFF_MULTICAST = $00000010;
+
+
   WM_WTSSESSION_CHANGE = $2B1;
   WTS_CONSOLE_CONNECT = 1;
   WTS_CONSOLE_DISCONNECT = 2;
@@ -35,8 +43,8 @@ const
   CriptKey=' &(5428396%:?(__*:?:(_(%fGfhhKJHFGHD12_= ';
   MutexName='{94FA4497-A317-4C45-9B57-A0558F8221D7}';
   ServerMutex='{B66AEAD2-94BF-453B-9D79-27CC798B6657}';
-  WaitTime=1000;      // время между проверками состояний
-
+  WaitTime=5000;      // время между проверками состояний
+  WM_BallonMessage = WM_USER + 1;
 
 type
  TClbHookMode=(chEmail,chURL,chEmailURL);
@@ -73,6 +81,22 @@ type
   PBMTable = ^TBMTable;
 
 type
+ SockAddr_Gen = packed record
+  AddressIn: sockaddr_in;
+  Filter: packed array [0..7] of char;
+end;
+
+type
+ INTERFACE_INFO = packed record
+  iiFlags: u_long; // Флаги интерфейса
+  iiAddress: sockaddr_gen; // Адрес интерфейса
+  iiBroadcastAddress: sockaddr_gen; // Broadcast адрес
+  iiNetmask: sockaddr_gen; // Маска подсети
+end;
+
+
+
+type
   TFilterResult = record
     FilterType: TFilterType;
     Reason: string;
@@ -100,7 +124,7 @@ type
 
 type
  PSignalTypeDescriptor=^TSignalTypeDescriptor;
- TSignalTypeDescriptor = record
+ TSignalTypeDescriptor = packed record
     Description: string;
     Location: TSignalLocation;
   end;
@@ -266,6 +290,13 @@ type
   end;
 
 
+function IsConnected():Boolean;
+function WSAIoctl(s: TSocket; cmd: DWORD; lpInBuffer: PCHAR; dwInBufferLen:
+  DWORD;
+  lpOutBuffer: PCHAR; dwOutBufferLen: DWORD;
+  lpdwOutBytesReturned: LPDWORD;
+  lpOverLapped: POINTER;
+  lpOverLappedRoutine: POINTER): Integer; stdcall; external 'WS2_32.DLL';
 
 function RegisterSessionNotification(Wnd: HWND; dwFlags: DWORD): Boolean;
 function UnRegisterSessionNotification(Wnd: HWND): Boolean;
@@ -758,6 +789,45 @@ begin
     end;
   end;
 end;
+
+
+function IsConnected():boolean;
+var
+  s: TSocket;
+  wsaD: WSADATA;
+  NumInterfaces: Integer;
+  BytesReturned, SetFlags: u_long;
+  PtrA: pointer;
+  Buffer: array[0..20] of INTERFACE_INFO;
+  i: Integer;
+begin
+ WSAStartup($0101, wsaD);
+ S := Socket(AF_INET, SOCK_STREAM, 0); // Открываем сокет
+ if (s = INVALID_SOCKET) then
+  exit;
+ try // Вызываем WSAIoCtl
+  PtrA := @bytesReturned;
+  if (WSAIoCtl(s, SIO_GET_INTERFACE_LIST, nil, 0, @Buffer,1024, PtrA, nil, nil) <> SOCKET_ERROR) then
+    begin
+     NumInterfaces := BytesReturned div SizeOf(INTERFACE_INFO);
+     i:=0;
+     Result:=false;
+     while (i<NumInterfaces) and (not Result) do
+      begin
+       SetFlags := Buffer[i].iiFlags;
+       if  ((SetFlags and IFF_UP) = IFF_UP) then
+        if (SetFlags and IFF_LOOPBACK) <>IFF_LOOPBACK then
+        Result:=True
+       else inc(i);
+      end;
+
+ end;
+ except
+  CloseSocket(s);
+  WSACleanUp;
+ end;
+end;
+
 
 function GetLocalIP: String;
 const WSVer = $101;
