@@ -11,12 +11,12 @@ type
   private
     FAccountParams:TAccountParams;
     FPackMessages: Boolean;
-    FTimeout: Integer;
-    Log: TLogger;
     RecMessage: TFMessage;
     adProc: TADOQuery;
+    FLogMessage: string;
+    FMessagesCount: Integer;
+    FSuccessFul: Boolean;
     procedure AddToOldMessagesId(Mess: TFMessage);
-    function GetThreadsCount: Integer;
     function MessageIdExists(MsgId: string): Boolean;
     procedure ReceiveMessages; virtual; abstract;
     procedure SaveMessage(Mess: TFMessage;MessSize:integer); virtual;
@@ -27,7 +27,9 @@ type
         PackMessages: Boolean); virtual;
     destructor Destroy; override;
     property AccountId: Integer read FAccountParams.Id;
-    property ThreadsCount: Integer read GetThreadsCount;
+    property LogMessage: string read FLogMessage;
+    property MessagesCount: Integer read FMessagesCount;
+    property SuccessFul: Boolean read FSuccessFul;
   end;
 
   TPOP3Receiver = class(TBaseReceiver)
@@ -50,9 +52,11 @@ constructor TBaseReceiver.Create(Account: TAccountParams; ADOCon:
 begin
   inherited Create(False);
   FreeOnTerminate:=False;
+  FMessagesCount:=0;
+  FLogMessage:='';
+  FSuccessFul:=True;
   FAccountParams:=Account;
   FPackMessages:=PackMessages;
-  Log:=TLogger.Create(ADOCon);
   adProc:=TADOQuery.Create(nil);
   adProc.Connection:=ADOCon;
   RecMessage:=TFMessage.Create;
@@ -61,7 +65,6 @@ end;
 destructor TBaseReceiver.Destroy;
 begin
   inherited Destroy;
-  Log.Free;
   adProc.Free;
   RecMessage.Free;
 end;
@@ -87,11 +90,6 @@ begin
   CoUninitialize;
 end;
 
-function TBaseReceiver.GetThreadsCount: Integer;
-begin
-//  Result := FThreadsCount;
-end;
-
 function TBaseReceiver.MessageIdExists(MsgId: string): Boolean;
 var
   Flag: Boolean;
@@ -102,7 +100,6 @@ begin
    begin
     Active:=False;
     SQL.Text:='SELECT COUNT(id) FROM OldMessagesId WHERE MessId=:MessId';
-    Parameters.AddParameter.Name:='MessId';
     Parameters.ParamByName('MessId').Value:=MsgId;
     Active:=True;
     if Fields[0].AsInteger>0 then Flag:=True;
@@ -199,19 +196,23 @@ begin
             end;
          end;
    POP3Client.Disconnect;
+   FMessagesCount:=MessCount;
+   FSuccessFul:=True;
  //  CoInitialize(nil);
    with adProc do
     begin
+     Active:=False;
      SQL.Text:='DELETE FROM OldmessagesId WHERE mid=:AccountId';
-     Parameters.AddParameter.Name:='AccountId';
      Parameters.ParamByName('AccountId').Value:=AccountId;
      ExecSQL;
+     Active:=False;
     end;
   // CoUninitialize;
    except
      on E:Exception do
       begin
-       Log.Add(E.Message,FAccountParams.Id,ltPostReceiver);
+       FSuccessFul:=False;
+       FLogMessage:=e.Message;
       end;
    end;
 end;

@@ -57,6 +57,8 @@ type
 
 type
   TLogType=(ltPOP3Server,ltPostReceiver);
+type
+  TBalloonHintIcon =(bitNone, bitInfo, bitWarning, bitError);
 
 type
   TFilterType=(ftBlackSender,ftWhiteSender,ftStamp,ftBlackWord,ftWhiteWord,ftImageFilter,ftLinkFilter,
@@ -199,8 +201,7 @@ type
 
   TLogger = class(TObject)
   private
-    ACon: TADOConnection;
-    Ast: TADOStoredProc;
+    adProc: TADOQuery;
   public
     constructor Create(ADOCon:TADOConnection);
     destructor Destroy; override;
@@ -287,6 +288,20 @@ type
     function SIndex2NIndex(SelectionIndex:Integer): Integer;
     property Count: Integer read GetCount;
     property Item[Index: Integer]: TSNConvert read GetItem;
+  end;
+
+  TSClass = class
+  private
+  public
+    Loc: TSignalTypeDescriptor;
+  end;
+
+  TWMMessanger = class
+  private
+    BallonType: TBalloonHintIcon;
+    LogMessage: string;
+    MessagesCount: Integer;
+  public
   end;
 
 
@@ -564,38 +579,33 @@ end;
 }
 constructor TLogger.Create(ADOCon:TADOConnection);
 begin
-  ACon:=ADOCon;
-  Ast:=TADOStoredProc.Create(nil);
-  Ast.Connection:=ACon;
-  Ast.ProcedureName:='AddLogRecord';
+  adProc:=TADOQuery.Create(nil);
+  adProc.Connection:=ADOCon;
+  adProc.SQL.Text:='INSERT INTO log ( Message, ErrorTime, mid, ErrorType ) '+
+                   'VALUES (:Message,:ErrorTime,:mid,:ErrorType)';
 end;
 
 destructor TLogger.Destroy;
 begin
-  ACon:=nil;
-  Ast.Close;
-  Ast.Free;
+  adProc.Close;
+  adProc.Free;
 end;
 
 procedure TLogger.Add(LogMessage:string;AccountId:integer;LogType:TLogType);
 begin
   try
-   with Ast do
+   with adProc do
     begin
+      Active:=False;
       CoInitialize(nil);
       with Parameters do
         begin
-          Clear;
-          AddParameter.Name:='Message';
           ParamByName('Message').Value:=LogMessage;
-          AddParameter.Name:='ErrorTime';
           ParamByName('ErrorTime').Value:=Now;;
-          AddParameter.Name:='mid';
           ParamByName('mid').Value:=AccountId;
-          AddParameter.Name:='ErrorType';
           ParamByName('ErrorType').Value:=GetEnumName(TypeInfo(TLogType), Ord(LogType));
         end;
-      ExecProc;
+      ExecSQL;
       CoUninitialize;
     end;
    except

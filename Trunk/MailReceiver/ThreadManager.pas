@@ -3,7 +3,7 @@ unit ThreadManager;
 interface
 
 uses
-      Exceptions, DB, StrUtils, Shared,PostReceiver,
+      Exceptions, DB, StrUtils, Shared,PostReceiver,WinSock,
      SysUtils,TypInfo, Windows,Classes,DateUtils,Dialogs, ADODB, AccountManager;
 
 
@@ -14,6 +14,7 @@ type
     FCanExecute: Boolean;
     FAccountManager: TAccountManager;
     FADOCon: TADOConnection;
+    Logger: TLogger;
     Mutex: THandle;
     PostReceivers: TList;
     SProvider: TSettings;
@@ -26,6 +27,7 @@ type
         CanExecute:Boolean=True);
     destructor Destroy; override;
     procedure Execute; override;
+    function IsConnected: Boolean;
     procedure StartAllThreads(Intro:boolean=True);
     procedure StartThread(AccountId: Integer;Single:Boolean=False);
     procedure StopAllThreads(Soft:boolean=False);
@@ -50,6 +52,7 @@ begin
   Mutex:=CreateMutex(nil,False,MutexName);
   FAccountManager:=AccountManager;
   PostReceivers:=TList.Create;
+  Logger:=TLogger.Create(ADOCon);
   FCanExecute:=CanExecute;
 end;
 
@@ -60,6 +63,7 @@ begin
   FAccountManager:=nil;
   CloseHandle(Mutex);
   SProvider.Free;
+  Logger.Free;
   inherited Destroy;
 end;
 
@@ -80,11 +84,19 @@ begin
   while i<PostReceivers.Count do
     begin
      if TBaseReceiver(PostReceivers[i]).Terminated then
-         begin
-           FAccountManager.SetStatus(TBaseReceiver(PostReceivers[i]).AccountId,asFree);
-           TBaseReceiver(PostReceivers[i]).Free;
-           PostReceivers[i]:=nil;
-         end;
+      with TBaseReceiver(PostReceivers[i]) do
+        begin
+         if SuccessFul=False then
+          begin
+           Logger.Add(LogMessage,AccountId,ltPostReceiver);
+           
+          end;
+
+         FAccountManager.SetStatus(AccountId,asFree);
+         Free;
+         PostReceivers[i]:=nil;
+        end;
+
      inc(i);
     end;
   PostReceivers.Pack;
@@ -128,6 +140,43 @@ end;
 function TThreadManager.GetCheckInterval: Integer;
 begin
  Result:=StrToInt(SProvider.GetValue('CheckInterval'));
+end;
+
+function TThreadManager.IsConnected: boolean;
+var
+  s: TSocket;
+  wsaD: WSADATA;
+  NumInterfaces: Integer;
+  BytesReturned, SetFlags: u_long;
+  PtrA: pointer;
+  Buffer: array[0..20] of INTERFACE_INFO;
+  i: Integer;
+begin
+ WSAStartup($0101, wsaD);
+ S := Socket(AF_INET, SOCK_STREAM, 0); // Открываем сокет
+ if (s = INVALID_SOCKET) then
+  exit;
+ try // Вызываем WSAIoCtl
+  PtrA := @bytesReturned;
+  if (WSAIoCtl(s, SIO_GET_INTERFACE_LIST, nil, 0, @Buffer,1024, PtrA, nil, nil) <> SOCKET_ERROR) then
+    begin
+     NumInterfaces := BytesReturned div SizeOf(INTERFACE_INFO);
+     i:=0;
+     Result:=false;
+     while (i<NumInterfaces) and (not Result) do
+      begin
+       SetFlags := Buffer[i].iiFlags;
+       if  ((SetFlags and IFF_UP) = IFF_UP) then
+        if (SetFlags and IFF_LOOPBACK) <>IFF_LOOPBACK then
+        Result:=True
+       else inc(i);
+      end;
+
+ end;
+ except
+  CloseSocket(s);
+  WSACleanUp;
+ end;
 end;
 
 procedure TThreadManager.StartAllThreads(Intro:boolean=True);

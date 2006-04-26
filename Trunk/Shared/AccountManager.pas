@@ -45,6 +45,7 @@ begin
   FadAccounts:=adAccounts;
   AccountTable:=TADOTable.Create(nil);
   AccountTable.Connection:=FadAccounts.Connection;
+  AccountTable.TableName:='Accounts';
   adProc:=TADOQuery.Create(nil);
   adProc.Connection:=FadAccounts.Connection;
 

@@ -7,7 +7,7 @@ uses Commctrl, Forms,Windows, Dialogs, Registry, dxBar, cxStyles, Shared,
   cxCheckBox, cxGridLevel, cxGridCustomTableView, cxGridTableView, ShellAPI,
   SysUtils, Typinfo, FilterManager, AccountManager,  AccountEditor,  Graphics,
 
-  cxGridCustomView, cxGrid, Menus,   Messages, 
+  cxGridCustomView, cxGrid, Menus,   Messages, ThreadManager,
   cxGridCustomPopupMenu, cxGridPopupMenu, Classes, Controls,
   cxGridDBTableView, cxClasses, cxControls, cxPC, cxSplitter,
   cxInplaceContainer, dxStatusBar, cxLookAndFeels,CustomEditor, ActnList,
@@ -15,7 +15,15 @@ uses Commctrl, Forms,Windows, Dialogs, Registry, dxBar, cxStyles, Shared,
   ImgList, dxBarExtItems, CoolTrayIcon, ToolWin, ActnCtrls, ActnColorMaps,
   ActnPopupCtrl;
 
+ 
 
+type 
+  TCopyDataStruct = packed record 
+    dwData: DWORD;   // anwendungsspezifischer Wert 
+    cbData: DWORD;   // Byte-Länge der zu übertragenden Daten 
+    lpData: Pointer; // Adresse der Daten 
+  end;
+  
 type
   TFMain = class(TForm)
     stBar: TdxStatusBar;
@@ -168,6 +176,7 @@ var
   FAccountEditor:TFAccountEditor;
   Coder:TBFCoder;
   AccountManager:TAccountManager;
+  ThreadManager:TThreadManager;
   Mutex:THandle;
 
 implementation
@@ -295,11 +304,14 @@ begin
 
  adAccounts.Active:=True;
 
+ ThreadManager:=TThreadManager.Create(adCon,AccountManager);
+
 end;
 
 
 procedure TFMain.FormDestroy(Sender: TObject);
 begin
+ ThreadManager.Free;
  FManager.Free;
  SNConverter.Free;
  FEditor.Free;
@@ -607,31 +619,73 @@ end;
 procedure TFMain.Button3Click(Sender: TObject);
 var
    aCopyData: TCopyDataStruct;
-   sn:PNodeParams;
+   sn:PSignalTypeDescriptor;
+   i:integer;
+   sl:TSignalLocation;
+   bt:TButton;
+   scl:TSClass;
 begin
- New(sn);
- sn.FilterType:=ftBlackSender;
- sn.adTab:=adAccounts;
+ bt:=TButton.Create(nil);
+ bt.Caption:='fdsfasfa';
+
+ scl:=TSClass.Create;
+
+  //New(sl);
+ //sl.Description:='ftBlackSender';
+ sl:=slAnywhere;
+ scl.Loc.Location:=slAnywhere;
+ scl.Loc.Description:='dsfdfafas';
 // if sn.Location=slAnywhere
 //  then ShowMessage('âåçäå');
  with aCopyData do
   begin
-   dwData := 0;
-   cbData := SizeOf(PSignalTypeDescriptor);
-   lpData :=sn;
+   dwData := 1;
+   cbData := SizeOf(TSClass);
+  // lpData :=@sl;
+   lpData:=@scl
   end;
+// Dispose(sn);
 
- SendMessage(Handle, WM_COPYDATA, Longint(Handle), Longint(@aCopyData))
+
+ SendMessage(Handle, WM_COPYDATA, Longint(Handle), Longint(@aCopyData));
+ Caption:='';
+// Dispose(sn);
 end;
 
 procedure TFMain.WMCopyData(var Msg: TWMCopyData);
 var
- sn:PNodeParams;
+ sn:PSignalTypeDescriptor;
+ sd:TSignalTypeDescriptor;
+ sl:TSignalLocation;
+ bt:TButton;
+ scl:TSClass;
+ i:integer;
 begin
+ for I := 0 to 100 do    // Iterate
+   begin
+    sleep(50);
+    Application.ProcessMessages;
+   end;
+// sleep(10000);
+ with Msg.CopyDataStruct^ do
+  begin
+//  ms.Write(lpdata^, cbdata);
+// sd.Location:=slBody;
+//sl:=slBody;
 
- sn:=Msg.CopyDataStruct.lpData;
- if sn.FilterType=ftBlackSender then ShowMessage('');
+ // bt:=TButton(lpdata^);
+ // ShowMessage(bt.Caption);
+   scl:=TSClass(lpdata^);
+// sl:=TSignalLocation(lpdata^);
+ if scl.Loc.Location=slBody then ShowMessage('');
+ end;
 
+
+
+// sn:=Msg.CopyDataStruct.lpData;
+//
+// Caption:=SN.Description;
+// Dispose(sn);
 end;
 
 
