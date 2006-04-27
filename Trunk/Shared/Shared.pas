@@ -7,7 +7,7 @@ uses  PerlRegEx,
   cxCheckBox, cxGridLevel, cxGridCustomTableView, cxGridTableView,
   
 
-  cxGridCustomView, cxGrid, Menus,
+  cxGridCustomView, cxGrid, Menus,  CoolTrayIcon,
   cxGridCustomPopupMenu, cxGridPopupMenu,  Controls,
   cxGridDBTableView, cxClasses, cxControls, cxPC, cxSplitter,
   cxInplaceContainer, dxStatusBar, cxLookAndFeels,
@@ -57,8 +57,7 @@ type
 
 type
   TLogType=(ltPOP3Server,ltPostReceiver);
-type
-  TBalloonHintIcon =(bitNone, bitInfo, bitWarning, bitError);
+
 
 type
   TFilterType=(ftBlackSender,ftWhiteSender,ftStamp,ftBlackWord,ftWhiteWord,ftImageFilter,ftLinkFilter,
@@ -298,10 +297,11 @@ type
 
   TWMMessanger = class
   private
+  public
     BallonType: TBalloonHintIcon;
+    Caption: string;
     LogMessage: string;
     MessagesCount: Integer;
-  public
   end;
 
 
@@ -319,9 +319,6 @@ function GetCurrentSessionID: Integer;
 function GetLocalIP: String;
 implementation
 
-procedure Register;
-begin
-end;
 
 {
 ******************************** TStringSeacher ********************************

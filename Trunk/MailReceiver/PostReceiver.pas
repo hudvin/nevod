@@ -27,6 +27,7 @@ type
         PackMessages: Boolean); virtual;
     destructor Destroy; override;
     property AccountId: Integer read FAccountParams.Id;
+    property AccountParams: TAccountParams read FAccountParams write FAccountParams;
     property LogMessage: string read FLogMessage;
     property MessagesCount: Integer read FMessagesCount;
     property SuccessFul: Boolean read FSuccessFul;
@@ -159,9 +160,10 @@ end;
 
 destructor TPOP3Receiver.Destroy;
 begin
-  inherited Destroy;
+  
   if POP3Client.Connected then POP3Client.Disconnect;
   POP3Client.Free;
+  inherited Destroy;
 end;
 
 procedure TPOP3Receiver.ReceiveMessages;
@@ -188,7 +190,7 @@ begin
                   RecMessage.Clear;
                   POP3Client.Retrieve(i,RecMessage);
                   MessSize:=POP3Client.RetrieveMsgSize(i);
-                  POP3Client.Delete(i);
+               //   POP3Client.Delete(i);
                   AddToOldMessagesId(RecMessage);
                   SaveMessage(RecMessage,MessSize);
                  end

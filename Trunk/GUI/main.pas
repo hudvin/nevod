@@ -103,6 +103,9 @@ type
     alAppTerminate: TAction;
     Button3: TButton;
     Button4: TButton;
+    AccountsUpdater: TTimer;
+    alStopThread: TAction;
+    msStopThread: TdxBarButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure amDeleteAccountExecute(Sender: TObject);
@@ -130,8 +133,9 @@ type
     procedure alEditAccountExecute(Sender: TObject);
     procedure alDeleteAccountExecute(Sender: TObject);
     procedure alAppTerminateExecute(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
+    procedure AccountsUpdaterTimer(Sender: TObject);
+    procedure alStopThreadExecute(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -586,11 +590,13 @@ begin
   begin
    alEditAccount.Enabled:=True;
    alDeleteAccount.Enabled:=True;
+   alStopThread.Enabled:=True;
   end
    else
     begin
      alEditAccount.Enabled:=False;
      alDeleteAccount.Enabled:=False;
+     alStopThread.Enabled:=False;
     end;
 end;
 
@@ -608,48 +614,16 @@ var
 begin
  AccountId:= cxAccounts.Controller.SelectedRows[0].Values[cxAccountsid.Index];
  if Application.MessageBox('Are you are sure ?','Deleting Account',MB_OKCANCEL)=IDOK then
+  begin
+   ThreadManager.StopThread(AccountId);
    AccountManager.DeleteAccount([AccountId]);
+  end;
+
 end;
 
 procedure TFMain.alAppTerminateExecute(Sender: TObject);
 begin
  Application.Terminate;
-end;
-
-procedure TFMain.Button3Click(Sender: TObject);
-var
-   aCopyData: TCopyDataStruct;
-   sn:PSignalTypeDescriptor;
-   i:integer;
-   sl:TSignalLocation;
-   bt:TButton;
-   scl:TSClass;
-begin
- bt:=TButton.Create(nil);
- bt.Caption:='fdsfasfa';
-
- scl:=TSClass.Create;
-
-  //New(sl);
- //sl.Description:='ftBlackSender';
- sl:=slAnywhere;
- scl.Loc.Location:=slAnywhere;
- scl.Loc.Description:='dsfdfafas';
-// if sn.Location=slAnywhere
-//  then ShowMessage('везде');
- with aCopyData do
-  begin
-   dwData := 1;
-   cbData := SizeOf(TSClass);
-  // lpData :=@sl;
-   lpData:=@scl
-  end;
-// Dispose(sn);
-
-
- SendMessage(Handle, WM_COPYDATA, Longint(Handle), Longint(@aCopyData));
- Caption:='';
-// Dispose(sn);
 end;
 
 procedure TFMain.WMCopyData(var Msg: TWMCopyData);
@@ -660,48 +634,36 @@ var
  bt:TButton;
  scl:TSClass;
  i:integer;
+ mess:TWMMessanger;
 begin
- for I := 0 to 100 do    // Iterate
-   begin
-    sleep(50);
-    Application.ProcessMessages;
-   end;
-// sleep(10000);
  with Msg.CopyDataStruct^ do
   begin
-//  ms.Write(lpdata^, cbdata);
-// sd.Location:=slBody;
-//sl:=slBody;
-
- // bt:=TButton(lpdata^);
- // ShowMessage(bt.Caption);
-   scl:=TSClass(lpdata^);
-// sl:=TSignalLocation(lpdata^);
- if scl.Loc.Location=slBody then ShowMessage('');
- end;
-
-
-
-// sn:=Msg.CopyDataStruct.lpData;
-//
-// Caption:=SN.Description;
-// Dispose(sn);
+   mess:=TWMMessanger(lpdata^);
+   tray.ShowBalloonHint(mess.Caption,mess.LogMessage,mess.BallonType,10);
+  end;
 end;
 
 
-
-{
-
- procedure WMEndSession(var Msg: TWMEndSession); message WM_ENDSESSION;
-
- вывод сообщения В ящике "" есть "" сообщений
-
-}
 
 procedure TFMain.Button4Click(Sender: TObject);
 begin
  if StrToBool('False') then  ShowMessage('');
    
+end;
+
+procedure TFMain.AccountsUpdaterTimer(Sender: TObject);
+begin
+ adAccounts.Requery;
+end;
+
+
+
+procedure TFMain.alStopThreadExecute(Sender: TObject);
+var
+ AccountId:integer;
+begin
+ AccountId:= cxAccounts.Controller.SelectedRows[0].Values[cxAccountsid.Index];
+ ThreadManager.StopThread(AccountId);
 end;
 
 end.

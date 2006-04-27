@@ -3,7 +3,7 @@ unit ThreadManager;
 interface
 
 uses
-      Exceptions, DB, StrUtils, Shared,PostReceiver,WinSock,
+      Exceptions, DB, StrUtils, Shared,PostReceiver,WinSock, Messages,  CoolTrayIcon,
      SysUtils,TypInfo, Windows,Classes,DateUtils,Dialogs, ADODB, AccountManager;
 
 
@@ -11,6 +11,7 @@ type
   TThreadManager = class(TThread)
   private
     Accounts: TADOStoredProc;
+    aCopyData: TCopyDataStruct;
     FCanExecute: Boolean;
     FAccountManager: TAccountManager;
     FADOCon: TADOConnection;
@@ -18,22 +19,27 @@ type
     Mutex: THandle;
     PostReceivers: TList;
     SProvider: TSettings;
+    Mess:TWMMessanger;
     procedure CheckForConnection;
     procedure Clean;
     function GetActiveThreads: Integer;
     function GetCheckInterval: Integer;
+    function GetShowHint: Boolean;
   public
     constructor Create(ADOCon: TADOConnection; AccountManager:TAccountManager;
         CanExecute:Boolean=True);
     destructor Destroy; override;
     procedure Execute; override;
     function IsConnected: Boolean;
+    procedure SendHintMessage(AccountName:String;Message:String;
+        BaloonType:TBalloonHintIcon);
     procedure StartAllThreads(Intro:boolean=True);
     procedure StartThread(AccountId: Integer;Single:Boolean=False);
     procedure StopAllThreads(Soft:boolean=False);
     procedure StopThread(AccountId: Integer); overload;
     property ActiveThreads: Integer read GetActiveThreads;
     property CheckInterval: Integer read GetCheckInterval;
+    property ShowHint: Boolean read GetShowHint;
   end;
 
 
@@ -45,6 +51,8 @@ uses main;
 }
 constructor TThreadManager.Create(ADOCon: TADOConnection;
     AccountManager:TAccountManager;CanExecute:Boolean=True);
+var
+ i:integer;
 begin
   inherited Create(False);
   FADOCon:=ADOCon;
@@ -54,6 +62,12 @@ begin
   PostReceivers:=TList.Create;
   Logger:=TLogger.Create(ADOCon);
   FCanExecute:=CanExecute;
+  Mess:=TWMMessanger.Create;
+  for I :=1 to FAccountManager.Count do    // Iterate
+    begin
+      FAccountManager.SetStatus(FAccountManager.Items[i].Id,asFree);
+    end;
+
 end;
 
 destructor TThreadManager.Destroy;
@@ -64,6 +78,7 @@ begin
   CloseHandle(Mutex);
   SProvider.Free;
   Logger.Free;
+  Mess.Free;
   inherited Destroy;
 end;
 
@@ -86,11 +101,38 @@ begin
      if TBaseReceiver(PostReceivers[i]).Terminated then
       with TBaseReceiver(PostReceivers[i]) do
         begin
+         if ShowHint then
          if SuccessFul=False then
           begin
            Logger.Add(LogMessage,AccountId,ltPostReceiver);
-           
-          end;
+           Mess.Caption:=' Ошибка при получении почты для  '+ '"'+AccountParams.AccountName +'"';
+           Mess.LogMessage:=' Ошибка при получении почты для учетной записи '+  ' '+LogMessage+ '  подробнее смотрите в журанале сообщений ';
+           Mess.MessagesCount:=MessagesCount;
+           Mess.BallonType:=bitError;
+           with aCopyData do
+            begin
+             dwData := 1;
+             cbData := SizeOf(TWMMessanger);
+             lpData:=@Mess
+            end;
+           SendMessage(main.FMain.Handle, WM_COPYDATA, Longint(main.FMain.Handle), Longint(@aCopyData));
+          end
+           else
+            if MessagesCount>0 then
+            begin
+             Mess.Caption:=' Получена новая почта  для  '+ '"'+AccountParams.AccountName +'"';
+             Mess.LogMessage:=' Загружено '+  ' '+IntToStr(MessagesCount)+ ' новых писем';
+             Mess.MessagesCount:=MessagesCount;
+             Mess.BallonType:=bitInfo;
+             with aCopyData do
+              begin
+               dwData := 1;
+               cbData := SizeOf(TWMMessanger);
+               lpData:=@Mess
+              end;
+             SendMessage(main.FMain.Handle, WM_COPYDATA, Longint(main.FMain.Handle), Longint(@aCopyData));
+            end;
+
 
          FAccountManager.SetStatus(AccountId,asFree);
          Free;
@@ -142,6 +184,11 @@ begin
  Result:=StrToInt(SProvider.GetValue('CheckInterval'));
 end;
 
+function TThreadManager.GetShowHint: Boolean;
+begin
+  Result:= StrToBool(SProvider.GetValue('ShowMessInfo'));
+end;
+
 function TThreadManager.IsConnected: boolean;
 var
   s: TSocket;
@@ -177,6 +224,12 @@ begin
   CloseSocket(s);
   WSACleanUp;
  end;
+end;
+
+procedure TThreadManager.SendHintMessage(AccountName:String;Message:String;
+    BaloonType:TBalloonHintIcon);
+begin
+
 end;
 
 procedure TThreadManager.StartAllThreads(Intro:boolean=True);
@@ -249,18 +302,28 @@ procedure TThreadManager.StopThread(AccountId: Integer);
 var
  i:integer;
 begin
- WaitForSingleObject(Mutex,INFINITE);
+ WaitForSingleObject(Mutex,500);
   for i :=0  to PostReceivers.Count-1 do
    if TBaseReceiver(PostReceivers[i]).AccountId=AccountId then
-    if not TBaseReceiver(PostReceivers[i]).Terminated then
+  {  if not TBaseReceiver(PostReceivers[i]).Terminated then
+     begin
+      TBaseReceiver(PostReceivers[i]).Free;   INFINITE
+      PostReceivers[i]:=nil;
+      FAccountManager.SetStatus(AccountId);
+     end
+    else
+     begin
+      PostReceivers[i]:=nil;     }
      begin
       TBaseReceiver(PostReceivers[i]).Free;
       PostReceivers[i]:=nil;
-     end
-    else
-      PostReceivers[i]:=nil;
+      FAccountManager.SetStatus(AccountId,asFree);
+     end;
+   //  end;
+  PostReceivers.Pack;
+  //Clean;
  ReleaseMutex(Mutex);
-end;
+ end;
 
 {
 

@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 125
-  Top = 251
+  Left = 237
+  Top = 207
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -109,7 +109,7 @@ object FMain: TFMain
     Top = 23
     Width = 586
     Height = 405
-    ActivePage = cxTab_Log
+    ActivePage = cxTab_Accounts
     Align = alClient
     DragMode = dmAutomatic
     LookAndFeel.Kind = lfStandard
@@ -318,9 +318,8 @@ object FMain: TFMain
     Top = 224
     Width = 75
     Height = 25
-    Caption = 'Button3'
-    TabOrder = 7
-    OnClick = Button3Click
+    Action = alStopThread
+    TabOrder = 6
   end
   object Button4: TButton
     Left = 80
@@ -337,6 +336,7 @@ object FMain: TFMain
     Top = 272
   end
   object adCon: TADOConnection
+    Connected = True
     ConnectionString = 
       'Provider=Microsoft.Jet.OLEDB.4.0;User ID=Admin;Data Source=..\DB' +
       '\messages.mdb;Mode=Share Deny None;Extended Properties="";Persis' +
@@ -349,6 +349,7 @@ object FMain: TFMain
       't=False;Jet OLEDB:Compact Without Replica Repair=False;Jet OLEDB' +
       ':SFP=False'
     LoginPrompt = False
+    Mode = cmShareDenyNone
     Provider = 'Microsoft.Jet.OLEDB.4.0'
     Top = 368
   end
@@ -358,6 +359,7 @@ object FMain: TFMain
     Top = 304
   end
   object adLog: TADOQuery
+    Active = True
     Connection = adCon
     CursorType = ctStatic
     Parameters = <>
@@ -4343,8 +4345,8 @@ object FMain: TFMain
     Top = 368
   end
   object AList: TActionList
-    Left = 395
-    Top = 176
+    Left = 355
+    Top = 184
     object alAddAccount: TAction
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
       OnExecute = alAddAccountExecute
@@ -4362,6 +4364,11 @@ object FMain: TFMain
     object alAppTerminate: TAction
       Caption = #1042#1099#1093#1086#1076
       OnExecute = alAppTerminateExecute
+    end
+    object alStopThread: TAction
+      Caption = #1054#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1087#1086#1083#1091#1095#1077#1085#1080#1077
+      Enabled = False
+      OnExecute = alStopThreadExecute
     end
   end
   object dxBar: TdxBarManager
@@ -4430,6 +4437,10 @@ object FMain: TFMain
           Visible = True
         end
         item
+          Item = msStopThread
+          Visible = True
+        end
+        item
           BeginGroup = True
           Item = msAppExit
           Visible = True
@@ -4453,5 +4464,15 @@ object FMain: TFMain
       Action = alAppTerminate
       Category = 0
     end
+    object msStopThread: TdxBarButton
+      Action = alStopThread
+      Category = 0
+    end
+  end
+  object AccountsUpdater: TTimer
+    Interval = 3000
+    OnTimer = AccountsUpdaterTimer
+    Left = 691
+    Top = 133
   end
 end
