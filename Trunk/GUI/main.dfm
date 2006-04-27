@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 237
-  Top = 207
+  Left = 306
+  Top = 111
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -312,23 +312,6 @@ object FMain: TFMain
       Caption = 'cxTab_Settings'
       ImageIndex = 3
     end
-  end
-  object Button3: TButton
-    Left = 96
-    Top = 224
-    Width = 75
-    Height = 25
-    Action = alStopThread
-    TabOrder = 6
-  end
-  object Button4: TButton
-    Left = 80
-    Top = 360
-    Width = 75
-    Height = 25
-    Caption = 'Button4'
-    TabOrder = 9
-    OnClick = Button4Click
   end
   object dsAccounts: TDataSource
     DataSet = adAccounts
@@ -4370,6 +4353,24 @@ object FMain: TFMain
       Enabled = False
       OnExecute = alStopThreadExecute
     end
+    object alStartThread: TAction
+      Caption = #1047#1072#1087#1091#1089#1090#1080#1090#1100' '#1087#1086#1090#1086#1082
+      Enabled = False
+      OnExecute = alStartThreadExecute
+    end
+    object alStartAllThreads: TAction
+      Caption = #1055#1088#1086#1074#1077#1088#1080#1090#1100' '#1074#1089#1077' '#1072#1082#1082#1072#1091#1085#1090#1099
+      OnExecute = alStartAllThreadsExecute
+    end
+    object alStopAllThreads: TAction
+      Caption = #1054#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1074#1089#1077' '#1087#1086#1090#1086#1082#1080
+      OnExecute = alStopAllThreadsExecute
+    end
+    object Action1: TAction
+      Caption = #1056#1077#1075#1091#1083#1103#1088#1085#1086' '#1087#1088#1086#1074#1077#1088#1103#1090#1100' '#1072#1082#1082#1072#1091#1085#1090#1099
+      Checked = True
+      OnExecute = Action1Execute
+    end
   end
   object dxBar: TdxBarManager
     Font.Charset = DEFAULT_CHARSET
@@ -4441,6 +4442,22 @@ object FMain: TFMain
           Visible = True
         end
         item
+          Item = msStartThread
+          Visible = True
+        end
+        item
+          Item = msStartAllThreads
+          Visible = True
+        end
+        item
+          Item = msStopAllThreads
+          Visible = True
+        end
+        item
+          Item = dxBarButton1
+          Visible = True
+        end
+        item
           BeginGroup = True
           Item = msAppExit
           Visible = True
@@ -4467,6 +4484,25 @@ object FMain: TFMain
     object msStopThread: TdxBarButton
       Action = alStopThread
       Category = 0
+    end
+    object msStartThread: TdxBarButton
+      Action = alStartThread
+      Category = 0
+    end
+    object msStartAllThreads: TdxBarButton
+      Action = alStartAllThreads
+      Category = 0
+    end
+    object msStopAllThreads: TdxBarButton
+      Action = alStopAllThreads
+      Category = 0
+    end
+    object dxBarButton1: TdxBarButton
+      Caption = 'New Item'
+      Category = 0
+      Hint = 'New Item'
+      Visible = ivAlways
+      ButtonStyle = bsChecked
     end
   end
   object AccountsUpdater: TTimer

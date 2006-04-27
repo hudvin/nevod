@@ -160,9 +160,11 @@ end;
 
 destructor TPOP3Receiver.Destroy;
 begin
-  
-  if POP3Client.Connected then POP3Client.Disconnect;
-  POP3Client.Free;
+  try
+   if POP3Client.Connected then POP3Client.Disconnect;
+   POP3Client.Free;
+  except
+  end;
   inherited Destroy;
 end;
 

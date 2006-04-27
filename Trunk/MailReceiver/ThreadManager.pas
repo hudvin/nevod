@@ -12,7 +12,7 @@ type
   private
     Accounts: TADOStoredProc;
     aCopyData: TCopyDataStruct;
-    FCanExecute: Boolean;
+    FCanExecute: Boolean;      // использовать как свойство, связанное с таблицей
     FAccountManager: TAccountManager;
     FADOCon: TADOConnection;
     Logger: TLogger;
