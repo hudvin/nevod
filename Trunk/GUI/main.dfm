@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 306
-  Top = 111
+  Left = 253
+  Top = 129
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -132,6 +132,7 @@ object FMain: TFMain
         LookAndFeel.Kind = lfStandard
         LookAndFeel.NativeStyle = True
         object cxAccounts: TcxGridDBTableView
+          PopupMenu = pAccounts
           NavigatorButtons.ConfirmDelete = False
           DataController.DataSource = dsAccounts
           DataController.Summary.DefaultGroupSummaryItems = <>
@@ -4325,11 +4326,11 @@ object FMain: TFMain
     MinimizeToTray = True
     OnClick = trayClick
     Left = 227
-    Top = 368
+    Top = 376
   end
   object AList: TActionList
-    Left = 355
-    Top = 184
+    Left = 699
+    Top = 136
     object alAddAccount: TAction
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
       OnExecute = alAddAccountExecute
@@ -4366,10 +4367,14 @@ object FMain: TFMain
       Caption = #1054#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1074#1089#1077' '#1087#1086#1090#1086#1082#1080
       OnExecute = alStopAllThreadsExecute
     end
-    object Action1: TAction
+    object alCanCheckAccounts: TAction
       Caption = #1056#1077#1075#1091#1083#1103#1088#1085#1086' '#1087#1088#1086#1074#1077#1088#1103#1090#1100' '#1072#1082#1082#1072#1091#1085#1090#1099
       Checked = True
-      OnExecute = Action1Execute
+      OnExecute = alCanCheckAccountsExecute
+    end
+    object alOnAccountsPopUp: TAction
+      Caption = 'alOnAccountsPopUp'
+      OnExecute = alOnAccountsPopUpExecute
     end
   end
   object dxBar: TdxBarManager
@@ -4404,7 +4409,7 @@ object FMain: TFMain
         WholeRow = True
       end>
     Categories.Strings = (
-      'Default')
+      'Accounts')
     Categories.ItemsVisibles = (
       2)
     Categories.Visibles = (
@@ -4413,8 +4418,8 @@ object FMain: TFMain
     PopupMenuLinks = <>
     Style = bmsFlat
     UseSystemFont = True
-    Left = 227
-    Top = 70
+    Left = 699
+    Top = 110
     DockControlHeights = (
       0
       0
@@ -4454,7 +4459,7 @@ object FMain: TFMain
           Visible = True
         end
         item
-          Item = dxBarButton1
+          Item = msCanCheckAccounts
           Visible = True
         end
         item
@@ -4497,18 +4502,89 @@ object FMain: TFMain
       Action = alStopAllThreads
       Category = 0
     end
-    object dxBarButton1: TdxBarButton
-      Caption = 'New Item'
+    object msCanCheckAccounts: TdxBarButton
+      Action = alCanCheckAccounts
       Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
+      ButtonStyle = bsChecked
+    end
+    object pmAddAccount: TdxBarButton
+      Action = alAddAccount
+      Category = 0
+    end
+    object pmDeleteAccount: TdxBarButton
+      Action = alDeleteAccount
+      Category = 0
+    end
+    object pmStopThread: TdxBarButton
+      Action = alStopThread
+      Category = 0
+    end
+    object pmEditAccount: TdxBarButton
+      Action = alEditAccount
+      Category = 0
+    end
+    object pmStartThread: TdxBarButton
+      Action = alStartThread
+      Category = 0
+    end
+    object pmStartAllThreads: TdxBarButton
+      Action = alStartAllThreads
+      Category = 0
+    end
+    object pmStopAllThreads: TdxBarButton
+      Action = alStopAllThreads
+      Category = 0
+    end
+    object pmCheckAccounts: TdxBarButton
+      Action = alCanCheckAccounts
+      Category = 0
       ButtonStyle = bsChecked
     end
   end
   object AccountsUpdater: TTimer
     Interval = 3000
     OnTimer = AccountsUpdaterTimer
-    Left = 691
-    Top = 133
+    Left = 699
+    Top = 85
+  end
+  object pAccounts: TdxBarPopupMenu
+    BarManager = dxBar
+    ItemLinks = <
+      item
+        Item = pmAddAccount
+        Visible = True
+      end
+      item
+        Item = pmStopThread
+        Visible = True
+      end
+      item
+        Item = pmEditAccount
+        Visible = True
+      end
+      item
+        Item = pmDeleteAccount
+        Visible = True
+      end
+      item
+        Item = pmStartThread
+        Visible = True
+      end
+      item
+        Item = pmStartAllThreads
+        Visible = True
+      end
+      item
+        Item = pmStopAllThreads
+        Visible = True
+      end
+      item
+        Item = pmCheckAccounts
+        Visible = True
+      end>
+    UseOwnFont = False
+    OnPopup = alOnAccountsPopUpExecute
+    Left = 699
+    Top = 165
   end
 end

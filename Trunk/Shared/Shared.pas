@@ -716,7 +716,6 @@ begin
     begin
      Close;
      SQL.Text:='UPDATE Settings SET Var=:Value WHERE Name=:SettingName ';
-     Parameters.AddParameter.Name:='Value';
      Parameters.ParamByName('Value').Value:=Value;
      Parameters.ParamByName('SettingName').Value:=SettingName;
      ExecSQL;

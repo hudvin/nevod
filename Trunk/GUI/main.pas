@@ -110,8 +110,18 @@ type
     msStartAllThreads: TdxBarButton;
     alStopAllThreads: TAction;
     msStopAllThreads: TdxBarButton;
-    dxBarButton1: TdxBarButton;
-    Action1: TAction;
+    msCanCheckAccounts: TdxBarButton;
+    alCanCheckAccounts: TAction;
+    pAccounts: TdxBarPopupMenu;
+    alOnAccountsPopUp: TAction;
+    pmAddAccount: TdxBarButton;
+    pmDeleteAccount: TdxBarButton;
+    pmStopThread: TdxBarButton;
+    pmEditAccount: TdxBarButton;
+    pmStartThread: TdxBarButton;
+    pmStartAllThreads: TdxBarButton;
+    pmStopAllThreads: TdxBarButton;
+    pmCheckAccounts: TdxBarButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure amDeleteAccountExecute(Sender: TObject);
@@ -144,7 +154,8 @@ type
     procedure alStartThreadExecute(Sender: TObject);
     procedure alStartAllThreadsExecute(Sender: TObject);
     procedure alStopAllThreadsExecute(Sender: TObject);
-    procedure Action1Execute(Sender: TObject);
+    procedure alCanCheckAccountsExecute(Sender: TObject);
+    procedure alOnAccountsPopUpExecute(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -591,31 +602,8 @@ begin
 end;
 
 procedure TFMain.msAccountsPopup(Sender: TObject);
-var
- buf:TSNConvert;
- Status:TAccountStatus;
 begin
- SNConverter.Find(STree.TreeList.FocusedNode.AbsoluteIndex,buf);
- if (buf.Sheet=cxTab_Accounts) and (cxAccounts.Controller.SelectedRowCount>0) then
-  begin
-   alEditAccount.Enabled:=True;
-   alDeleteAccount.Enabled:=True;
-   Status:=TAccountStatus(GetEnumValue(TypeInfo(TAccountStatus),cxAccounts.Controller.SelectedRows[0].Values[cxAccountsstatus.Index]));
-   if Status=asClient then
-     alStopThread.Enabled:=True
-      else alStopThread.Enabled:=False;
-   if Status=asFree then
-    alStartThread.Enabled:=True
-      else alStartThread.Enabled:=False;
-        
-  end
-   else
-    begin
-     alEditAccount.Enabled:=False;
-     alDeleteAccount.Enabled:=False;
-     alStopThread.Enabled:=False;
-     alStartThread.Enabled:=False;
-    end;
+ alOnAccountsPopUp.Execute;
 end;
 
 procedure TFMain.alEditAccountExecute(Sender: TObject);
@@ -696,9 +684,39 @@ begin
  ThreadManager.StopAllThreads(True);
 end;
 
-procedure TFMain.Action1Execute(Sender: TObject);
+procedure TFMain.alCanCheckAccountsExecute(Sender: TObject);
 begin
- ///////
+ alCanCheckAccounts.Checked:=NOT alCanCheckAccounts.Checked;
+ SProvider.SetValue('CanCheckAccounts',BoolToStr(alCanCheckAccounts.Checked,True));
+end;
+
+procedure TFMain.alOnAccountsPopUpExecute(Sender: TObject);
+var
+ buf:TSNConvert;
+ Status:TAccountStatus;
+begin
+ SNConverter.Find(STree.TreeList.FocusedNode.AbsoluteIndex,buf);
+ if (buf.Sheet=cxTab_Accounts) and (cxAccounts.Controller.SelectedRowCount>0) then
+  begin
+   alEditAccount.Enabled:=True;
+   alDeleteAccount.Enabled:=True;
+   Status:=TAccountStatus(GetEnumValue(TypeInfo(TAccountStatus),cxAccounts.Controller.SelectedRows[0].Values[cxAccountsstatus.Index]));
+   if Status=asClient then
+     alStopThread.Enabled:=True
+      else alStopThread.Enabled:=False;
+   if Status=asFree then
+    alStartThread.Enabled:=True
+      else alStartThread.Enabled:=False;
+
+  end
+   else
+    begin
+     alEditAccount.Enabled:=False;
+     alDeleteAccount.Enabled:=False;
+     alStopThread.Enabled:=False;
+     alStartThread.Enabled:=False;
+    end;
+
 end;
 
 end.

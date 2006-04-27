@@ -12,7 +12,6 @@ type
   private
     Accounts: TADOStoredProc;
     aCopyData: TCopyDataStruct;
-    FCanExecute: Boolean;      // использовать как свойство, св€занное с таблицей
     FAccountManager: TAccountManager;
     FADOCon: TADOConnection;
     Logger: TLogger;
@@ -23,21 +22,25 @@ type
     procedure CheckForConnection;
     procedure Clean;
     function GetActiveThreads: Integer;
+    function GetCanExecute: Boolean;
+    function GetCheckIfNotConnected: Boolean;
     function GetCheckInterval: Integer;
     function GetShowHint: Boolean;
+    procedure SetCanExecute(const Value: Boolean);
   public
-    constructor Create(ADOCon: TADOConnection; AccountManager:TAccountManager;
-        CanExecute:Boolean=True);
+    constructor Create(ADOCon: TADOConnection; AccountManager:TAccountManager);
     destructor Destroy; override;
     procedure Execute; override;
     function IsConnected: Boolean;
-    procedure SendHintMessage(AccountName:String;Message:String;
-        BaloonType:TBalloonHintIcon);
+    procedure SendHintMessage(AccountName:String;Caption:String;Message:String;
+        BaloonType:TBalloonHintIcon;MessagesCount:integer);
     procedure StartAllThreads(Intro:boolean=True);
     procedure StartThread(AccountId: Integer;Single:Boolean=False);
     procedure StopAllThreads(Soft:boolean=False);
     procedure StopThread(AccountId: Integer); overload;
     property ActiveThreads: Integer read GetActiveThreads;
+    property CanExecute: Boolean read GetCanExecute write SetCanExecute;
+    property CheckIfNotConnected: Boolean read GetCheckIfNotConnected;
     property CheckInterval: Integer read GetCheckInterval;
     property ShowHint: Boolean read GetShowHint;
   end;
@@ -50,7 +53,7 @@ uses main;
 ******************************** TThreadManager ********************************
 }
 constructor TThreadManager.Create(ADOCon: TADOConnection;
-    AccountManager:TAccountManager;CanExecute:Boolean=True);
+    AccountManager:TAccountManager);
 var
  i:integer;
 begin
@@ -61,7 +64,6 @@ begin
   FAccountManager:=AccountManager;
   PostReceivers:=TList.Create;
   Logger:=TLogger.Create(ADOCon);
-  FCanExecute:=CanExecute;
   Mess:=TWMMessanger.Create;
   for I :=1 to FAccountManager.Count do    // Iterate
     begin
@@ -84,11 +86,11 @@ end;
 
 procedure TThreadManager.CheckForConnection;
 begin
- if  StrToBool(SProvider.GetValue('CheckIfNotConnected')) then
+{ if  StrToBool(SProvider.GetValue('CheckIfNotConnected')) then
   FCanExecute:=True
    else
     if IsConnected then  FCanExecute:=True
-     else FCanExecute:=False;
+     else FCanExecute:=False;    }
 end;
 
 procedure TThreadManager.Clean;
@@ -105,17 +107,12 @@ begin
          if SuccessFul=False then
           begin
            Logger.Add(LogMessage,AccountId,ltPostReceiver);
-           Mess.Caption:=' ќшибка при получении почты дл€  '+ '"'+AccountParams.AccountName +'"';
-           Mess.LogMessage:=' ќшибка при получении почты дл€ учетной записи '+  ' '+LogMessage+ '  подробнее смотрите в журанале сообщений ';
-           Mess.MessagesCount:=MessagesCount;
-           Mess.BallonType:=bitError;
-           with aCopyData do
-            begin
-             dwData := 1;
-             cbData := SizeOf(TWMMessanger);
-             lpData:=@Mess
-            end;
-           SendMessage(main.FMain.Handle, WM_COPYDATA, Longint(main.FMain.Handle), Longint(@aCopyData));
+
+           SendHintMessage(AccountParams.AccountName,
+               ' ќшибка при получении почты дл€  '+ '"'+AccountParams.AccountName +'"',
+               ' ќшибка при получении почты дл€ учетной записи '+  ' '+LogMessage+ '  подробнее смотрите в журанале сообщений ',
+               bitError,
+               MessagesCount);
           end
            else
             if MessagesCount>0 then
@@ -124,16 +121,14 @@ begin
              Mess.LogMessage:=' «агружено '+  ' '+IntToStr(MessagesCount)+ ' новых писем';
              Mess.MessagesCount:=MessagesCount;
              Mess.BallonType:=bitInfo;
-             with aCopyData do
-              begin
-               dwData := 1;
-               cbData := SizeOf(TWMMessanger);
-               lpData:=@Mess
-              end;
-             SendMessage(main.FMain.Handle, WM_COPYDATA, Longint(main.FMain.Handle), Longint(@aCopyData));
+             SendHintMessage(
+                AccountParams.AccountName,
+                ' ѕолучена нова€ почта  дл€  '+ '"'+AccountParams.AccountName +'"',
+                ' «агружено '+  ' '+IntToStr(MessagesCount)+ ' новых писем',
+                bitInfo,
+                MessagesCount
+             );
             end;
-
-
          FAccountManager.SetStatus(AccountId,asFree);
          Free;
          PostReceivers[i]:=nil;
@@ -154,8 +149,7 @@ begin
     Counter:=Counter+WaitTime;
     Clean;
     // проверить можно ли провер€ть сообщени€, если нет подключений
-    CheckForConnection();
-    if FCanExecute then
+    if (CanExecute) and ( (IsConnected) or (CheckIfNotConnected) ) then
      begin
       WaitForSingleObject(Mutex,WaitTime) ;
    //   Clean();     // очищать нужно в любом случае
@@ -177,6 +171,16 @@ begin
     Clean();
     Result:=PostReceivers.Count;
   ReleaseMutex(Mutex);
+end;
+
+function TThreadManager.GetCanExecute: Boolean;
+begin
+ Result:= StrToBool(SProvider.GetValue('CanCheckAccounts'));
+end;
+
+function TThreadManager.GetCheckIfNotConnected: Boolean;
+begin
+ Result:=StrToBool(SProvider.GetValue('CheckIfNotConnected'));
 end;
 
 function TThreadManager.GetCheckInterval: Integer;
@@ -226,10 +230,26 @@ begin
  end;
 end;
 
-procedure TThreadManager.SendHintMessage(AccountName:String;Message:String;
-    BaloonType:TBalloonHintIcon);
+procedure TThreadManager.SendHintMessage(AccountName:String;Caption:String;
+    Message:String; BaloonType:TBalloonHintIcon;MessagesCount:integer);
 begin
 
+ Mess.Caption:=Caption;
+ Mess.LogMessage:=Message;
+ Mess.MessagesCount:=MessagesCount;
+ Mess.BallonType:=BaloonType;
+ with aCopyData do
+  begin
+   dwData := 1;
+   cbData := SizeOf(TWMMessanger);
+   lpData:=@Mess
+  end;
+ SendMessage(main.FMain.Handle, WM_COPYDATA, Longint(main.FMain.Handle), Longint(@aCopyData));
+end;
+
+procedure TThreadManager.SetCanExecute(const Value: Boolean);
+begin
+ SProvider.SetValue('CanCheckAccounts',BoolToStr(Value,True));
 end;
 
 procedure TThreadManager.StartAllThreads(Intro:boolean=True);
@@ -237,7 +257,7 @@ var
   AParams: TAccountParams;
   i:integer;
 begin
- FCanExecute:=True;
+// FCanExecute:=True;
  if Intro then   // если запуск из класса
   begin
 
@@ -279,7 +299,7 @@ procedure TThreadManager.StopAllThreads(Soft:boolean=False);
 var
  i:integer;
 begin
- if NOT Soft then FCanExecute:=False;
+// if NOT Soft then CanExecute:=False;
  WaitForSingleObject(Mutex,INFINITE);
  // Clean;
   for i :=0  to PostReceivers.Count-1  do
@@ -325,11 +345,5 @@ begin
  ReleaseMutex(Mutex);
  end;
 
-{
-
-
-если нет соединени€ - не запускать потоки !
-
-}
 
 end.
