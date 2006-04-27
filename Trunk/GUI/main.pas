@@ -2,17 +2,20 @@ unit main;
 
 interface
 
-uses Commctrl, Forms,Windows, Dialogs, Registry, dxBar, cxStyles, Shared,
-  cxTL, DB, ADODB,  StdCtrls, ExtCtrls, cxContainer, cxEdit,
-  cxCheckBox, cxGridLevel, cxGridCustomTableView, cxGridTableView, ShellAPI,
+uses Commctrl, Forms,Windows, Dialogs, Registry, dxBar, cxStyles, Shared, 
+  ExtCtrls, Classes, ActnList, CoolTrayIcon, DB, ADODB, StdCtrls,
+  cxGridLevel, cxGridCustomTableView, cxGridTableView, cxGridDBTableView,
+  cxClasses, cxControls, cxGridCustomView, cxGrid, cxPC, cxSplitter,
+  cxInplaceContainer, cxTL, Controls, dxStatusBar,
+   cxContainer, cxEdit, WinSock,
+  cxCheckBox,  ShellAPI,
   SysUtils, Typinfo, FilterManager, AccountManager,  AccountEditor,  Graphics,
 
-  cxGridCustomView, cxGrid, Menus,   Messages, ThreadManager,
-  cxGridCustomPopupMenu, cxGridPopupMenu, Classes, Controls,
-  cxGridDBTableView, cxClasses, cxControls, cxPC, cxSplitter,
-  cxInplaceContainer, dxStatusBar, cxLookAndFeels,CustomEditor, ActnList,
+    Menus,   Messages, ThreadManager, POPServer,
+  cxGridCustomPopupMenu, cxGridPopupMenu,
+   cxLookAndFeels,CustomEditor,
   XPStyleActnCtrls, ActnMan,  Clipbrd, PerlRegEx,
-  ImgList, dxBarExtItems, CoolTrayIcon, ToolWin, ActnCtrls, ActnColorMaps,
+  ImgList, dxBarExtItems,  ToolWin, ActnCtrls, ActnColorMaps,
   ActnPopupCtrl;
 
  
@@ -122,6 +125,10 @@ type
     pmStartAllThreads: TdxBarButton;
     pmStopAllThreads: TdxBarButton;
     pmCheckAccounts: TdxBarButton;
+    Button3: TButton;
+    Button4: TButton;
+    Button5: TButton;
+    Button6: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure amDeleteAccountExecute(Sender: TObject);
@@ -156,6 +163,10 @@ type
     procedure alStopAllThreadsExecute(Sender: TObject);
     procedure alCanCheckAccountsExecute(Sender: TObject);
     procedure alOnAccountsPopUpExecute(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
+    procedure Button5Click(Sender: TObject);
+    procedure Button6Click(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -717,6 +728,86 @@ begin
      alStartThread.Enabled:=False;
     end;
 
+end;
+
+procedure TFMain.Button3Click(Sender: TObject);
+var SockAddrIn : TSockAddrIn;
+    FSocket    : TSocket;
+    lpHostEntry: PHostEnt;
+begin
+  lpHostEntry.h_name:='localhost';
+  SockAddrIn.sin_port:=1100;
+  SOckAddrIn.sin_family := AF_INET;
+  SockAddrIn.sin_addr := PInAddr(lpHostEntry.h_name^)^;
+  SockAddrIn.sin_port := htons(8245);
+  //FSocket.
+  If  bind(FSocket, SockAddrIn, SizeOf(SockAddrIn)) <> 0 Then
+   ShowMessage('Порт занят !');
+
+
+  ShowMessage(SysErrorMessage(GetLastError));
+
+end;
+
+procedure TFMain.Button4Click(Sender: TObject);
+var
+ Sock: TSocket;
+ lpHostEntry: PHostEnt;
+ saServer: TSockAddrIn;
+ nRet, Size, lPos: Integer;
+ DataIn, Request: String;
+begin
+  SetLastError(0);
+ //Sock := socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+ //if Sock = INVALID_SOCKET then Exit;
+   lpHostEntry := gethostbyname('localhost');
+    ShowMessage(SysErrorMessage(GetLastError));
+  // if lpHostEntry = nil then Exit;
+   saServer.sin_family := AF_INET;
+    ShowMessage(SysErrorMessage(GetLastError));
+   saServer.sin_addr := PInAddr(lpHostEntry.h_addr_list^)^;
+    ShowMessage(SysErrorMessage(GetLastError));
+   saServer.sin_port := htons(121);
+    ShowMessage(SysErrorMessage(GetLastError));
+   If  bind(Sock, saServer, SizeOf(saServer)) <> 0 Then
+   ShowMessage('Порт занят !');
+   ShowMessage(SysErrorMessage(GetLastError));
+end;
+
+procedure TFMain.Button5Click(Sender: TObject);
+var
+ FAddr: TSockAddrIn;
+ FSocket:TSocket;
+begin
+ FSocket := socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+ FAddr.sin_family := AF_INET;
+ FAddr.sin_addr.s_addr := INADDR_ANY;
+ FAddr.sin_port := htons(6666);
+ if bind(FSocket, FAddr, SizeOf(FAddr))=SOCKET_ERROR then
+   raise Exception.Create(Format('Cannot bind on port %d',[6666]));
+ if Winsock.listen(FSocket, SOMAXCONN)=SOCKET_ERROR then
+   raise Exception.Create(Format('Cannot listen on port %d',[6666]));
+end;
+
+
+
+procedure TFMain.Button6Click(Sender: TObject);
+var
+FAddr: TSockAddrIn;
+FSocket:TSocket;
+wsaD: WSADATA;
+begin
+FSocket := socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+FAddr.sin_family := AF_INET;
+FAddr.sin_addr.s_addr := INADDR_ANY;
+FAddr.sin_port := htons(1100);
+ if WSAStartup($101, WsaD) = 0 then
+  begin
+if bind(FSocket, FAddr, SizeOf(FAddr))=SOCKET_ERROR then
+  showmessage('Немогу создать');
+ WSACleanUp;
+ closesocket(FSocket);
+ end;
 end;
 
 end.

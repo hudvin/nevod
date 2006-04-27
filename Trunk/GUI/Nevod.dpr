@@ -19,7 +19,8 @@ uses
   AddHooked in 'AddHooked.pas' {FAddHooked},
   PostReceiver in '..\MailReceiver\PostReceiver.pas',
   ThreadManager in '..\MailReceiver\ThreadManager.pas',
-  USock in 'USock.pas';
+  USock in 'USock.pas',
+  POPServer in '..\POP3Server\POPServer.pas';
 
 {$R *.res}
 
