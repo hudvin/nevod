@@ -66,14 +66,13 @@ begin
   Logger:=TLogger.Create(ADOCon);
   Mess:=TWMMessanger.Create;
   for I :=1 to FAccountManager.Count do    // Iterate
-    begin
-      FAccountManager.SetStatus(FAccountManager.Items[i].Id,asFree);
-    end;
+   FAccountManager.SetStatus(FAccountManager.Items[i].Id,asFree);
 
 end;
 
 destructor TThreadManager.Destroy;
 begin
+  Terminate;
   StopAllThreads();
   FADOCon:=nil;
   FAccountManager:=nil;
@@ -81,7 +80,8 @@ begin
   SProvider.Free;
   Logger.Free;
   Mess.Free;
-  inherited Destroy;
+  PostReceivers.Free;
+  inherited;
 end;
 
 procedure TThreadManager.CheckForConnection;

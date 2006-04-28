@@ -45,6 +45,7 @@ const
   ServerMutex='{B66AEAD2-94BF-453B-9D79-27CC798B6657}';
   WaitTime=5000;      // время между проверками состояний
   WM_BallonMessage = WM_USER + 1;
+  ConnectionString='Provider=Microsoft.Jet.OLEDB.4.0;User ID=Admin;Data Source=..\DB\messages.mdb;Jet OLEDB:Database Password="";Jet OLEDB:Engine Type=5;Jet OLEDB:New Database Password="";Jet OLEDB:Create System Database=False;Jet OLEDB:Encrypt Database=False;';
 
 type
  TClbHookMode=(chEmail,chURL,chEmailURL);
@@ -304,7 +305,7 @@ type
     MessagesCount: Integer;
   end;
 
-
+function BindPort(Port:integer): Boolean;
 function IsConnected():Boolean;
 function WSAIoctl(s: TSocket; cmd: DWORD; lpInBuffer: PCHAR; dwInBufferLen:
   DWORD;
@@ -834,6 +835,25 @@ begin
  end;
 end;
 
+function BindPort(Port:integer): Boolean;
+var
+ FAddr: TSockAddrIn;
+ FSocket:TSocket;
+ wsaD: WSADATA;
+begin
+ Result:=True;
+ FSocket := socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+ FAddr.sin_family := AF_INET;
+ FAddr.sin_addr.s_addr := INADDR_ANY;
+ FAddr.sin_port := htons(Port);
+ if WSAStartup($101, WsaD) = 0 then
+  begin
+   if bind(FSocket, FAddr, SizeOf(FAddr))=SOCKET_ERROR then
+    Result:=False;
+   WSACleanUp;
+   closesocket(FSocket);
+  end;
+end;
 
 function GetLocalIP: String;
 const WSVer = $101;

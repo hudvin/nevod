@@ -3,7 +3,7 @@ unit AccountManager;
 interface
 
 uses
-  TypInfo, SysUtils, cxGridCustomTableView,Dialogs, cxGridTableView,
+  TypInfo, SysUtils, cxGridCustomTableView, cxGridTableView,
    ADODB,DB,Exceptions,Shared;
 
 type
@@ -207,9 +207,8 @@ begin
  with adProc do
   begin
    Active:=False;
-   SQL.Text:='DELETE FROM Accounts WHERE ' + RowSQL;
+   SQL.Text:='DELETE FROM FiltersParams WHERE ' + RowSQL;
    ExecSQL;
-   Active:=False;
   end;
  FadAccounts.Requery;
 end;
@@ -343,7 +342,6 @@ begin
     Parameters.ParamByName('AccountStatus').Value:=GetEnumName(TypeInfo(TAccountStatus), Ord(AccountStatus));
     Parameters.ParamByName('AccountId').Value:=AccountId;
     ExecSQL;
-  // FadAccounts.Requery;
    end;
 end;
 

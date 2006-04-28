@@ -3,7 +3,7 @@ unit POPServer;
 interface
 uses
     Shared,Windows,Dialogs,Classes, Messages, SysUtils,IdContext, StdCtrls,
-     ADODB, IdBaseComponent, IdComponent, Math, IdCommandHandlers,
+     ADODB, IdBaseComponent, IdComponent, Math, IdCommandHandlers,WinSock,
      IdTCPServer, IdPOP3Server,  AccountManager,DBTables;
 
 type
@@ -11,39 +11,42 @@ type
   private
    FAccountManager: TAccountManager;
    FADOCon: TADOConnection;
-   FDefaultPort: Integer;
    Mutex: THandle;
    pop:TIdPOP3Server;
+   SProvider: TSettings;
+   function BindPort(Port:integer): Boolean;
    procedure CheckAccount(AThread: TIdContext;LThread: TIdPOP3ServerContext);
    procedure Connect(AContext: TIdContext);
    procedure QUIT(ASender: TIdCommand);
    procedure STAT(ASender: TIdCommand);
    procedure Disconnect(AContext: TIdContext);
+   function GetServerPort: Integer;
    procedure LIST(ASender: TIdCommand; AMessageNum: Integer);
-   procedure SetDefaultPort(const Value: Integer);
+   procedure SetServerPort(const Value: Integer);
  public
-   constructor Create(ADOCon:TADOConnection; AccountManager:TAccountManager;
-       ServerPort:integer);
+   constructor Create(ADOCon:TADOConnection; AccountManager:TAccountManager);
    destructor  Destroy(); override;
    procedure DELE(ASender: TIdCommand; AMessageNum: Integer);
+   function LoadParams: Boolean;
    procedure RETR(ASender: TIdCommand; AMessageNum: Integer);
-   property DefaultPort: Integer read FDefaultPort write SetDefaultPort;
+   property ServerPort: Integer read GetServerPort write SetServerPort;
 end;
 
 implementation
 
-uses DB;
+uses DB, IdTCPConnection, IdTask;
 
 constructor TPOPServer.Create(ADOCon:TADOConnection;
-    AccountManager:TAccountManager;ServerPort:integer);
+    AccountManager:TAccountManager);
 begin
+
  Mutex:=CreateMutex(nil,False,MutexName);
  FADOCon:=ADOCon;
- FDefaultPort:=ServerPort;
+ SProvider:=TSettings.Create(ADOCon);
  FAccountManager:=AccountManager;
  pop:=TIdPOP3Server.Create(nil);
 
- pop.DefaultPort:=DefaultPort;
+// pop.DefaultPort:=DefaultPort;
  with pop do
   begin
     CheckUser:=CheckAccount;
@@ -54,22 +57,59 @@ begin
     OnLIST:=LIST;
     OnDELE:=DELE;
     OnRETR:=RETR;
-   Active:=true;
+  // Active:=true;
  end;
+end;
+
+function TPOPServer.LoadParams: Boolean;
+var
+ Port:integer;
+begin
+ pop.Active:=False;
+ Port:=ServerPort;
+ if not (BindPort(Port)) then
+  Result:=False
+   else
+    begin
+     pop.DefaultPort:=Port;
+     pop.Active:=True;
+     Result:=True;
+    end;
 end;
 
 destructor TPOPServer.Destroy();
 begin
  pop.Active:=False;
  pop.Free;
+ SProvider.Free;
  FADOCon:=nil;
  CloseHandle(Mutex);
+end;
+
+function TPOPServer.BindPort(Port:integer): Boolean;
+var
+ FAddr: TSockAddrIn;
+ FSocket:TSocket;
+ wsaD: WSADATA;
+begin
+ Result:=True;
+ FSocket := socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+ FAddr.sin_family := AF_INET;
+ FAddr.sin_addr.s_addr := INADDR_ANY;
+ FAddr.sin_port := htons(Port);
+ if WSAStartup($101, WsaD) = 0 then
+  begin
+   if bind(FSocket, FAddr, SizeOf(FAddr))=SOCKET_ERROR then
+    Result:=False;
+   WSACleanUp;
+   closesocket(FSocket);
+  end;
 end;
 
 procedure TPOPServer.CheckAccount(AThread: TIdContext;LThread:
     TIdPOP3ServerContext);
 var
-    Password,Username:string;
+    Password,Username,Server:string;
     AParams:TAccountParams;
     id:integer;
     Proc:TADOQuery;
@@ -80,6 +120,9 @@ begin
  // нафига тут мьютекс ?    - а затем, чтобы несколько клиентов не залогинилось одновременно под одним паролем
   Password:=LThread.Password;
   Username:=LThread.Username;
+
+  //Lthread.Data:=Proc;
+
   Id:=FAccountManager.AccountName2Id(Username);
   if Id<>-1 then
   begin
@@ -132,12 +175,14 @@ begin
   begin
    Proc:=TADOQuery.Create(nil);
    Proc.Connection:=FADOCon;
-   Proc.SQL.Text:='SELECT deleted FROM messages WHERE mid=:AccountId  '; // не делать выборку всех полей
+   Proc.SQL.Text:='SELECT id,deleted FROM messages WHERE mid=:AccountId  '; // не делать выборку всех полей
    Proc. Parameters.ParamByName('AccountId').Value:=AccountId;
    Proc.Active:=True;
    if AMessageNum>Proc.RecordCount then  ASender.Reply.SetReply(ERR, 'No such message')
     else
      begin
+     // Proc.SQL.Text:='SELECT deleted FROM Messages WHERE Id=:AccountId ';
+    //  Proc.Parameters.ParamByName('AccountId').Value:=AccountId;
       Proc.RecNo:=AMessageNum;
       if not Proc.FieldByName('deleted').AsBoolean then
         begin
@@ -170,6 +215,11 @@ begin
    begin
 
    end;
+end;
+
+function TPOPServer.GetServerPort: Integer;
+begin
+ Result:=StrToInt(SProvider.GetValue('ServerPort'));
 end;
 
 procedure TPOPServer.LIST(ASender: TIdCommand; AMessageNum: Integer);
@@ -288,6 +338,11 @@ begin
    end;
 end;
 
+procedure TPOPServer.SetServerPort(const Value: Integer);
+begin
+ SProvider.SetValue('ServerPort',IntToStr(Value));
+end;
+
 procedure TPOPServer.STAT(ASender: TIdCommand);
 var
  AccountId:integer;
@@ -316,24 +371,6 @@ begin
       Proc.Free;
      end
   else ASender.Reply.SetReply(OK, '0 0');
-end;
-
-procedure TPOPServer.SetDefaultPort(const Value: Integer);
-begin
-  if FDefaultPort <> Value then   // использовать класс TSettings
-                                  // при изменении свойтсва перезапускать сервер
-                                  // при ошибке устанавливать дефолтовый порт
-                                  // если порт занят - выводить сообщение об ошибке
-                                  // или просить задать другой порт
-   try
-    POP.Active:=False;
-    FDefaultPort := Value;
-    POP.DefaultPort:=FDefaultPort;
-    pop.Active:=True;
-   except
-    on e: Exception do
-      ShowMessage(E.Message);
-   end;
 end;
 
 end.

@@ -8,7 +8,7 @@ uses Commctrl, Forms,Windows, Dialogs, Registry, dxBar, cxStyles, Shared,
   cxClasses, cxControls, cxGridCustomView, cxGrid, cxPC, cxSplitter,
   cxInplaceContainer, cxTL, Controls, dxStatusBar,
    cxContainer, cxEdit, WinSock,
-  cxCheckBox,  ShellAPI,
+  cxCheckBox,  ShellAPI, PortEditor,
   SysUtils, Typinfo, FilterManager, AccountManager,  AccountEditor,  Graphics,
 
     Menus,   Messages, ThreadManager, POPServer,
@@ -125,13 +125,11 @@ type
     pmStartAllThreads: TdxBarButton;
     pmStopAllThreads: TdxBarButton;
     pmCheckAccounts: TdxBarButton;
+    Button6: TButton;
     Button3: TButton;
     Button4: TButton;
-    Button5: TButton;
-    Button6: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure amDeleteAccountExecute(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -163,10 +161,9 @@ type
     procedure alStopAllThreadsExecute(Sender: TObject);
     procedure alCanCheckAccountsExecute(Sender: TObject);
     procedure alOnAccountsPopUpExecute(Sender: TObject);
+    procedure Button6Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
-    procedure Button5Click(Sender: TObject);
-    procedure Button6Click(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -187,6 +184,7 @@ type
     CurrentFilterType:TFilterType;  // тип текущего фильтра
     TwinFilterType:TFilterType;
     SNConverter:TSNIndexConverter;
+     SProvider:TSettings;
  //   PSManager: TPostManager;
     FManager:TFilterManager;
     procedure ActivateNode(NodeIndex:Integer);
@@ -197,7 +195,6 @@ type
 
     { Public declarations }
   protected
-    SProvider:TSettings;
     ClbHookMode:TClbHookMode;
     AddClb:TFilterType;
     procedure SetCurrentParams(Grid:TcxGridDBTableView;Filter:TFilterType);
@@ -208,10 +205,12 @@ var
   FMain: TFMain;
   DragState:boolean=False;
   FEditor:TFCustomEditor;
+  FPortEditor:TFPortEditor;
   FAccountEditor:TFAccountEditor;
   Coder:TBFCoder;
   AccountManager:TAccountManager;
   ThreadManager:TThreadManager;
+  POP3Server:TPOPServer;
   Mutex:THandle;
 
 implementation
@@ -221,7 +220,7 @@ uses Unit1, AddHooked, USock;
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
 
-
+function CheckPortForFree(Port:Integer):boolean; External 'Shared.dll';
 
 procedure TFMain.ShowNewMail(var Msg: TMessage);
 begin
@@ -282,21 +281,13 @@ end;
 procedure TFMain.FormCreate(Sender: TObject);
 var
  Headers:TColumnsHeaders;
+ TmAppl:boolean;
 begin
+
+ FPortEditor:=TFPortEditor.Create(adCon);
  Mutex:=CreateMutex(nil, False,MutexName);
-
- FManager:=TFilterManager.Create(adCon);
- Exp:=TPerlRegEx.Create(nil);
+ AccountManager:=TAccountManager.Create(adAccounts);
  SProvider:=TSettings.Create(adCon);
- AddClb:=TFilterType(GetEnumValue(TypeInfo(TFilterType),SProvider.GetValue('AddClb')));
- ClbHookMode:=TClbHookMode(GetEnumValue(TypeInfo(TCLbHookMode),SProvider.GetValue('ClbHookMode')));
-
- adProc:=TADOQuery.Create(nil);
- adProc.Connection:=adCon;
-
- PrevHwnd := SetClipboardViewer(Handle);
- Coder:=TBFCoder.Create;
- Coder.Key:=CriptKey;
 
  SNConverter:=TSNIndexConverter.Create;
  SignList:=TSignalDescriptorsList.Create;
@@ -329,10 +320,43 @@ begin
    Add(13,ftNone,'',cxTab_Log);
    end;
 
+ POP3Server:=TPOPServer.Create(adCon,AccountManager);
+ TmAppl:=False;
+ if not POP3Server.LoadParams then
+   if MessageBox(Handle,' Ошибка запуска сервера ',' Стандартный порт фильтра занят. Хотите сменить порт ? ',MB_OKCANCEL)=IDOK then
+    begin
+     while (not POP3Server.LoadParams) and (not TmAppl) do
+      begin
+       FPortEditor.ShowModal;
+       if FPortEditor.CanExit=True then
+        TmAppl:=True;
+      end;
+     if TmAppl then
+      Application.Terminate;
+    end
+  else
+   Application.Terminate;
+
+
+ FManager:=TFilterManager.Create(adCon);
+ Exp:=TPerlRegEx.Create(nil);
+
+ AddClb:=TFilterType(GetEnumValue(TypeInfo(TFilterType),SProvider.GetValue('AddClb')));
+ ClbHookMode:=TClbHookMode(GetEnumValue(TypeInfo(TCLbHookMode),SProvider.GetValue('ClbHookMode')));
+
+ adProc:=TADOQuery.Create(nil);
+ adProc.Connection:=adCon;
+
+ PrevHwnd := SetClipboardViewer(Handle);
+ Coder:=TBFCoder.Create;
+ Coder.Key:=CriptKey;
 
 
 
- AccountManager:=TAccountManager.Create(adAccounts);
+
+
+
+
 
  FEditor:=TFCustomEditor.Create(SNConverter,FManager,adFilters,SignList);
  FAccountEditor:=TFAccountEditor.Create(adAccounts,AccountManager);
@@ -346,6 +370,8 @@ end;
 
 procedure TFMain.FormDestroy(Sender: TObject);
 begin
+ POP3Server.Free;
+ tray.Enabled:=False;
  ThreadManager.Free;
  FManager.Free;
  SNConverter.Free;
@@ -353,6 +379,7 @@ begin
  SignList.Free;
  AccountManager.Free;
  FAccountEditor.Free;
+ //FPortEditor.Free;
  Coder.Free;
  Exp.Free;
  SProvider.Free;
@@ -360,14 +387,6 @@ begin
 
  CloseHandle(Mutex);
 
-end;
-
-procedure TFMain.amDeleteAccountExecute(Sender: TObject);
-begin
- if Application.MessageBox('Are you are sure ?','Deleting Account',MB_OKCANCEL)=IDOK then
-  begin
- //  PSManager.AccountManager.DeleteAccount( PSManager.AccountManager.AccountName2Id(cxAccounts.Controller.SelectedRecords[0].Values[cxAccountsAccountName.VisibleIndex]));
-  end;
 end;
 
 procedure TFMain.SettingsTreeSelectionChanged(Sender: TObject);
@@ -645,12 +664,6 @@ end;
 
 procedure TFMain.WMCopyData(var Msg: TWMCopyData);
 var
- sn:PSignalTypeDescriptor;
- sd:TSignalTypeDescriptor;
- sl:TSignalLocation;
- bt:TButton;
- scl:TSClass;
- i:integer;
  mess:TWMMessanger;
 begin
  with Msg.CopyDataStruct^ do
@@ -664,7 +677,7 @@ end;
 
 procedure TFMain.AccountsUpdaterTimer(Sender: TObject);
 begin
- adAccounts.Requery;
+ if FMain.Active then adAccounts.Requery;
 end;
 
 
@@ -730,67 +743,6 @@ begin
 
 end;
 
-procedure TFMain.Button3Click(Sender: TObject);
-var SockAddrIn : TSockAddrIn;
-    FSocket    : TSocket;
-    lpHostEntry: PHostEnt;
-begin
-  lpHostEntry.h_name:='localhost';
-  SockAddrIn.sin_port:=1100;
-  SOckAddrIn.sin_family := AF_INET;
-  SockAddrIn.sin_addr := PInAddr(lpHostEntry.h_name^)^;
-  SockAddrIn.sin_port := htons(8245);
-  //FSocket.
-  If  bind(FSocket, SockAddrIn, SizeOf(SockAddrIn)) <> 0 Then
-   ShowMessage('Порт занят !');
-
-
-  ShowMessage(SysErrorMessage(GetLastError));
-
-end;
-
-procedure TFMain.Button4Click(Sender: TObject);
-var
- Sock: TSocket;
- lpHostEntry: PHostEnt;
- saServer: TSockAddrIn;
- nRet, Size, lPos: Integer;
- DataIn, Request: String;
-begin
-  SetLastError(0);
- //Sock := socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
- //if Sock = INVALID_SOCKET then Exit;
-   lpHostEntry := gethostbyname('localhost');
-    ShowMessage(SysErrorMessage(GetLastError));
-  // if lpHostEntry = nil then Exit;
-   saServer.sin_family := AF_INET;
-    ShowMessage(SysErrorMessage(GetLastError));
-   saServer.sin_addr := PInAddr(lpHostEntry.h_addr_list^)^;
-    ShowMessage(SysErrorMessage(GetLastError));
-   saServer.sin_port := htons(121);
-    ShowMessage(SysErrorMessage(GetLastError));
-   If  bind(Sock, saServer, SizeOf(saServer)) <> 0 Then
-   ShowMessage('Порт занят !');
-   ShowMessage(SysErrorMessage(GetLastError));
-end;
-
-procedure TFMain.Button5Click(Sender: TObject);
-var
- FAddr: TSockAddrIn;
- FSocket:TSocket;
-begin
- FSocket := socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
- FAddr.sin_family := AF_INET;
- FAddr.sin_addr.s_addr := INADDR_ANY;
- FAddr.sin_port := htons(6666);
- if bind(FSocket, FAddr, SizeOf(FAddr))=SOCKET_ERROR then
-   raise Exception.Create(Format('Cannot bind on port %d',[6666]));
- if Winsock.listen(FSocket, SOMAXCONN)=SOCKET_ERROR then
-   raise Exception.Create(Format('Cannot listen on port %d',[6666]));
-end;
-
-
-
 procedure TFMain.Button6Click(Sender: TObject);
 var
 FAddr: TSockAddrIn;
@@ -800,7 +752,7 @@ begin
 FSocket := socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
 FAddr.sin_family := AF_INET;
 FAddr.sin_addr.s_addr := INADDR_ANY;
-FAddr.sin_port := htons(1100);
+FAddr.sin_port := htons(11000);
  if WSAStartup($101, WsaD) = 0 then
   begin
 if bind(FSocket, FAddr, SizeOf(FAddr))=SOCKET_ERROR then
@@ -808,6 +760,23 @@ if bind(FSocket, FAddr, SizeOf(FAddr))=SOCKET_ERROR then
  WSACleanUp;
  closesocket(FSocket);
  end;
+end;
+
+procedure TFMain.Button3Click(Sender: TObject);
+var
+ t:TPOPServer;
+begin
+ t:=TPOPServer.Create(adCon,AccountManager);
+ if not t.LoadParams then
+  ShowMessage('Выберите другой порт');
+   
+   
+end;
+
+procedure TFMain.Button4Click(Sender: TObject);
+begin
+if CheckPortForFree(11100) then
+   ShowMessage('!!!!'); 
 end;
 
 end.
