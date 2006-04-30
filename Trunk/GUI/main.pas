@@ -213,7 +213,7 @@ var
   ThreadManager:TThreadManager;
   POP3Server:TPOPServer;
   Mutex:THandle;
-
+  pp:integer;
 implementation
 
 uses Unit1, AddHooked, USock;
@@ -767,20 +767,20 @@ if bind(FSocket, FAddr, SizeOf(FAddr))=SOCKET_ERROR then
 end;
 
 procedure TFMain.Button3Click(Sender: TObject);
-var
- t:TPOPServer;
 begin
- t:=TPOPServer.Create(adCon,AccountManager);
- if not t.LoadParams then
-  ShowMessage('¬ыберите другой порт');
-   
+
+  TForm(pp).Show;  
    
 end;
 
 procedure TFMain.Button4Click(Sender: TObject);
+var
+// pp:integer;   // играет роль указател€
+ bt:TForm;
 begin
-if CheckPortForFree(11100) then
-   ShowMessage('!!!!'); 
+ bt:=TForm.Create(FMain);
+ pp:=Integer(bt);
+// TForm(pp).Show;
 end;
 
 procedure TFMain.FormClose(Sender: TObject; var Action: TCloseAction);

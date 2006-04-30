@@ -7,6 +7,7 @@ uses
      IdTCPServer, IdPOP3Server,  AccountManager,DBTables;
 
 type
+  TPOP3ServerContext = class;
  TPOPServer=class
   private
    FAccountManager: TAccountManager;
@@ -32,6 +33,18 @@ type
    property ServerPort: Integer read GetServerPort write SetServerPort;
 end;
 
+  TPOP3ServerContext = class
+  private
+    FAccountId: Integer;
+    FadProc: TADOQuery;
+    procedure SetadProc(const Value: TADOQuery);
+  public
+    constructor Create(AccountId:integer;adCon:TADOConnection);
+    destructor Destroy; override;
+    property AccountId: Integer read FAccountId write FAccountId;
+    property adProc: TADOQuery read FadProc write SetadProc;
+  end;
+
 implementation
 
 uses DB, IdTCPConnection, IdTask;
@@ -39,14 +52,11 @@ uses DB, IdTCPConnection, IdTask;
 constructor TPOPServer.Create(ADOCon:TADOConnection;
     AccountManager:TAccountManager);
 begin
-
  Mutex:=CreateMutex(nil,False,MutexName);
  FADOCon:=ADOCon;
  SProvider:=TSettings.Create(ADOCon);
  FAccountManager:=AccountManager;
  pop:=TIdPOP3Server.Create(nil);
-
-// pop.DefaultPort:=DefaultPort;
  with pop do
   begin
     CheckUser:=CheckAccount;
@@ -57,7 +67,6 @@ begin
     OnLIST:=LIST;
     OnDELE:=DELE;
     OnRETR:=RETR;
-  // Active:=true;
  end;
 end;
 
@@ -113,46 +122,57 @@ var
     AParams:TAccountParams;
     id:integer;
     Proc:TADOQuery;
+    i:integer;
+    AContext:TPOP3ServerContext;
 begin
  WaitForSingleObject(Mutex,INFINITE);
- Proc:=TADOQuery.Create(nil);
- Proc.Connection:=FADOCon;
- // нафига тут мьютекс ?    - а затем, чтобы несколько клиентов не залогинилось одновременно под одним паролем
   Password:=LThread.Password;
   Username:=LThread.Username;
-
-  //Lthread.Data:=Proc;
-
   Id:=FAccountManager.AccountName2Id(Username);
+  AContext:=TPOP3ServerContext.Create(Id,FADOCon);
   if Id<>-1 then
   begin
-   AParams:=FAccountManager.AccountById[Id];
+  AParams:=FAccountManager.AccountById[Id];
    if AParams.Password=Password then
      case AParams.Status of    //
        asFree:                // ящик свободен
-        begin
-          FAccountManager.SetStatus(AParams.Id,asServer);
-
-          Proc.SQL.Text:='UPDATE Messages SET Deleted=False WHERE mid=:AccountId AND Deleted=TRUE';
-           {
-           обновление статуса сообщений, если соединение было разорвано
-           }
-          Proc.Parameters.ParamByName('AccountId').Value:=AParams.Id;
-          Proc.ExecSQL;
-          LThread.Connection.Tag:=AParams.Id;
+        with AContext.adProc do
+          begin
+           FAccountManager.SetStatus(AParams.Id,asServer);
+           Active:=False;
+           SQL.Text:='UPDATE Messages SET Deleted=False WHERE mid=:AccountId AND Deleted=TRUE';
+           Parameters.ParamByName('AccountId').Value:=AParams.Id;
+           ExecSQL;
+           Active:=False;
+           SQL.Text:='SELECT id,num FROM Messages WHERE mid=:AccountId';
+           Parameters.ParamByName('AccountId').Value:=AParams.Id;
+           Active:=True;
+           i:=1;
+           while (not Eof) do
+            begin
+             Edit;
+             FieldByName('num').Value:=i;
+             Post;
+             inc(i);
+             Next;
+            end;
+           Active:=false;
           LThread.State:=Trans;
+          LThread.Connection.Tag:=Integer(AContext);
         end;
        asClient:  // выполняется получение новой почты
         begin
-         // LThread.Connection.Tag:=AParams.Id;
-          LThread.Connection.Tag:=0;
+          AContext.AccountId:=0;
+          LThread.Connection.Tag:=Integer(AContext);
           LThread.State:=Trans;
         end;
-     else
-       LThread.Connection.Tag:=-1;  // доступ запрещен
+     else     // доступ запрещен
+      begin
+        AContext.AccountId:=-1;
+        LThread.Connection.Tag:=Integer(AContext);
+      end;
      end;    // case
   end;
- Proc.Free;
  ReleaseMutex(Mutex);
 end;
 
@@ -164,56 +184,45 @@ end;
 procedure TPOPServer.DELE(ASender: TIdCommand; AMessageNum: Integer);
 var
     AccountId,MessCount:integer;
-    Proc:TADOQuery;
     Flag:boolean;
-
+    Cont:TPOP3ServerContext;
 begin
- AccountId:=ASender.Context.Connection.Tag;
+ Cont:=TPOp3ServerContext(ASender.Context.Connection.Tag);
+ AccountId:=Cont.AccountId;
  if AccountId=0 then   // если статус asClient
   ASender.Reply.SetReply(ERR, ' No such message ! ');
  if AccountId>0 then
-  begin
-   Proc:=TADOQuery.Create(nil);
-   Proc.Connection:=FADOCon;
-   Proc.SQL.Text:='SELECT id,deleted FROM messages WHERE mid=:AccountId  '; // не делать выборку всех полей
-   Proc. Parameters.ParamByName('AccountId').Value:=AccountId;
-   Proc.Active:=True;
-   if AMessageNum>Proc.RecordCount then  ASender.Reply.SetReply(ERR, 'No such message')
-    else
-     begin
-     // Proc.SQL.Text:='SELECT deleted FROM Messages WHERE Id=:AccountId ';
-    //  Proc.Parameters.ParamByName('AccountId').Value:=AccountId;
-      Proc.RecNo:=AMessageNum;
-      if not Proc.FieldByName('deleted').AsBoolean then
-        begin
-         Proc.Edit;
-         Proc.FieldByName('deleted').AsBoolean:=true;
-         Proc.Post;
-         ASender.Reply.SetReply(OK, 'Message deleted');
-        end
-         else    ASender.Reply.SetReply(ERR,'No such message');
-     end;
-   Proc.Free;
-  end;
+  with Cont.adProc do
+    begin
+     SQL.Text:='SELECT id,deleted FROM messages WHERE mid=:AccountId AND num=:MessNum AND Deleted=FALSE';
+     Parameters.ParamByName('AccountId').Value:=AccountId;
+     Parameters.ParamByName('MessNum').Value:=AMessageNum;
+     Active:=True;
+     if RecordCount=0 then ASender.Reply.SetReply(ERR, 'No such message')
+      else
+       begin
+        Edit;
+        FieldByName('deleted').AsBoolean:=true;
+        Post;
+       end;
+     Active:=False;
+    end;
 end;
 
 
 
 procedure TPOPServer.Disconnect(AContext: TIdContext);
 var
-    AccountId:integer;
+    adProc:TADOQuery;
+    Cont:TPOP3ServerContext;
 begin
- // если -1 - ничего не делать - клиент просто отключился или доступ запрещен
- AccountId:=AContext.Connection.Tag;
- if AccountId>0 then
-  begin
-   WaitForSingleObject(Mutex,INFINITE);
-     FAccountManager.SetStatus(AccountId,asFree);
-   ReleaseMutex(Mutex);
-  end //
-  else // если -1 или 0
+ if (AContext.Connection.Tag<>-1)and (TPOP3ServerContext(AContext.Connection.Tag).AccountId<>-1) then  // если -1 - ничего не делать - клиент просто отключился или доступ запрещен
    begin
-
+    Cont:=TPOP3ServerContext(AContext.Connection.Tag);
+      WaitForSingleObject(Mutex,INFINITE);
+       FAccountManager.SetStatus(Cont.AccountId,asFree);
+      ReleaseMutex(Mutex);
+    TPOP3ServerContext(AContext.Connection.Tag).Destroy;
    end;
 end;
 
@@ -225,120 +234,94 @@ end;
 procedure TPOPServer.LIST(ASender: TIdCommand; AMessageNum: Integer);
 var
     AccountId,MessCount:integer;
-    Proc:TADOQuery;
-    Flag:boolean;
-
+    Cont:TPOP3ServerContext;
 begin
- AccountId:=ASender.Context.Connection.Tag;
- if AccountId=0 then   // если статус asClient
-   if AMessageNum=-1 then  ASender.Reply.SetReply(OK, '0 0')
-    else ASender.Reply.SetReply(ERR, 'No such message')
-  else // если получение разрешено
-   begin
-    Proc:=TADOQuery.Create(nil);
-    Proc.Connection:=FADOCon;
-    Proc.SQL.Text:='SELECT MessSize FROM messages WHERE mid=:AccountId AND Deleted=False ';
-    Proc. Parameters.ParamByName('AccountId').Value:=AccountId;
-    Proc.Active:=True;
-    MessCount:=Proc.RecordCount;
-    Proc.Close;
-    if AMessageNum=-1 then          // вывести весь список сообщений или указать что ящик пуст
-      if MessCount=0 then          // если ящик пустой
+ try
+   Cont:=TPOp3ServerContext(ASender.Context.Connection.Tag);
+   AccountId:=Cont.AccountId;
+   {-----------------------------Если загружается почта из Инета----------------------------------}
+   if AccountId=0 then   // если статус asClient
+    if AMessageNum=-1 then  ASender.Reply.SetReply(OK, '0 0')  // показ всех писем
+     else ASender.Reply.SetReply(ERR, 'No such message'); // показ определенного сообщения
+   {-----------------------------Если можно отдавать почту----------------------------------------}
+   if AccountId>0 then
+    begin
+     if AMessageNum=-1 then   // вывести все сообщения
+      with Cont.adProc do
         begin
-         ASender.Reply.SetReply(OK, '0 0');
-         ASender.Response.Add('.');
-        end
-       else // если сообщения есть - выполнить запрос и вывести данные о сообщении
-        begin
-         Proc. Open;
-         Proc.First;
-         while not Proc.EOF do
+         Active:=False;
+         SQL.Text:='SELECT num,MessSize FROM Messages WHERE mid=:AccountId AND Deleted=False';
+         Parameters.ParamByName('AccountId').Value:=AccountId;
+         Active:=True;
+         if RecordCount>0 then // если есть сообщения
+          while not EOF do
            begin
-            ASender.Response.Add(IntToStr(Proc.RecNo)+ ' ' +IntToStr(Proc.Fields[0].AsInteger));
-            Proc.Next;
-           end;
+            ASender.Response.Add(IntToStr(FieldByName('num').AsInteger)+ ' ' +IntToStr(FieldByName('messsize').AsInteger));
+            Next;
+           end
+            else  ASender.Reply.SetReply(OK, '0 0');
+         Active:=False;
         end;
-    if AMessageNum>0 then
-     begin
-       Proc.Open;
-       if (AMessageNum<=Proc.RecordCount) and (AMessageNum>0) then
+     if AMessageNum>0 then    // если указан номер сообщения
+      with Cont.adProc do
         begin
-         Proc.RecNo:=AMessageNum;
-         ASender.Reply.SetReply(OK,IntToStr(Proc.RecNo)+ ' ' +IntToStr(Proc.Fields[0].AsInteger));
-        end
-         else ASender.Reply.SetReply(ERR, 'No such message');
-     end;
-    Proc.Free;
-   end;
+         Active:=False;
+         SQL.Text:='SELECT num,MessSize FROM Messages WHERE mid=:AccountId AND Deleted=False AND num=:MessNum';
+         Parameters.ParamByName('AccountId').Value:=AccountId;
+         Parameters.ParamByName('MessNum').Value:=AMessageNum;
+         Active:=True;
+         if RecordCount=0 then  ASender.Reply.SetReply(ERR, 'No such message')
+          else
+            ASender.Reply.SetReply(OK,IntToStr(RecNo)+ ' ' +IntToStr(FieldByname('MessSize').AsInteger));
+         Active:=False;
+        end;
+    end;
+ except
 
+ end;
 end;
 
 procedure TPOPServer.QUIT(ASender: TIdCommand);
 var
     AccountId:integer;
-    Proc:TADOQuery;
+    Cont:TPOP3ServerContext;
 begin
- {
- если id  равен 0 - ничего не делать
- }
-  AccountId:=ASender.Context.Connection.Tag;
-  if AccountId>0 then
-   begin
-    Proc:=TADOQuery.Create(nil);
-    Proc.Connection:=FADOCon;
-    Proc.SQL.Text:='DELETE FROM Messages WHERE mid=:AccountId AND Deleted=TRUE';
-    Proc.Parameters.ParamByName('AccountId').Value:=AccountId;
-    Proc.ExecSQL;
-    Proc.Free;
-   end;
+ Cont:=TPOp3ServerContext(ASender.Context.Connection.Tag);
+ AccountId:=Cont.AccountId;
+ if AccountId>0 then
+   with Cont.adProc do
+     begin
+       Active:=False;
+       SQL.Text:='DELETE FROM Messages WHERE mid=:AccountId AND Deleted=TRUE';
+       Parameters.ParamByName('AccountId').Value:=AccountId;
+       ExecSQL;
+     end;
 end;
 
 procedure TPOPServer.RETR(ASender: TIdCommand; AMessageNum: Integer);
 var
-   AccountId:integer;
-   Proc:TADOQuery;
    MessCount,MessSize:Integer;
-   MessStream,outp:TMemoryStream;
-   comp:TCompressor;
-   buff:integer;
-   bn:String;
-   const
-  s: string = '';
-
+   AccountId:integer;
+   Cont:TPOP3ServerContext;
 begin
-AccountId:=ASender.Context.Connection.Tag;
+ Cont:=TPOp3ServerContext(ASender.Context.Connection.Tag);
+ AccountId:=Cont.AccountId;
  if AccountId=0
   then  ASender.Reply.SetReply(ERR, 'No such message')
    else
-    begin
-     Proc:=TADOQuery.Create(nil);
-     Proc.CacheSize:=20;
-     Proc.Connection:=FADOCon;
-    // Proc.SQL.Text:='SELECT * FROM messages WHERE mid=:AccountId AND Deleted=False ';
-    Proc.SQL.Text:='SELECT TOP 1 message FROM ( SELECT TOP 10 id,message FROM messages WHERE mid=26 ORDER BY id) ORDER BY  id DESC';
-   //  Proc. Parameters.ParamByName('AccountId').Value:=AccountId;
-     Proc.Active:=True;
-   //  if AMessageNum>Proc.RecordCount
-   if  Proc.RecordCount=0
-   // then
-      then ASender.Reply.SetReply(ERR, 'No such message')
-      else
-       begin
-        Proc.RecNo:=AMessageNum;
-        MessStream:=TMemoryStream.Create;
-        ASender.Reply.SetReply(OK,'');
-
-      //  TBlobField(Proc.FieldByName('Message')).SaveToStream(MessStream);
-      //  MessStream.Size:=MessStream.Size-3;
-     //   MessSTream.Position:=0;
-    //  ASender.Response.Add(Proc.FieldDef]);
-       ASender.Response.Add(Proc.FieldByName('Message').AsString);
-       // ASender.Response.LoadFromStream(MessStream);
-        MessStream.Free;
-       end;
-     Proc.Active:=False;
-     Proc.Free;
-   end;
+    with Cont.adProc do
+      begin
+       SQL.Text:='SELECT Message FROM Messages WHERE num=:AMessageNum AND Deleted=False AND mid=:AccountId';
+       Parameters.ParamByName('AMessageNum').Value:=AMessageNum;
+       Parameters.ParamByName('AccountId').Value:=AccountId;
+       Active:=True;
+       if RecordCount=0 then  ASender.Reply.SetReply(ERR, 'No such message')
+        else
+         begin
+          ASender.Reply.SetReply(OK,'');
+          ASender.Response.Add(FieldByName('Message').AsString);
+         end;
+      end;
 end;
 
 procedure TPOPServer.SetServerPort(const Value: Integer);
@@ -348,22 +331,22 @@ end;
 
 procedure TPOPServer.STAT(ASender: TIdCommand);
 var
- AccountId:integer;
- Proc:TADOQuery;
  MessCount,MessSize:Integer;
+ AccountId:integer;
+ Cont:TPOP3ServerContext;
 begin
-  AccountId:=ASender.Context.Connection.Tag;
+ Cont:=TPOp3ServerContext(ASender.Context.Connection.Tag);
+ AccountId:=Cont.AccountId;
   if AccountId>0 then
-   with Proc do
+   with Cont.adProc do
      begin
       // получение количества сообщений
-      Proc:=TADOQuery.Create(nil);
-      Proc.Connection:=FADOCon;
+      Active:=False;
       SQL.Text:='SELECT COUNT(Id) FROM messages WHERE mid=:AccountId AND Deleted=False ';
       Parameters.ParamByName('AccountId').Value:=AccountId;
       Active:=True;
       MessCount:=Fields[0].AsInteger;
-      Close;
+      Active:=False;
       // получение объема сообщений
       SQL.Text:='SELECT SUM(MessSize) FROM messages WHERE mid=:AccountId AND Deleted=False ';
       Parameters.ParamByName('AccountId').Value:=AccountId;
@@ -371,9 +354,29 @@ begin
       MessSize:=Fields[0].AsInteger;
 
       ASender.Reply.SetReply(OK,IntToStr(MessCount)+ ' '+ IntToStr(MessSize));
-      Proc.Free;
      end
-  else ASender.Reply.SetReply(OK, '0 0');
+  else
+   ASender.Reply.SetReply(OK, '0 0');
+end;
+
+constructor TPOP3ServerContext.Create(AccountId:integer;adCon:TADOConnection);
+begin
+  FadProc:=TADOQuery.Create(nil);
+  FadProc.Connection:=adCon;
+  FAccountId:=AccountId;
+end;
+
+destructor TPOP3ServerContext.Destroy;
+begin
+  FadProc.Free;
+end;
+
+procedure TPOP3ServerContext.SetadProc(const Value: TADOQuery);
+begin
+  if FadProc <> Value then
+  begin
+    FadProc := Value;
+  end;
 end;
 
 end.
