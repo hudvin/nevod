@@ -164,6 +164,7 @@ type
     procedure Button6Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -396,7 +397,9 @@ var
  RowSQL:String;
  Res:TSNConvert;
 begin
- if not DragState then
+
+
+  if not DragState then
   begin
    NodeIndex:=STree.TreeList.FocusedNode.AbsoluteIndex;
    if SNConverter.Find(NodeIndex,Res) then
@@ -710,8 +713,8 @@ end;
 
 procedure TFMain.alCanCheckAccountsExecute(Sender: TObject);
 begin
- alCanCheckAccounts.Checked:=NOT alCanCheckAccounts.Checked;
- SProvider.SetValue('CanCheckAccounts',BoolToStr(alCanCheckAccounts.Checked,True));
+// alCanCheckAccounts.Checked:=NOT alCanCheckAccounts.Checked;
+ SProvider.SetValue('CanCheckAccounts',BoolToStr(NOT alCanCheckAccounts.Checked,True));
 end;
 
 procedure TFMain.alOnAccountsPopUpExecute(Sender: TObject);
@@ -719,6 +722,7 @@ var
  buf:TSNConvert;
  Status:TAccountStatus;
 begin
+ alCanCheckAccounts.Checked:=StrToBool(SProvider.GetValue('CanCheckAccounts'));
  SNConverter.Find(STree.TreeList.FocusedNode.AbsoluteIndex,buf);
  if (buf.Sheet=cxTab_Accounts) and (cxAccounts.Controller.SelectedRowCount>0) then
   begin
@@ -777,6 +781,12 @@ procedure TFMain.Button4Click(Sender: TObject);
 begin
 if CheckPortForFree(11100) then
    ShowMessage('!!!!'); 
+end;
+
+procedure TFMain.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+ tray.Enabled:=False;
+ Hide;
 end;
 
 end.

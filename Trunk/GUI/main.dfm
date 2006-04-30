@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 382
-  Top = 445
+  Left = 146
+  Top = 281
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -14,6 +14,7 @@ object FMain: TFMain
   Font.Style = []
   HelpFile = 'c:\d7.hlp'
   OldCreateOrder = False
+  OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   PixelsPerInch = 96
@@ -329,7 +330,7 @@ object FMain: TFMain
     Width = 75
     Height = 25
     Caption = 'Button3'
-    TabOrder = 8
+    TabOrder = 4
     OnClick = Button3Click
   end
   object Button4: TButton
@@ -347,7 +348,6 @@ object FMain: TFMain
     Top = 272
   end
   object adCon: TADOConnection
-    Connected = True
     ConnectionString = 
       'Provider=Microsoft.Jet.OLEDB.4.0;User ID=Admin;Data Source=..\DB' +
       '\messages.mdb;Mode=Share Deny None;Extended Properties="";Persis' +

@@ -126,7 +126,7 @@ begin
   if FPackMessages then    Mess.SaveToZStream(MessStream)
     else  Mess.SaveToStream(MessStream);
   adProc.Close;
-
+  MessSTream.Size:=MessStream.Size-3;
   adProc.SQL.Text:='INSERT INTO messages (mid, message,messId,Address,CompressionLevel,MessSize)'+
                   ' VALUES (:mid,:message,:messId,:Address,:CompressionLevel,:MessSize)';
   adProc.Parameters.ParseSQL(adProc.sql.text,true);
@@ -135,7 +135,7 @@ begin
       ParamByName('mid').Value:=FAccountParams.Id;
 
 
-      ParamByName('Message').LoadFromStream(MessStream,ftBlob);   // ftMemo писать отдельно !!!
+      ParamByName('Message').LoadFromStream(MessStream,ftMemo);   // ftMemo писать отдельно !!!
       ParamByName('messId').Value:=Mess.MsgId;
 
       

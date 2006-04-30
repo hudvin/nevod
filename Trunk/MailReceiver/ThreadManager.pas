@@ -285,13 +285,13 @@ begin
   begin
    WaitForSingleObject(Mutex,INFINITE);
     FAccountManager.SetStatus(AccountId,asClient);
-    PostReceivers.Add(TPOP3Receiver.Create(AParams,FADOCon,true));
+    PostReceivers.Add(TPOP3Receiver.Create(AParams,FADOCon,False));
    ReleaseMutex(Mutex);
   end
  else // если запуск происходит из процедуры StartAllThreads - мьютекс захвачен
   begin
    FAccountManager.SetStatus(AccountId,asClient);
-   PostReceivers.Add(TPOP3Receiver.Create(AParams,FADOCon,True));
+   PostReceivers.Add(TPOP3Receiver.Create(AParams,FADOCon,false));
   end;
 end;
 

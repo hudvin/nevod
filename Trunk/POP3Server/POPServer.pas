@@ -300,40 +300,43 @@ var
    MessCount,MessSize:Integer;
    MessStream,outp:TMemoryStream;
    comp:TCompressor;
+   buff:integer;
+   bn:String;
+   const
+  s: string = '';
+
 begin
- AccountId:=ASender.Context.Connection.Tag;
+AccountId:=ASender.Context.Connection.Tag;
  if AccountId=0
   then  ASender.Reply.SetReply(ERR, 'No such message')
    else
     begin
      Proc:=TADOQuery.Create(nil);
+     Proc.CacheSize:=20;
      Proc.Connection:=FADOCon;
-     Proc.SQL.Text:='SELECT * FROM messages WHERE mid=:AccountId AND Deleted=False ';
-     Proc. Parameters.ParamByName('AccountId').Value:=AccountId;
+    // Proc.SQL.Text:='SELECT * FROM messages WHERE mid=:AccountId AND Deleted=False ';
+    Proc.SQL.Text:='SELECT TOP 1 message FROM ( SELECT TOP 10 id,message FROM messages WHERE mid=26 ORDER BY id) ORDER BY  id DESC';
+   //  Proc. Parameters.ParamByName('AccountId').Value:=AccountId;
      Proc.Active:=True;
-     if AMessageNum>Proc.RecordCount
+   //  if AMessageNum>Proc.RecordCount
+   if  Proc.RecordCount=0
+   // then
       then ASender.Reply.SetReply(ERR, 'No such message')
       else
        begin
         Proc.RecNo:=AMessageNum;
-
-        {получить поток из поля распаковать и вывести}
         MessStream:=TMemoryStream.Create;
-        outp:=TMemoryStream.Create;
-        comp:=TCompressor.Create;
-        TBlobField(Proc.FieldByName('Message')).SaveToStream(MessStream);
-        comp.DecompressStream(MessStream,outp);
+        ASender.Reply.SetReply(OK,'');
 
-
-        ASender.Response.LoadFromStream(outp);
-
-
-        outp.Free;
-        comp.Free;
+      //  TBlobField(Proc.FieldByName('Message')).SaveToStream(MessStream);
+      //  MessStream.Size:=MessStream.Size-3;
+     //   MessSTream.Position:=0;
+    //  ASender.Response.Add(Proc.FieldDef]);
+       ASender.Response.Add(Proc.FieldByName('Message').AsString);
+       // ASender.Response.LoadFromStream(MessStream);
         MessStream.Free;
-
        end;
-     Proc.Close;
+     Proc.Active:=False;
      Proc.Free;
    end;
 end;
@@ -374,8 +377,3 @@ begin
 end;
 
 end.
-
-{
-неправильно указывается размер сообщения
-
-}

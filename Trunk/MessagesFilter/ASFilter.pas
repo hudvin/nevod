@@ -127,13 +127,12 @@ function TBaseFilter.GetReason(FilterType:TFilterType): string;
 begin
  with FProc do
   begin
-   Close;
+   Active:=False;
    SQL.Text:='SELECT Reason FROM Filters WHERE type=:FilterType';
    Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
-
-   Open;
+   Active:=True;
    Result:=Fields[0].AsString;
-   Close;
+   Active:=False;
   end; 
 end;
 
@@ -152,11 +151,11 @@ begin
   Sender:=Mess.Recipients.EMailAddresses;
   with FProc do
    begin       // делать выбоку по типу фильтра
-    SQL.Text:='SELECT FVAlue FROM SenderFilter WHERE (Active=TRUE) AND '+
+    Active:=False;
+    SQL.Text:='SELECT FVAlue FROM FiltersParams WHERE (Active=TRUE) AND '+
      ' (mid=(SELECT id FROM Filters WHERE type=:FilterType) ) ' ;
     Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
-  //  ExecSQL;
-    Open;
+    Active:=True;
     First;
     while (not Res) and (not Eof) do
      begin
@@ -192,16 +191,17 @@ begin
    StrExp:=StrExp+'("(\w+)"|'+''''+'(\w+)'+''''+')(\s*(&nbsp;)*\s*)*(&gt;|>)';
    FExp.RegEx :=StrExp;
    FExp.Subject := Mess.MessageText;
-   FProc.SQL.Text:='SELECT COUNT(Id) FROM StampFilter WHERE FValue=:Stamp AND Active=True';
+   FProc.SQL.Text:='SELECT COUNT(Id) FROM FiltersParams WHERE FValue=:Stamp AND Active=True AND  '+
+    ' (mid=(SELECT id FROM Filters WHERE type=:FilterType) ) ' ;
+    Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
    Flag:=True;
    if FExp.Match then
     repeat
      with FProc do
       begin
-       Close;
+       Active:=False;
        Parameters.ParamByName('Stamp').Value:=Trim(FExp.SubExpressions[12]);
-    //   ExecSQL;
-       Open;
+       Active:=True;
        if Fields[0].AsInteger>0 then Flag:=False;
        Close;
       end;
@@ -226,6 +226,7 @@ begin
   inherited Create(Exp,Proc,FilterType);
   with Proc do
     begin
+     Active:=False;
      SQL.Text:='SELECT Var FROM Settings WHERE Name=FName';
      Parameters.ParamByName('FName').Value:='SignalLocation';
      Active:=True;
@@ -235,7 +236,7 @@ begin
 end;
 
 function TSignalFilter.AnalyzeMessage(Mess:TFMessage): Boolean;
- function GetRowText(MessageText:String):String;
+ function GetRowText(MessageText:String):String;  // удаляет теги из текста и лишние пробелы
  var buff:String;
  begin
   buff:=MessageText;
@@ -266,13 +267,13 @@ begin
 if Mess.BodyType=btHtml then
   RowText:=GetRowText(Mess.MessageText) // получение текста сообщения без тегов и лишних пробелов
  else RowText:=Mess.MessageText;
- FProc.Close;
+ FProc.Active:=False;
  FType:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
  case FSignalLocation of  // по каким полям сообщения должен производится поиск
   slAnywhere:
    begin
-    FProc.SQL.Text:='SELECT id, FValue,Location,Description FROM SignalFilter  WHERE     (Active=TRUE) AND'  +
-     '(Location=:Location_1 OR Location=:Location_2 OR Location=:Location_3)'+
+    FProc.SQL.Text:='SELECT id, FValue,Params,Description FROM FiltersParams  WHERE     (Active=TRUE) AND'  +
+     '(Params=:Location_1 OR Params=:Location_2 OR Params=:Location_3)'+
      'AND (mid=(SELECT id FROM Filters WHERE type='+ ''''+FType +'''' +'))';
     FProc.Parameters.ParamByName('Location_1').Value:='slSubject';
     FProc.Parameters.ParamByName('Location_2').Value:='slAnyWhere';
@@ -280,23 +281,23 @@ if Mess.BodyType=btHtml then
    end;
   slBody:
    begin
-    FProc.SQL.Text:='SELECT id, FValue,Location,Description FROM SignalFilter  WHERE     (Active=TRUE) AND'  +
-     '(Location=:Location_1 OR Location=:Location_2)'+
+    FProc.SQL.Text:='SELECT id, FValue,Params,Description FROM FiltersParams  WHERE     (Active=TRUE) AND'  +
+     '(Params=:Location_1 OR Params=:Location_2)'+
      'AND (mid=(SELECT id FROM Filters WHERE type='+ ''''+FType +'''' +'))';
     FProc.Parameters.ParamByName('Location_1').Value:='slAnyWhere';
     FProc.Parameters.ParamByName('Location_2').Value:='slBody';
    end;
   slSubject:
    begin
-    FProc.SQL.Text:='SELECT id, FValue,Location,Description FROM SignalFilter  WHERE     (Active=TRUE) AND'  +
-     '(Location=:Location_1 OR Location=:Location_2)'+
+    FProc.SQL.Text:='SELECT id, FValue,Params,Description FROM FiltersParams  WHERE     (Active=TRUE) AND'  +
+     '(Params=:Location_1 OR Params=:Location_2)'+
      'AND (mid=(SELECT id FROM Filters WHERE type='+ ''''+FType +'''' +'))';
     FProc.Parameters.ParamByName('Location_1').Value:='slAnyWhere';
     FProc.Parameters.ParamByName('Location_2').Value:='slSubject';
    end;
  end;
 
-   
+
  with FProc do    // поиск слов из таблицы в сообщении
   begin
    FType:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
@@ -350,11 +351,11 @@ begin
   inherited Create(Exp,Proc,FilterType);
   with Proc do
   begin
-   Close;
+   Active:=False;
    SQL.Text:='SELECT Var FROM Settings WHERE Name='+'''' +'MaxImg'+'''';
    Active:=True;
    MaxImg:=Fields[0].AsInteger;
-   Close;
+   Active:=False;
   end;
 end;
 
@@ -395,11 +396,11 @@ begin
   inherited Create(Exp,Proc,FilterType);
   with Proc do
   begin
-   Close;
+   Active:=False;
    SQL.Text:='SELECT Var FROM Settings WHERE Name='+'''' +'MaxLinks'+'''';
    Active:=True;
    MaxLinks:=Fields[0].AsInteger;
-   Close;
+   Active:=False;
   end;
 end;
 
@@ -437,13 +438,18 @@ constructor TAttachmentExtFilter.Create(Exp:TRegExp;Proc:TADOQuery;
     FilterType:TFilterType);
 begin
   inherited Create(Exp,Proc,FilterType);
-  with Proc do   // выборка всех расширений для фильтра данного типа
+ { with Proc do   // выборка всех расширений для фильтра данного типа
    begin
-    Close;
+    Active:=False;
     SQL.Text:='SELECT FVAlue FROM AttachmentExtFilter WHERE (Active=TRUE) AND '+
      ' (mid=(SELECT id FROM Filters WHERE type=:FilterType) ) ' ;
     Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
-   end;
+   end;  }
+
+   {
+   код неизвестно зачем !
+   }
+
 end;
 
 function TAttachmentExtFilter.AnalyzeMessage(Mess:TFMessage): Boolean;
@@ -454,7 +460,8 @@ var
 begin
  i:=0;
  Flag:=False;
- FProc.SQL.Text:='SELECT FVAlue FROM AttachmentExtFilter WHERE (Active=TRUE) AND '+
+ FProc.Active:=False;
+ FProc.SQL.Text:='SELECT FVAlue FROM FiltersParams WHERE (Active=TRUE) AND '+
                 ' (mid=(SELECT id FROM Filters WHERE type=:FilterType) ) AND FValue=:Ext';
  while (not Flag) AND  (i<Mess.MessageParts.Count) do
   begin
@@ -471,10 +478,12 @@ begin
        end;
    inc(i);
 
-  end;  
+  end;
+ if Flag  then FReason:=GetReason(FFilterType)
+  else FReason:='';
 
  Result:=Flag;
- FReason:=GetReason(FFilterType);
+// FReason:=GetReason(FFilterType);
 end;
 
 function TAttachmentExtFilter.GetFileExtension(FileName:string): string;
@@ -493,11 +502,11 @@ begin
   inherited Create(Exp,Proc,FilterType);
   with Proc do
   begin
-   Close;
+   Active:=False;
    SQL.Text:='SELECT Var FROM Settings WHERE Name='+'''' +'MaxSize'+'''';
    Active:=True;
    MaxSize:=Fields[0].AsInteger;
-   Close;
+   Active:=False;
   end;
 end;
 
@@ -513,7 +522,7 @@ begin
      then   Result:=True
       else Result:=False
     else Result:=False;
-   Active:=True;
+   Active:=False;
   end;
 end;
 
@@ -617,8 +626,9 @@ begin
        TabFilter:=TFilterType(GetEnumValue(TypeInfo(TFilterType),FieldByName('Type').AsString));
        if TabFilter in Filters4Loading then
         AddFilter(TabFilter);
-       Next;  
+       Next;
       end;
+    Active:=False;
    end;
 end;
 
@@ -685,6 +695,10 @@ begin
      then  Flag:=True;
     inc(i);
    end;
+
+ if Flag then FReason:='Too many dark words'
+  else FReason:='';
+     
  Result:=Flag;
 
 end;
