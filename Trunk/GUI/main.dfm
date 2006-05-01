@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 146
-  Top = 281
+  Left = 181
+  Top = 113
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -187,15 +187,6 @@ object FMain: TFMain
           GridView = cxAccounts
         end
       end
-      object Button6: TButton
-        Left = 88
-        Top = 296
-        Width = 75
-        Height = 25
-        Caption = 'Button6'
-        TabOrder = 1
-        OnClick = Button6Click
-      end
     end
     object cxTab_Log: TcxTabSheet
       Caption = 'cxTab_Log'
@@ -325,22 +316,13 @@ object FMain: TFMain
     end
   end
   object Button3: TButton
-    Left = 144
-    Top = 360
+    Left = 64
+    Top = 376
     Width = 75
     Height = 25
     Caption = 'Button3'
-    TabOrder = 4
+    TabOrder = 8
     OnClick = Button3Click
-  end
-  object Button4: TButton
-    Left = 64
-    Top = 360
-    Width = 75
-    Height = 25
-    Caption = 'Button4'
-    TabOrder = 9
-    OnClick = Button4Click
   end
   object dsAccounts: TDataSource
     DataSet = adAccounts

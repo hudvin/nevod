@@ -2,7 +2,7 @@ unit POPServer;
 
 interface
 uses
-    Shared,Windows,Dialogs,Classes, Messages, SysUtils,IdContext, StdCtrls,
+    Shared,Windows,Dialogs,Classes,ASFilter, Messages, SysUtils,IdContext, StdCtrls,
      ADODB, IdBaseComponent, IdComponent, Math, IdCommandHandlers,WinSock,
      IdTCPServer, IdPOP3Server,  AccountManager,DBTables;
 
@@ -21,6 +21,7 @@ type
    procedure QUIT(ASender: TIdCommand);
    procedure STAT(ASender: TIdCommand);
    procedure Disconnect(AContext: TIdContext);
+   function GetLocalIP: String;
    function GetServerPort: Integer;
    procedure LIST(ASender: TIdCommand; AMessageNum: Integer);
    procedure SetServerPort(const Value: Integer);
@@ -35,6 +36,7 @@ end;
 
   TPOP3ServerContext = class
   private
+    AllowFilter: TAllowFilterGroup;
     FAccountId: Integer;
     FadProc: TADOQuery;
     procedure SetadProc(const Value: TADOQuery);
@@ -47,7 +49,7 @@ end;
 
 implementation
 
-uses DB, IdTCPConnection, IdTask;
+uses DB, IdTCPConnection, IdTask,main;
 
 constructor TPOPServer.Create(ADOCon:TADOConnection;
     AccountManager:TAccountManager);
@@ -118,14 +120,15 @@ end;
 procedure TPOPServer.CheckAccount(AThread: TIdContext;LThread:
     TIdPOP3ServerContext);
 var
-    Password,Username,Server:string;
+    Password,Username:string;
     AParams:TAccountParams;
     id:integer;
-    Proc:TADOQuery;
     i:integer;
     AContext:TPOP3ServerContext;
 begin
  WaitForSingleObject(Mutex,INFINITE);
+  if AThread.Connection.Socket.Binding.PeerIP<>GetLocalIP // проверка на допустимость адреса клиента
+   then AThread.Connection.Socket.Close;
   Password:=LThread.Password;
   Username:=LThread.Username;
   Id:=FAccountManager.AccountName2Id(Username);
@@ -183,8 +186,7 @@ end;
 
 procedure TPOPServer.DELE(ASender: TIdCommand; AMessageNum: Integer);
 var
-    AccountId,MessCount:integer;
-    Flag:boolean;
+    AccountId:integer;
     Cont:TPOP3ServerContext;
 begin
  Cont:=TPOp3ServerContext(ASender.Context.Connection.Tag);
@@ -213,7 +215,6 @@ end;
 
 procedure TPOPServer.Disconnect(AContext: TIdContext);
 var
-    adProc:TADOQuery;
     Cont:TPOP3ServerContext;
 begin
  if (AContext.Connection.Tag<>-1)and (TPOP3ServerContext(AContext.Connection.Tag).AccountId<>-1) then  // если -1 - ничего не делать - клиент просто отключился или доступ запрещен
@@ -226,6 +227,23 @@ begin
    end;
 end;
 
+function TPOPServer.GetLocalIP: String;
+const WSVer = $101;
+var
+  wsaData: TWSAData;
+  P: PHostEnt;
+  Buf: array [0..127] of Char;
+begin
+  Result := '';
+  if WSAStartup(WSVer, wsaData) = 0 then begin
+    if GetHostName(@Buf, 128) = 0 then begin
+      P := GetHostByName(@Buf);
+      if P <> nil then Result := iNet_ntoa(PInAddr(p^.h_addr_list^)^);
+    end;
+    WSACleanup;
+  end;
+end;
+
 function TPOPServer.GetServerPort: Integer;
 begin
  Result:=StrToInt(SProvider.GetValue('ServerPort'));
@@ -233,7 +251,7 @@ end;
 
 procedure TPOPServer.LIST(ASender: TIdCommand; AMessageNum: Integer);
 var
-    AccountId,MessCount:integer;
+    AccountId:integer;
     Cont:TPOP3ServerContext;
 begin
  try
@@ -300,9 +318,10 @@ end;
 
 procedure TPOPServer.RETR(ASender: TIdCommand; AMessageNum: Integer);
 var
-   MessCount,MessSize:Integer;
    AccountId:integer;
    Cont:TPOP3ServerContext;
+   MessStream:TMemoryStream;
+   Mess:TFMessage;
 begin
  Cont:=TPOp3ServerContext(ASender.Context.Connection.Tag);
  AccountId:=Cont.AccountId;
@@ -314,12 +333,34 @@ begin
        SQL.Text:='SELECT Message FROM Messages WHERE num=:AMessageNum AND Deleted=False AND mid=:AccountId';
        Parameters.ParamByName('AMessageNum').Value:=AMessageNum;
        Parameters.ParamByName('AccountId').Value:=AccountId;
+
        Active:=True;
        if RecordCount=0 then  ASender.Reply.SetReply(ERR, 'No such message')
         else
          begin
+          
+          MessStream:=TMemoryStream.Create;
+          Mess:=TFMessage.Create;
+          TBlobField(FieldByName('Message')).SaveToStream(MessStream);
+          MessStream.Position:=0;
+          Mess.LoadFromStream(MessStream);
+         
+          // произвести обработку данных
+          Mess.Subject:='program testing';
+       //    MessStream.SaveToFile('c:\file.txt');
+       //   Mess.SaveToFile('c:\ggg.txt');
+          MessStream.Clear;
+          Mess.Headers.Values['Subject']:='pfdsfffff';
+          Mess.SaveToStream(MessStream);
+          MessStream.SaveToFile('c:\mess.txt');
+          messStream.Position:=0;
+
           ASender.Reply.SetReply(OK,'');
-          ASender.Response.Add(FieldByName('Message').AsString);
+          MessStream.Size:=MessStream.Size-3;
+          ASender.Response.LoadFromStream(MessStream);
+          MessStream.Free;
+          Mess.Free;
+
          end;
       end;
 end;
@@ -364,10 +405,12 @@ begin
   FadProc:=TADOQuery.Create(nil);
   FadProc.Connection:=adCon;
   FAccountId:=AccountId;
+  AllowFilter:=TAllowFilterGroup.Create(adCon);
 end;
 
 destructor TPOP3ServerContext.Destroy;
 begin
+  AllowFilter.Free;
   FadProc.Free;
 end;
 

@@ -125,9 +125,7 @@ type
     pmStartAllThreads: TdxBarButton;
     pmStopAllThreads: TdxBarButton;
     pmCheckAccounts: TdxBarButton;
-    Button6: TButton;
     Button3: TButton;
-    Button4: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -161,10 +159,8 @@ type
     procedure alStopAllThreadsExecute(Sender: TObject);
     procedure alCanCheckAccountsExecute(Sender: TObject);
     procedure alOnAccountsPopUpExecute(Sender: TObject);
-    procedure Button6Click(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
-    procedure Button4Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure Button3Click(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -216,7 +212,7 @@ var
   pp:integer;
 implementation
 
-uses Unit1, AddHooked, USock;
+uses  AddHooked, USock;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
@@ -747,46 +743,15 @@ begin
 
 end;
 
-procedure TFMain.Button6Click(Sender: TObject);
-var
-FAddr: TSockAddrIn;
-FSocket:TSocket;
-wsaD: WSADATA;
-begin
-FSocket := socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
-FAddr.sin_family := AF_INET;
-FAddr.sin_addr.s_addr := INADDR_ANY;
-FAddr.sin_port := htons(11000);
- if WSAStartup($101, WsaD) = 0 then
-  begin
-if bind(FSocket, FAddr, SizeOf(FAddr))=SOCKET_ERROR then
-  showmessage('Немогу создать');
- WSACleanUp;
- closesocket(FSocket);
- end;
-end;
-
-procedure TFMain.Button3Click(Sender: TObject);
-begin
-
-  TForm(pp).Show;  
-   
-end;
-
-procedure TFMain.Button4Click(Sender: TObject);
-var
-// pp:integer;   // играет роль указателя
- bt:TForm;
-begin
- bt:=TForm.Create(FMain);
- pp:=Integer(bt);
-// TForm(pp).Show;
-end;
-
 procedure TFMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
  tray.Enabled:=False;
  Hide;
+end;
+
+procedure TFMain.Button3Click(Sender: TObject);
+begin
+ ShowMessage(GetLocalIP);
 end;
 
 end.

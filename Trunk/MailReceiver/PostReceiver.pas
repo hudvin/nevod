@@ -126,7 +126,7 @@ begin
   if FPackMessages then    Mess.SaveToZStream(MessStream)
     else  Mess.SaveToStream(MessStream);
   adProc.Close;
-  MessSTream.Size:=MessStream.Size-3;
+ // MessSTream.Size:=MessStream.Size-3;
   adProc.SQL.Text:='INSERT INTO messages (mid, message,messId,Address,CompressionLevel,MessSize)'+
                   ' VALUES (:mid,:message,:messId,:Address,:CompressionLevel,:MessSize)';
   adProc.Parameters.ParseSQL(adProc.sql.text,true);
@@ -135,7 +135,7 @@ begin
       ParamByName('mid').Value:=FAccountParams.Id;
 
 
-      ParamByName('Message').LoadFromStream(MessStream,ftMemo);   // ftMemo писать отдельно !!!
+      ParamByName('Message').LoadFromStream(MessStream,ftBlob);   // ftMemo писать отдельно !!!
       ParamByName('messId').Value:=Mess.MsgId;
 
       
@@ -170,7 +170,7 @@ end;
 
 procedure TPOP3Receiver.ReceiveMessages;
 var
-  i, MessCount: Integer;
+  i, MessCount,rec: Integer;
   MessSize:Integer;
 begin
   POP3Client.Host:=FAccountParams.Host;
@@ -183,6 +183,7 @@ begin
    MessCount:=POP3Client.CheckMessages;
    if messcount>0 then
        begin
+         rec:=0;
          for i:=1 to messcount do
             begin
               RecMessage.Clear;
@@ -192,6 +193,7 @@ begin
                   RecMessage.Clear;
                   POP3Client.Retrieve(i,RecMessage);
                   MessSize:=POP3Client.RetrieveMsgSize(i);
+                  inc(rec);
                //   POP3Client.Delete(i);
                   AddToOldMessagesId(RecMessage);
                   SaveMessage(RecMessage,MessSize);
@@ -200,7 +202,7 @@ begin
             end;
          end;
    POP3Client.Disconnect;
-   FMessagesCount:=MessCount;
+   FMessagesCount:=rec;
    FSuccessFul:=True;
  //  CoInitialize(nil);
    with adProc do

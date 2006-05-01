@@ -193,7 +193,7 @@ begin
    FExp.Subject := Mess.MessageText;
    FProc.SQL.Text:='SELECT COUNT(Id) FROM FiltersParams WHERE FValue=:Stamp AND Active=True AND  '+
     ' (mid=(SELECT id FROM Filters WHERE type=:FilterType) ) ' ;
-    Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
+   FProc.Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
    Flag:=True;
    if FExp.Match then
     repeat
@@ -553,15 +553,15 @@ end;
 procedure TBaseFilterContainer.AddFilter(FilterType:TFilterType);
 begin
   case FilterType of
-    ftBlackEmail: FilterList.Add(TSenderFilter.Create(Exp,Proc,ftBlackEmail));
-    ftWhiteEmail: FilterList.Add(TSenderFilter.Create(Exp,Proc,ftWhiteEmail));
+    ftBlackSender: FilterList.Add(TSenderFilter.Create(Exp,Proc,ftBlackSender));
+    ftWhiteSender: FilterList.Add(TSenderFilter.Create(Exp,Proc,ftWhiteSender));
     ftStamp: FilterList.Add(TStampFilter.Create(Exp,Proc,ftStamp));
     ftBlackWord: FilterList.Add(TSignalFilter.Create(Exp,Proc,ftBlackWord)) ;
     ftWhiteWord:FilterList.Add(TSignalFilter.Create(Exp,Proc,ftWhiteWord)) ;
     ftImageFilter:FilterList.Add(TImageFilter.Create(Exp,Proc,ftBlackWord)) ;
     ftLinkFilter:FilterList.Add(TLinkFilter.Create(Exp,Proc,ftLinkFilter)) ;
-    ftBlackAttachExtFilter:FilterList.Add(TAttachmentExtFilter.Create(Exp,Proc,ftBlackAttachExtFilter));
-    ftWhiteAttachExtFilter:FilterList.Add(TAttachmentExtFilter.Create(Exp,Proc,ftWhiteAttachExtFilter));
+    ftBlackAttach:FilterList.Add(TAttachmentExtFilter.Create(Exp,Proc,ftBlackAttach));
+    ftWhiteAttach:FilterList.Add(TAttachmentExtFilter.Create(Exp,Proc,ftWhiteAttach));
     ftMessSize:FilterList.Add(TMessageSizeFilter.Create(Exp,Proc,ftMessSize));
   end;
 end;
@@ -634,13 +634,13 @@ end;
 
 constructor TAllowFilterGroup.Create(ADOCon:TADOConnection);
 begin
-  Filters4Loading:=[ftWhiteEmail,ftStamp,ftWhiteWord,ftWhiteAttachExtFilter];
+  Filters4Loading:=[ftWhiteSender,ftStamp,ftWhiteWord,ftWhiteAttach];
   inherited Create(ADOCon);
 end;
 
 constructor TDenyFilterGroup.Create(ADOCon:TADOConnection);
 begin
-  Filters4Loading:=[ftBlackEmail,ftBlackWord,ftImageFilter,ftLinkFilter,ftBlackAttachExtFilter,ftMessSize,ftSpamWords];
+  Filters4Loading:=[ftBlackSender,ftBlackWord,ftImageFilter,ftLinkFilter,ftBlackAttach,ftMessSize,ftSpamWord];
   inherited Create(ADOCon);
 end;
 
