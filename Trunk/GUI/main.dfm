@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 181
-  Top = 113
+  Left = 224
+  Top = 245
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'

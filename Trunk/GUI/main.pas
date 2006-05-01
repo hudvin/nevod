@@ -751,7 +751,8 @@ end;
 
 procedure TFMain.Button3Click(Sender: TObject);
 begin
- ShowMessage(GetLocalIP);
+ ShowMessage(IntToStr(pos('aaa','zzz')));
+// ShowMessage(GetLocalIP);
 end;
 
 end.

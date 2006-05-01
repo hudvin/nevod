@@ -37,6 +37,7 @@ end;
   TPOP3ServerContext = class
   private
     AllowFilter: TAllowFilterGroup;
+    DenyFilter: TDenyFilterGroup;
     FAccountId: Integer;
     FadProc: TADOQuery;
     procedure SetadProc(const Value: TADOQuery);
@@ -344,15 +345,15 @@ begin
           TBlobField(FieldByName('Message')).SaveToStream(MessStream);
           MessStream.Position:=0;
           Mess.LoadFromStream(MessStream);
-         
-          // произвести обработку данных
-          Mess.Subject:='program testing';
-       //    MessStream.SaveToFile('c:\file.txt');
-       //   Mess.SaveToFile('c:\ggg.txt');
+          if Cont.AllowFilter.AnalyzeMessage(Mess) then
+            Mess.Subject:=Cont.AllowFilter.Reason
+             else
+              if Cont.DenyFilter.AnalyzeMessage(Mess) then
+               mess.Subject:=Cont.DenyFilter.Reason;
+
+
           MessStream.Clear;
-          Mess.Headers.Values['Subject']:='pfdsfffff';
           Mess.SaveToStream(MessStream);
-          MessStream.SaveToFile('c:\mess.txt');
           messStream.Position:=0;
 
           ASender.Reply.SetReply(OK,'');
@@ -406,11 +407,13 @@ begin
   FadProc.Connection:=adCon;
   FAccountId:=AccountId;
   AllowFilter:=TAllowFilterGroup.Create(adCon);
+  DenyFilter:=TDenyFilterGroup.Create(adCon);
 end;
 
 destructor TPOP3ServerContext.Destroy;
 begin
   AllowFilter.Free;
+  DenyFilter.Free;
   FadProc.Free;
 end;
 

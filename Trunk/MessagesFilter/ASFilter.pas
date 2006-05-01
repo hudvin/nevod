@@ -307,7 +307,7 @@ if Mess.BodyType=btHtml then
    while (not FProc.Eof) and (not Flag) do
     begin
      try
-      case TSignalLocation(GetEnumValue(TypeInfo(TSignalLocation),FieldByName('Location').AsString)) of    //
+      case TSignalLocation(GetEnumValue(TypeInfo(TSignalLocation),FieldByName('Params').AsString)) of    //
        slAnywhere:
         if FindString(RowText+' '+mess.Subject,FProc.FieldByName('FValue').AsString)
          then Flag:=True;
@@ -409,11 +409,14 @@ var
  i:integer;
  Flag:boolean;
 begin
+
   if Mess.MessageText<>'' then
    begin
    i:=0;
    Flag:=True;
-   FExp.RegEx:='<\s*a\s*href';  // проверить, насколько правильно
+   if Mess.BodyType=btText then
+    FExp.RegEx:='(http://www.|http://|www.)([_a-z\d\-]+(\.[_a-z\d\-]+)+)((/[ _a-z\d\-\\\.]+)+)*'
+     else  FExp.RegEx:='<\s*a\s*href';  // проверить, насколько правильно
    FExp.Subject:=Mess.MessageText;
    if FExp.Match then
     repeat
@@ -524,6 +527,8 @@ begin
     else Result:=False;
    Active:=False;
   end;
+ if Result then FReason:=GetReason(FFilterType)
+    
 end;
 
 constructor TBaseFilterContainer.Create(ADOCon:TADOConnection);

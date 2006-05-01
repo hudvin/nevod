@@ -480,38 +480,33 @@ function TFMessage.GetBodyType: TBodyType;
 var
  Flag:Boolean;
  i:integer;
+ buf:String;
 begin
  Flag:=True;
  i:=0;
- if ContentType='text/plain' then Result:=btText
-  else
-   begin
-    while (Flag) and (i<MessageParts.Count) do
-     if MessageParts[i].ContentType='text/plain' then
-      begin
-       Flag:=False;
-       Result:=btText;
-      end
-     else
-       if MessageParts[i].ContentType='text/html' then
-        begin
-         Flag:=False;
-         Result:=btText;
-        end
-       else
-        inc(i);
-    if Flag then Result:=btText;
-      
-   end;
+ if (not IsEncoded) then
+  buf:=ContentType;
+ if IsEncoded then
+  while (Flag) and (i<MessageParts.Count) do
+   if  MessageParts.Items[i] is TIdText then
+    begin
+     buf:=(MessageParts[i] as TIdText).ContentType;
+     Flag:=False;
+    end
+   else inc(i);
 
+  if (pos('html',buf)<>0) or (pos('xml',buf)<>0) then Result:=btHtml
+   else Result:=btText;
 end;
 
 function TFMessage.GetMessageText: string;
 var
  i:integer;
 begin
- for i:=0 to MessageParts.Count-1 do
-  if MessageParts.Items[i] is TIdText then Result:=Result+(MessageParts[i] as TIdText).Body.Text;
+ if IsEncoded then
+  for i:=0 to MessageParts.Count-1 do
+   if MessageParts.Items[i] is TIdText then Result:=Result+(MessageParts[i] as TIdText).Body.Text;
+ if (Not IsEncoded) then Result:=Body.Text;
 end;
 
 procedure TFMessage.LoadFromZFile(FileName: String);
