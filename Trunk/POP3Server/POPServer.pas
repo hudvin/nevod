@@ -40,12 +40,15 @@ end;
     DenyFilter: TDenyFilterGroup;
     FAccountId: Integer;
     FadProc: TADOQuery;
+    FSettings: TSettings;
     procedure SetadProc(const Value: TADOQuery);
+    procedure SetSettings(const Value: TSettings);
   public
     constructor Create(AccountId:integer;adCon:TADOConnection);
     destructor Destroy; override;
     property AccountId: Integer read FAccountId write FAccountId;
     property adProc: TADOQuery read FadProc write SetadProc;
+    property Settings: TSettings read FSettings write SetSettings;
   end;
 
 implementation
@@ -345,12 +348,14 @@ begin
           TBlobField(FieldByName('Message')).SaveToStream(MessStream);
           MessStream.Position:=0;
           Mess.LoadFromStream(MessStream);
-          if Cont.AllowFilter.AnalyzeMessage(Mess) then
-            Mess.Subject:=Cont.AllowFilter.Reason
-             else
-              if Cont.DenyFilter.AnalyzeMessage(Mess) then
-               mess.Subject:=Cont.DenyFilter.Reason;
-
+          if StrToBool(Cont.Settings.GetValue('EnableFiltering')) then
+           begin
+            if Cont.AllowFilter.AnalyzeMessage(Mess) then
+             Mess.Subject:=Cont.AllowFilter.Reason
+            else
+             if Cont.DenyFilter.AnalyzeMessage(Mess) then
+                mess.Subject:=Cont.DenyFilter.Reason;
+           end;
 
           MessStream.Clear;
           Mess.SaveToStream(MessStream);
@@ -408,6 +413,7 @@ begin
   FAccountId:=AccountId;
   AllowFilter:=TAllowFilterGroup.Create(adCon);
   DenyFilter:=TDenyFilterGroup.Create(adCon);
+  FSettings:=TSettings.Create(adCon);
 end;
 
 destructor TPOP3ServerContext.Destroy;
@@ -415,6 +421,7 @@ begin
   AllowFilter.Free;
   DenyFilter.Free;
   FadProc.Free;
+  Settings.Free;
 end;
 
 procedure TPOP3ServerContext.SetadProc(const Value: TADOQuery);
@@ -422,6 +429,14 @@ begin
   if FadProc <> Value then
   begin
     FadProc := Value;
+  end;
+end;
+
+procedure TPOP3ServerContext.SetSettings(const Value: TSettings);
+begin
+  if FSettings <> Value then
+  begin
+    FSettings := Value;
   end;
 end;
 

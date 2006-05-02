@@ -110,7 +110,7 @@ object FMain: TFMain
     Top = 23
     Width = 586
     Height = 405
-    ActivePage = cxTab_Accounts
+    ActivePage = cxTab_DFSettings
     Align = alClient
     DragMode = dmAutomatic
     LookAndFeel.Kind = lfStandard
@@ -314,15 +314,14 @@ object FMain: TFMain
       Caption = 'cxTab_Settings'
       ImageIndex = 3
     end
-  end
-  object Button3: TButton
-    Left = 64
-    Top = 376
-    Width = 75
-    Height = 25
-    Caption = 'Button3'
-    TabOrder = 8
-    OnClick = Button3Click
+    object cxTab_AFSettings: TcxTabSheet
+      Caption = 'cxTab_AFSettings'
+      ImageIndex = 4
+    end
+    object cxTab_DFSettings: TcxTabSheet
+      Caption = 'cxTab_DFSettings'
+      ImageIndex = 5
+    end
   end
   object dsAccounts: TDataSource
     DataSet = adAccounts

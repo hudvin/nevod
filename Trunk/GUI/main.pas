@@ -125,7 +125,8 @@ type
     pmStartAllThreads: TdxBarButton;
     pmStopAllThreads: TdxBarButton;
     pmCheckAccounts: TdxBarButton;
-    Button3: TButton;
+    cxTab_AFSettings: TcxTabSheet;
+    cxTab_DFSettings: TcxTabSheet;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -160,7 +161,6 @@ type
     procedure alCanCheckAccountsExecute(Sender: TObject);
     procedure alOnAccountsPopUpExecute(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure Button3Click(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -315,6 +315,8 @@ begin
    Add(0,ftNone,'',cxTab_Settings);      // основные настройки
    Add(1,ftNone,'Accounts',cxTab_Accounts);      // учетные записи
    Add(13,ftNone,'',cxTab_Log);
+   Add(3,ftNone,'',cxTab_AFSettings);
+   Add(8,ftNone,'',cxTab_DFSettings);
    end;
 
  POP3Server:=TPOPServer.Create(adCon,AccountManager);
@@ -747,12 +749,6 @@ procedure TFMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
  tray.Enabled:=False;
  Hide;
-end;
-
-procedure TFMain.Button3Click(Sender: TObject);
-begin
- ShowMessage(IntToStr(pos('aaa','zzz')));
-// ShowMessage(GetLocalIP);
 end;
 
 end.

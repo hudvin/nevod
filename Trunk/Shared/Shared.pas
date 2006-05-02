@@ -247,11 +247,8 @@ type
   TRegExp = class(TPerlRegEx)
   { при присвоении текста для обработки -экранирование спецсимволов }
   private
-    FShieldingExp: string;
-    function GetShieldingExp: string;
-    procedure SetShieldingExp(const Value: string);
   public
-    property ShieldingExp: string read GetShieldingExp write SetShieldingExp;
+    function BuildExp(const Value: string): string;
   end;
 
   TSignalDescriptorsList = class
@@ -486,7 +483,7 @@ begin
  i:=0;
  if (not IsEncoded) then
   buf:=ContentType;
- if IsEncoded then
+ if pos('multipart',ContentType)<>0 then
   while (Flag) and (i<MessageParts.Count) do
    if  MessageParts.Items[i] is TIdText then
     begin
@@ -503,10 +500,14 @@ function TFMessage.GetMessageText: string;
 var
  i:integer;
 begin
- if IsEncoded then
-  for i:=0 to MessageParts.Count-1 do
-   if MessageParts.Items[i] is TIdText then Result:=Result+(MessageParts[i] as TIdText).Body.Text;
- if (Not IsEncoded) then Result:=Body.Text;
+ if pos('multipart',ContentType)<>0 then
+   for i:=0 to MessageParts.Count-1 do
+    if MessageParts.Items[i] is TIdText then Result:=Result+(MessageParts[i] as TIdText).Body.Text;
+ //if IsEncoded then
+ // for i:=0 to MessageParts.Count-1 do
+ //  if MessageParts.Items[i] is TIdText then Result:=Result+(MessageParts[i] as TIdText).Body.Text;
+// if (Not IsEncoded) then Result:=Body.Text;
+  if pos('multipart',ContentType)=0 then Result:=Body.Text;
 end;
 
 procedure TFMessage.LoadFromZFile(FileName: String);
@@ -907,16 +908,10 @@ begin
 
 end;
 
-function TRegExp.GetShieldingExp: string;
-begin
- Result:=FShieldingExp;
-end;
-
-procedure TRegExp.SetShieldingExp(const Value: string);
+function TRegExp.BuildExp(const Value: string): string;
 var inpString,buff,symbols:String;
     i:Integer;
 begin
- FShieldingExp:=Value;
  inpString:=Value;
  Symbols:='.[]\$^()';
  buff:='';
@@ -942,8 +937,7 @@ begin
  if (InpString[Length(InpString)]<>'.') AND (InpString[Length(InpString)]<>'*') then   // проверка в конце
   inpString:=InpString+'\b';
 
-  RegEx:=InpString;
-
+  Result:=InpString;
 end;
 
 constructor TSignalDescriptorsList.Create;

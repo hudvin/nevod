@@ -113,7 +113,7 @@ type
 
 
 implementation
-uses main;
+uses main, IdEMailAddress;
 
 constructor TBaseFilter.Create(Exp:TRegExp;Proc:TADOQuery;
     FilterType:TFilterType);
@@ -148,7 +148,7 @@ var
  sender:String;
 begin
   Res:=False;
-  Sender:=Mess.Recipients.EMailAddresses;
+  Sender:=Mess.From.Address;
   with FProc do
    begin       // делать выбоку по типу фильтра
     Active:=False;
@@ -156,11 +156,10 @@ begin
      ' (mid=(SELECT id FROM Filters WHERE type=:FilterType) ) ' ;
     Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
     Active:=True;
-    First;
     while (not Res) and (not Eof) do
      begin
       FExp.Options:=[preCaseLess];
-      FExp.ShieldingExp:=FieldByName('FValue').AsString; // сырая маска получателся
+      FExp.RegEx:=FExp.BuildExp(FieldByName('FValue').AsString);
       FExp.Subject:=Sender;
       if FExp.Match then Res:=True
        else Next;
@@ -264,6 +263,7 @@ var
  RowText,FType:String;
  Flag:Boolean;
 begin
+// неправильно определяется текст сообщения
 if Mess.BodyType=btHtml then
   RowText:=GetRowText(Mess.MessageText) // получение текста сообщения без тегов и лишних пробелов
  else RowText:=Mess.MessageText;
@@ -338,7 +338,7 @@ end;
 
 function TSignalFilter.FindString(InpText:String;SubString:string): Boolean;
 begin
- FExp.ShieldingExp:=SubString;
+ FExp.RegEx:=FExp.BuildExp(SubString);
  FExp.Subject:=InpText;
  if FExp.Match then   Result:=True
   else result:=false;
@@ -354,7 +354,7 @@ begin
    Active:=False;
    SQL.Text:='SELECT Var FROM Settings WHERE Name='+'''' +'MaxImg'+'''';
    Active:=True;
-   MaxImg:=Fields[0].AsInteger;
+   MaxImg:=StrToInt(Fields[0].AsString);
    Active:=False;
   end;
 end;
@@ -399,7 +399,7 @@ begin
    Active:=False;
    SQL.Text:='SELECT Var FROM Settings WHERE Name='+'''' +'MaxLinks'+'''';
    Active:=True;
-   MaxLinks:=Fields[0].AsInteger;
+   MaxLinks:=StrToInt(Fields[0].AsString);
    Active:=False;
   end;
 end;
@@ -508,7 +508,7 @@ begin
    Active:=False;
    SQL.Text:='SELECT Var FROM Settings WHERE Name='+'''' +'MaxSize'+'''';
    Active:=True;
-   MaxSize:=Fields[0].AsInteger;
+   MaxSize:=StrToInt(Fields[0].AsString);
    Active:=False;
   end;
 end;
@@ -521,7 +521,7 @@ begin
    Parameters.ParamByName('MessageId').Value:=Mess.MsgId;
    Active:=True;
    if RecordCount>0 then
-    if FieldByName('MessSize').AsInteger>MaxSize
+    if StrToInt(FieldByName('MessSize').AsString)>MaxSize
      then   Result:=True
       else Result:=False
     else Result:=False;
@@ -568,6 +568,7 @@ begin
     ftBlackAttach:FilterList.Add(TAttachmentExtFilter.Create(Exp,Proc,ftBlackAttach));
     ftWhiteAttach:FilterList.Add(TAttachmentExtFilter.Create(Exp,Proc,ftWhiteAttach));
     ftMessSize:FilterList.Add(TMessageSizeFilter.Create(Exp,Proc,ftMessSize));
+    ftSpamWord:FIlterList.Add(TCOmplexFilter.Create(Exp,Proc,ftSpamWord));
   end;
 end;
 
@@ -576,10 +577,6 @@ var
  Flag:boolean;
  i:integer;
 begin
-  {
-  идентичный код для  TAllowFilterGroup и TDenyFilterGroup
-  для контекстного фильтра - перезаписать метод
-  }
  Flag:=False;
  i:=0;
  while (not Flag) and (i<FilterList.Count) do
@@ -618,13 +615,9 @@ procedure TBaseFilterContainer.LoadFilters;
 var
  TabFilter:TFilterType;
 begin
-  {
-  идентичный код для  TAllowFilterGroup и TDenyFilterGroup
-  для контекстного фильтра - перезаписать метод
-  }
  with SubProc do
    begin
-    SQL.Text:='SELECT Type FROM Filters WHERE Active=TRUE';
+    SQL.Text:='SELECT Type FROM Filters WHERE Active=TRUE ORDER By Priority ';
     Active:=TRUE;
     while not Eof do
       begin
@@ -655,17 +648,18 @@ begin
   inherited Create(Exp,Proc,FilterType);
   Signals:=TStringList.Create;
   Signals.Delimiter:=' ';
-  Signals.DelimitedText:='mail all click we real win out wish $ per money'+
-           'sex porno girls buy congratulations love best million'+
-           'Did sexual cheapest potent man tonight try never Credit'+
-           'partner absolutely just Worried product Wow life fuck'+
-           'amazing prizes offer happinesss unsubscribe subscribe care men' ;
+
   with Proc do
   begin
-   Close;
+   Active:=False;
+   SQL.Text:='SELECT Var FROM Settings WHERE Name='+'''' +'SpamWords'+'''';
+   Active:=True;
+   Signals.DelimitedText:=Fields[0].AsString;
+   Active:=False;
+
    SQL.Text:='SELECT Var FROM Settings WHERE Name='+'''' +'MaxSpamWords'+'''';
    Active:=True;
-   MaxSignals:=Fields[0].AsInteger;
+   MaxSignals:=StrToInt(Fields[0].AsString);
    Close;
   end;
 end;
@@ -690,7 +684,7 @@ begin
  Flag:=False;
  Counter:=0;
  i:=0;
- while not Flag do
+ while (not Flag) and (i<Signals.Count)do
    begin
     FExp.Subject:=Mess.MessageText+' ' + Mess.Subject;
     Fexp.RegEx:=Signals[i];
