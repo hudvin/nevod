@@ -16,7 +16,8 @@ uses Commctrl, Forms,Windows, Dialogs, Registry, dxBar, cxStyles, Shared,
    cxLookAndFeels,CustomEditor,
   XPStyleActnCtrls, ActnMan,  Clipbrd, PerlRegEx,
   ImgList, dxBarExtItems,  ToolWin, ActnCtrls, ActnColorMaps,
-  ActnPopupCtrl;
+  ActnPopupCtrl, cxTextEdit, cxMemo, JvComponent, JvaScrollText, JvEditor,
+  JvHLEditor, JvScrollText, cxRichEdit, cxMaskEdit, cxSpinEdit;
 
  
 
@@ -127,6 +128,32 @@ type
     pmCheckAccounts: TdxBarButton;
     cxTab_AFSettings: TcxTabSheet;
     cxTab_DFSettings: TcxTabSheet;
+    cxWhiteWordDescription: TcxMemo;
+    cbStamp: TcxCheckBox;
+    cbWhiteWord: TcxCheckBox;
+    cxStampDescription: TcxMemo;
+    cbWhiteSender: TcxCheckBox;
+    cxSenderDescription: TcxMemo;
+    cbWhiteAttach: TcxCheckBox;
+    cxWhiteAttachDescription: TcxMemo;
+    cbBlackWord: TcxCheckBox;
+    cxBlackWordDescription: TcxMemo;
+    cbBlackSender: TcxCheckBox;
+    cxBlackSenderDescription: TcxMemo;
+    cbBlackAttach: TcxCheckBox;
+    cxBlackAttachDescription: TcxMemo;
+    cxSpinLinks: TcxSpinEdit;
+    cbMaxLinks: TcxCheckBox;
+    cxMaxLinksDescription: TcxMemo;
+    cbMaxImages: TcxCheckBox;
+    cxSpinImages: TcxSpinEdit;
+    cxMaxImagesDescription: TcxMemo;
+    cbMaxSpamWords: TcxCheckBox;
+    cxSpinSpamWords: TcxSpinEdit;
+    cxMaxSpamWords: TcxMemo;
+    cbMaxSize: TcxCheckBox;
+    cxSpinMaxSize: TcxSpinEdit;
+    cxMaxSizeDescription: TcxMemo;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
