@@ -3,7 +3,7 @@ object FCustomEditor: TFCustomEditor
   Top = 221
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
-  Caption = 'FCustomEditor'
+  Caption = #1044#1086#1073#1072#1074#1083#1077#1085#1080#1077' '#1085#1086#1074#1086#1075#1086' '#1092#1080#1083#1100#1090#1088#1072
   ClientHeight = 192
   ClientWidth = 312
   Color = clBtnFace
@@ -22,13 +22,12 @@ object FCustomEditor: TFCustomEditor
     Width = 312
     Height = 192
     Align = alClient
-    LookAndFeel.Kind = lfStandard
-    LookAndFeel.NativeStyle = True
+    LookAndFeel.Kind = lfOffice11
+    LookAndFeel.NativeStyle = False
     TabOrder = 0
-    ClientRectBottom = 188
-    ClientRectLeft = 2
-    ClientRectRight = 308
-    ClientRectTop = 2
+    ClientRectBottom = 192
+    ClientRectRight = 312
+    ClientRectTop = 0
     object leFilter: TLabel
       Left = 32
       Top = 72
@@ -48,14 +47,14 @@ object FCustomEditor: TFCustomEditor
       Top = 64
       Properties.DropDownListStyle = lsFixedList
       Properties.OnChange = cCBFilterPropertiesChange
-      Style.LookAndFeel.Kind = lfStandard
-      Style.LookAndFeel.NativeStyle = True
-      StyleDisabled.LookAndFeel.Kind = lfStandard
-      StyleDisabled.LookAndFeel.NativeStyle = True
-      StyleFocused.LookAndFeel.Kind = lfStandard
-      StyleFocused.LookAndFeel.NativeStyle = True
-      StyleHot.LookAndFeel.Kind = lfStandard
-      StyleHot.LookAndFeel.NativeStyle = True
+      Style.LookAndFeel.Kind = lfOffice11
+      Style.LookAndFeel.NativeStyle = False
+      StyleDisabled.LookAndFeel.Kind = lfOffice11
+      StyleDisabled.LookAndFeel.NativeStyle = False
+      StyleFocused.LookAndFeel.Kind = lfOffice11
+      StyleFocused.LookAndFeel.NativeStyle = False
+      StyleHot.LookAndFeel.Kind = lfOffice11
+      StyleHot.LookAndFeel.NativeStyle = False
       TabOrder = 0
       Width = 201
     end
@@ -63,15 +62,16 @@ object FCustomEditor: TFCustomEditor
       Left = 32
       Top = 112
       Caption = #1040#1082#1090#1080#1074#1077#1085' '
-      Style.LookAndFeel.Kind = lfStandard
-      Style.LookAndFeel.NativeStyle = True
-      StyleDisabled.LookAndFeel.Kind = lfStandard
-      StyleDisabled.LookAndFeel.NativeStyle = True
-      StyleFocused.LookAndFeel.Kind = lfStandard
-      StyleFocused.LookAndFeel.NativeStyle = True
-      StyleHot.LookAndFeel.Kind = lfStandard
-      StyleHot.LookAndFeel.NativeStyle = True
+      Style.LookAndFeel.Kind = lfOffice11
+      Style.LookAndFeel.NativeStyle = False
+      StyleDisabled.LookAndFeel.Kind = lfOffice11
+      StyleDisabled.LookAndFeel.NativeStyle = False
+      StyleFocused.LookAndFeel.Kind = lfOffice11
+      StyleFocused.LookAndFeel.NativeStyle = False
+      StyleHot.LookAndFeel.Kind = lfOffice11
+      StyleHot.LookAndFeel.NativeStyle = False
       TabOrder = 1
+      Transparent = True
       Width = 121
     end
     object leValue: TLabeledEdit
@@ -110,7 +110,7 @@ object FCustomEditor: TFCustomEditor
       Top = 152
       Width = 97
       Height = 25
-      Caption = 'Cancel'
+      Caption = #1054#1090#1084#1077#1085#1072
       TabOrder = 5
       OnClick = btCancelClick
     end
@@ -118,14 +118,14 @@ object FCustomEditor: TFCustomEditor
       Left = 120
       Top = 88
       Properties.DropDownListStyle = lsFixedList
-      Style.LookAndFeel.Kind = lfStandard
-      Style.LookAndFeel.NativeStyle = True
-      StyleDisabled.LookAndFeel.Kind = lfStandard
-      StyleDisabled.LookAndFeel.NativeStyle = True
-      StyleFocused.LookAndFeel.Kind = lfStandard
-      StyleFocused.LookAndFeel.NativeStyle = True
-      StyleHot.LookAndFeel.Kind = lfStandard
-      StyleHot.LookAndFeel.NativeStyle = True
+      Style.LookAndFeel.Kind = lfOffice11
+      Style.LookAndFeel.NativeStyle = False
+      StyleDisabled.LookAndFeel.Kind = lfOffice11
+      StyleDisabled.LookAndFeel.NativeStyle = False
+      StyleFocused.LookAndFeel.Kind = lfOffice11
+      StyleFocused.LookAndFeel.NativeStyle = False
+      StyleHot.LookAndFeel.Kind = lfOffice11
+      StyleHot.LookAndFeel.NativeStyle = False
       TabOrder = 6
       Width = 169
     end

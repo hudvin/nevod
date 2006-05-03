@@ -4,13 +4,14 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants,ADOdb,DB, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, Shared;
+  Dialogs, StdCtrls, ExtCtrls, Shared, cxControls, cxPC;
 
 type
   TFPortEditor = class(TForm)
     leServerPort: TLabeledEdit;
     btOK: TButton;
     btCancel: TButton;
+    cxTabControl1: TcxTabControl;
     procedure btOKClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure btCancelClick(Sender: TObject);

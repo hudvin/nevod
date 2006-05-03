@@ -88,16 +88,19 @@ begin
   if Res.FilterType=ftNone then // фильтр не был выбран
    begin
     cCBLocation.Enabled:=False;
-    // найти индекс
-    cCBFilter.ItemIndex:=-1;//FSNConverter.FindIndex(ftWhiteSender);
+    cCBFilter.ItemIndex:=FSNConverter.FindIndex(ftWhiteSender);
    end
-    else
-     begin
-      cCBFilter.ItemIndex:=FSNConverter.FindIndex(Res.FilterType);
-      if Res.FilterType in[ftBlackWord,ftWhiteWord] then
-       cCBLocation.Enabled:=True;
-     end;
-     
+  else
+   begin
+    cCBFilter.ItemIndex:=FSNConverter.FindIndex(Res.FilterType);
+    if Res.FilterType in[ftBlackWord,ftWhiteWord] then cCBLocation.Enabled:=True;
+   end;
+{  else
+   begin
+     cCBLocation.Enabled:=False;
+    cCBFilter.ItemIndex:=FSNConverter.FindIndex(ftWhiteSender);
+   end;
+ }    
  inherited ShowModal;
 end;
 
@@ -119,15 +122,14 @@ begin
  cCBFilter.ItemIndex:=FSNConverter.FindIndex(Res.FilterType);
  cCBFilter.Enabled:=False;
  if not (Res.FilterType in [ftBlackWord,ftWhiteWord]) then
-  cCBLocation.Enabled:=False
+  begin
+   cCBLocation.Enabled:=False;
+   cCBFilter.ItemIndex:=0;
+  end
   else
    begin
     for i:=0 to FSignList.Count-1 do
-      if cCBLocation.Properties.Items.Strings[i]=Desc then
-       begin
-       cCBLocation.ItemIndex:=i;
-      // ShowMessage(cCBLocation.Properties.Items.Strings[i]);
-      end;
+      if cCBLocation.Properties.Items.Strings[i]=Desc then  cCBLocation.ItemIndex:=i;
    end;
  inherited ShowModal;
 end;
@@ -156,6 +158,7 @@ begin
   if FEditorMode=emAdd
    then FFilterManager.AddElement(leValue.Text,Res.FilterType,leDescription.Text,cxCbActive.Checked,Location)
     else FFilterManager.ModifyElement(FElementId,leValue.Text,Res.FilterType,leDescription.Text,cxCbActive.Checked,Location);
+  FFIltersTable.Active:=True;
   FFiltersTable.Requery;
   Close;
  except

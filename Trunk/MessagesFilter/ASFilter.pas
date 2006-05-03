@@ -156,6 +156,9 @@ begin
      ' (mid=(SELECT id FROM Filters WHERE type=:FilterType) ) ' ;
     Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
     Active:=True;
+
+
+
     while (not Res) and (not Eof) do
      begin
       FExp.Options:=[preCaseLess];

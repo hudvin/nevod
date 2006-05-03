@@ -83,6 +83,7 @@ procedure TFilterManager.AddElement(ElementValue:String;FilterType:TFilterType;
     Description:String; Status:Boolean;Params:Variant);
 var
  tFilter:TFilterType;
+ Flag:boolean;
 begin
 // if Params=slAnywhere then ShowMessage('');
 
@@ -93,13 +94,23 @@ begin
                ftBlackAttach,ftWhiteAttach,ftSpamWord]) then
    Raise EInvalidFilterParams.Create('Неправильный тип фильтра');
 
+ Flag:=False;;
  if FilterType in [ftWhiteSender,ftBlackSender] then
   begin
    Exp.RegEx:='[_a-zA-Z\d\-\.\*]+@([_a-zA-Z\d\-]+(\.[_a-zA-Z\d\-]+)+)';
    Exp.Subject:=ElementValue;
-   if not Exp.Match then
-    Raise EInvalidFilterParams.Create('Адрес отправителя некорректен');
+   if  Exp.Match then  Flag:=True;
+    Exp.RegEx:='(?i)(http://www.|http://|www.)([_a-z\d\-]+(\.[_a-z\d\-]+)+)((/[ _a-z\d\-\\\.]+)+)*';
+   if Exp.Match then
+    begin
+     Flag:=True;
+     ElementValue:='*@' +Exp.SubExpressions[2];
+    end;
+   if not Flag then
+     Raise EInvalidFilterParams.Create('Адрес отправителя некорректен');
   end;
+
+
  // разобраться с преобразованиями  
  if ((FilterType=ftWhiteWord) or (FilterType=ftBlackWord)) and not( (Params=slAnywhere) or (Params=slSubject)  or (Params=slBody) ) then
    Raise EInvalidFilterParams.Create('Неправильное расположение спам-слова');
@@ -245,6 +256,7 @@ procedure TFilterManager.ModifyElement(ElementId:Integer;ElementValue:String;
     FilterType:TFilterType; Description:String; Status:Boolean;Params:Variant);
 var
  tFilter:TFilterType;
+ Flag:boolean;
 begin
  ElementValue:=Trim(ElementValue);
  if ElementValue='' then
@@ -252,6 +264,25 @@ begin
  if not (FilterType in [ftBlackSender,ftWhiteSender,ftStamp,ftBlackWord,ftWhiteWord,
                ftBlackAttach,ftWhiteAttach,ftSpamWord]) then
    Raise EInvalidFilterParams.Create('Неправильный тип фильтра');
+
+ // проверки на корректность адресов
+
+ Flag:=False;;
+ if FilterType in [ftWhiteSender,ftBlackSender] then
+  begin
+   Exp.RegEx:='[_a-zA-Z\d\-\.\*]+@([_a-zA-Z\d\-]+(\.[_a-zA-Z\d\-]+)+)';
+   Exp.Subject:=ElementValue;
+   if  Exp.Match then  Flag:=True;
+    Exp.RegEx:='(?i)(http://www.|http://|www.)([_a-z\d\-]+(\.[_a-z\d\-]+)+)((/[ _a-z\d\-\\\.]+)+)*';
+   if Exp.Match then
+    begin
+     Flag:=True;
+     ElementValue:='*@' +Exp.SubExpressions[2];
+    end;
+   if not Flag then
+     Raise EInvalidFilterParams.Create('Адрес отправителя некорректен');
+  end;
+
 
  if ((FilterType=ftWhiteWord) or (FilterType=ftBlackWord)) and not( (Params=slAnywhere) or (Params=slSubject)  or (Params=slBody) ) then
    Raise EInvalidFilterParams.Create('Неправильное расположение спам-слова');

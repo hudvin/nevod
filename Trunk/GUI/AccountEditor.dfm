@@ -22,13 +22,12 @@ object FAccountEditor: TFAccountEditor
     Width = 278
     Height = 210
     Align = alClient
-    LookAndFeel.Kind = lfStandard
-    LookAndFeel.NativeStyle = True
+    LookAndFeel.Kind = lfOffice11
+    LookAndFeel.NativeStyle = False
     TabOrder = 0
-    ClientRectBottom = 206
-    ClientRectLeft = 2
-    ClientRectRight = 274
-    ClientRectTop = 2
+    ClientRectBottom = 210
+    ClientRectRight = 278
+    ClientRectTop = 0
     object leAccountName: TLabeledEdit
       Left = 88
       Top = 8

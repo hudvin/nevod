@@ -347,20 +347,22 @@ begin
           Mess:=TFMessage.Create;
           TBlobField(FieldByName('Message')).SaveToStream(MessStream);
           MessStream.Position:=0;
-          Mess.LoadFromStream(MessStream);
           if StrToBool(Cont.Settings.GetValue('EnableFiltering')) then
            begin
-            if Cont.AllowFilter.AnalyzeMessage(Mess) then
-             Mess.Subject:=Cont.AllowFilter.Reason
-            else
-             if Cont.DenyFilter.AnalyzeMessage(Mess) then
+            Mess.LoadFromStream(MessStream);
+            if StrToBool(Cont.Settings.GetValue('EnableFiltering')) then
+             begin
+              if Cont.AllowFilter.AnalyzeMessage(Mess) then
+               Mess.Subject:=Cont.AllowFilter.Reason
+              else
+               if Cont.DenyFilter.AnalyzeMessage(Mess) then
                 mess.Subject:=Cont.DenyFilter.Reason;
+             end;
+            MessStream.Clear;
+            Mess.SaveToStream(MessStream);
            end;
 
-          MessStream.Clear;
-          Mess.SaveToStream(MessStream);
           messStream.Position:=0;
-
           ASender.Reply.SetReply(OK,'');
           MessStream.Size:=MessStream.Size-3;
           ASender.Response.LoadFromStream(MessStream);

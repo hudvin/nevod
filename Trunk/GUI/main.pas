@@ -46,15 +46,15 @@ type
     adLogErrorType: TWideStringField;
     adLogMessage: TWideStringField;
     adLogErrorTime: TDateTimeField;
-    cxGrid2DBTableView1: TcxGridDBTableView;
-    cxGrid2Level1: TcxGridLevel;
-    cxGrid2: TcxGrid;
-    cxGrid2DBTableView1AccountName: TcxGridDBColumn;
-    cxGrid2DBTableView1ErrorType: TcxGridDBColumn;
-    cxGrid2DBTableView1Message: TcxGridDBColumn;
-    cxGrid2DBTableView1ErrorTime: TcxGridDBColumn;
+    cxLogDBTableView1: TcxGridDBTableView;
+    cxLogLevel1: TcxGridLevel;
+    cxLog: TcxGrid;
+    cxLogDBTableView1AccountName: TcxGridDBColumn;
+    cxLogDBTableView1ErrorType: TcxGridDBColumn;
+    cxLogDBTableView1Message: TcxGridDBColumn;
+    cxLogDBTableView1ErrorTime: TcxGridDBColumn;
     adLogId: TAutoIncField;
-    cxGrid2DBTableView1Id: TcxGridDBColumn;
+    cxLogDBTableView1Id: TcxGridDBColumn;
     cxTab_Filters: TcxTabSheet;
     cxFilters: TcxGridDBTableView;
     cxFiltersGridLevel1: TcxGridLevel;
@@ -71,7 +71,6 @@ type
     cxFiltersDescription: TcxGridDBColumn;
     cxFiltersParams: TcxGridDBColumn;
     cxFiltersActive: TcxGridDBColumn;
-    Button1: TButton;
     cxTab_Settings: TcxTabSheet;
     Button2: TButton;
     adAccounts: TADOQuery;
@@ -154,10 +153,17 @@ type
     cbMaxSize: TcxCheckBox;
     cxSpinMaxSize: TcxSpinEdit;
     cxMaxSizeDescription: TcxMemo;
+    msFilters: TdxBarSubItem;
+    alAddFilterElement: TAction;
+    msAddFilterElement: TdxBarButton;
+    alRemoveFilterElement: TAction;
+    msRemoveFiltersElement: TdxBarButton;
+    alOnFiltersPopUp: TAction;
+    alEditFilterElement: TAction;
+    msEditFilterElement: TdxBarButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure adFiltersParamsGetText(Sender: TField; var Text: String;
       DisplayText: Boolean);
@@ -196,6 +202,29 @@ type
     procedure cbBlackSenderPropertiesChange(Sender: TObject);
     procedure cbBlackAttachPropertiesChange(Sender: TObject);
     procedure cbMaxLinksPropertiesChange(Sender: TObject);
+    procedure cbMaxImagesPropertiesChange(Sender: TObject);
+    procedure cbMaxSpamWordsPropertiesChange(Sender: TObject);
+    procedure cbMaxSizePropertiesChange(Sender: TObject);
+    procedure cxSpinLinksExit(Sender: TObject);
+    procedure cxSpinImagesExit(Sender: TObject);
+    procedure cxSpinSpamWordsExit(Sender: TObject);
+    procedure cxSpinMaxSizeExit(Sender: TObject);
+    procedure cxSpinLinksPropertiesValidate(Sender: TObject;
+      var DisplayValue: Variant; var ErrorText: TCaption;
+      var Error: Boolean);
+    procedure cxSpinImagesPropertiesValidate(Sender: TObject;
+      var DisplayValue: Variant; var ErrorText: TCaption;
+      var Error: Boolean);
+    procedure cxSpinSpamWordsPropertiesValidate(Sender: TObject;
+      var DisplayValue: Variant; var ErrorText: TCaption;
+      var Error: Boolean);
+    procedure cxSpinMaxSizePropertiesValidate(Sender: TObject;
+      var DisplayValue: Variant; var ErrorText: TCaption;
+      var Error: Boolean);
+    procedure alAddFilterElementExecute(Sender: TObject);
+    procedure alRemoveFilterElementExecute(Sender: TObject);
+    procedure alOnFiltersPopUpExecute(Sender: TObject);
+    procedure alEditFilterElementExecute(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -356,6 +385,7 @@ begin
    Add(13,ftNone,'',cxTab_Log);
    Add(3,ftNone,'',cxTab_AFSettings);
    Add(8,ftNone,'',cxTab_DFSettings);
+   Add(12,ftNone,'',cxTab_Log);
    end;
 
  POP3Server:=TPOPServer.Create(adCon,AccountManager);
@@ -402,6 +432,24 @@ begin
  adAccounts.Active:=True;
 
  ThreadManager:=TThreadManager.Create(adCon,AccountManager);
+
+
+
+ cbStamp.Checked:=FilterState[ftStamp];
+ cbWhiteWord.Checked:=FilterState[ftWhiteWord];
+ cbWhiteSender.Checked:=FilterState[ftWhiteSender];
+ cbWhiteAttach.Checked:=FilterState[ftWhiteAttach];
+ cbBlackWord.Checked:=FilterState[ftBlackWord];
+ cbBlackSender.Checked:=FilterState[ftBlackSender];
+ cbBlackAttach.Checked:=FilterState[ftBlackAttach];
+ cbMaxLinks.Checked:=FilterState[ftLinkFilter];
+ cbMaxSize.Checked:=FilterState[ftMessSize];
+ cbMaxSpamWords.Checked:=FilterState[ftSpamWord];
+
+ cxSpinLinks.Value:=StrToInt(SProvider.GetValue('MaxLinks'));
+ cxSpinImages.Value:=StrToInt(SProvider.GetValue('MaxImg'));
+ cxSpinSpamWords.Value:=StrToInt(SProvider.GetValue('MaxSpamWords'));
+ cxSpinMaxSize.Value:=StrToInt(SProvider.GetValue('MaxSize'))/1000;
 
 end;
 
@@ -470,11 +518,6 @@ end;
 procedure TFMain.SetCurrentParams(Grid:TcxGridDBTableView;Filter:TFilterType);
 begin
  CurrentFilterType:=Filter;
-end;
-
-procedure TFMain.Button1Click(Sender: TObject);
-begin
- FEditor.ShowModal(STree.TreeList.FocusedNode.AbsoluteIndex);
 end;
 
 procedure TFMain.UpdateHeaders(Headers:TColumnsHeaders);
@@ -793,13 +836,32 @@ end;
 
 procedure TFMain.SetFilterState(FilterType:TFilterType; const FilterStatus:
     Boolean);
+var
+  oFt: Set of TFilterType;
+  FilterString:String;
 begin
+ oFt:=[ftSpamWord,ftMessSize,ftImageFilter,ftLinkFilter];
  with adProc do
    begin
     Active:=False;
-    SQL.Text:='UPDATE Filters SET Active=:FilterStatus WHERE Type=:FilterType';
-    Parameters.ParamByName('FilterStatus').Value:=FilterStatus;
-    Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
+    if (FilterType in  oFt ) then
+     begin
+      case FilterType of
+       ftSpamWord: FilterString:='SpamWords';
+       ftMessSize:FilterString:='MaxSize';
+       ftImageFilter:FilterString:='MaxImg';
+       ftLinkFilter:FilterString:='MaxLinks' ;
+      end;
+      SQL.Text:='UPDATE Settings SET Active=:FilterStatus  WHERE Name=:FilterName';
+      Parameters.ParamByName('FilterStatus').Value:=FilterStatus;
+      Parameters.ParamByName('FilterName').Value:=FilterString;
+     end
+    else
+     begin
+      SQL.Text:=' UPDATE Filters SET Active=:FilterStatus  WHERE Type=:FilterType';
+      Parameters.ParamByName('FilterStatus').Value:=FilterStatus;
+      Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
+     end;
     ExecSQL;
    end;
 end;
@@ -872,7 +934,125 @@ end;
 
 procedure TFMain.cbMaxLinksPropertiesChange(Sender: TObject);
 begin
- // использовать че
+ FilterState[ftLinkFilter]:=cbMaxLinks.Checked;
+end;
+
+procedure TFMain.cbMaxImagesPropertiesChange(Sender: TObject);
+begin
+ FilterState[ftImageFilter]:=cbMaxImages.Checked;
+end;
+
+procedure TFMain.cbMaxSpamWordsPropertiesChange(Sender: TObject);
+begin
+ FilterState[ftSpamWord]:=cbMaxSpamWords.Checked;
+end;
+
+procedure TFMain.cbMaxSizePropertiesChange(Sender: TObject);
+begin
+ FilterState[ftMessSize]:=cbMaxSize.Checked;
+end;
+
+procedure TFMain.cxSpinLinksExit(Sender: TObject);
+begin
+ SProvider.SetValue('MaxLinks',IntToStr(cxSpinLinks.Value));
+end;
+
+procedure TFMain.cxSpinImagesExit(Sender: TObject);
+begin
+ SProvider.SetValue('MaxLinks',IntToStr(cxSpinImages.Value));
+end;
+
+procedure TFMain.cxSpinSpamWordsExit(Sender: TObject);
+begin
+ SProvider.SetValue('MaxLinks',IntToStr(cxSpinSpamWords.Value));
+end;
+
+procedure TFMain.cxSpinMaxSizeExit(Sender: TObject);
+begin
+ SProvider.SetValue('MaxLinks',IntToStr(cxSpinLinks.Value*1000));
+end;
+
+procedure TFMain.cxSpinLinksPropertiesValidate(Sender: TObject;
+  var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
+begin
+ if Error  then   ErrorText:='';
+end;
+
+procedure TFMain.cxSpinImagesPropertiesValidate(Sender: TObject;
+  var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
+begin
+ if Error  then   ErrorText:='';
+end;
+
+procedure TFMain.cxSpinSpamWordsPropertiesValidate(Sender: TObject;
+  var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
+begin
+ if Error  then   ErrorText:='';
+end;
+
+procedure TFMain.cxSpinMaxSizePropertiesValidate(Sender: TObject;
+  var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
+begin
+ if Error  then   ErrorText:='';
+end;
+
+procedure TFMain.alAddFilterElementExecute(Sender: TObject);
+begin
+ FEditor.ShowModal(STree.TreeList.FocusedNode.AbsoluteIndex);
+end;
+
+procedure TFMain.alRemoveFilterElementExecute(Sender: TObject);
+var
+ ElementsId:Array of integer;
+ SelCount:Integer;
+ i:integer;
+begin
+ if Application.MessageBox(' Вы дейтсвительно хотите удалить фильтры ?','Удаление фильтров',MB_OKCANCEL)=IDOK then
+  begin
+   SelCount:=cxFilters.Controller.SelectedRowCount;
+   SetLength(ElementsId,SelCount);
+   for I:=0 to SelCount - 1 do
+    ElementsId[i]:=cxFilters.Controller.SelectedRows[i].Values[cxFiltersid.Index];
+   FManager.RemoveElements(ElementsId);
+   adFilters.Requery;
+  end;
+end;
+
+procedure TFMain.alOnFiltersPopUpExecute(Sender: TObject);
+var
+ Res:TSNConvert;
+begin
+ SNConverter.Find(STree.TreeList.FocusedNode.AbsoluteIndex,Res);
+ if (Res.FilterType<>ftNone) and (cxFilters.Controller.SelectedRowCount>0) then
+  begin
+   alRemoveFilterElement.Enabled:=True;
+   alEditFilterElement.Enabled:=True;
+  end
+ else
+  begin
+   alRemoveFilterElement.Enabled:=False;
+   alEditFilterElement.Enabled:=False;
+ end;
+end;
+
+procedure TFMain.alEditFilterElementExecute(Sender: TObject);
+var
+ id:Integer;
+ Params:Variant;
+ Value:String;
+ Active:boolean;
+ Description:String;
+begin
+ with cxFilters.Controller do
+  begin
+   id:=SelectedRows[0].Values[cxFiltersid.Index];
+   Value:=SelectedRows[0].Values[cxFiltersFValue.Index];
+   Description:=SelectedRows[0].Values[cxFiltersDescription.Index];
+   Params:=SelectedRows[0].Values[cxFiltersParams.Index];
+   Active:=SelectedRows[0].Values[cxFiltersActive.Index];
+  end;
+ FEditor.ShowModal(id,Value,Description,Params,Active,STree.TreeList.FocusedNode.AbsoluteIndex);
+
 end;
 
 end.
