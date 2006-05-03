@@ -1,10 +1,10 @@
 object FMain: TFMain
-  Left = 99
-  Top = 68
+  Left = 294
+  Top = 71
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
-  ClientHeight = 513
+  ClientHeight = 480
   ClientWidth = 771
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -21,7 +21,7 @@ object FMain: TFMain
   TextHeight = 13
   object stBar: TdxStatusBar
     Left = 0
-    Top = 493
+    Top = 460
     Width = 771
     Height = 20
     Panels = <
@@ -44,7 +44,7 @@ object FMain: TFMain
     Left = 0
     Top = 23
     Width = 177
-    Height = 470
+    Height = 437
     Align = alLeft
     Bands = <
       item
@@ -99,7 +99,7 @@ object FMain: TFMain
     Left = 177
     Top = 23
     Width = 8
-    Height = 470
+    Height = 437
     HotZoneClassName = 'TcxMediaPlayer9Style'
     AutoSnap = True
     ResizeUpdate = True
@@ -109,17 +109,18 @@ object FMain: TFMain
     Left = 185
     Top = 23
     Width = 586
-    Height = 470
+    Height = 437
     ActivePage = cxTab_DFSettings
     Align = alClient
     DragMode = dmAutomatic
+    HideTabs = True
     LookAndFeel.Kind = lfStandard
     LookAndFeel.NativeStyle = True
     TabOrder = 3
-    ClientRectBottom = 466
+    ClientRectBottom = 433
     ClientRectLeft = 2
     ClientRectRight = 582
-    ClientRectTop = 22
+    ClientRectTop = 2
     object cxTab_Accounts: TcxTabSheet
       Caption = 'cxTab_Accounts'
       ImageIndex = 1
@@ -127,7 +128,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 580
-        Height = 444
+        Height = 431
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
@@ -195,7 +196,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 580
-        Height = 444
+        Height = 431
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfStandard
@@ -246,7 +247,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 580
-        Height = 444
+        Height = 431
         Align = alClient
         TabOrder = 0
         LookAndFeel.NativeStyle = True
@@ -348,6 +349,7 @@ object FMain: TFMain
         Left = 8
         Top = 88
         Caption = #1064#1090#1072#1084#1087#1099' '#1089#1086#1086#1073#1097#1077#1085#1080#1081
+        Properties.OnChange = cbStampPropertiesChange
         Style.LookAndFeel.Kind = lfStandard
         Style.LookAndFeel.NativeStyle = True
         StyleDisabled.LookAndFeel.Kind = lfStandard
@@ -364,6 +366,7 @@ object FMain: TFMain
         Left = 8
         Top = 8
         Caption = #1057#1083#1086#1074#1072#1088#1085#1099#1081' '#1092#1080#1083#1100#1090#1088
+        Properties.OnChange = cbWhiteWordPropertiesChange
         Style.LookAndFeel.Kind = lfStandard
         Style.LookAndFeel.NativeStyle = True
         StyleDisabled.LookAndFeel.Kind = lfStandard
@@ -408,6 +411,7 @@ object FMain: TFMain
         Left = 8
         Top = 168
         Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1077#1083#1100
+        Properties.OnChange = cbWhiteSenderPropertiesChange
         Style.LookAndFeel.Kind = lfStandard
         Style.LookAndFeel.NativeStyle = True
         StyleDisabled.LookAndFeel.Kind = lfStandard
@@ -452,6 +456,7 @@ object FMain: TFMain
         Left = 8
         Top = 248
         Caption = #1056#1072#1089#1096#1080#1088#1077#1085#1080#1077' '#1087#1088#1080#1083#1086#1078#1077#1085#1085#1086#1075#1086' '#1092#1072#1081#1083#1072
+        Properties.OnChange = cbWhiteAttachPropertiesChange
         Style.LookAndFeel.Kind = lfStandard
         Style.LookAndFeel.NativeStyle = True
         StyleDisabled.LookAndFeel.Kind = lfStandard
@@ -496,6 +501,7 @@ object FMain: TFMain
         Left = 8
         Top = 8
         Caption = #1057#1083#1086#1074#1072#1088#1085#1099#1081' '#1092#1080#1083#1100#1090#1088
+        Properties.OnChange = cbBlackWordPropertiesChange
         Style.LookAndFeel.Kind = lfStandard
         Style.LookAndFeel.NativeStyle = True
         StyleDisabled.LookAndFeel.Kind = lfStandard
@@ -532,13 +538,14 @@ object FMain: TFMain
         StyleHot.LookAndFeel.Kind = lfStandard
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 1
-        Height = 41
+        Height = 33
         Width = 561
       end
       object cbBlackSender: TcxCheckBox
         Left = 8
-        Top = 80
+        Top = 64
         Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1077#1083#1100
+        Properties.OnChange = cbBlackSenderPropertiesChange
         Style.LookAndFeel.Kind = lfStandard
         Style.LookAndFeel.NativeStyle = True
         StyleDisabled.LookAndFeel.Kind = lfStandard
@@ -553,7 +560,7 @@ object FMain: TFMain
       end
       object cxBlackSenderDescription: TcxMemo
         Left = 11
-        Top = 104
+        Top = 88
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090' '#1087#1088#1080' '#1086#1073#1085#1072#1088#1091#1078#1077#1085#1080#1080' '#1074' '#1089#1086#1086#1073#1097#1077#1085#1080#1080' ('#1074' '#1090#1077#1084#1077', '#1074 +
@@ -575,13 +582,14 @@ object FMain: TFMain
         StyleHot.LookAndFeel.Kind = lfStandard
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 3
-        Height = 41
+        Height = 33
         Width = 561
       end
       object cbBlackAttach: TcxCheckBox
         Left = 8
-        Top = 152
+        Top = 120
         Caption = #1056#1072#1089#1096#1080#1088#1077#1085#1080#1077' '#1087#1088#1080#1083#1086#1078#1077#1085#1085#1086#1075#1086' '#1092#1072#1081#1083#1072
+        Properties.OnChange = cbBlackAttachPropertiesChange
         Style.LookAndFeel.Kind = lfStandard
         Style.LookAndFeel.NativeStyle = True
         StyleDisabled.LookAndFeel.Kind = lfStandard
@@ -596,7 +604,7 @@ object FMain: TFMain
       end
       object cxBlackAttachDescription: TcxMemo
         Left = 11
-        Top = 176
+        Top = 144
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090','#1077#1089#1083#1080' '#1088#1072#1089#1096#1080#1088#1077#1085#1080#1077' '#1087#1088#1080#1083#1086#1078#1077#1085#1085#1086#1075#1086' '#1092#1072#1081#1083#1072' '#1085#1072#1093 +
@@ -615,12 +623,12 @@ object FMain: TFMain
         StyleHot.LookAndFeel.Kind = lfStandard
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 5
-        Height = 33
+        Height = 25
         Width = 561
       end
       object cxSpinLinks: TcxSpinEdit
         Left = 296
-        Top = 216
+        Top = 176
         Properties.MaxValue = 1.000000000000000000
         Properties.MinValue = 10000.000000000000000000
         TabOrder = 6
@@ -628,8 +636,9 @@ object FMain: TFMain
       end
       object cbMaxLinks: TcxCheckBox
         Left = 8
-        Top = 216
+        Top = 176
         Caption = #1052#1072#1082#1089#1080#1084#1072#1083#1100#1085#1086#1077' '#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1089#1089#1099#1083#1086#1082' '#1074' '#1089#1086#1086#1073#1097#1077#1085#1080#1080
+        Properties.OnChange = cbMaxLinksPropertiesChange
         Style.LookAndFeel.Kind = lfStandard
         Style.LookAndFeel.NativeStyle = True
         StyleDisabled.LookAndFeel.Kind = lfStandard
@@ -644,7 +653,7 @@ object FMain: TFMain
       end
       object cxMaxLinksDescription: TcxMemo
         Left = 11
-        Top = 240
+        Top = 200
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090','#1077#1089#1083#1080' '#1088#1072#1089#1096#1080#1088#1077#1085#1080#1077' '#1087#1088#1080#1083#1086#1078#1077#1085#1085#1086#1075#1086' '#1092#1072#1081#1083#1072' '#1085#1072#1093 +
@@ -668,7 +677,7 @@ object FMain: TFMain
       end
       object cbMaxImages: TcxCheckBox
         Left = 8
-        Top = 272
+        Top = 232
         Caption = #1052#1072#1082#1089#1080#1084#1072#1083#1100#1085#1086#1077' '#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1080#1079#1086#1073#1088#1072#1078#1077#1085#1080#1081
         Style.LookAndFeel.Kind = lfStandard
         Style.LookAndFeel.NativeStyle = True
@@ -684,7 +693,7 @@ object FMain: TFMain
       end
       object cxSpinImages: TcxSpinEdit
         Left = 296
-        Top = 272
+        Top = 232
         Properties.MaxValue = 1.000000000000000000
         Properties.MinValue = 10000.000000000000000000
         TabOrder = 10
@@ -692,7 +701,7 @@ object FMain: TFMain
       end
       object cxMaxImagesDescription: TcxMemo
         Left = 11
-        Top = 296
+        Top = 256
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090','#1077#1089#1083#1080' '#1088#1072#1089#1096#1080#1088#1077#1085#1080#1077' '#1087#1088#1080#1083#1086#1078#1077#1085#1085#1086#1075#1086' '#1092#1072#1081#1083#1072' '#1085#1072#1093 +
@@ -716,7 +725,7 @@ object FMain: TFMain
       end
       object cbMaxSpamWords: TcxCheckBox
         Left = 8
-        Top = 328
+        Top = 288
         Caption = #1052#1072#1082#1089#1080#1084#1072#1083#1100#1085#1086#1077' '#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1089#1087#1072#1084'-'#1089#1083#1086#1074
         Style.LookAndFeel.Kind = lfStandard
         Style.LookAndFeel.NativeStyle = True
@@ -732,7 +741,7 @@ object FMain: TFMain
       end
       object cxSpinSpamWords: TcxSpinEdit
         Left = 296
-        Top = 328
+        Top = 288
         Properties.MaxValue = 1.000000000000000000
         Properties.MinValue = 10000.000000000000000000
         TabOrder = 13
@@ -740,7 +749,7 @@ object FMain: TFMain
       end
       object cxMaxSpamWords: TcxMemo
         Left = 11
-        Top = 352
+        Top = 312
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090','#1077#1089#1083#1080' '#1088#1072#1089#1096#1080#1088#1077#1085#1080#1077' '#1087#1088#1080#1083#1086#1078#1077#1085#1085#1086#1075#1086' '#1092#1072#1081#1083#1072' '#1085#1072#1093 +
@@ -764,7 +773,7 @@ object FMain: TFMain
       end
       object cbMaxSize: TcxCheckBox
         Left = 8
-        Top = 384
+        Top = 344
         Caption = #1052#1072#1082#1089#1080#1084#1072#1083#1100#1085#1099#1081' '#1088#1072#1079#1084#1077#1088' '#1089#1086#1086#1073#1096#1077#1085#1080#1103
         Style.LookAndFeel.Kind = lfStandard
         Style.LookAndFeel.NativeStyle = True
@@ -780,15 +789,15 @@ object FMain: TFMain
       end
       object cxSpinMaxSize: TcxSpinEdit
         Left = 296
-        Top = 384
+        Top = 344
         Properties.MaxValue = 1.000000000000000000
         Properties.MinValue = 10000.000000000000000000
         TabOrder = 16
         Width = 121
       end
       object cxMaxSizeDescription: TcxMemo
-        Left = 11
-        Top = 408
+        Left = 3
+        Top = 368
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090','#1077#1089#1083#1080' '#1088#1072#1089#1096#1080#1088#1077#1085#1080#1077' '#1087#1088#1080#1083#1086#1078#1077#1085#1085#1086#1075#1086' '#1092#1072#1081#1083#1072' '#1085#1072#1093 +

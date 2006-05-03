@@ -188,12 +188,21 @@ type
     procedure alCanCheckAccountsExecute(Sender: TObject);
     procedure alOnAccountsPopUpExecute(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure cbWhiteWordPropertiesChange(Sender: TObject);
+    procedure cbStampPropertiesChange(Sender: TObject);
+    procedure cbWhiteSenderPropertiesChange(Sender: TObject);
+    procedure cbWhiteAttachPropertiesChange(Sender: TObject);
+    procedure cbBlackWordPropertiesChange(Sender: TObject);
+    procedure cbBlackSenderPropertiesChange(Sender: TObject);
+    procedure cbBlackAttachPropertiesChange(Sender: TObject);
+    procedure cbMaxLinksPropertiesChange(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
     CurrNode:TcxTreeListNode;
     PrevHwnd: Hwnd;
     Exp:TPerlRegEx;
+    function GetFilterState(FilterType:TFilterType): Boolean;
     procedure ShowNewMail(var Msg: TMessage); message WM_BallonMessage;
     procedure WMChangeCBChain(var Msg: TWMChangeCBChain);
      message WM_CHANGECBCHAIN;
@@ -215,7 +224,10 @@ type
     function FindElement(Text:String;SType:TClbHookMode): string;
     procedure MoveElements(NewType:TFilterType);
     procedure RunOnStartup(Run:boolean);
+    procedure SetFilterState(FilterType:TFilterType; const FilterStatus: Boolean);
     procedure UpdateHeaders(Headers:TColumnsHeaders);
+    property FilterState[FilterType:TFilterType]: Boolean read GetFilterState write
+        SetFilterState; default;
 
     { Public declarations }
   protected
@@ -747,6 +759,7 @@ var
  buf:TSNConvert;
  Status:TAccountStatus;
 begin
+
  alCanCheckAccounts.Checked:=StrToBool(SProvider.GetValue('CanCheckAccounts'));
  SNConverter.Find(STree.TreeList.FocusedNode.AbsoluteIndex,buf);
  if (buf.Sheet=cxTab_Accounts) and (cxAccounts.Controller.SelectedRowCount>0) then
@@ -776,6 +789,90 @@ procedure TFMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
  tray.Enabled:=False;
  Hide;
+end;
+
+procedure TFMain.SetFilterState(FilterType:TFilterType; const FilterStatus:
+    Boolean);
+begin
+ with adProc do
+   begin
+    Active:=False;
+    SQL.Text:='UPDATE Filters SET Active=:FilterStatus WHERE Type=:FilterType';
+    Parameters.ParamByName('FilterStatus').Value:=FilterStatus;
+    Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
+    ExecSQL;
+   end;
+end;
+
+procedure TFMain.cbWhiteWordPropertiesChange(Sender: TObject);
+begin
+ FilterState[ftWhiteWord]:=cbWhiteWord.Checked;
+end;
+
+procedure TFMain.cbStampPropertiesChange(Sender: TObject);
+begin
+ FilterState[ftStamp]:=cbStamp.Checked;
+end;
+
+procedure TFMain.cbWhiteSenderPropertiesChange(Sender: TObject);
+begin
+ FilterState[ftWhiteSender]:=cbWhiteSender.Checked;
+end;
+
+procedure TFMain.cbWhiteAttachPropertiesChange(Sender: TObject);
+begin
+ FilterState[ftWhiteAttach]:=cbWhiteAttach.Checked;
+end;
+
+procedure TFMain.cbBlackWordPropertiesChange(Sender: TObject);
+begin
+ FilterState[ftBlackWord]:=cbBlackWord.Checked;
+end;
+
+function TFMain.GetFilterState(FilterType:TFilterType): Boolean;
+var
+  oFt: Set of TFilterType;
+  FilterString:String;
+begin
+ oFt:=[ftSpamWord,ftMessSize,ftImageFilter,ftLinkFilter];
+ with adProc do
+   begin
+    Active:=False;
+    if (FilterType in  oFt ) then
+     begin
+      case FilterType of
+       ftSpamWord: FilterString:='SpamWords';
+       ftMessSize:FilterString:='MaxSize';
+       ftImageFilter:FilterString:='MaxImg';
+       ftLinkFilter:FilterString:='MaxLinks' ;
+      end;
+      SQL.Text:='SELECT Active FROM Settings WHERE Name=:FilterName';
+      Parameters.ParamByName('FilterName').Value:=FilterString;
+     end
+    else
+     begin
+      SQL.Text:='SELECT Active FROM Filters WHERE Type=:FilterType';
+      Parameters.ParamByName('FilterType').Value:=GetEnumName(TypeInfo(TFilterType), Ord(FilterType));
+     end;
+    Active:=True;
+    Result:=Fields[0].AsBoolean;
+    Active:=False;
+   end;
+end;
+
+procedure TFMain.cbBlackSenderPropertiesChange(Sender: TObject);
+begin
+ FilterState[ftBlackSender]:=cbBlackSender.Checked;
+end;
+
+procedure TFMain.cbBlackAttachPropertiesChange(Sender: TObject);
+begin
+ FilterState[ftBlackAttach]:=cbBlackAttach.Checked;
+end;
+
+procedure TFMain.cbMaxLinksPropertiesChange(Sender: TObject);
+begin
+ // использовать че
 end;
 
 end.
