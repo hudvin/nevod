@@ -218,6 +218,7 @@ end;
 
 procedure TPOPServer.Disable;
 begin
+// pop.Contexts.Clear;
  pop.Active:=false;
 end;
 

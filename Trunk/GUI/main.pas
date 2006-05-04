@@ -16,8 +16,7 @@ uses Commctrl, Forms,Windows, Dialogs, Registry, dxBar, cxStyles, Shared,
    cxLookAndFeels,CustomEditor,
   XPStyleActnCtrls, ActnMan,  Clipbrd, PerlRegEx,
   ImgList, dxBarExtItems,  ToolWin, ActnCtrls, ActnColorMaps,
-  ActnPopupCtrl, cxTextEdit, cxMemo, JvComponent, JvaScrollText, JvEditor,
-  JvHLEditor, JvScrollText, cxRichEdit, cxMaskEdit, cxSpinEdit;
+  ActnPopupCtrl, cxTextEdit, cxMemo, cxRichEdit, cxMaskEdit, cxSpinEdit;
 
  
 
@@ -302,45 +301,48 @@ uses  AddHooked, MultInst;
 
 
 
- 
+
 
 procedure TFMain.AppMessage(var Msg: TMSG; var Handled: Boolean);
 var
  TmAppl:Boolean;
+ Flag:integer;
 begin
   Handled := False;
-  if Msg.Message = WM_WTSSESSION_CHANGE then 
-  begin 
+  Flag:=0;
+  if Msg.Message = WM_WTSSESSION_CHANGE then
      case Msg.wParam of
-     {  WTS_SESSION_LOGON:
-           strReason := 'WTS_SESSION_LOGON'; 
-       WTS_SESSION_LOGOFF: 
-           strReason := 'WTS_SESSION_LOGOFF';
-     }
        WTS_SESSION_LOCK:
-        begin
-          POP3Server.Disable; // отключение сервера
-          ShowMessage('!!!!!!!!!!');
-        end;
-       WTS_SESSION_UNLOCK:     // запустить сервер
-        begin
-         TmAppl:=False;
-         if not POP3Server.LoadParams then
-         if MessageBox(Handle,' Ошибка запуска сервера ',' Стандартный порт фильтра занят. Хотите сменить порт ? ',MB_OKCANCEL)=IDOK then
-          begin
-           while (not POP3Server.LoadParams) and (not TmAppl) do
-            begin
-             FPortEditor.ShowModal;
-             if FPortEditor.CanExit=True then TmAppl:=True;
-            end;
-           if TmAppl then Application.Terminate;
-          end
-         else Application.Terminate;
-
-        end;
-
+         Flag:=1;
+       WTS_SESSION_UNLOCK:
+         Flag:=2;
      end;
+
+ if Flag=1 then
+  begin
+   POP3Server.Disable;
+   //FreeAndNil(POP3Server);
+   Windows.Beep(100,1000);
   end;
+ if Flag=2 then
+  begin
+   TmAppl:=False;
+   //POP3Server:=TPOPServer.Create(adCon,AccountManager);
+   Windows.Beep(10000,10000);
+   if not POP3Server.LoadParams then
+    if MessageBox(Handle,' Ошибка запуска сервера ',' Стандартный порт фильтра занят. Хотите сменить порт ? ',MB_OKCANCEL)=IDOK then
+     begin
+      while (not POP3Server.LoadParams) and (not TmAppl) do
+       begin
+        FPortEditor.ShowModal;
+        if FPortEditor.CanExit=True then TmAppl:=True;
+       end;
+      if TmAppl then Application.Terminate;
+     end
+    else Application.Terminate;
+
+  end;
+
 end;
 
 
@@ -398,6 +400,10 @@ var
  Headers:TColumnsHeaders;
  TmAppl:boolean;
 begin
+
+ FRegisteredSessionNotification := RegisterSessionNotification(Handle, NOTIFY_FOR_THIS_SESSION); 
+  Application.OnMessage := AppMessage; 
+
 
  FPortEditor:=TFPortEditor.Create(adCon);
  Mutex:=CreateMutex(nil, False,MutexName);
@@ -506,7 +512,7 @@ end;
 
 procedure TFMain.FormDestroy(Sender: TObject);
 begin
- POP3Server.Free;
+ if POP3Server<>nil then POP3Server.Free;
  tray.Enabled:=False;
  ThreadManager.Free;
  FManager.Free;
@@ -520,7 +526,8 @@ begin
  Exp.Free;
  SProvider.Free;
  adProc.Free;
-
+  if FRegisteredSessionNotification then
+   UnRegisterSessionNotification(Handle); 
  CloseHandle(Mutex);
 
 end;
@@ -1108,7 +1115,11 @@ procedure TFMain.Button1Click(Sender: TObject);
 var
  tab:TExportADOTable;
 begin
- Showmessage(GetCurrentUserSid);
+
+    Windows.Beep(100,1000);
+
+//  POP3Server.Disable;
+// Showmessage(GetCurrentUserSid);
 { tab:=TExportADOTable.Create(nil);
  tab.Connection:=adCon;
  tab.TableName:='Log';

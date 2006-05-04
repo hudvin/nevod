@@ -23,7 +23,6 @@ uses
   AccountManager in '..\Shared\AccountManager.pas',
   AddAccount in 'AddAccount.pas' {FAddAccount},
   AccountEditor in 'AccountEditor.pas' {FAccountEditor},
-  AddHooked in 'AddHooked.pas' {FAddHooked},
   PostReceiver in '..\MailReceiver\PostReceiver.pas',
   ThreadManager in '..\MailReceiver\ThreadManager.pas',
   POPServer in '..\POP3Server\POPServer.pas',
@@ -41,7 +40,6 @@ begin
   begin
   Application.Initialize;
   Application.CreateForm(TFMain, FMain);
-  Application.CreateForm(TFAddHooked, FAddHooked);
   Application.Run;
   end;
 end.

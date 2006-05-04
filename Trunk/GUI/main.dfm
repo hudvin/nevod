@@ -1,10 +1,10 @@
 object FMain: TFMain
-  Left = 106
-  Top = 105
+  Left = 104
+  Top = 185
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
-  ClientHeight = 480
+  ClientHeight = 490
   ClientWidth = 771
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -21,7 +21,7 @@ object FMain: TFMain
   TextHeight = 13
   object stBar: TdxStatusBar
     Left = 0
-    Top = 460
+    Top = 470
     Width = 771
     Height = 20
     Panels = <
@@ -44,7 +44,7 @@ object FMain: TFMain
     Left = 0
     Top = 67
     Width = 177
-    Height = 393
+    Height = 403
     Align = alLeft
     Bands = <
       item
@@ -98,7 +98,7 @@ object FMain: TFMain
     Left = 177
     Top = 67
     Width = 8
-    Height = 393
+    Height = 403
     HotZoneClassName = 'TcxMediaPlayer9Style'
     AutoSnap = True
     ResizeUpdate = True
@@ -108,7 +108,7 @@ object FMain: TFMain
     Left = 185
     Top = 67
     Width = 586
-    Height = 393
+    Height = 403
     ActivePage = cxTab_Log
     Align = alClient
     DragMode = dmAutomatic
@@ -116,7 +116,7 @@ object FMain: TFMain
     LookAndFeel.Kind = lfOffice11
     LookAndFeel.NativeStyle = False
     TabOrder = 3
-    ClientRectBottom = 393
+    ClientRectBottom = 403
     ClientRectRight = 586
     ClientRectTop = 0
     object cxTab_Accounts: TcxTabSheet
@@ -126,7 +126,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 586
-        Height = 393
+        Height = 403
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
@@ -198,7 +198,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 586
-        Height = 393
+        Height = 403
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
@@ -255,7 +255,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 586
-        Height = 393
+        Height = 403
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
@@ -860,7 +860,7 @@ object FMain: TFMain
     Width = 75
     Height = 25
     Caption = 'Button1'
-    TabOrder = 8
+    TabOrder = 6
     OnClick = Button1Click
   end
   object dsAccounts: TDataSource
