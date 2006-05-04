@@ -106,7 +106,7 @@ begin
          if ShowHint then
          if SuccessFul=False then
           begin
-           Logger.Add(LogMessage,AccountId,ltPostReceiver);
+           Logger.Add('Ошибка при получении почты : ' +LogMessage,AccountId,ltPostReceiver);
 
            SendHintMessage(AccountParams.AccountName,
                ' Ошибка при получении почты для  '+ '"'+AccountParams.AccountName +'"',

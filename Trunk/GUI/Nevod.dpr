@@ -2,6 +2,8 @@ program Nevod;
 
 uses
   Forms,
+  Messages,
+  Windows,
   Dialogs,
   ADODB,
   DB,
@@ -26,13 +28,20 @@ uses
   ThreadManager in '..\MailReceiver\ThreadManager.pas',
   POPServer in '..\POP3Server\POPServer.pas',
   PortEditor in 'PortEditor.pas' {FPortEditor},
-  ASFilter in '..\MessagesFilter\ASFilter.pas';
+  ASFilter in '..\MessagesFilter\ASFilter.pas',
+  MultInst in 'MultInst.pas';
 
 {$R *.res}
 
+
+
 begin
+
+  if InitInstance then
+  begin
   Application.Initialize;
   Application.CreateForm(TFMain, FMain);
   Application.CreateForm(TFAddHooked, FAddHooked);
   Application.Run;
+  end;
 end.

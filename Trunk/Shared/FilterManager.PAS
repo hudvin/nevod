@@ -99,9 +99,9 @@ begin
   begin
    Exp.RegEx:='[_a-zA-Z\d\-\.\*]+@([_a-zA-Z\d\-]+(\.[_a-zA-Z\d\-]+)+)';
    Exp.Subject:=ElementValue;
-   if  Exp.Match then  Flag:=True;
+   if  (Exp.Match) and (Exp.MatchedExpression=ElementValue) then  Flag:=True;
     Exp.RegEx:='(?i)(http://www.|http://|www.)([_a-z\d\-]+(\.[_a-z\d\-]+)+)((/[ _a-z\d\-\\\.]+)+)*';
-   if Exp.Match then
+   if (Exp.Match)and (Exp.MatchedExpression=ElementValue) then
     begin
      Flag:=True;
      ElementValue:='*@' +Exp.SubExpressions[2];
@@ -272,9 +272,9 @@ begin
   begin
    Exp.RegEx:='[_a-zA-Z\d\-\.\*]+@([_a-zA-Z\d\-]+(\.[_a-zA-Z\d\-]+)+)';
    Exp.Subject:=ElementValue;
-   if  Exp.Match then  Flag:=True;
+   if  (Exp.Match)and (Exp.MatchedExpression=ElementValue) then  Flag:=True;
     Exp.RegEx:='(?i)(http://www.|http://|www.)([_a-z\d\-]+(\.[_a-z\d\-]+)+)((/[ _a-z\d\-\\\.]+)+)*';
-   if Exp.Match then
+   if (Exp.Match)and (Exp.MatchedExpression=ElementValue) then
     begin
      Flag:=True;
      ElementValue:='*@' +Exp.SubExpressions[2];

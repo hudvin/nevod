@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 183
-  Top = 183
+  Left = 106
+  Top = 105
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -42,9 +42,9 @@ object FMain: TFMain
   end
   object SettingsTree: TcxTreeList
     Left = 0
-    Top = 23
+    Top = 67
     Width = 177
-    Height = 437
+    Height = 393
     Align = alLeft
     Bands = <
       item
@@ -96,9 +96,9 @@ object FMain: TFMain
   end
   object cxSplitter1: TcxSplitter
     Left = 177
-    Top = 23
+    Top = 67
     Width = 8
-    Height = 437
+    Height = 393
     HotZoneClassName = 'TcxMediaPlayer9Style'
     AutoSnap = True
     ResizeUpdate = True
@@ -106,17 +106,17 @@ object FMain: TFMain
   end
   object stPages: TcxPageControl
     Left = 185
-    Top = 23
+    Top = 67
     Width = 586
-    Height = 437
-    ActivePage = cxTab_Filters
+    Height = 393
+    ActivePage = cxTab_Log
     Align = alClient
     DragMode = dmAutomatic
     HideTabs = True
     LookAndFeel.Kind = lfOffice11
     LookAndFeel.NativeStyle = False
     TabOrder = 3
-    ClientRectBottom = 437
+    ClientRectBottom = 393
     ClientRectRight = 586
     ClientRectTop = 0
     object cxTab_Accounts: TcxTabSheet
@@ -126,13 +126,14 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 586
-        Height = 437
+        Height = 393
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
         LookAndFeel.NativeStyle = False
         object cxAccounts: TcxGridDBTableView
           PopupMenu = pAccounts
+          OnKeyDown = cxAccountsKeyDown
           NavigatorButtons.ConfirmDelete = False
           DataController.DataSource = dsAccounts
           DataController.Summary.DefaultGroupSummaryItems = <>
@@ -140,7 +141,10 @@ object FMain: TFMain
           DataController.Summary.SummaryGroups = <>
           OptionsCustomize.ColumnFiltering = False
           OptionsCustomize.ColumnGrouping = False
+          OptionsData.Deleting = False
+          OptionsData.DeletingConfirmation = False
           OptionsData.Editing = False
+          OptionsData.Inserting = False
           OptionsSelection.CellSelect = False
           OptionsSelection.InvertSelect = False
           OptionsSelection.MultiSelect = True
@@ -194,7 +198,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 586
-        Height = 437
+        Height = 393
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
@@ -205,31 +209,37 @@ object FMain: TFMain
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <>
           DataController.Summary.SummaryGroups = <>
+          OptionsCustomize.ColumnFiltering = False
+          OptionsData.Deleting = False
           OptionsSelection.CellSelect = False
           OptionsSelection.MultiSelect = True
-          OptionsView.CellAutoHeight = True
           OptionsView.ColumnAutoWidth = True
           OptionsView.DataRowHeight = 19
           OptionsView.FooterAutoHeight = True
           OptionsView.GroupByBox = False
           object cxLogDBTableView1AccountName: TcxGridDBColumn
+            Caption = #1059#1095#1077#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
             DataBinding.FieldName = 'AccountName'
             Width = 102
           end
           object cxLogDBTableView1ErrorType: TcxGridDBColumn
             DataBinding.FieldName = 'ErrorType'
+            Visible = False
             Width = 65
           end
           object cxLogDBTableView1Message: TcxGridDBColumn
+            Caption = #1057#1086#1086#1073#1097#1077#1085#1080#1077
             DataBinding.FieldName = 'Message'
             Width = 194
           end
           object cxLogDBTableView1ErrorTime: TcxGridDBColumn
+            Caption = #1042#1088#1077#1084#1103
             DataBinding.FieldName = 'ErrorTime'
             Width = 66
           end
           object cxLogDBTableView1Id: TcxGridDBColumn
             DataBinding.FieldName = 'Id'
+            Visible = False
             Width = 53
           end
         end
@@ -245,14 +255,16 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 586
-        Height = 437
+        Height = 393
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
         LookAndFeel.NativeStyle = False
         object cxFilters: TcxGridDBTableView
           DragMode = dmAutomatic
+          PopupMenu = pFilters
           OnEndDrag = cxFiltersEndDrag
+          OnKeyDown = cxFiltersKeyDown
           OnStartDrag = cxFiltersStartDrag
           NavigatorButtons.ConfirmDelete = False
           DataController.DataSource = dsFilters
@@ -260,6 +272,11 @@ object FMain: TFMain
           DataController.Summary.FooterSummaryItems = <>
           DataController.Summary.SummaryGroups = <>
           OptionsCustomize.ColumnFiltering = False
+          OptionsData.CancelOnExit = False
+          OptionsData.Deleting = False
+          OptionsData.DeletingConfirmation = False
+          OptionsData.Editing = False
+          OptionsData.Inserting = False
           OptionsSelection.CellSelect = False
           OptionsSelection.InvertSelect = False
           OptionsSelection.MultiSelect = True
@@ -290,15 +307,6 @@ object FMain: TFMain
         object cxFiltersGridLevel1: TcxGridLevel
           GridView = cxFilters
         end
-      end
-      object Button2: TButton
-        Left = 264
-        Top = 184
-        Width = 217
-        Height = 49
-        Caption = 'Button2'
-        TabOrder = 1
-        OnClick = Button2Click
       end
     end
     object cxTab_Settings: TcxTabSheet
@@ -846,6 +854,15 @@ object FMain: TFMain
       end
     end
   end
+  object Button1: TButton
+    Left = 88
+    Top = 400
+    Width = 75
+    Height = 25
+    Caption = 'Button1'
+    TabOrder = 8
+    OnClick = Button1Click
+  end
   object dsAccounts: TDataSource
     DataSet = adAccounts
     Left = 32
@@ -875,6 +892,8 @@ object FMain: TFMain
     Top = 304
   end
   object adLog: TADOQuery
+    Active = True
+    AutoCalcFields = False
     Connection = adCon
     CursorType = ctStatic
     Parameters = <>
@@ -4960,6 +4979,28 @@ object FMain: TFMain
         UseOwnFont = False
         Visible = True
         WholeRow = True
+      end
+      item
+        Caption = 'Custom 2'
+        DockedDockingStyle = dsTop
+        DockedLeft = 0
+        DockedTop = 23
+        DockingStyle = dsTop
+        FloatLeft = 46
+        FloatTop = 62
+        FloatClientWidth = 0
+        FloatClientHeight = 0
+        ItemLinks = <
+          item
+            Item = btAddAccount
+            Visible = True
+          end>
+        Name = 'Custom 2'
+        OneOnRow = True
+        Row = 1
+        UseOwnFont = False
+        Visible = True
+        WholeRow = False
       end>
     Categories.Strings = (
       'Accounts')
@@ -4977,7 +5018,7 @@ object FMain: TFMain
     DockControlHeights = (
       0
       0
-      23
+      67
       0)
     object msAccounts: TdxBarSubItem
       Caption = #1040#1082#1082#1072#1091#1085#1090#1099
@@ -5126,6 +5167,40 @@ object FMain: TFMain
       Category = 0
       Hint = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100' '#1092#1080#1083#1100#1090#1088
     end
+    object pmEditFilterElement: TdxBarButton
+      Action = alEditFilterElement
+      Category = 0
+    end
+    object dxAccountsBarButton1: TdxBarButton
+      Action = alAddFilterElement
+      Category = 0
+    end
+    object pmRemoveFilterElement: TdxBarButton
+      Action = alRemoveFilterElement
+      Category = 0
+    end
+    object dxBarButton1: TdxBarButton
+      Caption = 'New Item'
+      Category = 0
+      Hint = 'New Item'
+      Visible = ivAlways
+    end
+    object dxBarButton2: TdxBarButton
+      Caption = 'New Item'
+      Category = 0
+      Hint = 'New Item'
+      Visible = ivAlways
+    end
+    object dxBarStatic1: TdxBarStatic
+      Caption = 'New Item'
+      Category = 0
+      Hint = 'New Item'
+      Visible = ivAlways
+    end
+    object btAddAccount: TdxBarLargeButton
+      Action = alAddAccount
+      Category = 0
+    end
   end
   object AccountsUpdater: TTimer
     Interval = 1500
@@ -5172,5 +5247,29 @@ object FMain: TFMain
     OnPopup = alOnAccountsPopUpExecute
     Left = 699
     Top = 165
+  end
+  object pFilters: TdxBarPopupMenu
+    BarManager = dxBar
+    ItemLinks = <
+      item
+        Item = pmEditFilterElement
+        Visible = True
+      end
+      item
+        Item = dxAccountsBarButton1
+        Visible = True
+      end
+      item
+        Item = pmRemoveFilterElement
+        Visible = True
+      end>
+    UseOwnFont = False
+    OnPopup = alOnFiltersPopUpExecute
+    Left = 697
+    Top = 191
+  end
+  object btImages: TImageList
+    Left = 697
+    Top = 219
   end
 end

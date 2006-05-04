@@ -7,8 +7,8 @@ uses Commctrl, Forms,Windows, Dialogs, Registry, dxBar, cxStyles, Shared,
   cxGridLevel, cxGridCustomTableView, cxGridTableView, cxGridDBTableView,
   cxClasses, cxControls, cxGridCustomView, cxGrid, cxPC, cxSplitter,
   cxInplaceContainer, cxTL, Controls, dxStatusBar,
-   cxContainer, cxEdit, WinSock,
-  cxCheckBox,  ShellAPI, PortEditor,
+   cxContainer, cxEdit, WinSock,  IdGlobalProtocols,
+  cxCheckBox,  ShellAPI, PortEditor,  
   SysUtils, Typinfo, FilterManager, AccountManager,  AccountEditor,  Graphics,
 
     Menus,   Messages, ThreadManager, POPServer,
@@ -22,10 +22,10 @@ uses Commctrl, Forms,Windows, Dialogs, Registry, dxBar, cxStyles, Shared,
  
 
 type 
-  TCopyDataStruct = packed record 
-    dwData: DWORD;   // anwendungsspezifischer Wert 
-    cbData: DWORD;   // Byte-Lдnge der zu ьbertragenden Daten 
-    lpData: Pointer; // Adresse der Daten 
+  TCopyDataStruct = packed record
+    dwData: DWORD;
+    cbData: DWORD;
+    lpData: Pointer;
   end;
   
 type
@@ -72,7 +72,6 @@ type
     cxFiltersParams: TcxGridDBColumn;
     cxFiltersActive: TcxGridDBColumn;
     cxTab_Settings: TcxTabSheet;
-    Button2: TButton;
     adAccounts: TADOQuery;
     adAccountsid: TAutoIncField;
     adAccountsAccountName: TWideStringField;
@@ -161,10 +160,19 @@ type
     alOnFiltersPopUp: TAction;
     alEditFilterElement: TAction;
     msEditFilterElement: TdxBarButton;
+    pFilters: TdxBarPopupMenu;
+    pmEditFilterElement: TdxBarButton;
+    dxAccountsBarButton1: TdxBarButton;
+    pmRemoveFilterElement: TdxBarButton;
+    Button1: TButton;
+    dxBarButton1: TdxBarButton;
+    dxBarButton2: TdxBarButton;
+    dxBarStatic1: TdxBarStatic;
+    btAddAccount: TdxBarLargeButton;
+    btImages: TImageList;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
     procedure adFiltersParamsGetText(Sender: TField; var Text: String;
       DisplayText: Boolean);
     procedure SettingsTreeDragOver(Sender, Source: TObject; X, Y: Integer;
@@ -173,7 +181,6 @@ type
     procedure cxFiltersStartDrag(Sender: TObject;
       var DragObject: TDragObject);
     procedure SettingsTreeDragDrop(Sender, Source: TObject; X, Y: Integer);
-    procedure dxBarLargeButton1Click(Sender: TObject);
     procedure adAccountspassGetText(Sender: TField; var Text: String;
       DisplayText: Boolean);
     procedure adAccountsTimeoutGetText(Sender: TField; var Text: String;
@@ -225,14 +232,21 @@ type
     procedure alRemoveFilterElementExecute(Sender: TObject);
     procedure alOnFiltersPopUpExecute(Sender: TObject);
     procedure alEditFilterElementExecute(Sender: TObject);
+    procedure cxAccountsKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure cxFiltersKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure Button1Click(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
     CurrNode:TcxTreeListNode;
     PrevHwnd: Hwnd;
     Exp:TPerlRegEx;
+    FRegisteredSessionNotification : Boolean;
     function GetFilterState(FilterType:TFilterType): Boolean;
-    procedure ShowNewMail(var Msg: TMessage); message WM_BallonMessage;
+    procedure AppMessage(var Msg: TMSG; var HAndled: Boolean);
+  //  procedure ShowNewMail(var Msg: TMessage); message WM_BallonMessage;
     procedure WMChangeCBChain(var Msg: TWMChangeCBChain);
      message WM_CHANGECBCHAIN;
     procedure WMDrawClipboard(var Msg: TWMDrawClipboard);
@@ -280,19 +294,55 @@ var
   pp:integer;
 implementation
 
-uses  AddHooked, USock;
+uses  AddHooked, MultInst;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
 
-function CheckPortForFree(Port:Integer):boolean; External 'Shared.dll';
 
-procedure TFMain.ShowNewMail(var Msg: TMessage);
+
+
+ 
+
+procedure TFMain.AppMessage(var Msg: TMSG; var Handled: Boolean);
+var
+ TmAppl:Boolean;
 begin
- Randomize;
- tray.ShowBalloonHint('Получена новая почта','В ящике ' +IntToStr(Random(1000)) +' новых сообщений',bitInfo,10);
+  Handled := False;
+  if Msg.Message = WM_WTSSESSION_CHANGE then 
+  begin 
+     case Msg.wParam of
+     {  WTS_SESSION_LOGON:
+           strReason := 'WTS_SESSION_LOGON'; 
+       WTS_SESSION_LOGOFF: 
+           strReason := 'WTS_SESSION_LOGOFF';
+     }
+       WTS_SESSION_LOCK:
+        begin
+          POP3Server.Disable; // отключение сервера
+          ShowMessage('!!!!!!!!!!');
+        end;
+       WTS_SESSION_UNLOCK:     // запустить сервер
+        begin
+         TmAppl:=False;
+         if not POP3Server.LoadParams then
+         if MessageBox(Handle,' Ошибка запуска сервера ',' Стандартный порт фильтра занят. Хотите сменить порт ? ',MB_OKCANCEL)=IDOK then
+          begin
+           while (not POP3Server.LoadParams) and (not TmAppl) do
+            begin
+             FPortEditor.ShowModal;
+             if FPortEditor.CanExit=True then TmAppl:=True;
+            end;
+           if TmAppl then Application.Terminate;
+          end
+         else Application.Terminate;
 
+        end;
+
+     end;
+  end;
 end;
+
 
 procedure TFMain.WMChangeCBChain(var Msg: TWMChangeCBChain);
 begin
@@ -531,27 +581,6 @@ begin
    end;
 end;
 
-procedure TFMain.Button2Click(Sender: TObject);
-var
- id:Integer;
- Params:Variant;
- Value:String;
- Active:boolean;
- Description:String;
-begin
- with cxFilters.Controller do
-  begin
-   id:=SelectedRows[0].Values[cxFiltersid.Index];
-   Value:=SelectedRows[0].Values[cxFiltersFValue.Index];
-   Description:=SelectedRows[0].Values[cxFiltersDescription.Index];
-   Params:=SelectedRows[0].Values[cxFiltersParams.Index];
-   Active:=SelectedRows[0].Values[cxFiltersActive.Index];
-
-  end;
- //cxFilters.Controller.SelectedRecords[];
- FEditor.ShowModal(id,Value,Description,Params,Active,STree.TreeList.FocusedNode.AbsoluteIndex);
-end;
-
 procedure TFMain.adFiltersParamsGetText(Sender: TField; var Text: String;
   DisplayText: Boolean);
 begin
@@ -631,11 +660,6 @@ procedure TFMain.SettingsTreeDragDrop(Sender, Source: TObject; X,
   Y: Integer);
 begin
  MoveElements(TwinFilterType);
-end;
-
-procedure TFMain.dxBarLargeButton1Click(Sender: TObject);
-begin
- //FAddAccount.ShowModal;
 end;
 
 procedure TFMain.adAccountspassGetText(Sender: TField; var Text: String;
@@ -760,7 +784,11 @@ end;
 
 procedure TFMain.AccountsUpdaterTimer(Sender: TObject);
 begin
- if FMain.Active then adAccounts.Requery;
+ if FMain.Active then
+  begin
+   adAccounts.Requery;
+   adLog.Requery;
+  end;
 end;
 
 
@@ -1007,9 +1035,9 @@ var
  SelCount:Integer;
  i:integer;
 begin
- if Application.MessageBox(' Вы дейтсвительно хотите удалить фильтры ?','Удаление фильтров',MB_OKCANCEL)=IDOK then
+ SelCount:=cxFilters.Controller.SelectedRowCount;
+ if (SelCount>0) and ( Application.MessageBox(' Вы дейтсвительно хотите удалить фильтры ?','Удаление фильтров',MB_OKCANCEL)=IDOK) then
   begin
-   SelCount:=cxFilters.Controller.SelectedRowCount;
    SetLength(ElementsId,SelCount);
    for I:=0 to SelCount - 1 do
     ElementsId[i]:=cxFilters.Controller.SelectedRows[i].Values[cxFiltersid.Index];
@@ -1053,6 +1081,41 @@ begin
   end;
  FEditor.ShowModal(id,Value,Description,Params,Active,STree.TreeList.FocusedNode.AbsoluteIndex);
 
+end;
+
+
+procedure TFMain.cxAccountsKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+if (Key=46) or (Key=110) then
+ begin
+   alOnAccountsPopUp.Execute;
+   alDeleteAccount.Execute;
+  end;
+end;
+
+procedure TFMain.cxFiltersKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+if (Key=46) or (Key=110) then
+ begin
+   alOnFiltersPopUp.Execute;
+   alRemoveFilterElement.Execute;
+  end;
+end;
+
+procedure TFMain.Button1Click(Sender: TObject);
+var
+ tab:TExportADOTable;
+begin
+ Showmessage(GetCurrentUserSid);
+{ tab:=TExportADOTable.Create(nil);
+ tab.Connection:=adCon;
+ tab.TableName:='Log';
+ tab.Active:=True;
+ tab.ExportToExcel('Message ,ErrorTime','c:\qwerty.xls','Log','Excel 8.0');
+
+ }
 end;
 
 end.

@@ -29,6 +29,7 @@ type
    constructor Create(ADOCon:TADOConnection; AccountManager:TAccountManager);
    destructor  Destroy(); override;
    procedure DELE(ASender: TIdCommand; AMessageNum: Integer);
+   procedure Disable;
    function LoadParams: Boolean;
    procedure RETR(ASender: TIdCommand; AMessageNum: Integer);
    property ServerPort: Integer read GetServerPort write SetServerPort;
@@ -213,6 +214,11 @@ begin
        end;
      Active:=False;
     end;
+end;
+
+procedure TPOPServer.Disable;
+begin
+ pop.Active:=false;
 end;
 
 

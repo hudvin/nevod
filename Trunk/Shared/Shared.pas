@@ -26,7 +26,8 @@ const
   IFF_LOOPBACK = $00000004;
   IFF_POINTTOPOINT = $00000008;
   IFF_MULTICAST = $00000010;
-
+  HEAP_ZERO_MEMORY = $00000008;
+  SID_REVISION     = 1; 
 
   WM_WTSSESSION_CHANGE = $2B1;
   WTS_CONSOLE_CONNECT = 1;
@@ -81,6 +82,13 @@ type
   TIntVect = array[0..255] of Integer;
   TBMTable = array[0..0] of TIntVect;
   PBMTable = ^TBMTable;
+
+type
+   PTokenUser = ^TTokenUser;
+   TTokenUser = packed record
+     User: TSidAndAttributes;
+   end;  
+
 
 type
  SockAddr_Gen = packed record
@@ -233,17 +241,6 @@ type
     function SetValue(SettingName,Value:string): Boolean;
   end;
 
-  TSQLProcs = class(TObject)
-  private
-    SQLStrings: THashedStringList;
-  public
-    constructor Create;
-    destructor Destroy; override;
-    procedure AddQuery(QueryString:String;QueryName:String);
-    procedure DeleteQuery(QueryName:String);
-    procedure Fill(ADOQuery:TADOQuery;QueryName:String ;Params:array of const);
-  end;
-
   TRegExp = class(TPerlRegEx)
   { при присвоении текста для обработки -экранирование спецсимволов }
   private
@@ -287,12 +284,6 @@ type
     property Item[Index: Integer]: TSNConvert read GetItem;
   end;
 
-  TSClass = class
-  private
-  public
-    Loc: TSignalTypeDescriptor;
-  end;
-
   TWMMessanger = class
   private
   public
@@ -300,6 +291,22 @@ type
     Caption: string;
     LogMessage: string;
     MessagesCount: Integer;
+  end;
+
+  TExportADOTable = class(TADOTable)
+  private
+    FADOCommand: TADOCommand;
+  public
+    { Public declarations }
+    constructor Create(AOwner: TComponent); override;
+    procedure ExportToExcel(FieldNames: string; FileName: string;
+      SheetName: string; IsamFormat: string);
+    procedure ExportToHtml(FieldNames: string; FileName: string);
+    procedure ExportToParadox(FieldNames: string; FileName: string; IsamFormat:
+      string);
+    procedure ExportToDbase(FieldNames: string; FileName: string; IsamFormat:
+      string);
+    procedure ExportToTxt(FieldNames: string; FileName: string);
   end;
 
 function BindPort(Port:integer): Boolean;
@@ -315,6 +322,12 @@ function RegisterSessionNotification(Wnd: HWND; dwFlags: DWORD): Boolean;
 function UnRegisterSessionNotification(Wnd: HWND): Boolean;
 function GetCurrentSessionID: Integer;
 function GetLocalIP: String;
+
+function ConvertSid(Sid: PSID; pszSidText: PChar; var dwBufferLen: DWORD): BOOL;
+function GetCurrentUserSid: string;
+function ObtainTextSid(hToken: THandle; pszSid: PChar;
+   var dwBufferLen: DWORD): BOOL;
+
 implementation
 
 
@@ -723,6 +736,8 @@ begin
   end;
 end;
 
+
+
 function RegisterSessionNotification(Wnd: HWND; dwFlags: DWORD): Boolean;
 type
   TWTSRegisterSessionNotification = function(Wnd: HWND; dwFlags: DWORD): BOOL; stdcall;
@@ -868,45 +883,124 @@ begin
   end;
 end;
 
-constructor TSQLProcs.Create;
-begin
- SQlStrings:=THashedStringList.Create;
-end;
+ function ConvertSid(Sid: PSID; pszSidText: PChar; var dwBufferLen: DWORD): BOOL;
+ var
+   psia: PSIDIdentifierAuthority;
+   dwSubAuthorities: DWORD;
+   dwSidRev: DWORD;
+   dwCounter: DWORD;
+   dwSidSize: DWORD;
+ begin
+   Result := False;
 
-destructor TSQLProcs.Destroy;
-begin
- SQLStrings.Free;
-end;
+   dwSidRev := SID_REVISION;
 
-procedure TSQLProcs.AddQuery(QueryString:String;QueryName:String);
-begin
- SQLStrings.Add(QueryName);
- SQLStrings.Values[QueryName]:=QueryString;
-end;
+   if not IsValidSid(Sid) then Exit;
 
-procedure TSQLProcs.DeleteQuery(QueryName:String);
-begin
- SQLStrings.Delete(SQLStrings.IndexOf(QueryName));
-end;
+   psia := GetSidIdentifierAuthority(Sid);
 
-procedure TSQLProcs.Fill(ADOQuery:TADOQuery;QueryName:String; Params:array of
-    const);
-var
- i:Integer;
-begin
-  ADOQuery.SQL.Text:=SQLStrings.Values[QueryName];
-  for i := 0 to High(Params) do
-    with TVarRec(Params[I]) do
-     case VType of
-          vtInteger: ADOQuery.Parameters[i].Value:=VInteger;
-          vtBoolean: if VBoolean then
-             ADOQuery.Parameters[i].Value:=True
-            else
-            ADOQuery.Parameters[i].Value:=False;
-          vtString: ADOQuery.Parameters[i].Value:=VString^;
-        end;
+   dwSubAuthorities := GetSidSubAuthorityCount(Sid)^;
 
-end;
+   dwSidSize := (15 + 12 + (12 * dwSubAuthorities) + 1) * SizeOf(Char);
+
+   if (dwBufferLen < dwSidSize) then
+   begin
+     dwBufferLen := dwSidSize;
+     SetLastError(ERROR_INSUFFICIENT_BUFFER);
+     Exit;
+   end;
+
+   StrFmt(pszSidText, 'S-%u-', [dwSidRev]);
+
+   if (psia.Value[0] <> 0) or (psia.Value[1] <> 0) then
+     StrFmt(pszSidText + StrLen(pszSidText),
+       '0x%.2x%.2x%.2x%.2x%.2x%.2x',
+       [psia.Value[0], psia.Value[1], psia.Value[2],
+       psia.Value[3], psia.Value[4], psia.Value[5]])
+   else
+     StrFmt(pszSidText + StrLen(pszSidText),
+       '%u',
+       [DWORD(psia.Value[5]) +
+       DWORD(psia.Value[4] shl 8) +
+       DWORD(psia.Value[3] shl 16) +
+       DWORD(psia.Value[2] shl 24)]);
+
+   dwSidSize := StrLen(pszSidText);
+
+   for dwCounter := 0 to dwSubAuthorities - 1 do
+   begin
+     StrFmt(pszSidText + dwSidSize, '-%u',
+       [GetSidSubAuthority(Sid, dwCounter)^]);
+     dwSidSize := StrLen(pszSidText);
+   end;
+
+   Result := True;
+ end;
+
+ function ObtainTextSid(hToken: THandle; pszSid: PChar;
+   var dwBufferLen: DWORD): BOOL;
+ var
+   dwReturnLength: cardinal;
+   dwTokenUserLength:Cardinal;
+   tic: TTokenInformationClass;
+   ptu: Pointer;
+ begin
+   Result := False;
+   dwReturnLength := 0;
+   dwTokenUserLength := 0;
+   tic := TokenUser;
+   ptu := nil;
+
+   if not GetTokenInformation(hToken, tic, ptu, dwTokenUserLength,dwReturnLength) then
+   begin
+     if GetLastError = ERROR_INSUFFICIENT_BUFFER then
+     begin
+       ptu := HeapAlloc(GetProcessHeap, HEAP_ZERO_MEMORY, dwReturnLength);
+       if ptu = nil then Exit;
+       dwTokenUserLength := dwReturnLength;
+       dwReturnLength    := 0;
+
+       if not GetTokenInformation(hToken, tic, ptu, dwTokenUserLength,
+         dwReturnLength) then Exit;
+     end
+      else
+        Exit;
+   end;
+
+   if not ConvertSid((PTokenUser(ptu).User).Sid, pszSid, dwBufferLen) then Exit;
+
+   if not HeapFree(GetProcessHeap, 0, ptu) then Exit;
+
+   Result := True;
+ end;
+
+ function GetCurrentUserSid: string;
+ var
+   hAccessToken: THandle;
+   bSuccess: BOOL;
+   dwBufferLen: DWORD;
+   szSid: array[0..260] of Char;
+ begin
+   Result := '';
+
+   bSuccess := OpenThreadToken(GetCurrentThread, TOKEN_QUERY, True,
+     hAccessToken);
+   if not bSuccess then
+   begin
+     if GetLastError = ERROR_NO_TOKEN then
+       bSuccess := OpenProcessToken(GetCurrentProcess, TOKEN_QUERY,
+         hAccessToken);
+   end;
+   if bSuccess then
+   begin
+     ZeroMemory(@szSid, SizeOf(szSid));
+     dwBufferLen := SizeOf(szSid);
+
+     if ObtainTextSid(hAccessToken, szSid, dwBufferLen) then
+       Result := szSid;
+     CloseHandle(hAccessToken);
+   end;
+ end;
 
 function TRegExp.BuildExp(const Value: string): string;
 var inpString,buff,symbols:String;
@@ -1151,6 +1245,141 @@ begin
    end;
  if not Flag then Result:=-1;
 end;
+
+constructor TExportADOTable.Create(AOwner: TComponent);
+begin
+  inherited;
+
+  FADOCommand := TADOCommand.Create(Self);
+end;
+
+procedure TExportADOTable.ExportToDbase(FieldNames: string; FileName: string;
+  IsamFormat: string);
+begin
+  {IsamFormat values
+  dBase III
+  dBase IV
+  dBase 5.0
+  }
+  if not Active then
+    Exit;
+
+  FADOCommand.Connection := Connection;
+  FADOCommand.CommandText := 'Select ' + FieldNames + ' INTO ' + '[' +
+    ExtractFileName(FileName) + ']' +
+    ' IN ' + '"' + ExtractFilePath(FileName) + '"' + '[' + IsamFormat +
+    ';]' + ' From ' + TableName;
+  if Filtered and (Filter <> '') then
+    FADOCommand.CommandText := FADOCommand.CommandText + ' where ' + Filter;
+  if (Sort <> '') then
+    FADOCommand.CommandText := FADOCommand.CommandText + ' order by ' + Sort;
+  FADOCommand.Execute;
+end;
+
+procedure TExportADOTable.ExportToExcel(FieldNames: string; FileName: string;
+  SheetName: string; IsamFormat: string);
+begin
+  {IsamFormat values
+   Excel 3.0
+   Excel 4.0
+   Excel 5.0
+   //MMWIN:CLASSCOPY
+unit _MM_Copy_Buffer_;
+
+interface
+
+
+implementation
+
+type
+   TTokenUser = packed record
+     User: TSidAndAttributes;
+   end;
+
+
+end.
+
+  }
+
+  if not Active then
+    Exit;
+  FADOCommand.Connection := Connection;
+  FADOCommand.CommandText := 'Select ' + FieldNames + ' INTO ' + '[' +
+    SheetName + ']' + ' IN ' + '"' + FileName + '"' + '[' + IsamFormat +
+    ';]' + ' From ' + TableName;
+  if Filtered and (Filter <> '') then
+    FADOCommand.CommandText := FADOCommand.CommandText + ' where ' + Filter;
+  if (Sort <> '') then
+    FADOCommand.CommandText := FADOCommand.CommandText + ' order by ' + Sort;
+  FADOCommand.Execute;
+end;
+
+procedure TExportADOTable.ExportToHtml(FieldNames: string; FileName: string);
+var
+  IsamFormat: string;
+begin
+  if not Active then
+    Exit;
+
+  IsamFormat := 'HTML Export';
+
+  FADOCommand.Connection := Connection;
+  FADOCommand.CommandText := 'Select ' + FieldNames + ' INTO ' + '[' +
+    ExtractFileName(FileName) + ']' +
+    ' IN ' + '"' + ExtractFilePath(FileName) + '"' + '[' + IsamFormat +
+    ';]' + ' From ' + TableName;
+  if Filtered and (Filter <> '') then
+    FADOCommand.CommandText := FADOCommand.CommandText + ' where ' + Filter;
+  if (Sort <> '') then
+    FADOCommand.CommandText := FADOCommand.CommandText + ' order by ' + Sort;
+  FADOCommand.Execute;
+end;
+
+procedure TExportADOTable.ExportToParadox(FieldNames: string;
+  FileName: string; IsamFormat: string);
+begin
+  {IsamFormat values
+  Paradox 3.X
+  Paradox 4.X
+  Paradox 5.X
+  Paradox 7.X
+  }
+  if not Active then
+    Exit;
+
+  FADOCommand.Connection := Connection;
+  FADOCommand.CommandText := 'Select ' + FieldNames + ' INTO ' + '[' +
+    ExtractFileName(FileName) + ']' +
+    ' IN ' + '"' + ExtractFilePath(FileName) + '"' + '[' + IsamFormat +
+    ';]' + ' From ' + TableName;
+  if Filtered and (Filter <> '') then
+    FADOCommand.CommandText := FADOCommand.CommandText + ' where ' + Filter;
+  if (Sort <> '') then
+    FADOCommand.CommandText := FADOCommand.CommandText + ' order by ' + Sort;
+  FADOCommand.Execute;
+end;
+
+procedure TExportADOTable.ExportToTxt(FieldNames: string; FileName: string);
+var
+  IsamFormat: string;
+begin
+  if not Active then
+    Exit;
+
+  IsamFormat := 'Text';
+
+  FADOCommand.Connection := Connection;
+  FADOCommand.CommandText := 'Select ' + FieldNames + ' INTO ' + '[' +
+    ExtractFileName(FileName) + ']' +
+    ' IN ' + '"' + ExtractFilePath(FileName) + '"' + '[' + IsamFormat +
+    ';]' + ' From ' + TableName;
+  if Filtered and (Filter <> '') then
+    FADOCommand.CommandText := FADOCommand.CommandText + ' where ' + Filter;
+  if (Sort <> '') then
+    FADOCommand.CommandText := FADOCommand.CommandText + ' order by ' + Sort;
+  FADOCommand.Execute;
+end;
+
 
 
 
