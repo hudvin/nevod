@@ -2,7 +2,7 @@ unit Shared;
 
 interface
 
-uses  PerlRegEx,
+uses  PerlRegEx, MMSystem,
   cxEdit,
   cxCheckBox, cxGridLevel, cxGridCustomTableView, cxGridTableView,
   
@@ -327,6 +327,8 @@ function ConvertSid(Sid: PSID; pszSidText: PChar; var dwBufferLen: DWORD): BOOL;
 function GetCurrentUserSid: string;
 function ObtainTextSid(hToken: THandle; pszSid: PChar;
    var dwBufferLen: DWORD): BOOL;
+
+procedure PlaySound(FilePath:String);
 
 implementation
 
@@ -1001,6 +1003,11 @@ end;
      CloseHandle(hAccessToken);
    end;
  end;
+
+procedure PlaySound(FilePath:String);
+begin
+  MMSystem.PlaySound(PChar(FilePath),0,SND_FILENAME);
+end;
 
 function TRegExp.BuildExp(const Value: string): string;
 var inpString,buff,symbols:String;

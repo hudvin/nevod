@@ -447,6 +447,7 @@ object FMain: TFMain
           Left = 8
           Top = 16
           Caption = #1057#1086#1086#1073#1097#1077#1085#1080#1077' '#1087#1088#1080' '#1087#1086#1083#1091#1095#1077#1085#1080#1080' '#1085#1086#1074#1086#1081' '#1087#1086#1095#1090#1099
+          Properties.OnChange = cbBallonOnReceivePropertiesChange
           Style.LookAndFeel.Kind = lfOffice11
           Style.LookAndFeel.NativeStyle = True
           StyleDisabled.LookAndFeel.Kind = lfOffice11
@@ -458,22 +459,34 @@ object FMain: TFMain
           TabOrder = 0
           Width = 225
         end
-        object cxButtonEdit1: TcxButtonEdit
-          Left = 208
+        object beSoundOnNew: TcxButtonEdit
+          Left = 201
           Top = 40
           Properties.Buttons = <
             item
               Default = True
               Kind = bkEllipsis
+            end
+            item
+              Kind = bkGlyph
             end>
+          Properties.OnButtonClick = cxButtonEdit1PropertiesButtonClick
+          Style.LookAndFeel.Kind = lfOffice11
+          Style.LookAndFeel.NativeStyle = True
+          StyleDisabled.LookAndFeel.Kind = lfOffice11
+          StyleDisabled.LookAndFeel.NativeStyle = True
+          StyleFocused.LookAndFeel.Kind = lfOffice11
+          StyleFocused.LookAndFeel.NativeStyle = True
+          StyleHot.LookAndFeel.Kind = lfOffice11
+          StyleHot.LookAndFeel.NativeStyle = True
           TabOrder = 1
-          Text = 'cxButtonEdit1'
-          Width = 89
+          Width = 96
         end
         object cbSoundOnReceive: TcxCheckBox
           Left = 8
           Top = 40
           Caption = #1047#1074#1091#1082' '#1087#1088#1080' '#1087#1086#1083#1091#1095#1077#1085#1080#1080' '#1085#1086#1074#1086#1081' '#1087#1086#1095#1090#1099
+          Properties.OnChange = cbSoundOnReceivePropertiesChange
           Style.LookAndFeel.Kind = lfOffice11
           Style.LookAndFeel.NativeStyle = True
           StyleDisabled.LookAndFeel.Kind = lfOffice11
@@ -489,6 +502,7 @@ object FMain: TFMain
           Left = 8
           Top = 64
           Caption = #1057#1086#1086#1073#1097#1077#1085#1080#1077' '#1087#1088#1080' '#1086#1096#1080#1073#1082#1077
+          Properties.OnChange = cbBaloonOnErrorPropertiesChange
           Style.LookAndFeel.Kind = lfOffice11
           Style.LookAndFeel.NativeStyle = True
           StyleDisabled.LookAndFeel.Kind = lfOffice11
@@ -504,6 +518,7 @@ object FMain: TFMain
           Left = 8
           Top = 88
           Caption = #1047#1074#1091#1082' '#1087#1088#1080' '#1086#1096#1080#1073#1082#1077
+          Properties.OnChange = cbSoundOnErrorPropertiesChange
           Style.LookAndFeel.Kind = lfOffice11
           Style.LookAndFeel.NativeStyle = True
           StyleDisabled.LookAndFeel.Kind = lfOffice11
@@ -515,17 +530,28 @@ object FMain: TFMain
           TabOrder = 4
           Width = 121
         end
-        object cxButtonEdit2: TcxButtonEdit
-          Left = 208
+        object beSoundOnError: TcxButtonEdit
+          Left = 200
           Top = 88
           Properties.Buttons = <
             item
               Default = True
               Kind = bkEllipsis
+            end
+            item
+              Kind = bkGlyph
             end>
+          Properties.OnButtonClick = beSoundOnErrorPropertiesButtonClick
+          Style.LookAndFeel.Kind = lfOffice11
+          Style.LookAndFeel.NativeStyle = True
+          StyleDisabled.LookAndFeel.Kind = lfOffice11
+          StyleDisabled.LookAndFeel.NativeStyle = True
+          StyleFocused.LookAndFeel.Kind = lfOffice11
+          StyleFocused.LookAndFeel.NativeStyle = True
+          StyleHot.LookAndFeel.Kind = lfOffice11
+          StyleHot.LookAndFeel.NativeStyle = True
           TabOrder = 5
-          Text = 'cxButtonEdit2'
-          Width = 89
+          Width = 97
         end
       end
     end
@@ -1069,15 +1095,6 @@ object FMain: TFMain
         Width = 561
       end
     end
-  end
-  object Button1: TButton
-    Left = 88
-    Top = 400
-    Width = 75
-    Height = 25
-    Caption = 'Button1'
-    TabOrder = 6
-    OnClick = Button1Click
   end
   object dsAccounts: TDataSource
     DataSet = adAccounts
@@ -5487,5 +5504,10 @@ object FMain: TFMain
   object btImages: TImageList
     Left = 737
     Top = 443
+  end
+  object selSound: TOpenDialog
+    Filter = 'Sounds|*.wav'
+    Left = 737
+    Top = 251
   end
 end

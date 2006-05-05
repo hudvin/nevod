@@ -17,7 +17,7 @@ uses Commctrl, Forms,Windows, Dialogs,IdContext, Registry, dxBar, cxStyles, Shar
   XPStyleActnCtrls, ActnMan,  Clipbrd, PerlRegEx,
   ImgList, dxBarExtItems,  ToolWin, ActnCtrls, ActnColorMaps,
   ActnPopupCtrl, cxTextEdit, cxMemo, cxRichEdit, cxMaskEdit, cxSpinEdit,
-  cxGroupBox, cxButtonEdit;
+  cxGroupBox, cxButtonEdit, cxButtons;
 
  
 
@@ -164,7 +164,6 @@ type
     pmEditFilterElement: TdxBarButton;
     dxAccountsBarButton1: TdxBarButton;
     pmRemoveFilterElement: TdxBarButton;
-    Button1: TButton;
     dxBarButton1: TdxBarButton;
     dxBarButton2: TdxBarButton;
     dxBarStatic1: TdxBarStatic;
@@ -176,16 +175,17 @@ type
     Label1: TLabel;
     gbNag: TcxGroupBox;
     cbBallonOnReceive: TcxCheckBox;
-    cxButtonEdit1: TcxButtonEdit;
+    beSoundOnNew: TcxButtonEdit;
     cbSoundOnReceive: TcxCheckBox;
     cbBaloonOnError: TcxCheckBox;
     cbSoundOnError: TcxCheckBox;
-    cxButtonEdit2: TcxButtonEdit;
+    beSoundOnError: TcxButtonEdit;
     cbCheckIfNotConnected: TcxCheckBox;
     seCheckInterval: TcxSpinEdit;
     lbCheckInterval: TLabel;
     cbCanCheckAccounts: TcxCheckBox;
     cbEnableFiltering: TcxCheckBox;
+    selSound: TOpenDialog;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -254,7 +254,6 @@ type
       Shift: TShiftState);
     procedure cbRunAtStartUpPropertiesChange(Sender: TObject);
     procedure lbServerPortKeyPress(Sender: TObject; var Key: Char);
-    procedure Button1Click(Sender: TObject);
     procedure lbServerPortExit(Sender: TObject);
     procedure seCheckIntervalPropertiesValidate(Sender: TObject;
       var DisplayValue: Variant; var ErrorText: TCaption;
@@ -263,6 +262,14 @@ type
     procedure cbCheckIfNotConnectedPropertiesChange(Sender: TObject);
     procedure cbCanCheckAccountsPropertiesChange(Sender: TObject);
     procedure cbEnableFilteringPropertiesChange(Sender: TObject);
+    procedure cbBallonOnReceivePropertiesChange(Sender: TObject);
+    procedure cbBaloonOnErrorPropertiesChange(Sender: TObject);
+    procedure cxButtonEdit1PropertiesButtonClick(Sender: TObject;
+      AButtonIndex: Integer);
+    procedure beSoundOnErrorPropertiesButtonClick(Sender: TObject;
+      AButtonIndex: Integer);
+    procedure cbSoundOnReceivePropertiesChange(Sender: TObject);
+    procedure cbSoundOnErrorPropertiesChange(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -489,7 +496,12 @@ begin
  cbCheckIfNotConnected.Checked:=StrToBool(SProvider.GetValue('CheckIfNotConnected'));
  cbCanCheckAccounts.Checked:=StrToBool(SProvider.GetValue('CanCheckAccounts'));
  cbEnableFiltering.Checked:=StrToBool(SProvider.GetValue('EnableFiltering'));
-
+ cbBallonOnReceive.Checked:=StrToBool(SProvider.GetValue('BaloonOnNew'));
+ cbBaloonOnError.Checked:=StrToBool(SProvider.GetValue('BaloonOnError'));
+ beSoundOnNew.Text:=SProvider.GetValue('NewSound');
+ beSoundOnError.Text:=SProvider.GetValue('ErrorSound');
+ cbSoundOnReceive.Checked:=StrToBool(SProvider.GetValue('SoundOnNew'));
+ cbSoundOnError.Checked:=StrToBool(SProvider.GetValue('SoundOnError'));
 
  buf:=StrToBool(SProvider.GetValue('RunAtStartUp'));
  cbRunAtStartUp.Checked:=buf;
@@ -780,7 +792,17 @@ begin
  with Msg.CopyDataStruct^ do
   begin
    mess:=TWMMessanger(lpdata^);
+   if ( (mess.BallonType=bitInfo) and (StrToBool(SProvider.GetValue('BaloonOnNew'))) )
+    or ((mess.BallonType=bitError) and (StrToBool(SProvider.GetValue('BaloonOnError'))))
+
+    then
    tray.ShowBalloonHint(mess.Caption,mess.LogMessage,mess.BallonType,10);
+
+   if StrToBool(SProvider.GetValue('SoundOnError')) and (mess.BallonType=bitError) then
+    Shared.PlaySound(SProvider.GetValue('ErrorSound'));
+   if StrToBool(SProvider.GetValue('SoundOnNew')) and (mess.BallonType=bitInfo) then
+    Shared.PlaySound(SProvider.GetValue('NewSound'));
+
   end;
 end;
 
@@ -1133,31 +1155,6 @@ if not (Key  in ['0'..'9',#8]) then
   end;
 end;
 
-procedure TFMain.Button1Click(Sender: TObject);
-var
- bat:TStringList;
- FullProgPath: PChar;
-begin
- bat:=TStringList.Create;
- bat.Add('taskkill /IM  '+ ExtractFileName(Application.ExeName));
- bat.Add(Application.ExeName);
- bat.SaveToFile('bat.bat');
-// WinExec('bat.bat',SW_SHOW);
-
- //WinExec('Project2.exe',SW_HIDE);
-  FullProgPath := PChar(Application.ExeName);
-   // ShowWindow(Form1.handle,SW_HIDE); 
-  WinExec(FullProgPath, SW_SHOW); // Or better use the CreateProcess function 
-  Application.Terminate; // or: Close;
-
-// PostMessage(FindWindow(nil, PChar(caption)), WM_QUIT, 0, 0);
-// ShellExecute(0,0,PChar(Application.Exename),'','',0);
-{ POP3Server.pop.Active:=False;
- POP3Server.pop.Bindings.DefaultPort:=10;
- POP3Server.pop.Active:=True;
- }
-end;
-
 procedure TFMain.lbServerPortExit(Sender: TObject);
 begin
  SProvider.SetValue('ServerPort',lbServerPort.Text);
@@ -1187,6 +1184,57 @@ end;
 procedure TFMain.cbEnableFilteringPropertiesChange(Sender: TObject);
 begin
  SProvider.SetValue('EnableFiltering',BoolToStr(cbEnableFiltering.Checked,True));
+end;
+
+procedure TFMain.cbBallonOnReceivePropertiesChange(Sender: TObject);
+begin
+ SProvider.SetValue('BaloonOnNew',BoolToStr(cbBallonOnReceive.Checked,True));
+end;
+
+procedure TFMain.cbBaloonOnErrorPropertiesChange(Sender: TObject);
+begin
+ SProvider.SetValue('BaloonOnError',BoolToStr(cbBaloonOnError.Checked,True));
+
+end;
+
+procedure TFMain.cxButtonEdit1PropertiesButtonClick(Sender: TObject;
+  AButtonIndex: Integer);
+begin
+ if AButtonIndex=0 then
+  begin
+   if selSound.Execute then
+    begin
+     beSoundOnNew.Text:=selSound.FileName;
+     SProvider.SetValue('NewSound',selSound.FileName);
+    end;
+  end
+ else
+  Shared.PlaySound(beSoundOnNew.Text);
+end;
+
+procedure TFMain.beSoundOnErrorPropertiesButtonClick(Sender: TObject;
+  AButtonIndex: Integer);
+begin
+ if AButtonIndex=0 then
+  begin
+   if selSound.Execute then
+    begin
+     beSoundOnError.Text:=selSound.FileName;
+     SProvider.SetValue('ErrorSound',selSound.FileName);
+    end;
+  end
+ else
+  Shared.PlaySound(beSoundOnError.Text);
+end;
+
+procedure TFMain.cbSoundOnReceivePropertiesChange(Sender: TObject);
+begin
+ SProvider.SetValue('SoundOnNew',BoolToStr(cbSoundOnReceive.Checked,True));
+end;
+
+procedure TFMain.cbSoundOnErrorPropertiesChange(Sender: TObject);
+begin
+ SProvider.SetValue('SoundOnError',BoolToStr(cbSoundOnError.Checked,True));
 end;
 
 end.

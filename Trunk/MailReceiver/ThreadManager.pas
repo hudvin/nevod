@@ -103,7 +103,7 @@ begin
      if TBaseReceiver(PostReceivers[i]).Terminated then
       with TBaseReceiver(PostReceivers[i]) do
         begin
-         if ShowHint then
+
          if SuccessFul=False then
           begin
            Logger.Add('Ошибка при получении почты : ' +LogMessage,AccountId,ltPostReceiver);
