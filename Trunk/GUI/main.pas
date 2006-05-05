@@ -293,7 +293,7 @@ var
   pp:integer;
 implementation
 
-uses  AddHooked, MultInst;
+uses  MultInst;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
@@ -306,29 +306,29 @@ uses  AddHooked, MultInst;
 procedure TFMain.AppMessage(var Msg: TMSG; var Handled: Boolean);
 var
  TmAppl:Boolean;
- Flag:integer;
+ LType:integer;
 begin
   Handled := False;
-  Flag:=0;
+  LType:=0;
   if Msg.Message = WM_WTSSESSION_CHANGE then
      case Msg.wParam of
        WTS_SESSION_LOCK:
-         Flag:=1;
+         LType:=1;
        WTS_SESSION_UNLOCK:
-         Flag:=2;
+         LType:=2;
      end;
 
- if Flag=1 then
+ if LType=1 then
   begin
    POP3Server.Disable;
-   //FreeAndNil(POP3Server);
    Windows.Beep(100,1000);
   end;
- if Flag=2 then
+ if LType=2 then
   begin
+   Windows.Beep(1000,1000);
    TmAppl:=False;
    //POP3Server:=TPOPServer.Create(adCon,AccountManager);
-   Windows.Beep(10000,10000);
+   Windows.Beep(1000,1000);
    if not POP3Server.LoadParams then
     if MessageBox(Handle,' Ошибка запуска сервера ',' Стандартный порт фильтра занят. Хотите сменить порт ? ',MB_OKCANCEL)=IDOK then
      begin
@@ -340,7 +340,6 @@ begin
       if TmAppl then Application.Terminate;
      end
     else Application.Terminate;
-
   end;
 
 end;

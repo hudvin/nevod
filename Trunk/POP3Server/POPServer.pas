@@ -228,7 +228,8 @@ procedure TPOPServer.Disconnect(AContext: TIdContext);
 var
     Cont:TPOP3ServerContext;
 begin
- if (AContext.Connection.Tag<>-1)and (TPOP3ServerContext(AContext.Connection.Tag).AccountId<>-1) then  // если -1 - ничего не делать - клиент просто отключился или доступ запрещен
+ try
+  if (AContext.Connection.Tag<>-1)and (TPOP3ServerContext(AContext.Connection.Tag).AccountId<>-1) then  // если -1 - ничего не делать - клиент просто отключился или доступ запрещен
    begin
     Cont:=TPOP3ServerContext(AContext.Connection.Tag);
       WaitForSingleObject(Mutex,INFINITE);
@@ -236,6 +237,8 @@ begin
       ReleaseMutex(Mutex);
     TPOP3ServerContext(AContext.Connection.Tag).Destroy;
    end;
+ except
+ end;
 end;
 
 function TPOPServer.GetLocalIP: String;
