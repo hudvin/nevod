@@ -13,7 +13,6 @@ type
    FAccountManager: TAccountManager;
    FADOCon: TADOConnection;
    Mutex: THandle;
-   pop:TIdPOP3Server;
    SProvider: TSettings;
    function BindPort(Port:integer): Boolean;
    procedure CheckAccount(AThread: TIdContext;LThread: TIdPOP3ServerContext);
@@ -26,6 +25,7 @@ type
    procedure LIST(ASender: TIdCommand; AMessageNum: Integer);
    procedure SetServerPort(const Value: Integer);
  public
+   pop: TIdPOP3Server;
    constructor Create(ADOCon:TADOConnection; AccountManager:TAccountManager);
    destructor  Destroy(); override;
    procedure DELE(ASender: TIdCommand; AMessageNum: Integer);
@@ -81,7 +81,8 @@ function TPOPServer.LoadParams: Boolean;
 var
  Port:integer;
 begin
- pop.Active:=False;
+ try
+// pop.Active:=False;
  Port:=ServerPort;
  if not (BindPort(Port)) then
   Result:=False
@@ -91,6 +92,10 @@ begin
      pop.Active:=True;
      Result:=True;
     end;
+
+ except
+  Result:=False;
+ end;
 end;
 
 destructor TPOPServer.Destroy();
@@ -218,8 +223,10 @@ end;
 
 procedure TPOPServer.Disable;
 begin
-// pop.Contexts.Clear;
- pop.Active:=false;
+ try
+ pop.Free;// Active:=false;
+ except
+ end;
 end;
 
 
@@ -229,6 +236,7 @@ var
     Cont:TPOP3ServerContext;
 begin
  try
+ // AContext.Connection.Socket.Close;
   if (AContext.Connection.Tag<>-1)and (TPOP3ServerContext(AContext.Connection.Tag).AccountId<>-1) then  // если -1 - ничего не делать - клиент просто отключился или доступ запрещен
    begin
     Cont:=TPOP3ServerContext(AContext.Connection.Tag);

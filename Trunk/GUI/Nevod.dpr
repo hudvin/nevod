@@ -40,6 +40,8 @@ begin
   begin
   Application.Initialize;
   Application.CreateForm(TFMain, FMain);
+  if (ParamCount>0) and (ParamStr(1)='-h') then
+     Application.MainForm.WindowState:=wsMinimized;
   Application.Run;
   end;
 end.

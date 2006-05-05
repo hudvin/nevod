@@ -2,7 +2,7 @@ unit main;
 
 interface
 
-uses Commctrl, Forms,Windows, Dialogs, Registry, dxBar, cxStyles, Shared, 
+uses Commctrl, Forms,Windows, Dialogs,IdContext, Registry, dxBar, cxStyles, Shared,
   ExtCtrls, Classes, ActnList, CoolTrayIcon, DB, ADODB, StdCtrls,
   cxGridLevel, cxGridCustomTableView, cxGridTableView, cxGridDBTableView,
   cxClasses, cxControls, cxGridCustomView, cxGrid, cxPC, cxSplitter,
@@ -16,7 +16,8 @@ uses Commctrl, Forms,Windows, Dialogs, Registry, dxBar, cxStyles, Shared,
    cxLookAndFeels,CustomEditor,
   XPStyleActnCtrls, ActnMan,  Clipbrd, PerlRegEx,
   ImgList, dxBarExtItems,  ToolWin, ActnCtrls, ActnColorMaps,
-  ActnPopupCtrl, cxTextEdit, cxMemo, cxRichEdit, cxMaskEdit, cxSpinEdit;
+  ActnPopupCtrl, cxTextEdit, cxMemo, cxRichEdit, cxMaskEdit, cxSpinEdit,
+  cxGroupBox, cxButtonEdit;
 
  
 
@@ -169,6 +170,22 @@ type
     dxBarStatic1: TdxBarStatic;
     btAddAccount: TdxBarLargeButton;
     btImages: TImageList;
+    gbSystem: TcxGroupBox;
+    lbServerPort: TLabeledEdit;
+    cbRunAtStartUp: TcxCheckBox;
+    Label1: TLabel;
+    gbNag: TcxGroupBox;
+    cbBallonOnReceive: TcxCheckBox;
+    cxButtonEdit1: TcxButtonEdit;
+    cbSoundOnReceive: TcxCheckBox;
+    cbBaloonOnError: TcxCheckBox;
+    cbSoundOnError: TcxCheckBox;
+    cxButtonEdit2: TcxButtonEdit;
+    cbCheckIfNotConnected: TcxCheckBox;
+    seCheckInterval: TcxSpinEdit;
+    lbCheckInterval: TLabel;
+    cbCanCheckAccounts: TcxCheckBox;
+    cbEnableFiltering: TcxCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -235,7 +252,17 @@ type
       Shift: TShiftState);
     procedure cxFiltersKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure cbRunAtStartUpPropertiesChange(Sender: TObject);
+    procedure lbServerPortKeyPress(Sender: TObject; var Key: Char);
     procedure Button1Click(Sender: TObject);
+    procedure lbServerPortExit(Sender: TObject);
+    procedure seCheckIntervalPropertiesValidate(Sender: TObject;
+      var DisplayValue: Variant; var ErrorText: TCaption;
+      var Error: Boolean);
+    procedure seCheckIntervalExit(Sender: TObject);
+    procedure cbCheckIfNotConnectedPropertiesChange(Sender: TObject);
+    procedure cbCanCheckAccountsPropertiesChange(Sender: TObject);
+    procedure cbEnableFilteringPropertiesChange(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -265,7 +292,6 @@ type
     procedure ActivateNode(NodeIndex:Integer);
     function FindElement(Text:String;SType:TClbHookMode): string;
     procedure MoveElements(NewType:TFilterType);
-    procedure RunOnStartup(Run:boolean);
     procedure SetFilterState(FilterType:TFilterType; const FilterStatus: Boolean);
     procedure UpdateHeaders(Headers:TColumnsHeaders);
     property FilterState[FilterType:TFilterType]: Boolean read GetFilterState write
@@ -300,47 +326,8 @@ uses  MultInst;
 
 
 
-
-
-
 procedure TFMain.AppMessage(var Msg: TMSG; var Handled: Boolean);
-var
- TmAppl:Boolean;
- LType:integer;
 begin
-  Handled := False;
-  LType:=0;
-  if Msg.Message = WM_WTSSESSION_CHANGE then
-     case Msg.wParam of
-       WTS_SESSION_LOCK:
-         LType:=1;
-       WTS_SESSION_UNLOCK:
-         LType:=2;
-     end;
-
- if LType=1 then
-  begin
-   POP3Server.Disable;
-   Windows.Beep(100,1000);
-  end;
- if LType=2 then
-  begin
-   Windows.Beep(1000,1000);
-   TmAppl:=False;
-   //POP3Server:=TPOPServer.Create(adCon,AccountManager);
-   Windows.Beep(1000,1000);
-   if not POP3Server.LoadParams then
-    if MessageBox(Handle,' Ошибка запуска сервера ',' Стандартный порт фильтра занят. Хотите сменить порт ? ',MB_OKCANCEL)=IDOK then
-     begin
-      while (not POP3Server.LoadParams) and (not TmAppl) do
-       begin
-        FPortEditor.ShowModal;
-        if FPortEditor.CanExit=True then TmAppl:=True;
-       end;
-      if TmAppl then Application.Terminate;
-     end
-    else Application.Terminate;
-  end;
 
 end;
 
@@ -378,10 +365,6 @@ begin
         end;
      end
       else LastHooked:='';
-
-
-   //   tray.ShowBalloonHint('Balloon hint',Exp.MatchedExpression, bitInfo, 10);
-
     GlobalUnlock(H);
   end;
   Msg.Result := 0;
@@ -390,16 +373,16 @@ end;
 
 
 
-procedure TFMain.RunOnStartup(Run:boolean);
-begin
-end;
 
 procedure TFMain.FormCreate(Sender: TObject);
 var
  Headers:TColumnsHeaders;
  TmAppl:boolean;
+ Key:TRegistry;
+ buf:boolean;
 begin
 
+  
  FRegisteredSessionNotification := RegisterSessionNotification(Handle, NOTIFY_FOR_THIS_SESSION); 
   Application.OnMessage := AppMessage; 
 
@@ -476,11 +459,6 @@ begin
 
 
 
-
-
-
-
-
  FEditor:=TFCustomEditor.Create(SNConverter,FManager,adFilters,SignList);
  FAccountEditor:=TFAccountEditor.Create(adAccounts,AccountManager);
 
@@ -505,6 +483,26 @@ begin
  cxSpinImages.Value:=StrToInt(SProvider.GetValue('MaxImg'));
  cxSpinSpamWords.Value:=StrToInt(SProvider.GetValue('MaxSpamWords'));
  cxSpinMaxSize.Value:=StrToInt(SProvider.GetValue('MaxSize'))/1000;
+
+ lbServerPort.Text:=SProvider.GetValue('ServerPort');
+ seCheckInterval.Value:=StrToInt(SProvider.GetValue('CheckInterval'))/(1000*60);
+ cbCheckIfNotConnected.Checked:=StrToBool(SProvider.GetValue('CheckIfNotConnected'));
+ cbCanCheckAccounts.Checked:=StrToBool(SProvider.GetValue('CanCheckAccounts'));
+ cbEnableFiltering.Checked:=StrToBool(SProvider.GetValue('EnableFiltering'));
+
+
+ buf:=StrToBool(SProvider.GetValue('RunAtStartUp'));
+ cbRunAtStartUp.Checked:=buf;
+ Key:=TRegistry.Create;
+ Key.RootKey:=HKEY_CURRENT_USER;
+ Key.OpenKey('\Software\Microsoft\Windows\CurrentVersion\Run',True);
+ if buf then
+  Key.WriteString('Nevod AntiSpam',Application.ExeName+' -h')
+   else Key.DeleteValue('Nevod AntiSpam');
+ Key.CloseKey;
+ Key.Free;
+
+
 
 end;
 
@@ -1110,22 +1108,85 @@ if (Key=46) or (Key=110) then
   end;
 end;
 
+procedure TFMain.cbRunAtStartUpPropertiesChange(Sender: TObject);
+var
+ Key:TRegistry;
+begin
+ Key:=TRegistry.Create;
+ Key.RootKey:=HKEY_CURRENT_USER;
+ Key.OpenKey('\Software\Microsoft\Windows\CurrentVersion\Run',True);
+ if cbRunAtStartUp.Checked then
+  Key.WriteString('Nevod AntiSpam',Application.ExeName+' -h')
+   else Key.DeleteValue('Nevod AntiSpam');
+ Key.CloseKey;
+ Key.Free;
+ SProvider.SetValue('RunAtStartUp',BoolToStr(cbRunAtStartUp.Checked,True));
+
+end;
+
+procedure TFMain.lbServerPortKeyPress(Sender: TObject; var Key: Char);
+begin
+if not (Key  in ['0'..'9',#8]) then
+  begin
+   Key := #0;
+   Beep;
+  end;
+end;
+
 procedure TFMain.Button1Click(Sender: TObject);
 var
- tab:TExportADOTable;
+ bat:TStringList;
+ FullProgPath: PChar;
 begin
+ bat:=TStringList.Create;
+ bat.Add('taskkill /IM  '+ ExtractFileName(Application.ExeName));
+ bat.Add(Application.ExeName);
+ bat.SaveToFile('bat.bat');
+// WinExec('bat.bat',SW_SHOW);
 
-    Windows.Beep(100,1000);
+ //WinExec('Project2.exe',SW_HIDE);
+  FullProgPath := PChar(Application.ExeName);
+   // ShowWindow(Form1.handle,SW_HIDE); 
+  WinExec(FullProgPath, SW_SHOW); // Or better use the CreateProcess function 
+  Application.Terminate; // or: Close;
 
-//  POP3Server.Disable;
-// Showmessage(GetCurrentUserSid);
-{ tab:=TExportADOTable.Create(nil);
- tab.Connection:=adCon;
- tab.TableName:='Log';
- tab.Active:=True;
- tab.ExportToExcel('Message ,ErrorTime','c:\qwerty.xls','Log','Excel 8.0');
-
+// PostMessage(FindWindow(nil, PChar(caption)), WM_QUIT, 0, 0);
+// ShellExecute(0,0,PChar(Application.Exename),'','',0);
+{ POP3Server.pop.Active:=False;
+ POP3Server.pop.Bindings.DefaultPort:=10;
+ POP3Server.pop.Active:=True;
  }
+end;
+
+procedure TFMain.lbServerPortExit(Sender: TObject);
+begin
+ SProvider.SetValue('ServerPort',lbServerPort.Text);
+end;
+
+procedure TFMain.seCheckIntervalPropertiesValidate(Sender: TObject;
+  var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
+begin
+ if Error  then   ErrorText:='';
+end;
+
+procedure TFMain.seCheckIntervalExit(Sender: TObject);
+begin
+ SProvider.SetValue('CheckInterval',IntToStr(seCheckInterval.Value*60*1000))
+end;
+
+procedure TFMain.cbCheckIfNotConnectedPropertiesChange(Sender: TObject);
+begin
+ SProvider.SetValue('CheckIfNotConnected',BoolToStr(cbCheckIfNotConnected.Checked,True));
+end;
+
+procedure TFMain.cbCanCheckAccountsPropertiesChange(Sender: TObject);
+begin
+ SProvider.SetValue('CanCheckAccounts',BoolToStr(cbCanCheckAccounts.Checked,True));
+end;
+
+procedure TFMain.cbEnableFilteringPropertiesChange(Sender: TObject);
+begin
+ SProvider.SetValue('EnableFiltering',BoolToStr(cbEnableFiltering.Checked,True));
 end;
 
 end.

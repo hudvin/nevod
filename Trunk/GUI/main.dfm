@@ -1,19 +1,19 @@
 object FMain: TFMain
-  Left = 104
-  Top = 185
+  Left = 182
+  Top = 140
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
   ClientHeight = 490
-  ClientWidth = 771
+  ClientWidth = 776
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
-  HelpFile = 'c:\d7.hlp'
   OldCreateOrder = False
+  Position = poDesktopCenter
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -22,7 +22,7 @@ object FMain: TFMain
   object stBar: TdxStatusBar
     Left = 0
     Top = 470
-    Width = 771
+    Width = 776
     Height = 20
     Panels = <
       item
@@ -107,9 +107,9 @@ object FMain: TFMain
   object stPages: TcxPageControl
     Left = 185
     Top = 67
-    Width = 586
+    Width = 591
     Height = 403
-    ActivePage = cxTab_Log
+    ActivePage = cxTab_Settings
     Align = alClient
     DragMode = dmAutomatic
     HideTabs = True
@@ -117,7 +117,7 @@ object FMain: TFMain
     LookAndFeel.NativeStyle = False
     TabOrder = 3
     ClientRectBottom = 403
-    ClientRectRight = 586
+    ClientRectRight = 591
     ClientRectTop = 0
     object cxTab_Accounts: TcxTabSheet
       Caption = 'cxTab_Accounts'
@@ -125,7 +125,7 @@ object FMain: TFMain
       object cxAccountsGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 586
+        Width = 591
         Height = 403
         Align = alClient
         TabOrder = 0
@@ -197,7 +197,7 @@ object FMain: TFMain
       object cxLog: TcxGrid
         Left = 0
         Top = 0
-        Width = 586
+        Width = 591
         Height = 403
         Align = alClient
         TabOrder = 0
@@ -254,7 +254,7 @@ object FMain: TFMain
       object cxFiltersGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 586
+        Width = 591
         Height = 403
         Align = alClient
         TabOrder = 0
@@ -312,6 +312,222 @@ object FMain: TFMain
     object cxTab_Settings: TcxTabSheet
       Caption = 'cxTab_Settings'
       ImageIndex = 3
+      object gbSystem: TcxGroupBox
+        Left = 8
+        Top = 16
+        Caption = #1057#1080#1089#1090#1077#1084#1085#1099#1077
+        Style.LookAndFeel.Kind = lfOffice11
+        Style.LookAndFeel.NativeStyle = True
+        StyleDisabled.LookAndFeel.Kind = lfOffice11
+        StyleDisabled.LookAndFeel.NativeStyle = True
+        StyleFocused.LookAndFeel.Kind = lfOffice11
+        StyleFocused.LookAndFeel.NativeStyle = True
+        StyleHot.LookAndFeel.Kind = lfOffice11
+        StyleHot.LookAndFeel.NativeStyle = True
+        TabOrder = 0
+        Height = 185
+        Width = 257
+        object Label1: TLabel
+          Left = 224
+          Top = 84
+          Width = 20
+          Height = 13
+          Caption = #1084#1080#1085
+        end
+        object lbCheckInterval: TLabel
+          Left = 16
+          Top = 86
+          Width = 98
+          Height = 13
+          Caption = #1055#1088#1086#1074#1077#1088#1103#1090#1100' '#1082#1072#1078#1076#1099#1077
+        end
+        object lbServerPort: TLabeledEdit
+          Left = 96
+          Top = 48
+          Width = 121
+          Height = 21
+          EditLabel.Width = 73
+          EditLabel.Height = 13
+          EditLabel.Caption = #1055#1086#1088#1090' '#1089#1077#1088#1074#1077#1088#1072' '
+          LabelPosition = lpLeft
+          TabOrder = 0
+          OnExit = lbServerPortExit
+          OnKeyPress = lbServerPortKeyPress
+        end
+        object cbRunAtStartUp: TcxCheckBox
+          Left = 8
+          Top = 16
+          Caption = ' '#1047#1072#1087#1091#1089#1082#1072#1090#1100' '#1087#1088#1080' '#1079#1072#1075#1088#1091#1079#1082#1077
+          Properties.OnChange = cbRunAtStartUpPropertiesChange
+          Style.BorderStyle = ebsOffice11
+          Style.LookAndFeel.NativeStyle = True
+          StyleDisabled.LookAndFeel.NativeStyle = True
+          StyleFocused.LookAndFeel.NativeStyle = True
+          StyleHot.LookAndFeel.NativeStyle = True
+          TabOrder = 1
+          Transparent = True
+          Width = 161
+        end
+        object cbCheckIfNotConnected: TcxCheckBox
+          Left = 8
+          Top = 112
+          Caption = #1055#1088#1086#1074#1077#1088#1103#1090#1100' '#1087#1086#1095#1090#1091' '#1077#1089#1083#1080' '#1085#1077#1090' '#1087#1086#1076#1082#1083#1102#1095#1077#1085#1080#1103
+          Properties.OnChange = cbCheckIfNotConnectedPropertiesChange
+          Style.LookAndFeel.Kind = lfOffice11
+          Style.LookAndFeel.NativeStyle = True
+          StyleDisabled.LookAndFeel.Kind = lfOffice11
+          StyleDisabled.LookAndFeel.NativeStyle = True
+          StyleFocused.LookAndFeel.Kind = lfOffice11
+          StyleFocused.LookAndFeel.NativeStyle = True
+          StyleHot.LookAndFeel.Kind = lfOffice11
+          StyleHot.LookAndFeel.NativeStyle = True
+          TabOrder = 2
+          Width = 225
+        end
+        object seCheckInterval: TcxSpinEdit
+          Left = 120
+          Top = 80
+          Properties.MinValue = 1.000000000000000000
+          Properties.OnValidate = seCheckIntervalPropertiesValidate
+          TabOrder = 3
+          Value = 1
+          OnExit = seCheckIntervalExit
+          Width = 97
+        end
+        object cbCanCheckAccounts: TcxCheckBox
+          Left = 8
+          Top = 136
+          Caption = #1056#1077#1075#1091#1083#1103#1088#1085#1086' '#1087#1088#1086#1074#1077#1088#1103#1090#1100' '#1087#1086#1095#1090#1091
+          Properties.OnChange = cbCanCheckAccountsPropertiesChange
+          State = cbsChecked
+          Style.LookAndFeel.Kind = lfOffice11
+          Style.LookAndFeel.NativeStyle = True
+          StyleDisabled.LookAndFeel.Kind = lfOffice11
+          StyleDisabled.LookAndFeel.NativeStyle = True
+          StyleFocused.LookAndFeel.Kind = lfOffice11
+          StyleFocused.LookAndFeel.NativeStyle = True
+          StyleHot.LookAndFeel.Kind = lfOffice11
+          StyleHot.LookAndFeel.NativeStyle = True
+          TabOrder = 4
+          Width = 169
+        end
+        object cbEnableFiltering: TcxCheckBox
+          Left = 8
+          Top = 160
+          Caption = #1060#1080#1083#1100#1090#1088#1086#1074#1072#1090#1100' '#1089#1086#1086#1073#1097#1077#1085#1080#1103
+          Properties.OnChange = cbEnableFilteringPropertiesChange
+          Style.LookAndFeel.Kind = lfOffice11
+          Style.LookAndFeel.NativeStyle = True
+          StyleDisabled.LookAndFeel.Kind = lfOffice11
+          StyleDisabled.LookAndFeel.NativeStyle = True
+          StyleFocused.LookAndFeel.Kind = lfOffice11
+          StyleFocused.LookAndFeel.NativeStyle = True
+          StyleHot.LookAndFeel.Kind = lfOffice11
+          StyleHot.LookAndFeel.NativeStyle = True
+          TabOrder = 5
+          Width = 169
+        end
+      end
+      object gbNag: TcxGroupBox
+        Left = 272
+        Top = 16
+        Caption = #1059#1074#1077#1076#1086#1084#1083#1077#1085#1080#1103
+        Style.LookAndFeel.Kind = lfOffice11
+        Style.LookAndFeel.NativeStyle = True
+        StyleDisabled.LookAndFeel.Kind = lfOffice11
+        StyleDisabled.LookAndFeel.NativeStyle = True
+        StyleFocused.LookAndFeel.Kind = lfOffice11
+        StyleFocused.LookAndFeel.NativeStyle = True
+        StyleHot.LookAndFeel.Kind = lfOffice11
+        StyleHot.LookAndFeel.NativeStyle = True
+        TabOrder = 1
+        Height = 161
+        Width = 305
+        object cbBallonOnReceive: TcxCheckBox
+          Left = 8
+          Top = 16
+          Caption = #1057#1086#1086#1073#1097#1077#1085#1080#1077' '#1087#1088#1080' '#1087#1086#1083#1091#1095#1077#1085#1080#1080' '#1085#1086#1074#1086#1081' '#1087#1086#1095#1090#1099
+          Style.LookAndFeel.Kind = lfOffice11
+          Style.LookAndFeel.NativeStyle = True
+          StyleDisabled.LookAndFeel.Kind = lfOffice11
+          StyleDisabled.LookAndFeel.NativeStyle = True
+          StyleFocused.LookAndFeel.Kind = lfOffice11
+          StyleFocused.LookAndFeel.NativeStyle = True
+          StyleHot.LookAndFeel.Kind = lfOffice11
+          StyleHot.LookAndFeel.NativeStyle = True
+          TabOrder = 0
+          Width = 225
+        end
+        object cxButtonEdit1: TcxButtonEdit
+          Left = 208
+          Top = 40
+          Properties.Buttons = <
+            item
+              Default = True
+              Kind = bkEllipsis
+            end>
+          TabOrder = 1
+          Text = 'cxButtonEdit1'
+          Width = 89
+        end
+        object cbSoundOnReceive: TcxCheckBox
+          Left = 8
+          Top = 40
+          Caption = #1047#1074#1091#1082' '#1087#1088#1080' '#1087#1086#1083#1091#1095#1077#1085#1080#1080' '#1085#1086#1074#1086#1081' '#1087#1086#1095#1090#1099
+          Style.LookAndFeel.Kind = lfOffice11
+          Style.LookAndFeel.NativeStyle = True
+          StyleDisabled.LookAndFeel.Kind = lfOffice11
+          StyleDisabled.LookAndFeel.NativeStyle = True
+          StyleFocused.LookAndFeel.Kind = lfOffice11
+          StyleFocused.LookAndFeel.NativeStyle = True
+          StyleHot.LookAndFeel.Kind = lfOffice11
+          StyleHot.LookAndFeel.NativeStyle = True
+          TabOrder = 2
+          Width = 193
+        end
+        object cbBaloonOnError: TcxCheckBox
+          Left = 8
+          Top = 64
+          Caption = #1057#1086#1086#1073#1097#1077#1085#1080#1077' '#1087#1088#1080' '#1086#1096#1080#1073#1082#1077
+          Style.LookAndFeel.Kind = lfOffice11
+          Style.LookAndFeel.NativeStyle = True
+          StyleDisabled.LookAndFeel.Kind = lfOffice11
+          StyleDisabled.LookAndFeel.NativeStyle = True
+          StyleFocused.LookAndFeel.Kind = lfOffice11
+          StyleFocused.LookAndFeel.NativeStyle = True
+          StyleHot.LookAndFeel.Kind = lfOffice11
+          StyleHot.LookAndFeel.NativeStyle = True
+          TabOrder = 3
+          Width = 217
+        end
+        object cbSoundOnError: TcxCheckBox
+          Left = 8
+          Top = 88
+          Caption = #1047#1074#1091#1082' '#1087#1088#1080' '#1086#1096#1080#1073#1082#1077
+          Style.LookAndFeel.Kind = lfOffice11
+          Style.LookAndFeel.NativeStyle = True
+          StyleDisabled.LookAndFeel.Kind = lfOffice11
+          StyleDisabled.LookAndFeel.NativeStyle = True
+          StyleFocused.LookAndFeel.Kind = lfOffice11
+          StyleFocused.LookAndFeel.NativeStyle = True
+          StyleHot.LookAndFeel.Kind = lfOffice11
+          StyleHot.LookAndFeel.NativeStyle = True
+          TabOrder = 4
+          Width = 121
+        end
+        object cxButtonEdit2: TcxButtonEdit
+          Left = 208
+          Top = 88
+          Properties.Buttons = <
+            item
+              Default = True
+              Kind = bkEllipsis
+            end>
+          TabOrder = 5
+          Text = 'cxButtonEdit2'
+          Width = 89
+        end
+      end
     end
     object cxTab_AFSettings: TcxTabSheet
       Caption = 'cxTab_AFSettings'
@@ -4879,8 +5095,8 @@ object FMain: TFMain
     Top = 400
   end
   object AList: TActionList
-    Left = 699
-    Top = 136
+    Left = 739
+    Top = 344
     object alAddAccount: TAction
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
       OnExecute = alAddAccountExecute
@@ -5013,8 +5229,8 @@ object FMain: TFMain
     PopupMenuLinks = <>
     Style = bmsOffice11
     UseSystemFont = True
-    Left = 699
-    Top = 110
+    Left = 739
+    Top = 310
     DockControlHeights = (
       0
       0
@@ -5205,8 +5421,8 @@ object FMain: TFMain
   object AccountsUpdater: TTimer
     Interval = 1500
     OnTimer = AccountsUpdaterTimer
-    Left = 699
-    Top = 85
+    Left = 739
+    Top = 277
   end
   object pAccounts: TdxBarPopupMenu
     BarManager = dxBar
@@ -5245,8 +5461,8 @@ object FMain: TFMain
       end>
     UseOwnFont = False
     OnPopup = alOnAccountsPopUpExecute
-    Left = 699
-    Top = 165
+    Left = 739
+    Top = 381
   end
   object pFilters: TdxBarPopupMenu
     BarManager = dxBar
@@ -5265,11 +5481,11 @@ object FMain: TFMain
       end>
     UseOwnFont = False
     OnPopup = alOnFiltersPopUpExecute
-    Left = 697
-    Top = 191
+    Left = 737
+    Top = 415
   end
   object btImages: TImageList
-    Left = 697
-    Top = 219
+    Left = 737
+    Top = 443
   end
 end
