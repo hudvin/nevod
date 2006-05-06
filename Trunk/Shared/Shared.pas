@@ -46,7 +46,7 @@ const
   ServerMutex='{B66AEAD2-94BF-453B-9D79-27CC798B6657}';
   WaitTime=5000;      // время между проверками состояний
   WM_BallonMessage = WM_USER + 1;
-  ConnectionString='Provider=Microsoft.Jet.OLEDB.4.0;User ID=Admin;Data Source=..\DB\messages.mdb;Jet OLEDB:Database Password="";Jet OLEDB:Engine Type=5;Jet OLEDB:New Database Password="";Jet OLEDB:Create System Database=False;Jet OLEDB:Encrypt Database=False;';
+  
 
 type
  TClbHookMode=(chEmail,chURL,chEmailURL);
@@ -293,22 +293,6 @@ type
     MessagesCount: Integer;
   end;
 
-  TExportADOTable = class(TADOTable)
-  private
-    FADOCommand: TADOCommand;
-  public
-    { Public declarations }
-    constructor Create(AOwner: TComponent); override;
-    procedure ExportToExcel(FieldNames: string; FileName: string;
-      SheetName: string; IsamFormat: string);
-    procedure ExportToHtml(FieldNames: string; FileName: string);
-    procedure ExportToParadox(FieldNames: string; FileName: string; IsamFormat:
-      string);
-    procedure ExportToDbase(FieldNames: string; FileName: string; IsamFormat:
-      string);
-    procedure ExportToTxt(FieldNames: string; FileName: string);
-  end;
-
   TSounder = class(TThread)
   private
     FFilePath: string;
@@ -337,6 +321,12 @@ function ObtainTextSid(hToken: THandle; pszSid: PChar;
    var dwBufferLen: DWORD): BOOL;
 
 procedure PlaySound(FilePath:String);
+
+function md5(InputString:string): string;
+
+function GetAppDataPath: string;
+
+function GetConectionString: string;
 
 implementation
 
@@ -1017,6 +1007,65 @@ begin
   MMSystem.PlaySound(PChar(FilePath),0,SND_FILENAME);
 end;
 
+function md5(InputString:string): string;
+var
+  Digest: T4x4LongWordRecord;
+  S, S1: string;
+  i: Integer;
+begin
+  SetLength(S, 16);
+  with TIdHashMessageDigest5.Create do
+    begin
+      Digest := HashValue(InputString);
+      Move(Digest, S[1], 16);
+      for i := 1 to Length(InputString) do
+        S1 := S1 + Format('%02x', [Byte(S[i])]);
+      while Pos(' ', S1) > 0 do S1[Pos(' ', S1)] := '0';
+      Result:=s1;
+      Free;
+    end;
+end;
+
+function GetAppDataPath: string;
+var
+ Key:TRegistry;
+begin
+ Key:=TRegistry.Create;
+ Key.RootKey:=HKEY_CURRENT_USER;
+ Key.OpenKey('\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders',False);
+ Result:=Key.ReadString('AppData');
+ Key.CloseKey;
+ Key.Free;
+end;
+
+function GetConectionString: string;
+var
+ DBPassword:String;
+ DBPath:String;
+ rs: TResourceStream;
+ ConString:String;
+begin
+ DBpassword:=Copy((md5(CriptKey+MutexName)),0,15);
+ DBPath:=GetAppDataPath+'\Nevilon Software\Nevod AntiSpam';
+ ConString:='Provider=Microsoft.Jet.OLEDB.4.0;'+'Data Source='+DBPath+'\messages.ndb;'+
+            'Jet OLEDB:Database Password='+DBPassword;
+ if not FileExists(DBPath+'\messages.ndb') then
+  begin
+   ForceDirectories(DBPath);
+   rs := TResourceStream.Create(hinstance, 'MessDB', RT_RCDATA);
+   try
+    rs.SaveToFile(DBPath+'\messages.ndb');
+   finally
+    rs.Free;
+   end;
+  end
+ else
+  begin
+   {  упаковать и создать строку (отдельно)}
+  end;
+ Result:=ConString;
+end;
+
 function TRegExp.BuildExp(const Value: string): string;
 var inpString,buff,symbols:String;
     i:Integer;
@@ -1259,140 +1308,6 @@ begin
       else inc(i);
    end;
  if not Flag then Result:=-1;
-end;
-
-constructor TExportADOTable.Create(AOwner: TComponent);
-begin
-  inherited;
-
-  FADOCommand := TADOCommand.Create(Self);
-end;
-
-procedure TExportADOTable.ExportToDbase(FieldNames: string; FileName: string;
-  IsamFormat: string);
-begin
-  {IsamFormat values
-  dBase III
-  dBase IV
-  dBase 5.0
-  }
-  if not Active then
-    Exit;
-
-  FADOCommand.Connection := Connection;
-  FADOCommand.CommandText := 'Select ' + FieldNames + ' INTO ' + '[' +
-    ExtractFileName(FileName) + ']' +
-    ' IN ' + '"' + ExtractFilePath(FileName) + '"' + '[' + IsamFormat +
-    ';]' + ' From ' + TableName;
-  if Filtered and (Filter <> '') then
-    FADOCommand.CommandText := FADOCommand.CommandText + ' where ' + Filter;
-  if (Sort <> '') then
-    FADOCommand.CommandText := FADOCommand.CommandText + ' order by ' + Sort;
-  FADOCommand.Execute;
-end;
-
-procedure TExportADOTable.ExportToExcel(FieldNames: string; FileName: string;
-  SheetName: string; IsamFormat: string);
-begin
-  {IsamFormat values
-   Excel 3.0
-   Excel 4.0
-   Excel 5.0
-   //MMWIN:CLASSCOPY
-unit _MM_Copy_Buffer_;
-
-interface
-
-
-implementation
-
-type
-   TTokenUser = packed record
-     User: TSidAndAttributes;
-   end;
-
-
-end.
-
-  }
-
-  if not Active then
-    Exit;
-  FADOCommand.Connection := Connection;
-  FADOCommand.CommandText := 'Select ' + FieldNames + ' INTO ' + '[' +
-    SheetName + ']' + ' IN ' + '"' + FileName + '"' + '[' + IsamFormat +
-    ';]' + ' From ' + TableName;
-  if Filtered and (Filter <> '') then
-    FADOCommand.CommandText := FADOCommand.CommandText + ' where ' + Filter;
-  if (Sort <> '') then
-    FADOCommand.CommandText := FADOCommand.CommandText + ' order by ' + Sort;
-  FADOCommand.Execute;
-end;
-
-procedure TExportADOTable.ExportToHtml(FieldNames: string; FileName: string);
-var
-  IsamFormat: string;
-begin
-  if not Active then
-    Exit;
-
-  IsamFormat := 'HTML Export';
-
-  FADOCommand.Connection := Connection;
-  FADOCommand.CommandText := 'Select ' + FieldNames + ' INTO ' + '[' +
-    ExtractFileName(FileName) + ']' +
-    ' IN ' + '"' + ExtractFilePath(FileName) + '"' + '[' + IsamFormat +
-    ';]' + ' From ' + TableName;
-  if Filtered and (Filter <> '') then
-    FADOCommand.CommandText := FADOCommand.CommandText + ' where ' + Filter;
-  if (Sort <> '') then
-    FADOCommand.CommandText := FADOCommand.CommandText + ' order by ' + Sort;
-  FADOCommand.Execute;
-end;
-
-procedure TExportADOTable.ExportToParadox(FieldNames: string;
-  FileName: string; IsamFormat: string);
-begin
-  {IsamFormat values
-  Paradox 3.X
-  Paradox 4.X
-  Paradox 5.X
-  Paradox 7.X
-  }
-  if not Active then
-    Exit;
-
-  FADOCommand.Connection := Connection;
-  FADOCommand.CommandText := 'Select ' + FieldNames + ' INTO ' + '[' +
-    ExtractFileName(FileName) + ']' +
-    ' IN ' + '"' + ExtractFilePath(FileName) + '"' + '[' + IsamFormat +
-    ';]' + ' From ' + TableName;
-  if Filtered and (Filter <> '') then
-    FADOCommand.CommandText := FADOCommand.CommandText + ' where ' + Filter;
-  if (Sort <> '') then
-    FADOCommand.CommandText := FADOCommand.CommandText + ' order by ' + Sort;
-  FADOCommand.Execute;
-end;
-
-procedure TExportADOTable.ExportToTxt(FieldNames: string; FileName: string);
-var
-  IsamFormat: string;
-begin
-  if not Active then
-    Exit;
-
-  IsamFormat := 'Text';
-
-  FADOCommand.Connection := Connection;
-  FADOCommand.CommandText := 'Select ' + FieldNames + ' INTO ' + '[' +
-    ExtractFileName(FileName) + ']' +
-    ' IN ' + '"' + ExtractFilePath(FileName) + '"' + '[' + IsamFormat +
-    ';]' + ' From ' + TableName;
-  if Filtered and (Filter <> '') then
-    FADOCommand.CommandText := FADOCommand.CommandText + ' where ' + Filter;
-  if (Sort <> '') then
-    FADOCommand.CommandText := FADOCommand.CommandText + ' order by ' + Sort;
-  FADOCommand.Execute;
 end;
 
 constructor TSounder.Create(FilePath:String);

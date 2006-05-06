@@ -28,14 +28,14 @@ uses
   POPServer in '..\POP3Server\POPServer.pas',
   PortEditor in 'PortEditor.pas' {FPortEditor},
   ASFilter in '..\MessagesFilter\ASFilter.pas',
-  MultInst in 'MultInst.pas';
+  MultInst in 'MultInst.pas',
+  Crc32 in '..\Shared\Crc32.pas';
 
 {$R *.res}
 
 
 
 begin
-
   if InitInstance then
   begin
   Application.Initialize;

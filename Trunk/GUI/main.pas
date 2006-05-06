@@ -2,22 +2,29 @@ unit main;
 
 interface
 
-uses Commctrl, Forms,Windows, Dialogs,IdContext, Registry, dxBar, cxStyles, Shared,
-  ExtCtrls, Classes, ActnList, CoolTrayIcon, DB, ADODB, StdCtrls,
-  cxGridLevel, cxGridCustomTableView, cxGridTableView, cxGridDBTableView,
-  cxClasses, cxControls, cxGridCustomView, cxGrid, cxPC, cxSplitter,
-  cxInplaceContainer, cxTL, Controls, dxStatusBar,
-   cxContainer, cxEdit, WinSock,  IdGlobalProtocols,
-  cxCheckBox,  ShellAPI, PortEditor,  
+uses Commctrl,tlhelp32, StdCtrls, Dialogs, ImgList, Controls, dxBar,
+  ExtCtrls, dxBarExtItems, Classes, ActnList, CoolTrayIcon, DB, ADODB,
+  cxMemo, cxButtonEdit, cxTextEdit, cxMaskEdit, cxSpinEdit, cxCheckBox,
+  cxContainer, cxEdit, cxGroupBox, cxGridLevel, cxGridCustomTableView,
+  cxGridTableView, cxGridDBTableView, cxClasses, cxControls,
+  cxGridCustomView, cxGrid, cxPC, cxSplitter, cxInplaceContainer, cxTL,
+  dxStatusBar ,
+
+
+   Forms,Windows,IdContext, Registry,  cxStyles, Shared,
+
+
+    WinSock,  IdGlobalProtocols,
+    ShellAPI, PortEditor,
   SysUtils, Typinfo, FilterManager, AccountManager,  AccountEditor,  Graphics,
 
     Menus,   Messages, ThreadManager, POPServer,
   cxGridCustomPopupMenu, cxGridPopupMenu,
    cxLookAndFeels,CustomEditor,
   XPStyleActnCtrls, ActnMan,  Clipbrd, PerlRegEx,
-  ImgList, dxBarExtItems,  ToolWin, ActnCtrls, ActnColorMaps,
-  ActnPopupCtrl, cxTextEdit, cxMemo, cxRichEdit, cxMaskEdit, cxSpinEdit,
-  cxGroupBox, cxButtonEdit, cxButtons;
+   ToolWin, ActnCtrls, ActnColorMaps,
+  ActnPopupCtrl,  cxRichEdit,
+  cxButtons;
 
  
 
@@ -199,6 +206,7 @@ type
     msClearLog: TdxBarButton;
     msSaveLog: TdxBarButton;
     msDeleteSelectedLog: TdxBarButton;
+    Button1: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -287,6 +295,7 @@ type
     procedure alDeleteSelectedLogExecute(Sender: TObject);
     procedure alSaveLogExecute(Sender: TObject);
     procedure alOnLogPopUpExecute(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -295,8 +304,6 @@ type
     Exp:TPerlRegEx;
     FRegisteredSessionNotification : Boolean;
     function GetFilterState(FilterType:TFilterType): Boolean;
-    procedure AppMessage(var Msg: TMSG; var HAndled: Boolean);
-  //  procedure ShowNewMail(var Msg: TMessage); message WM_BallonMessage;
     procedure WMChangeCBChain(var Msg: TWMChangeCBChain);
      message WM_CHANGECBCHAIN;
     procedure WMDrawClipboard(var Msg: TWMDrawClipboard);
@@ -343,16 +350,37 @@ var
   pp:integer;
 implementation
 
-uses  MultInst;
+uses  MultInst,CRc32;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
+{$R ..\Resources\Messages.res}
 
 
-
-procedure TFMain.AppMessage(var Msg: TMSG; var Handled: Boolean);
+function KillTask(FileName: string): integer; //0 - пpибить не полyчилось
+var
+  ContinueLoop: BOOL;
+  FSnapshotHandle: THandle;
+  FProcessEntry32: TProcessEntry32;
+const
+  PROCESS_TERMINATE = $0001;
 begin
+  FileName:=ExtractFileName(FileName);
+  FSnapshotHandle := CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+  FProcessEntry32.dwSize := Sizeof(FProcessEntry32);
+  ContinueLoop := Process32First(FSnapshotHandle, FProcessEntry32);
+  while integer(ContinueLoop) <> 0 do
+  begin
+    if
+      ((UpperCase(ExtractFileName(FProcessEntry32.szExeFile)) =
+      UpperCase(FileName))
+      or (UpperCase(FProcessEntry32.szExeFile) = UpperCase(FileName))) then
+      Result := Integer(TerminateProcess(OpenProcess(PROCESS_TERMINATE, BOOL(0),
 
+        FProcessEntry32.th32ProcessID), 0));
+    ContinueLoop := Process32Next(FSnapshotHandle, FProcessEntry32);
+  end;
+  CloseHandle(FSnapshotHandle);
 end;
 
 
@@ -406,9 +434,8 @@ var
  buf:boolean;
 begin
 
-  
- FRegisteredSessionNotification := RegisterSessionNotification(Handle, NOTIFY_FOR_THIS_SESSION); 
-  Application.OnMessage := AppMessage; 
+ adCon.ConnectionString:=GetConectionString;
+ adCon.Connected:=True;
 
 
  FPortEditor:=TFPortEditor.Create(adCon);
@@ -830,6 +857,8 @@ procedure TFMain.AccountsUpdaterTimer(Sender: TObject);
 begin
  if FMain.Active then
   begin
+   if not adAccounts.Active then adAccounts.Active:=True;
+   if not adLog.Active then adLog.Active:=True;
    adAccounts.Requery;
    adLog.Requery;
   end;
@@ -1340,10 +1369,14 @@ begin
      alSaveLog.Enabled:=True;
      alClearLog.Enabled:=True;
     end;
-
  if cxLog.Controller.SelectedRowCount>0 then
   alDeleteSelectedLog.Enabled:=True
    else alDeleteSelectedLog.Enabled:=False;
+end;
+
+procedure TFMain.Button1Click(Sender: TObject);
+begin
+ KillTask(Application.ExeName);
 end;
 
 end.
