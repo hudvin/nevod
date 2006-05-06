@@ -1,9 +1,10 @@
 unit PostReceiver;
 
 interface
-uses   Shared,
-  IdThread, IdMessage,Variants, Classes,DBTables, 
-  IdPOP3,Windows, SysUtils, ADODB,DB, DateUtils,  ActiveX;
+uses   Shared, IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient,
+  IdExplicitTLSClientServerBase, IdMessageClient, IdPOP3,  IdStackBSDBase,
+  IdThread, IdMessage,Variants, Classes,DBTables, IdStack,IdreplyPOP3,
+  Windows, SysUtils, ADODB,DB, DateUtils,  ActiveX;
 
 
 type
@@ -215,10 +216,15 @@ begin
     end;
   // CoUninitialize;
    except
-     on E:Exception do
+    on EIdSocketError do
       begin
        FSuccessFul:=False;
-       FLogMessage:=e.Message;
+       FLogMessage:='Невозможно подключиться к серверу';
+      end;
+    on  EIdReplyPOP3Error  do
+      begin
+       FSuccessFul:=False;
+       FLogMessage:='Неправильные  параметры аккаунта';
       end;
    end;
 end;

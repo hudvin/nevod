@@ -110,7 +110,7 @@ begin
 
            SendHintMessage(AccountParams.AccountName,
                ' Ошибка при получении почты для  '+ '"'+AccountParams.AccountName +'"',
-               ' Ошибка при получении почты для учетной записи '+  ' '+LogMessage+ '  подробнее смотрите в журанале сообщений ',
+               ' Ошибка при получении почты  : '+  ' '+LogMessage,
                bitError,
                MessagesCount);
           end

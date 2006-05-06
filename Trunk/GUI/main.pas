@@ -46,15 +46,15 @@ type
     adLogErrorType: TWideStringField;
     adLogMessage: TWideStringField;
     adLogErrorTime: TDateTimeField;
-    cxLogDBTableView1: TcxGridDBTableView;
-    cxLogLevel1: TcxGridLevel;
-    cxLog: TcxGrid;
-    cxLogDBTableView1AccountName: TcxGridDBColumn;
-    cxLogDBTableView1ErrorType: TcxGridDBColumn;
-    cxLogDBTableView1Message: TcxGridDBColumn;
-    cxLogDBTableView1ErrorTime: TcxGridDBColumn;
+    cxLog: TcxGridDBTableView;
+    cxLogGridLevel1: TcxGridLevel;
+    cxLogGrid: TcxGrid;
+    cxLogAccountName: TcxGridDBColumn;
+    cxLogErrorType: TcxGridDBColumn;
+    cxLogMessage: TcxGridDBColumn;
+    cxLogErrorTime: TcxGridDBColumn;
     adLogId: TAutoIncField;
-    cxLogDBTableView1Id: TcxGridDBColumn;
+    cxLogId: TcxGridDBColumn;
     cxTab_Filters: TcxTabSheet;
     cxFilters: TcxGridDBTableView;
     cxFiltersGridLevel1: TcxGridLevel;
@@ -186,6 +186,19 @@ type
     cbCanCheckAccounts: TcxCheckBox;
     cbEnableFiltering: TcxCheckBox;
     selSound: TOpenDialog;
+    alClearLog: TAction;
+    alDeleteSelectedLog: TAction;
+    alSaveLog: TAction;
+    sdLog: TSaveDialog;
+    pLog: TdxBarPopupMenu;
+    pmClearLog: TdxBarButton;
+    pmDeleteSelectedLog: TdxBarButton;
+    pmSaveLogToFile: TdxBarButton;
+    alOnLogPopUp: TAction;
+    msLogs: TdxBarSubItem;
+    msClearLog: TdxBarButton;
+    msSaveLog: TdxBarButton;
+    msDeleteSelectedLog: TdxBarButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -270,6 +283,10 @@ type
       AButtonIndex: Integer);
     procedure cbSoundOnReceivePropertiesChange(Sender: TObject);
     procedure cbSoundOnErrorPropertiesChange(Sender: TObject);
+    procedure alClearLogExecute(Sender: TObject);
+    procedure alDeleteSelectedLogExecute(Sender: TObject);
+    procedure alSaveLogExecute(Sender: TObject);
+    procedure alOnLogPopUpExecute(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -788,6 +805,7 @@ end;
 procedure TFMain.WMCopyData(var Msg: TWMCopyData);
 var
  mess:TWMMessanger;
+ Sounder:TSounder;
 begin
  with Msg.CopyDataStruct^ do
   begin
@@ -799,9 +817,9 @@ begin
    tray.ShowBalloonHint(mess.Caption,mess.LogMessage,mess.BallonType,10);
 
    if StrToBool(SProvider.GetValue('SoundOnError')) and (mess.BallonType=bitError) then
-    Shared.PlaySound(SProvider.GetValue('ErrorSound'));
+    Sounder:=TSounder.Create(SProvider.GetValue('ErrorSound'));  /////
    if StrToBool(SProvider.GetValue('SoundOnNew')) and (mess.BallonType=bitInfo) then
-    Shared.PlaySound(SProvider.GetValue('NewSound'));
+    Sounder:=TSounder.Create(SProvider.GetValue('NewSound'));
 
   end;
 end;
@@ -884,6 +902,8 @@ end;
 
 procedure TFMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+ ShowWindow(Application.Handle, sw_Hide);
+ tray.HideTaskbarIcon;
  tray.Enabled:=False;
  Hide;
 end;
@@ -1199,21 +1219,26 @@ end;
 
 procedure TFMain.cxButtonEdit1PropertiesButtonClick(Sender: TObject;
   AButtonIndex: Integer);
+var
+ sn:TSounder;
 begin
  if AButtonIndex=0 then
   begin
    if selSound.Execute then
     begin
      beSoundOnNew.Text:=selSound.FileName;
-     SProvider.SetValue('NewSound',selSound.FileName);
+     SProvider.SetValue('NewSound',selSound.FileName)
+     
     end;
   end
  else
-  Shared.PlaySound(beSoundOnNew.Text);
+ sn:=TSounder.Create(beSoundOnNew.Text);
 end;
 
 procedure TFMain.beSoundOnErrorPropertiesButtonClick(Sender: TObject;
   AButtonIndex: Integer);
+var
+ sn:TSounder;
 begin
  if AButtonIndex=0 then
   begin
@@ -1224,7 +1249,7 @@ begin
     end;
   end
  else
-  Shared.PlaySound(beSoundOnError.Text);
+  sn:=TSounder.Create(beSoundOnError.Text);
 end;
 
 procedure TFMain.cbSoundOnReceivePropertiesChange(Sender: TObject);
@@ -1235,6 +1260,90 @@ end;
 procedure TFMain.cbSoundOnErrorPropertiesChange(Sender: TObject);
 begin
  SProvider.SetValue('SoundOnError',BoolToStr(cbSoundOnError.Checked,True));
+end;
+
+procedure TFMain.alClearLogExecute(Sender: TObject);
+begin
+ with adProc do
+   begin
+    Active:=False;
+    SQL.Text:='DELETE FROM Log';
+    ExecSQL;
+    Active:=False;
+   end;
+ adLog.Requery;
+end;
+
+procedure TFMain.alDeleteSelectedLogExecute(Sender: TObject);
+var
+ i,SelCount:integer;
+ LInd:Array of integer;
+ RowSQL:String;
+begin
+ SelCount:=cxLog.Controller.SelectedRowCount;
+ SetLength(LInd,SelCount);
+ for i:=0 to SelCount-1 do
+  LInd[i]:=cxLog.Controller.SelectedRows[i].Values[cxLogId.Index];
+
+ RowSQL:='';
+ for i:=Low(LInd) to High(LInd) do
+   begin
+    RowSQL:=RowSQL+ ' id='+IntToStr(LInd[i]);
+    if i<>High(LInd) then RowSQL:=RowSQl+' OR ';
+   end;
+
+ with adProc do
+  begin
+   Active:=False;
+   SQL.Text:='DELETE FROM Log WHERE ' + RowSQL;
+   ExecSQL;
+  end;
+
+ adLog.Requery;
+end;
+
+procedure TFMain.alSaveLogExecute(Sender: TObject);
+var
+ FileName,iFile:String;
+ ExpLog:TADOQuery;
+begin
+ if sdLog.Execute then
+   with ExpLog do
+     begin
+      ExpLog:=TADOQuery.Create(nil);
+      ExpLog.Connection:=adCon;
+      FileName:=sdLog.FileName;
+      if FileExists(FileName) then DeleteFile(FileName);
+      SQL.Clear;
+      SQL.Add('SELECT Accounts.AccountName,Log.Message,ErrorTime');
+      SQL.Add('INTO ['+ ExtractFileName(FileName)+']');
+      SQL.Add(' IN '+''''+ ExtractFilePath(FileName) + ''''+'[Text;]');
+      SQL.Add('FROM Log,Accounts WHERE  Accounts.Id=log.mid');
+      ExecSQL;
+      Free;
+      iFile:=ExtractFilePath(FileName)+'schema.ini';
+      if FileExists(iFile) then DeleteFile(iFile);
+     end;
+end;
+
+procedure TFMain.alOnLogPopUpExecute(Sender: TObject);
+begin
+ if cxLog.DataController.RecNo=-1 then    // если таблица пустая
+  begin
+   alSaveLog.Enabled:=False;
+   alClearLog.Enabled:=False;
+   alDeleteSelectedLog.Enabled:=False;
+   Exit;
+  end
+   else
+    begin
+     alSaveLog.Enabled:=True;
+     alClearLog.Enabled:=True;
+    end;
+
+ if cxLog.Controller.SelectedRowCount>0 then
+  alDeleteSelectedLog.Enabled:=True
+   else alDeleteSelectedLog.Enabled:=False;
 end;
 
 end.

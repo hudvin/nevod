@@ -309,6 +309,14 @@ type
     procedure ExportToTxt(FieldNames: string; FileName: string);
   end;
 
+  TSounder = class(TThread)
+  private
+    FFilePath: string;
+  public
+    constructor Create(FilePath:String);
+    procedure Execute; override;
+  end;
+
 function BindPort(Port:integer): Boolean;
 function IsConnected():Boolean;
 function WSAIoctl(s: TSocket; cmd: DWORD; lpInBuffer: PCHAR; dwInBufferLen:
@@ -1385,6 +1393,20 @@ begin
   if (Sort <> '') then
     FADOCommand.CommandText := FADOCommand.CommandText + ' order by ' + Sort;
   FADOCommand.Execute;
+end;
+
+constructor TSounder.Create(FilePath:String);
+begin
+
+  inherited Create(false);
+  FFilePath:=FilePath;
+  FreeOnTerminate:=True;
+end;
+
+procedure TSounder.Execute;
+begin
+  MMSystem.PlaySound(PChar(FFilePath),0,SND_FILENAME);
+  Terminate;
 end;
 
 

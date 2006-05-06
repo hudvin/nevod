@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 182
-  Top = 140
+  Left = 210
+  Top = 151
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -194,7 +194,7 @@ object FMain: TFMain
     object cxTab_Log: TcxTabSheet
       Caption = 'cxTab_Log'
       ImageIndex = 3
-      object cxLog: TcxGrid
+      object cxLogGrid: TcxGrid
         Left = 0
         Top = 0
         Width = 591
@@ -203,7 +203,8 @@ object FMain: TFMain
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
         LookAndFeel.NativeStyle = False
-        object cxLogDBTableView1: TcxGridDBTableView
+        object cxLog: TcxGridDBTableView
+          PopupMenu = pLog
           NavigatorButtons.ConfirmDelete = False
           DataController.DataSource = dsLog
           DataController.Summary.DefaultGroupSummaryItems = <>
@@ -211,40 +212,43 @@ object FMain: TFMain
           DataController.Summary.SummaryGroups = <>
           OptionsCustomize.ColumnFiltering = False
           OptionsData.Deleting = False
+          OptionsData.DeletingConfirmation = False
+          OptionsData.Editing = False
+          OptionsData.Inserting = False
           OptionsSelection.CellSelect = False
           OptionsSelection.MultiSelect = True
           OptionsView.ColumnAutoWidth = True
           OptionsView.DataRowHeight = 19
           OptionsView.FooterAutoHeight = True
           OptionsView.GroupByBox = False
-          object cxLogDBTableView1AccountName: TcxGridDBColumn
+          object cxLogAccountName: TcxGridDBColumn
             Caption = #1059#1095#1077#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
             DataBinding.FieldName = 'AccountName'
-            Width = 102
+            Width = 153
           end
-          object cxLogDBTableView1ErrorType: TcxGridDBColumn
+          object cxLogErrorType: TcxGridDBColumn
             DataBinding.FieldName = 'ErrorType'
             Visible = False
             Width = 65
           end
-          object cxLogDBTableView1Message: TcxGridDBColumn
+          object cxLogMessage: TcxGridDBColumn
             Caption = #1057#1086#1086#1073#1097#1077#1085#1080#1077
             DataBinding.FieldName = 'Message'
-            Width = 194
+            Width = 326
           end
-          object cxLogDBTableView1ErrorTime: TcxGridDBColumn
+          object cxLogErrorTime: TcxGridDBColumn
             Caption = #1042#1088#1077#1084#1103
             DataBinding.FieldName = 'ErrorTime'
-            Width = 66
+            Width = 110
           end
-          object cxLogDBTableView1Id: TcxGridDBColumn
+          object cxLogId: TcxGridDBColumn
             DataBinding.FieldName = 'Id'
             Visible = False
             Width = 53
           end
         end
-        object cxLogLevel1: TcxGridLevel
-          GridView = cxLogDBTableView1
+        object cxLogGridLevel1: TcxGridLevel
+          GridView = cxLog
         end
       end
     end
@@ -441,7 +445,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.Kind = lfOffice11
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 1
-        Height = 161
+        Height = 185
         Width = 305
         object cbBallonOnReceive: TcxCheckBox
           Left = 8
@@ -5177,6 +5181,25 @@ object FMain: TFMain
       Enabled = False
       OnExecute = alEditFilterElementExecute
     end
+    object alClearLog: TAction
+      Caption = #1054#1095#1080#1089#1090#1080#1090#1100
+      Enabled = False
+      OnExecute = alClearLogExecute
+    end
+    object alDeleteSelectedLog: TAction
+      Caption = #1059#1076#1072#1083#1080#1090#1100' '#1074#1099#1076#1077#1083#1077#1085#1085#1099#1077' '#1079#1072#1087#1080#1089#1080
+      Enabled = False
+      OnExecute = alDeleteSelectedLogExecute
+    end
+    object alSaveLog: TAction
+      Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
+      Enabled = False
+      OnExecute = alSaveLogExecute
+    end
+    object alOnLogPopUp: TAction
+      Caption = 'alOnLogPopUp'
+      OnExecute = alOnLogPopUpExecute
+    end
   end
   object dxBar: TdxBarManager
     Font.Charset = DEFAULT_CHARSET
@@ -5203,6 +5226,10 @@ object FMain: TFMain
           end
           item
             Item = msFilters
+            Visible = True
+          end
+          item
+            Item = msLogs
             Visible = True
           end>
         MultiLine = True
@@ -5434,6 +5461,48 @@ object FMain: TFMain
       Action = alAddAccount
       Category = 0
     end
+    object pmClearLog: TdxBarButton
+      Action = alClearLog
+      Category = 0
+    end
+    object pmDeleteSelectedLog: TdxBarButton
+      Action = alDeleteSelectedLog
+      Category = 0
+    end
+    object pmSaveLogToFile: TdxBarButton
+      Action = alSaveLog
+      Category = 0
+    end
+    object msLogs: TdxBarSubItem
+      Action = alOnLogPopUp
+      Caption = #1051#1086#1075
+      Category = 0
+      ItemLinks = <
+        item
+          Item = msClearLog
+          Visible = True
+        end
+        item
+          Item = msSaveLog
+          Visible = True
+        end
+        item
+          Item = msDeleteSelectedLog
+          Visible = True
+        end>
+    end
+    object msClearLog: TdxBarButton
+      Action = alClearLog
+      Category = 0
+    end
+    object msSaveLog: TdxBarButton
+      Action = alSaveLog
+      Category = 0
+    end
+    object msDeleteSelectedLog: TdxBarButton
+      Action = alDeleteSelectedLog
+      Category = 0
+    end
   end
   object AccountsUpdater: TTimer
     Interval = 1500
@@ -5509,5 +5578,30 @@ object FMain: TFMain
     Filter = 'Sounds|*.wav'
     Left = 737
     Top = 251
+  end
+  object sdLog: TSaveDialog
+    Filter = 'Text files|*.txt'
+    Left = 713
+    Top = 251
+  end
+  object pLog: TdxBarPopupMenu
+    BarManager = dxBar
+    ItemLinks = <
+      item
+        Item = pmClearLog
+        Visible = True
+      end
+      item
+        Item = pmDeleteSelectedLog
+        Visible = True
+      end
+      item
+        Item = pmSaveLogToFile
+        Visible = True
+      end>
+    UseOwnFont = False
+    OnPopup = alOnLogPopUpExecute
+    Left = 713
+    Top = 283
   end
 end
