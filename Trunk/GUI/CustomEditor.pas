@@ -37,6 +37,8 @@ type
     constructor Create(SNConverter:TSNIndexConverter;FilterManager:TFilterManager;
         FilterTable:TADOQuery;SignList:TSignalDescriptorsList); reintroduce;
         overload;
+    procedure Show(ElementValue:String; FilterType:TFilterType); reintroduce;
+        overload; virtual;
     procedure ShowModal(NodeIndex:integer); reintroduce; overload; virtual;
     procedure ShowModal(ElementId:Integer;ElementValue:String; Description:String;
         Params:Variant;Status:boolean;NodeIndex:Integer); reintroduce; overload;
@@ -150,6 +152,18 @@ var
  Res:TSNConvert;
  Location:TSignalLocation;
 begin
+
+ SetWindowPos(Handle,
+          HWND_TOPMOST,
+          Left,
+          Top,
+          Width,
+          Height,
+          SW_SHOWNORMAL  or SW_SHOWNOACTIVATE);
+
+
+
+
  FSNConverter.FindByName(cCBFilter.Properties.Items.Strings[cCBFilter.SelectedItem],Res);
  if Res.FilterType in [ftBlackWord,ftWhiteWord] then
   Location:=FSignList.LocationByDescription(cCBFilter.Properties.Items.Strings[cCBFilter.SelectedItem]);
@@ -178,6 +192,15 @@ begin
  cxCbActive.Checked:=True;
  leValue.Text:='';
  leDescription.Text:='';
+end;
+
+procedure TFCustomEditor.Show(ElementValue:String; FilterType:TFilterType);
+begin
+ leValue.Text:=ElementValue;
+ FEditorMode:=emAdd;
+ cCBFilter.Enabled:=True;
+ cCBFilter.ItemIndex:=FSNConverter.FindIndex(FilterType);
+ inherited Show;
 end;
 
 end.

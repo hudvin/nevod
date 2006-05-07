@@ -24,7 +24,7 @@ uses Commctrl,tlhelp32, StdCtrls, Dialogs, ImgList, Controls, dxBar,
   XPStyleActnCtrls, ActnMan,  Clipbrd, PerlRegEx,
    ToolWin, ActnCtrls, ActnColorMaps,
   ActnPopupCtrl,  cxRichEdit,
-  cxButtons;
+  cxButtons, cxDropDownEdit, JvClipView;
 
  
 
@@ -208,6 +208,12 @@ type
     msDeleteSelectedLog: TdxBarButton;
     Button1: TButton;
     gbSpy: TcxGroupBox;
+    cbActivateClbSpy: TcxCheckBox;
+    leSpyFor: TLabel;
+    cmSpyFor: TcxComboBox;
+    lbAddTo: TLabel;
+    cmAddTo: TcxComboBox;
+    cbShowEditor: TcxCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -297,6 +303,10 @@ type
     procedure alSaveLogExecute(Sender: TObject);
     procedure alOnLogPopUpExecute(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure cbActivateClbSpyPropertiesChange(Sender: TObject);
+    procedure cmSpyForPropertiesChange(Sender: TObject);
+    procedure cmAddToPropertiesChange(Sender: TObject);
+    procedure JvxClipboardViewer1Change(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -328,7 +338,8 @@ type
     procedure UpdateHeaders(Headers:TColumnsHeaders);
     property FilterState[FilterType:TFilterType]: Boolean read GetFilterState write
         SetFilterState; default;
-
+    procedure ShowEditor(var AMessage: TMessage); message
+        WM_ShowCEditor;
     { Public declarations }
   protected
     ClbHookMode:TClbHookMode;
@@ -357,6 +368,12 @@ uses  MultInst,CRc32;
 {$R ..\Resources\WinXP.res}
 {$R ..\Resources\Messages.res}
 
+procedure TFMain.ShowEditor(var AMessage: TMessage);
+begin
+ SetLastError(0);
+ FEditor.Show;
+ Showmessage(SysErrorMessage(GetLastError));
+end;
 
 function KillTask(FileName: string): integer; //0 - пpибить не полyчилось
 var
@@ -399,28 +416,45 @@ var
   H: THandle;
   Len:integer;
   buf,Res:String;
-
+  Sounder:TSounder;
 begin
   SendMessage(PrevHWnd, WM_DRAWCLIPBOARD, 0, 0);
   if Clipboard.HasFormat(CF_TEXT) then
   begin
     H := Clipboard.GetAsHandle(CF_TEXT);
     Len := GlobalSize(H) + 1;
+   // FAccountEditor.ShowModal;
+    //sleep(100000);
     P := GlobalLock(H);
-    if (Length(Trim(p))=Length(p) ) and (pos(' ',p)=0) then
-     begin
-      buf:=FindElement(P,CLbHookMode);
-      if buf<>'' then
-       if not FManager.ElementExists(buf,AddClb) then
+    if StrToBool(SProvider.GetValue('EnableClbSpy'))=True then
+     if (Length(Trim(p))=Length(p) ) and (pos(' ',p)=0) then
+      begin
+       ClbHookMode:=TClbHookMode(GetEnumValue(TypeInfo(TCLbHookMode),SProvider.GetValue('ClbHookMode')));
+       buf:=FindElement(P,CLbHookMode);
+       if (buf<>'')and (not FManager.ElementExists(buf,AddClb)) then
         begin
          FManager.AddElement(buf,AddClb,'',True,'');
+         Sounder:=TSounder.Create('D:\Souпds\WAV Music\Classical\FB045.WAV');
+         FEditor.Show(buf,TFIlterType(GetEnumValue(TypeInfo(TFilterType),SProvider.GetValue('AddClb'))));
+         with FEditor do
+         SetWindowPos(Handle,
+          HWND_TOPMOST,
+          Left,
+          Top,
+          Width,
+          Height,
+          SWP_NOACTIVATE or SWP_NOMOVE or SWP_NOSIZE);
+
+         adFilters.Active:=True;
+         adFilters.Requery;
          LastHooked:=buf;
         end;
-     end
-      else LastHooked:='';
+      end
+    else LastHooked:='';
     GlobalUnlock(H);
   end;
   Msg.Result := 0;
+ // FCustomEditor.Show;
 end;
 
 
@@ -432,6 +466,7 @@ var
  Headers:TColumnsHeaders;
  TmAppl,buf,Con:boolean;
  Key:TRegistry;
+ Sel:Integer;
 begin
  adCon.ConnectionString:=GetConnectionString;
 
@@ -498,7 +533,7 @@ begin
  Exp:=TPerlRegEx.Create(nil);
 
  AddClb:=TFilterType(GetEnumValue(TypeInfo(TFilterType),SProvider.GetValue('AddClb')));
- ClbHookMode:=TClbHookMode(GetEnumValue(TypeInfo(TCLbHookMode),SProvider.GetValue('ClbHookMode')));
+ 
 
  adProc:=TADOQuery.Create(nil);
  adProc.Connection:=adCon;
@@ -545,6 +580,26 @@ begin
  beSoundOnError.Text:=SProvider.GetValue('ErrorSound');
  cbSoundOnReceive.Checked:=StrToBool(SProvider.GetValue('SoundOnNew'));
  cbSoundOnError.Checked:=StrToBool(SProvider.GetValue('SoundOnError'));
+
+ //TSignalLocation(GetEnumValue(TypeInfo(TSignalLocation),Params)
+ Sel:=-1;
+ case TCLbHookMode(GetEnumValue(TypeInfo(TClbHookMode),SProvider.GetValue('ClbHookMode'))) of    //
+   chEmail:Sel:=0 ;
+   chURL: Sel:=1;
+   chEmailURL:Sel:=2 ;
+
+ end;
+ cmSpyFor.ItemIndex:=Sel;
+ Sel:=-1;
+
+ case TFIlterType(GetEnumValue(TypeInfo(TFilterType),SProvider.GetValue('AddClb'))) of    //
+   ftWhiteSender:Sel:=0 ;
+   ftBlackSender: Sel:=1;
+ end;
+ cmAddTo.ItemIndex:=Sel;
+
+
+ cbActivateClbSpy.Checked:=StrToBool(SProvider.GetValue('EnableClbSpy'));
 
  buf:=StrToBool(SProvider.GetValue('RunAtStartUp'));
  cbRunAtStartUp.Checked:=buf;
@@ -1375,7 +1430,42 @@ end;
 
 procedure TFMain.Button1Click(Sender: TObject);
 begin
- KillTask(Application.ExeName);
+// KillTask(Application.ExeName);
+ PostMessage(Handle,WM_ShowCEditor,0,0);
+end;
+
+procedure TFMain.cbActivateClbSpyPropertiesChange(Sender: TObject);
+begin
+ SProvider.SetValue('EnableClbSpy',BoolToStr(cbActivateClbSpy.Checked,True));
+end;
+
+procedure TFMain.cmSpyForPropertiesChange(Sender: TObject);
+var
+ Res:TClbHookMode;
+begin
+ case cmSpyFor.ItemIndex of
+   0: Res:=chEmail  ;  // email
+   1: Res:=chURL ;  // URL
+   2: Res:=chEmailURL;  // EMail & URL
+ end;
+ SProvider.SetValue('ClbHookMode',GetEnumName(TypeInfo(TClbHookMode), Ord(Res)));
+end;
+
+procedure TFMain.cmAddToPropertiesChange(Sender: TObject);
+var
+ Res:TFilterType;
+begin
+ case cmAddTo.ItemIndex of
+   0: Res:=ftWhiteSender  ;
+   1: Res:=ftBlackSender ;
+ end;
+ SProvider.SetValue('AddClb',GetEnumName(TypeInfo(TFilterType), Ord(Res)));
+
+end;
+
+procedure TFMain.JvxClipboardViewer1Change(Sender: TObject);
+begin
+//FCustomEditor.Show
 end;
 
 end.

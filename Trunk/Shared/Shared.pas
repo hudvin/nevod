@@ -46,7 +46,7 @@ const
   ServerMutex='{B66AEAD2-94BF-453B-9D79-27CC798B6657}';
   WaitTime=5000;      // время между проверками состояний
   WM_BallonMessage = WM_USER + 1;
-  
+  WM_ShowCEditor=WM_USER+2;
 
 type
  TClbHookMode=(chEmail,chURL,chEmailURL);

@@ -572,7 +572,88 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = False
         TabOrder = 2
         Height = 185
-        Width = 257
+        Width = 337
+        object leSpyFor: TLabel
+          Left = 8
+          Top = 88
+          Width = 137
+          Height = 13
+          Caption = #1054#1090#1089#1083#1077#1078#1080#1074#1072#1090#1100' '#1087#1086#1103#1074#1083#1077#1085#1080#1103
+        end
+        object lbAddTo: TLabel
+          Left = 8
+          Top = 61
+          Width = 68
+          Height = 13
+          Caption = #1044#1086#1073#1072#1074#1083#1103#1090#1100' '#1074' '
+        end
+        object cbActivateClbSpy: TcxCheckBox
+          Left = 8
+          Top = 16
+          Caption = #1057#1083#1077#1076#1080#1090#1100' '#1079#1072' '#1073#1091#1092#1077#1088#1086#1084' '#1086#1073#1084#1077#1085#1072
+          Properties.OnChange = cbActivateClbSpyPropertiesChange
+          Style.LookAndFeel.Kind = lfOffice11
+          Style.LookAndFeel.NativeStyle = True
+          StyleDisabled.LookAndFeel.Kind = lfOffice11
+          StyleDisabled.LookAndFeel.NativeStyle = True
+          StyleFocused.LookAndFeel.Kind = lfOffice11
+          StyleFocused.LookAndFeel.NativeStyle = True
+          StyleHot.LookAndFeel.Kind = lfOffice11
+          StyleHot.LookAndFeel.NativeStyle = True
+          TabOrder = 0
+          Width = 177
+        end
+        object cmSpyFor: TcxComboBox
+          Left = 144
+          Top = 83
+          Properties.DropDownListStyle = lsEditFixedList
+          Properties.Items.Strings = (
+            'Email'
+            'URL'
+            'EMail '#1080' URL')
+          Properties.OnChange = cmSpyForPropertiesChange
+          Style.LookAndFeel.Kind = lfOffice11
+          Style.LookAndFeel.NativeStyle = False
+          StyleDisabled.LookAndFeel.Kind = lfOffice11
+          StyleDisabled.LookAndFeel.NativeStyle = False
+          StyleFocused.LookAndFeel.Kind = lfOffice11
+          StyleFocused.LookAndFeel.NativeStyle = False
+          StyleHot.LookAndFeel.Kind = lfOffice11
+          StyleHot.LookAndFeel.NativeStyle = False
+          TabOrder = 1
+          Text = 'EMail '#1080' URL'
+          Width = 121
+        end
+        object cmAddTo: TcxComboBox
+          Left = 144
+          Top = 56
+          Properties.Items.Strings = (
+            #1073#1077#1083#1099#1081' '#1089#1087#1080#1089#1086#1082
+            #1095#1077#1088#1085#1099#1081' '#1089#1087#1080#1089#1086#1082)
+          Properties.OnChange = cmAddToPropertiesChange
+          Style.LookAndFeel.Kind = lfOffice11
+          StyleDisabled.LookAndFeel.Kind = lfOffice11
+          StyleFocused.LookAndFeel.Kind = lfOffice11
+          StyleHot.LookAndFeel.Kind = lfOffice11
+          TabOrder = 2
+          Text = #1073#1077#1083#1099#1081' '#1089#1087#1080#1089#1086#1082
+          Width = 121
+        end
+        object cbShowEditor: TcxCheckBox
+          Left = 8
+          Top = 40
+          Caption = #1054#1090#1086#1073#1088#1072#1078#1072#1090#1100' '#1092#1086#1088#1084#1091
+          Style.LookAndFeel.Kind = lfOffice11
+          Style.LookAndFeel.NativeStyle = True
+          StyleDisabled.LookAndFeel.Kind = lfOffice11
+          StyleDisabled.LookAndFeel.NativeStyle = True
+          StyleFocused.LookAndFeel.Kind = lfOffice11
+          StyleFocused.LookAndFeel.NativeStyle = True
+          StyleHot.LookAndFeel.Kind = lfOffice11
+          StyleHot.LookAndFeel.NativeStyle = True
+          TabOrder = 3
+          Width = 121
+        end
       end
     end
     object cxTab_AFSettings: TcxTabSheet

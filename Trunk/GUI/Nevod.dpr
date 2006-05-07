@@ -21,7 +21,6 @@ uses
   FilterManager in '..\Shared\FilterManager.pas',
   CustomEditor in 'CustomEditor.pas' {FCustomEditor},
   AccountManager in '..\Shared\AccountManager.pas',
-  AddAccount in 'AddAccount.pas' {FAddAccount},
   AccountEditor in 'AccountEditor.pas' {FAccountEditor},
   PostReceiver in '..\MailReceiver\PostReceiver.pas',
   ThreadManager in '..\MailReceiver\ThreadManager.pas',
@@ -43,7 +42,7 @@ begin
   Application.Initialize;
 
   try
-   PackDB(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb','',DBPassword);
+ //  PackDB(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb','',DBPassword);
   except;
   end;
   aCon:=TADOConnection.Create(nil);
@@ -64,7 +63,7 @@ begin
    else
     begin
      Application.CreateForm(TFMain, FMain);
-     if (ParamCount>0) and (ParamStr(1)='-h') then
+  if (ParamCount>0) and (ParamStr(1)='-h') then
      Application.MainForm.WindowState:=wsMinimized;
      Application.Run;
     end;
