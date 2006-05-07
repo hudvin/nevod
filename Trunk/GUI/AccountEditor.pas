@@ -21,6 +21,7 @@ type
     leTimeout: TLabeledEdit;
     btOK: TButton;
     btCancel: TButton;
+    leMessage: TLabel;
     procedure btCancelClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btOKClick(Sender: TObject);
@@ -64,8 +65,9 @@ begin
  leUsername.Text:='';
  lePassword.Text:='';
  leHost.Text:='';
- lePort.Text:='';
- leTimeout.Text:='2'
+ lePort.Text:='110';
+ leTimeout.Text:='2';
+ leMessage.Caption:='';
 end;
 
 procedure TFAccountEditor.ShowModal; // для добавления аккаунта
@@ -89,7 +91,7 @@ begin
    lePassword.Text:=Password;
    leHost.Text:=Host;
    lePort.Text:=IntToStr(Port);
-   leTimeout.Text:=FloatToStr(TimeOut/(60*1000));
+   leTimeout.Text:=FloatToStr(TimeOut/(1000));
   end;
  SetCaptions;
  inherited ShowModal;
@@ -121,16 +123,27 @@ begin
 end;
 
 procedure TFAccountEditor.btOKClick(Sender: TObject);
+var
+ buf:integer;
 begin
  with FAccountParams do
   begin
+   buf:=-1;
+   Val(lePort.Text,Port,buf);
+   if buf<>0 then Port:=-1;
+   buf:=-1;
+   Val(leTimeout.Text,Timeout,buf);
+   if buf<>0 then Timeout:=-1
+    else Timeout:=Timeout*1000;
+     
+
    Id:=FAccountId;
    AccountName:=leAccountName.Text;
    Username:=leUsername.Text;
    Password:=lePassword.Text;
    Host:=leHost.Text;
-   Port:=StrToInt(lePort.Text);
-   Timeout:=StrToInt(leTimeout.Text)*1000*60;
+  // Port:=StrToInt(lePort.Text);
+ //  Timeout:=StrToInt(leTimeout.Text)*1000*60;
   end;
 
  try

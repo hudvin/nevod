@@ -1,11 +1,11 @@
 object FAccountEditor: TFAccountEditor
-  Left = 601
-  Top = 194
+  Left = 413
+  Top = 198
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'FAccountEditor'
-  ClientHeight = 210
-  ClientWidth = 278
+  ClientHeight = 226
+  ClientWidth = 258
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,21 +13,34 @@ object FAccountEditor: TFAccountEditor
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  Position = poMainFormCenter
   OnClose = FormClose
   PixelsPerInch = 96
   TextHeight = 13
   object cxTab: TcxTabControl
     Left = 0
     Top = 0
-    Width = 278
-    Height = 210
+    Width = 258
+    Height = 226
     Align = alClient
     LookAndFeel.Kind = lfOffice11
     LookAndFeel.NativeStyle = False
     TabOrder = 0
-    ClientRectBottom = 210
-    ClientRectRight = 278
+    ClientRectBottom = 226
+    ClientRectRight = 258
     ClientRectTop = 0
+    object leMessage: TLabel
+      Left = 48
+      Top = 160
+      Width = 3
+      Height = 13
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clRed
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
+    end
     object leAccountName: TLabeledEdit
       Left = 88
       Top = 8
@@ -90,9 +103,9 @@ object FAccountEditor: TFAccountEditor
       Top = 128
       Width = 161
       Height = 21
-      EditLabel.Width = 44
+      EditLabel.Width = 68
       EditLabel.Height = 13
-      EditLabel.Caption = 'Timeout  '
+      EditLabel.Caption = 'Timeout  ('#1089#1077#1082')'
       LabelPosition = lpLeft
       TabOrder = 5
       Text = '60'
@@ -100,7 +113,7 @@ object FAccountEditor: TFAccountEditor
     end
     object btOK: TButton
       Left = 40
-      Top = 168
+      Top = 184
       Width = 75
       Height = 25
       Caption = 'Add'
@@ -109,7 +122,7 @@ object FAccountEditor: TFAccountEditor
     end
     object btCancel: TButton
       Left = 152
-      Top = 168
+      Top = 184
       Width = 75
       Height = 25
       Caption = #1054#1090#1084#1077#1085#1072

@@ -206,7 +206,6 @@ type
     msClearLog: TdxBarButton;
     msSaveLog: TdxBarButton;
     msDeleteSelectedLog: TdxBarButton;
-    Button1: TButton;
     gbSpy: TcxGroupBox;
     cbActivateClbSpy: TcxCheckBox;
     leSpyFor: TLabel;
@@ -214,6 +213,15 @@ type
     lbAddTo: TLabel;
     cmAddTo: TcxComboBox;
     cbShowEditor: TcxCheckBox;
+    cbSoundOnAdd: TcxCheckBox;
+    beSoundOnAdd: TcxButtonEdit;
+    cxStyleRepository1: TcxStyleRepository;
+    cxStyle1: TcxStyle;
+    cxStyle2: TcxStyle;
+    cxStyleRepository2: TcxStyleRepository;
+    cxStyle3: TcxStyle;
+    cxStyleRepository3: TcxStyleRepository;
+    cxStyle4: TcxStyle;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -302,11 +310,14 @@ type
     procedure alDeleteSelectedLogExecute(Sender: TObject);
     procedure alSaveLogExecute(Sender: TObject);
     procedure alOnLogPopUpExecute(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
     procedure cbActivateClbSpyPropertiesChange(Sender: TObject);
     procedure cmSpyForPropertiesChange(Sender: TObject);
     procedure cmAddToPropertiesChange(Sender: TObject);
-    procedure JvxClipboardViewer1Change(Sender: TObject);
+    procedure cbShowEditorPropertiesChange(Sender: TObject);
+    procedure cbSoundOnAddPropertiesChange(Sender: TObject);
+    procedure beSoundOnAddPropertiesButtonClick(Sender: TObject;
+      AButtonIndex: Integer);
+    procedure cxAccountsDblClick(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -433,17 +444,35 @@ begin
        buf:=FindElement(P,CLbHookMode);
        if (buf<>'')and (not FManager.ElementExists(buf,AddClb)) then
         begin
-         FManager.AddElement(buf,AddClb,'',True,'');
-         Sounder:=TSounder.Create('D:\Souпds\WAV Music\Classical\FB045.WAV');
-         FEditor.Show(buf,TFIlterType(GetEnumValue(TypeInfo(TFilterType),SProvider.GetValue('AddClb'))));
-         with FEditor do
-         SetWindowPos(Handle,
-          HWND_TOPMOST,
-          Left,
-          Top,
-          Width,
-          Height,
-          SWP_NOACTIVATE or SWP_NOMOVE or SWP_NOSIZE);
+         if StrToBool(SProvider.GetValue('SoundOnAdd'))=True then
+          Sounder:=TSounder.Create(SProvider.GetValue('AddSound'));
+
+         if StrToBool(SProvider.GetValue('ShowspyEditor')) then
+          begin
+           FEditor.Show(buf,TFIlterType(GetEnumValue(TypeInfo(TFilterType),SProvider.GetValue('AddClb'))));
+           with FEditor do
+           SetWindowPos(Handle,
+                        HWND_TOPMOST,
+                        Left,
+                        Top,
+                        Width,
+                        Height,
+                        SWP_NOACTIVATE or SWP_NOMOVE or SWP_NOSIZE);
+
+          end
+         else
+          begin
+           FManager.AddElement(buf,AddClb,'',True,'');
+          end;
+
+
+
+        
+
+
+
+
+         
 
          adFilters.Active:=True;
          adFilters.Requery;
@@ -578,10 +607,15 @@ begin
  cbBaloonOnError.Checked:=StrToBool(SProvider.GetValue('BaloonOnError'));
  beSoundOnNew.Text:=SProvider.GetValue('NewSound');
  beSoundOnError.Text:=SProvider.GetValue('ErrorSound');
+ beSoundOnAdd.Text:=SProvider.GetValue('AddSound');
  cbSoundOnReceive.Checked:=StrToBool(SProvider.GetValue('SoundOnNew'));
  cbSoundOnError.Checked:=StrToBool(SProvider.GetValue('SoundOnError'));
-
+ cbSoundOnAdd.Checked:=StrToBool(SProvider.GetValue('SoundOnAdd'));
+// SProvider.SetValue('',BoolToStr(,True));
  //TSignalLocation(GetEnumValue(TypeInfo(TSignalLocation),Params)
+
+ cbShowEditor.Checked:=StrToBool(SProvider.GetValue('ShowspyEditor'));
+
  Sel:=-1;
  case TCLbHookMode(GetEnumValue(TypeInfo(TClbHookMode),SProvider.GetValue('ClbHookMode'))) of    //
    chEmail:Sel:=0 ;
@@ -785,7 +819,7 @@ end;
 procedure TFMain.adAccountsTimeoutGetText(Sender: TField; var Text: String;
   DisplayText: Boolean);
 begin
- Text:=FloatToStr(Sender.AsInteger/(60*1000)); // не допускать ввод нулевых значений
+ Text:=FloatToStr(Sender.AsInteger/(1000)); // не допускать ввод нулевых значений
 end;
 
 function TFMain.FindElement(Text:String;SType:TClbHookMode): string;
@@ -1155,7 +1189,15 @@ end;
 
 procedure TFMain.alAddFilterElementExecute(Sender: TObject);
 begin
- FEditor.ShowModal(STree.TreeList.FocusedNode.AbsoluteIndex);
+  with FEditor do
+           SetWindowPos(Handle,
+                        HWND_TOPMOST,
+                        Left,
+                        Top,
+                        Width,
+                        Height,
+                        SWP_NOACTIVATE or SWP_NOMOVE or SWP_NOSIZE);
+ FEditor.Show(STree.TreeList.FocusedNode.AbsoluteIndex);
 end;
 
 procedure TFMain.alRemoveFilterElementExecute(Sender: TObject);
@@ -1208,7 +1250,7 @@ begin
    Params:=SelectedRows[0].Values[cxFiltersParams.Index];
    Active:=SelectedRows[0].Values[cxFiltersActive.Index];
   end;
- FEditor.ShowModal(id,Value,Description,Params,Active,STree.TreeList.FocusedNode.AbsoluteIndex);
+ FEditor.Show(id,Value,Description,Params,Active,STree.TreeList.FocusedNode.AbsoluteIndex);
 
 end;
 
@@ -1428,12 +1470,6 @@ begin
    else alDeleteSelectedLog.Enabled:=False;
 end;
 
-procedure TFMain.Button1Click(Sender: TObject);
-begin
-// KillTask(Application.ExeName);
- PostMessage(Handle,WM_ShowCEditor,0,0);
-end;
-
 procedure TFMain.cbActivateClbSpyPropertiesChange(Sender: TObject);
 begin
  SProvider.SetValue('EnableClbSpy',BoolToStr(cbActivateClbSpy.Checked,True));
@@ -1463,9 +1499,39 @@ begin
 
 end;
 
-procedure TFMain.JvxClipboardViewer1Change(Sender: TObject);
+procedure TFMain.cbShowEditorPropertiesChange(Sender: TObject);
 begin
-//FCustomEditor.Show
+ SProvider.SetValue('ShowspyEditor',BoolToStr(cbShowEditor.Checked,True));
+end;
+
+procedure TFMain.cbSoundOnAddPropertiesChange(Sender: TObject);
+begin
+ SProvider.SetValue('SoundOnAdd',BoolToStr(cbSoundOnAdd.Checked,True));
+end;
+
+procedure TFMain.beSoundOnAddPropertiesButtonClick(Sender: TObject;
+  AButtonIndex: Integer);
+var
+ sn:TSounder;
+begin
+ if AButtonIndex=0 then
+  begin
+   if selSound.Execute then
+    begin
+     beSoundOnAdd.Text:=selSound.FileName;
+     SProvider.SetValue('AddSound',selSound.FileName);
+    end;
+  end
+ else
+  sn:=TSounder.Create(beSoundOnAdd.Text);
+
+end;
+
+procedure TFMain.cxAccountsDblClick(Sender: TObject);
+begin
+ if (cxAccounts.DataController.RowCount>0)
+ and (cxAccounts.Controller.SelectedRowCount>0) then
+  alEditAccount.Execute;
 end;
 
 end.

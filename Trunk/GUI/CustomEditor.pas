@@ -19,8 +19,9 @@ type
     leFilter: TLabel;
     btOK: TButton;
     btCancel: TButton;
-    Label2: TLabel;
+    leLocation: TLabel;
     cCBLocation: TcxComboBox;
+    leMessage: TLabel;
     procedure cCBFilterPropertiesChange(Sender: TObject);
     procedure btOKClick(Sender: TObject);
     procedure btCancelClick(Sender: TObject);
@@ -39,8 +40,8 @@ type
         overload;
     procedure Show(ElementValue:String; FilterType:TFilterType); reintroduce;
         overload; virtual;
-    procedure ShowModal(NodeIndex:integer); reintroduce; overload; virtual;
-    procedure ShowModal(ElementId:Integer;ElementValue:String; Description:String;
+    procedure Show(NodeIndex:integer); reintroduce; overload; virtual;
+    procedure Show(ElementId:Integer;ElementValue:String; Description:String;
         Params:Variant;Status:boolean;NodeIndex:Integer); reintroduce; overload;
         virtual;
     property FiltersTable: TADOQuery read FFiltersTable write FFiltersTable;
@@ -80,10 +81,11 @@ begin
 
 end;
 
-procedure TFCustomEditor.ShowModal(NodeIndex:integer);
+procedure TFCustomEditor.Show(NodeIndex:integer);
 var
  Res:TSNConvert;
 begin
+ leMessage.Caption:='';
  FEditorMode:=emAdd;
  cCBFilter.Enabled:=True;
  if FSNConverter.Find(NodeIndex,Res) then
@@ -103,16 +105,17 @@ begin
     cCBFilter.ItemIndex:=FSNConverter.FindIndex(ftWhiteSender);
    end;
  }    
- inherited ShowModal;
+ inherited Show;
 end;
 
-procedure TFCustomEditor.ShowModal(ElementId:Integer;ElementValue:String;
+procedure TFCustomEditor.Show(ElementId:Integer;ElementValue:String;
     Description:String; Params:Variant;Status:boolean;NodeIndex:Integer);
 var
  Res:TSNConvert;
  i:integer;
  Desc:String;
 begin
+ leMessage.Caption:='';
  FEditorMode:=emEdit;
  FElementId:=ElementId;
  leValue.Text:=ElementValue;
@@ -133,7 +136,7 @@ begin
     for i:=0 to FSignList.Count-1 do
       if cCBLocation.Properties.Items.Strings[i]=Desc then  cCBLocation.ItemIndex:=i;
    end;
- inherited ShowModal;
+ inherited Show;
 end;
 
 procedure TFCustomEditor.cCBFilterPropertiesChange(Sender: TObject);
@@ -153,17 +156,6 @@ var
  Location:TSignalLocation;
 begin
 
- SetWindowPos(Handle,
-          HWND_TOPMOST,
-          Left,
-          Top,
-          Width,
-          Height,
-          SW_SHOWNORMAL  or SW_SHOWNOACTIVATE);
-
-
-
-
  FSNConverter.FindByName(cCBFilter.Properties.Items.Strings[cCBFilter.SelectedItem],Res);
  if Res.FilterType in [ftBlackWord,ftWhiteWord] then
   Location:=FSignList.LocationByDescription(cCBFilter.Properties.Items.Strings[cCBFilter.SelectedItem]);
@@ -177,7 +169,8 @@ begin
   Close;
  except
   on e: Exception do
-    ShowMessage(e.Message);
+    leMessage.Caption:=e.Message;
+   // ShowMessage(e.Message);
  end;
 end;
 
@@ -197,6 +190,7 @@ end;
 procedure TFCustomEditor.Show(ElementValue:String; FilterType:TFilterType);
 begin
  leValue.Text:=ElementValue;
+ leMessage.Caption:='';
  FEditorMode:=emAdd;
  cCBFilter.Enabled:=True;
  cCBFilter.ItemIndex:=FSNConverter.FindIndex(FilterType);

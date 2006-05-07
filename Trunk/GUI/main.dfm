@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 210
-  Top = 151
+  Left = 189
+  Top = 179
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -109,7 +109,7 @@ object FMain: TFMain
     Top = 67
     Width = 591
     Height = 403
-    ActivePage = cxTab_Settings
+    ActivePage = cxTab_Accounts
     Align = alClient
     DragMode = dmAutomatic
     HideTabs = True
@@ -133,6 +133,7 @@ object FMain: TFMain
         LookAndFeel.NativeStyle = False
         object cxAccounts: TcxGridDBTableView
           PopupMenu = pAccounts
+          OnDblClick = cxAccountsDblClick
           OnKeyDown = cxAccountsKeyDown
           NavigatorButtons.ConfirmDelete = False
           DataController.DataSource = dsAccounts
@@ -147,7 +148,6 @@ object FMain: TFMain
           OptionsData.Inserting = False
           OptionsSelection.CellSelect = False
           OptionsSelection.InvertSelect = False
-          OptionsSelection.MultiSelect = True
           OptionsView.ColumnAutoWidth = True
           OptionsView.GroupByBox = False
           object cxAccountsid: TcxGridDBColumn
@@ -221,6 +221,7 @@ object FMain: TFMain
           OptionsView.DataRowHeight = 19
           OptionsView.FooterAutoHeight = True
           OptionsView.GroupByBox = False
+          Styles.Background = cxStyle1
           object cxLogAccountName: TcxGridDBColumn
             Caption = #1059#1095#1077#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
             DataBinding.FieldName = 'AccountName'
@@ -557,6 +558,45 @@ object FMain: TFMain
           TabOrder = 5
           Width = 97
         end
+        object cbSoundOnAdd: TcxCheckBox
+          Left = 8
+          Top = 112
+          Caption = #1047#1074#1091#1082' '#1087#1088#1080' '#1076#1086#1073#1072#1074#1083#1077#1085#1080#1080' '#1072#1076#1088#1077#1089#1072' '
+          Properties.OnChange = cbSoundOnAddPropertiesChange
+          Style.LookAndFeel.Kind = lfOffice11
+          Style.LookAndFeel.NativeStyle = True
+          StyleDisabled.LookAndFeel.Kind = lfOffice11
+          StyleDisabled.LookAndFeel.NativeStyle = True
+          StyleFocused.LookAndFeel.Kind = lfOffice11
+          StyleFocused.LookAndFeel.NativeStyle = True
+          StyleHot.LookAndFeel.Kind = lfOffice11
+          StyleHot.LookAndFeel.NativeStyle = True
+          TabOrder = 6
+          Width = 177
+        end
+        object beSoundOnAdd: TcxButtonEdit
+          Left = 200
+          Top = 112
+          Properties.Buttons = <
+            item
+              Default = True
+              Kind = bkEllipsis
+            end
+            item
+              Kind = bkGlyph
+            end>
+          Properties.OnButtonClick = beSoundOnAddPropertiesButtonClick
+          Style.LookAndFeel.Kind = lfOffice11
+          Style.LookAndFeel.NativeStyle = True
+          StyleDisabled.LookAndFeel.Kind = lfOffice11
+          StyleDisabled.LookAndFeel.NativeStyle = True
+          StyleFocused.LookAndFeel.Kind = lfOffice11
+          StyleFocused.LookAndFeel.NativeStyle = True
+          StyleHot.LookAndFeel.Kind = lfOffice11
+          StyleHot.LookAndFeel.NativeStyle = True
+          TabOrder = 7
+          Width = 97
+        end
       end
       object gbSpy: TcxGroupBox
         Left = 8
@@ -576,7 +616,7 @@ object FMain: TFMain
         object leSpyFor: TLabel
           Left = 8
           Top = 88
-          Width = 137
+          Width = 125
           Height = 13
           Caption = #1054#1090#1089#1083#1077#1078#1080#1074#1072#1090#1100' '#1087#1086#1103#1074#1083#1077#1085#1080#1103
         end
@@ -643,6 +683,7 @@ object FMain: TFMain
           Left = 8
           Top = 40
           Caption = #1054#1090#1086#1073#1088#1072#1078#1072#1090#1100' '#1092#1086#1088#1084#1091
+          Properties.OnChange = cbShowEditorPropertiesChange
           Style.LookAndFeel.Kind = lfOffice11
           Style.LookAndFeel.NativeStyle = True
           StyleDisabled.LookAndFeel.Kind = lfOffice11
@@ -1197,15 +1238,6 @@ object FMain: TFMain
       end
     end
   end
-  object Button1: TButton
-    Left = 64
-    Top = 384
-    Width = 75
-    Height = 25
-    Caption = 'Button1'
-    TabOrder = 8
-    OnClick = Button1Click
-  end
   object dsAccounts: TDataSource
     DataSet = adAccounts
     Left = 32
@@ -1213,8 +1245,10 @@ object FMain: TFMain
   end
   object adCon: TADOConnection
     ConnectionString = 
-      'Provider=Microsoft.Jet.OLEDB.4.0;Data Source=..\DB\messages.mdb;' +
-      'Jet OLEDB:Database Password=qwerty'
+      'Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Documents and Se' +
+      'ttings\neiroman\Application Data\Nevilon Software\Nevod AntiSpam' +
+      '\messages.ndb;Persist Security Info=False;Jet OLEDB:Database Pas' +
+      'sword=C452030CAC51C8F'
     LoginPrompt = False
     Mode = cmShareDenyNone
     Provider = 'Microsoft.Jet.OLEDB.4.0'
@@ -5699,5 +5733,32 @@ object FMain: TFMain
     OnPopup = alOnLogPopUpExecute
     Left = 713
     Top = 283
+  end
+  object cxStyleRepository1: TcxStyleRepository
+    object cxStyle1: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clSkyBlue
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clGradientInactiveCaption
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+    end
+    object cxStyle2: TcxStyle
+      AssignedValues = [svColor]
+      Color = clMoneyGreen
+    end
+  end
+  object cxStyleRepository2: TcxStyleRepository
+    object cxStyle3: TcxStyle
+      AssignedValues = [svColor]
+      Color = clSkyBlue
+    end
+  end
+  object cxStyleRepository3: TcxStyleRepository
+    object cxStyle4: TcxStyle
+      AssignedValues = [svColor]
+      Color = clHotLight
+    end
   end
 end
