@@ -326,7 +326,16 @@ function md5(InputString:string): string;
 
 function GetAppDataPath: string;
 
-function GetConectionString: string;
+procedure WriteAppPath(AppPath:String);
+
+function GetConnectionString: string;
+
+procedure RestoreDB;
+
+procedure PackDB(DatabaseName: string; DestDatabaseName: string = ''; Password:
+    string = '');
+
+function DBPassword: string;
 
 implementation
 
@@ -1038,32 +1047,90 @@ begin
  Key.Free;
 end;
 
-function GetConectionString: string;
+procedure WriteAppPath(AppPath:String);
 var
- DBPassword:String;
+ key:TRegistry;
+begin
+ key:=TRegistry.Create;
+ key.RootKey:=HKEY_CURRENT_USER;
+ key.OpenKey('\Software\Nevilon\Nevod AntiSpam',True);
+ key.WriteString('AppPath',AppPath);
+ key.CloseKey;
+ key.Free;
+end;
+
+function GetConnectionString: string;
+var
+ DBPath:String;
+begin
+ DBPath:=GetAppDataPath+'\Nevilon Software\Nevod AntiSpam';
+ Result:='Provider=Microsoft.Jet.OLEDB.4.0;'+'Data Source='+DBPath+'\messages.ndb;'+
+            'Jet OLEDB:Database Password='+DBPassword;
+end;
+
+procedure RestoreDB;
+var
  DBPath:String;
  rs: TResourceStream;
- ConString:String;
 begin
- DBpassword:=Copy((md5(CriptKey+MutexName)),0,15);
  DBPath:=GetAppDataPath+'\Nevilon Software\Nevod AntiSpam';
- ConString:='Provider=Microsoft.Jet.OLEDB.4.0;'+'Data Source='+DBPath+'\messages.ndb;'+
-            'Jet OLEDB:Database Password='+DBPassword;
- if not FileExists(DBPath+'\messages.ndb') then
-  begin
-   ForceDirectories(DBPath);
-   rs := TResourceStream.Create(hinstance, 'MessDB', RT_RCDATA);
-   try
-    rs.SaveToFile(DBPath+'\messages.ndb');
-   finally
-    rs.Free;
+ ForceDirectories(DBPath);
+ rs := TResourceStream.Create(hinstance, 'MessDB', RT_RCDATA);
+ try
+  rs.SaveToFile(DBPath+'\messages.ndb');
+ finally
+  rs.Free;
+ end;
+end;
+
+procedure PackDB(DatabaseName: string; DestDatabaseName: string = ''; Password:
+    string = '');
+const
+  Provider = 'Provider=Microsoft.Jet.OLEDB.4.0;';
+var
+  TempName: array[0..MAX_PATH] of Char;
+  TempPath,Name: string;
+  Src, Dest: WideString;
+  V: Variant;
+begin
+ try
+  Src := Provider + 'Data Source=' + DatabaseName;
+  if DestDatabaseName <> '' then Name := DestDatabaseName
+  else
+   begin
+    TempPath := ExtractFilePath(DatabaseName);
+    if TempPath = '' then TempPath := GetCurrentDir;
+    GetTempFileName(PChar(TempPath), 'ndb', 0, TempName);
+    Name := StrPas(TempName);
    end;
-  end
- else
-  begin
-   {  упаковать и создать строку (отдельно)}
-  end;
- Result:=ConString;
+   DeleteFile(PChar(Name));
+   Dest := Provider + 'Data Source=' + Name;
+   if Password <> '' then
+    begin
+     Src := Src + ';Jet OLEDB:Database Password=' + Password;
+     Dest := Dest + ';Jet OLEDB:Database Password=' + Password;
+    end;
+    V := CreateOleObject('jro.JetEngine');
+    try
+      V.CompactDatabase(Src, Dest);
+    finally
+      V := 0;
+    end;
+    if DestDatabaseName = '' then
+    begin
+     DeleteFile(PChar(DatabaseName));
+     RenameFile(Name, DatabaseName);
+    end;
+ except
+    on E: Exception do  
+    // ShowMessage(e.message);
+ end;
+
+end;
+
+function DBPassword: string;
+begin
+  Result := Copy((md5(CriptKey+MutexName)),0,15);
 end;
 
 function TRegExp.BuildExp(const Value: string): string;

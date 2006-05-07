@@ -429,14 +429,29 @@ end;
 procedure TFMain.FormCreate(Sender: TObject);
 var
  Headers:TColumnsHeaders;
- TmAppl:boolean;
+ TmAppl,buf,Con:boolean;
  Key:TRegistry;
- buf:boolean;
 begin
+ adCon.ConnectionString:=GetConnectionString;
+ (* try                                                                                                                  
+  PackDB(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb','',DBPassword);
+ except;
+ end;
 
- adCon.ConnectionString:=GetConectionString;
- adCon.Connected:=True;
+ 
+ Con:=False;
 
+ while not Con do
+  try
+   adCon.Connected:=True;
+   Con:=True;
+  except
+    if MessageBox(Handle,'Ошибка загрузки','База данных не найдена или повреждена. Заменить ?',MB_OKCANCEL)=ID_OK then
+     RestoreDB
+    else Application.Terminate;
+  end; *)
+
+ WriteAppPath(Application.ExeName);
 
  FPortEditor:=TFPortEditor.Create(adCon);
  Mutex:=CreateMutex(nil, False,MutexName);

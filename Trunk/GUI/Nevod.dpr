@@ -32,16 +32,44 @@ uses
   Crc32 in '..\Shared\Crc32.pas';
 
 {$R *.res}
-
+var
+ Con,CanExit:boolean;
+ aCon:TADOConnection;
 
 
 begin
   if InitInstance then
   begin
   Application.Initialize;
-  Application.CreateForm(TFMain, FMain);
-  if (ParamCount>0) and (ParamStr(1)='-h') then
+
+  try
+   PackDB(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb','',DBPassword);
+  except;
+  end;
+  aCon:=TADOConnection.Create(nil);
+  aCon.LoginPrompt:=False;
+  aCon.ConnectionString:=GetConnectionString;
+  Con:=False;
+  CanExit:=False;
+  while (not Con) and (not canExit) do
+   try
+    aCon.Connected:=True;
+    Con:=True;
+   except
+    if MessageBox(Application.Handle,'Ошибка загрузки','База данных не найдена или повреждена. Заменить ?',MB_OKCANCEL)=ID_OK then
+     RestoreDB
+   else canExit:=True;
+  end;
+  if CanExit  then  Application.Terminate
+   else
+    begin
+     Application.CreateForm(TFMain, FMain);
+     if (ParamCount>0) and (ParamStr(1)='-h') then
      Application.MainForm.WindowState:=wsMinimized;
-  Application.Run;
+     Application.Run;
+    end;
+
+
+  
   end;
 end.
