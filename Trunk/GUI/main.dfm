@@ -558,6 +558,22 @@ object FMain: TFMain
           Width = 97
         end
       end
+      object gbSpy: TcxGroupBox
+        Left = 8
+        Top = 208
+        Caption = #1057#1083#1077#1078#1077#1085#1080#1077' '#1079#1072' '#1073#1091#1092#1077#1088#1086#1084' '#1086#1073#1084#1077#1085#1072
+        Style.LookAndFeel.Kind = lfOffice11
+        Style.LookAndFeel.NativeStyle = False
+        StyleDisabled.LookAndFeel.Kind = lfOffice11
+        StyleDisabled.LookAndFeel.NativeStyle = False
+        StyleFocused.LookAndFeel.Kind = lfOffice11
+        StyleFocused.LookAndFeel.NativeStyle = False
+        StyleHot.LookAndFeel.Kind = lfOffice11
+        StyleHot.LookAndFeel.NativeStyle = False
+        TabOrder = 2
+        Height = 185
+        Width = 257
+      end
     end
     object cxTab_AFSettings: TcxTabSheet
       Caption = 'cxTab_AFSettings'

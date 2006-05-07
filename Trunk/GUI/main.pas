@@ -207,6 +207,7 @@ type
     msSaveLog: TdxBarButton;
     msDeleteSelectedLog: TdxBarButton;
     Button1: TButton;
+    gbSpy: TcxGroupBox;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -433,23 +434,6 @@ var
  Key:TRegistry;
 begin
  adCon.ConnectionString:=GetConnectionString;
- (* try                                                                                                                  
-  PackDB(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb','',DBPassword);
- except;
- end;
-
- 
- Con:=False;
-
- while not Con do
-  try
-   adCon.Connected:=True;
-   Con:=True;
-  except
-    if MessageBox(Handle,'Ошибка загрузки','База данных не найдена или повреждена. Заменить ?',MB_OKCANCEL)=ID_OK then
-     RestoreDB
-    else Application.Terminate;
-  end; *)
 
  WriteAppPath(Application.ExeName);
 
