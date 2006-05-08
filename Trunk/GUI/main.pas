@@ -8,14 +8,8 @@ uses Commctrl,tlhelp32, StdCtrls, Dialogs, ImgList, Controls, dxBar,
   cxContainer, cxEdit, cxGroupBox, cxGridLevel, cxGridCustomTableView,
   cxGridTableView, cxGridDBTableView, cxClasses, cxControls,
   cxGridCustomView, cxGrid, cxPC, cxSplitter, cxInplaceContainer, cxTL,
-  dxStatusBar ,
-
-
-   Forms,Windows,IdContext, Registry,  cxStyles, Shared,
-
-
-    WinSock,  IdGlobalProtocols,
-    ShellAPI, PortEditor,
+  dxStatusBar ,  Forms,Windows,IdContext, Registry,  cxStyles, Shared,
+  WinSock,  IdGlobalProtocols,  ShellAPI, PortEditor,
   SysUtils, Typinfo, FilterManager, AccountManager,  AccountEditor,  Graphics,
 
     Menus,   Messages, ThreadManager, POPServer,
@@ -222,6 +216,13 @@ type
     cxStyle3: TcxStyle;
     cxStyleRepository3: TcxStyleRepository;
     cxStyle4: TcxStyle;
+    dxBarButton3: TdxBarButton;
+    dxBarButton4: TdxBarButton;
+    dxBarButton5: TdxBarButton;
+    dxBarStatic2: TdxBarStatic;
+    pTray: TdxBarPopupMenu;
+    ptStartAllThreads: TdxBarButton;
+    ptAppTerminate: TdxBarButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -318,6 +319,8 @@ type
     procedure beSoundOnAddPropertiesButtonClick(Sender: TObject;
       AButtonIndex: Integer);
     procedure cxAccountsDblClick(Sender: TObject);
+    procedure trayMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -434,15 +437,13 @@ begin
   begin
     H := Clipboard.GetAsHandle(CF_TEXT);
     Len := GlobalSize(H) + 1;
-   // FAccountEditor.ShowModal;
-    //sleep(100000);
     P := GlobalLock(H);
     if StrToBool(SProvider.GetValue('EnableClbSpy'))=True then
      if (Length(Trim(p))=Length(p) ) and (pos(' ',p)=0) then
       begin
        ClbHookMode:=TClbHookMode(GetEnumValue(TypeInfo(TCLbHookMode),SProvider.GetValue('ClbHookMode')));
        buf:=FindElement(P,CLbHookMode);
-       if (buf<>'')and (not FManager.ElementExists(buf,AddClb)) then
+       if (buf<>'')and (not FManager.ElementExists(buf,AddClb)) and (not FManager.ElementExists(buf,FManager.TwinFilter(AddClb))) then
         begin
          if StrToBool(SProvider.GetValue('SoundOnAdd'))=True then
           Sounder:=TSounder.Create(SProvider.GetValue('AddSound'));
@@ -451,29 +452,12 @@ begin
           begin
            FEditor.Show(buf,TFIlterType(GetEnumValue(TypeInfo(TFilterType),SProvider.GetValue('AddClb'))));
            with FEditor do
-           SetWindowPos(Handle,
-                        HWND_TOPMOST,
-                        Left,
-                        Top,
-                        Width,
-                        Height,
-                        SWP_NOACTIVATE or SWP_NOMOVE or SWP_NOSIZE);
-
+           SetWindowPos(Handle, HWND_TOPMOST,Left,Top,Width,Height,SWP_NOACTIVATE or SWP_NOMOVE or SWP_NOSIZE);
           end
          else
           begin
            FManager.AddElement(buf,AddClb,'',True,'');
           end;
-
-
-
-        
-
-
-
-
-         
-
          adFilters.Active:=True;
          adFilters.Requery;
          LastHooked:=buf;
@@ -611,8 +595,6 @@ begin
  cbSoundOnReceive.Checked:=StrToBool(SProvider.GetValue('SoundOnNew'));
  cbSoundOnError.Checked:=StrToBool(SProvider.GetValue('SoundOnError'));
  cbSoundOnAdd.Checked:=StrToBool(SProvider.GetValue('SoundOnAdd'));
-// SProvider.SetValue('',BoolToStr(,True));
- //TSignalLocation(GetEnumValue(TypeInfo(TSignalLocation),Params)
 
  cbShowEditor.Checked:=StrToBool(SProvider.GetValue('ShowspyEditor'));
 
@@ -646,8 +628,6 @@ begin
  Key.CloseKey;
  Key.Free;
 
-
-
 end;
 
 
@@ -680,7 +660,6 @@ var
  RowSQL:String;
  Res:TSNConvert;
 begin
-
 
   if not DragState then
   begin
@@ -875,6 +854,8 @@ end;
 procedure TFMain.trayClick(Sender: TObject);
 begin
  tray.ShowMainForm;
+// SetForegroundWindow(Handle);
+// pAccounts.PopupFromCursorPos;
 end;
 
 procedure TFMain.alAddAccountExecute(Sender: TObject);
@@ -982,7 +963,6 @@ end;
 
 procedure TFMain.alCanCheckAccountsExecute(Sender: TObject);
 begin
-// alCanCheckAccounts.Checked:=NOT alCanCheckAccounts.Checked;
  SProvider.SetValue('CanCheckAccounts',BoolToStr(NOT alCanCheckAccounts.Checked,True));
 end;
 
@@ -1529,9 +1509,18 @@ end;
 
 procedure TFMain.cxAccountsDblClick(Sender: TObject);
 begin
- if (cxAccounts.DataController.RowCount>0)
- and (cxAccounts.Controller.SelectedRowCount>0) then
-  alEditAccount.Execute;
+ alOnAccountsPopUp.Execute;
+ alEditAccount.Execute;
+end;
+
+procedure TFMain.trayMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+ if Button=mbRight then
+  begin
+   SetForegroundWindow(Handle);
+   pTray.PopupFromCursorPos;
+  end;
 end;
 
 end.

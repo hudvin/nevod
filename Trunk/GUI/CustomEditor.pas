@@ -21,7 +21,6 @@ type
     btCancel: TButton;
     leLocation: TLabel;
     cCBLocation: TcxComboBox;
-    leMessage: TLabel;
     procedure cCBFilterPropertiesChange(Sender: TObject);
     procedure btOKClick(Sender: TObject);
     procedure btCancelClick(Sender: TObject);
@@ -85,7 +84,6 @@ procedure TFCustomEditor.Show(NodeIndex:integer);
 var
  Res:TSNConvert;
 begin
- leMessage.Caption:='';
  FEditorMode:=emAdd;
  cCBFilter.Enabled:=True;
  if FSNConverter.Find(NodeIndex,Res) then
@@ -115,7 +113,6 @@ var
  i:integer;
  Desc:String;
 begin
- leMessage.Caption:='';
  FEditorMode:=emEdit;
  FElementId:=ElementId;
  leValue.Text:=ElementValue;
@@ -169,8 +166,7 @@ begin
   Close;
  except
   on e: Exception do
-    leMessage.Caption:=e.Message;
-   // ShowMessage(e.Message);
+    ShowMessage(e.Message);
  end;
 end;
 
@@ -190,7 +186,6 @@ end;
 procedure TFCustomEditor.Show(ElementValue:String; FilterType:TFilterType);
 begin
  leValue.Text:=ElementValue;
- leMessage.Caption:='';
  FEditorMode:=emAdd;
  cCBFilter.Enabled:=True;
  cCBFilter.ItemIndex:=FSNConverter.FindIndex(FilterType);

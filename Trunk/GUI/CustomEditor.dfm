@@ -42,18 +42,6 @@ object FCustomEditor: TFCustomEditor
       Height = 13
       Caption = #1056#1072#1089#1087#1086#1083#1086#1078#1077#1085#1080#1077
     end
-    object leMessage: TLabel
-      Left = 40
-      Top = 136
-      Width = 3
-      Height = 13
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clRed
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = []
-      ParentFont = False
-    end
     object cCBFilter: TcxComboBox
       Left = 88
       Top = 64

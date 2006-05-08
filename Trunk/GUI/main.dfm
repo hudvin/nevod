@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 189
-  Top = 179
+  Left = 176
+  Top = 121
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -42,9 +42,9 @@ object FMain: TFMain
   end
   object SettingsTree: TcxTreeList
     Left = 0
-    Top = 67
+    Top = 49
     Width = 177
-    Height = 403
+    Height = 421
     Align = alLeft
     Bands = <
       item
@@ -96,9 +96,9 @@ object FMain: TFMain
   end
   object cxSplitter1: TcxSplitter
     Left = 177
-    Top = 67
+    Top = 49
     Width = 8
-    Height = 403
+    Height = 421
     HotZoneClassName = 'TcxMediaPlayer9Style'
     AutoSnap = True
     ResizeUpdate = True
@@ -106,17 +106,18 @@ object FMain: TFMain
   end
   object stPages: TcxPageControl
     Left = 185
-    Top = 67
+    Top = 49
     Width = 591
-    Height = 403
-    ActivePage = cxTab_Accounts
+    Height = 421
+    ActivePage = cxTab_Settings
     Align = alClient
     DragMode = dmAutomatic
     HideTabs = True
     LookAndFeel.Kind = lfOffice11
     LookAndFeel.NativeStyle = False
+    Style = 8
     TabOrder = 3
-    ClientRectBottom = 403
+    ClientRectBottom = 421
     ClientRectRight = 591
     ClientRectTop = 0
     object cxTab_Accounts: TcxTabSheet
@@ -126,7 +127,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 591
-        Height = 403
+        Height = 421
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
@@ -198,7 +199,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 591
-        Height = 403
+        Height = 421
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
@@ -260,7 +261,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 591
-        Height = 403
+        Height = 421
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
@@ -5242,6 +5243,7 @@ object FMain: TFMain
     WantEnterExitEvents = True
     MinimizeToTray = True
     OnClick = trayClick
+    OnMouseDown = trayMouseDown
     Left = 3
     Top = 400
   end
@@ -5380,11 +5382,7 @@ object FMain: TFMain
         FloatTop = 62
         FloatClientWidth = 0
         FloatClientHeight = 0
-        ItemLinks = <
-          item
-            Item = btAddAccount
-            Visible = True
-          end>
+        ItemLinks = <>
         Name = 'Custom 2'
         OneOnRow = True
         Row = 1
@@ -5408,7 +5406,7 @@ object FMain: TFMain
     DockControlHeights = (
       0
       0
-      67
+      49
       0)
     object msAccounts: TdxBarSubItem
       Caption = #1040#1082#1082#1072#1091#1085#1090#1099
@@ -5633,6 +5631,38 @@ object FMain: TFMain
       Action = alDeleteSelectedLog
       Category = 0
     end
+    object dxBarButton3: TdxBarButton
+      Caption = 'New Item'
+      Category = 0
+      Hint = 'New Item'
+      Visible = ivAlways
+    end
+    object dxBarButton4: TdxBarButton
+      Caption = 'New Item'
+      Category = 0
+      Hint = 'New Item'
+      Visible = ivAlways
+    end
+    object dxBarButton5: TdxBarButton
+      Caption = 'New Item'
+      Category = 0
+      Hint = 'New Item'
+      Visible = ivAlways
+    end
+    object dxBarStatic2: TdxBarStatic
+      Caption = 'New Item'
+      Category = 0
+      Hint = 'New Item'
+      Visible = ivAlways
+    end
+    object ptStartAllThreads: TdxBarButton
+      Action = alStartAllThreads
+      Category = 0
+    end
+    object ptAppTerminate: TdxBarButton
+      Action = alAppTerminate
+      Category = 0
+    end
   end
   object AccountsUpdater: TTimer
     Interval = 1500
@@ -5760,5 +5790,20 @@ object FMain: TFMain
       AssignedValues = [svColor]
       Color = clHotLight
     end
+  end
+  object pTray: TdxBarPopupMenu
+    BarManager = dxBar
+    ItemLinks = <
+      item
+        Item = ptStartAllThreads
+        Visible = True
+      end
+      item
+        Item = ptAppTerminate
+        Visible = True
+      end>
+    UseOwnFont = False
+    Left = 705
+    Top = 385
   end
 end

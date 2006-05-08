@@ -21,12 +21,15 @@ type
     leTimeout: TLabeledEdit;
     btOK: TButton;
     btCancel: TButton;
-    leMessage: TLabel;
     procedure btCancelClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btOKClick(Sender: TObject);
     procedure lePortKeyPress(Sender: TObject; var Key: Char);
     procedure leTimeoutKeyPress(Sender: TObject; var Key: Char);
+    procedure leAccountNameKeyPress(Sender: TObject; var Key: Char);
+    procedure leUsernameKeyPress(Sender: TObject; var Key: Char);
+    procedure lePasswordKeyPress(Sender: TObject; var Key: Char);
+    procedure leHostKeyPress(Sender: TObject; var Key: Char);
   private
     FAccountManager: TAccountManager;
     FadAccounts: TADOQuery;
@@ -66,8 +69,7 @@ begin
  lePassword.Text:='';
  leHost.Text:='';
  lePort.Text:='110';
- leTimeout.Text:='2';
- leMessage.Caption:='';
+ leTimeout.Text:='60';
 end;
 
 procedure TFAccountEditor.ShowModal; // для добавления аккаунта
@@ -142,8 +144,6 @@ begin
    Username:=leUsername.Text;
    Password:=lePassword.Text;
    Host:=leHost.Text;
-  // Port:=StrToInt(lePort.Text);
- //  Timeout:=StrToInt(leTimeout.Text)*1000*60;
   end;
 
  try
@@ -180,6 +180,45 @@ procedure TFAccountEditor.leTimeoutKeyPress(Sender: TObject;
   var Key: Char);
 begin
 if not (Key  in ['0'..'9',#8]) then
+  begin
+   Key := #0;
+   Beep;
+  end;
+end;
+
+procedure TFAccountEditor.leAccountNameKeyPress(Sender: TObject;
+  var Key: Char);
+begin
+if not (Key  in ['a'..'z','A'..'Z','0'..'9',#8]) then
+  begin
+   Key := #0;
+   Beep;
+  end;
+end;
+
+procedure TFAccountEditor.leUsernameKeyPress(Sender: TObject;
+  var Key: Char);
+begin
+if not (Key  in ['a'..'z','A'..'Z','0'..'9',#8]) then
+  begin
+   Key := #0;
+   Beep;
+  end;
+end;
+
+procedure TFAccountEditor.lePasswordKeyPress(Sender: TObject;
+  var Key: Char);
+begin
+if not (Key  in ['a'..'z','A'..'Z','0'..'9',#8]) then
+  begin
+   Key := #0;
+   Beep;
+  end;
+end;
+
+procedure TFAccountEditor.leHostKeyPress(Sender: TObject; var Key: Char);
+begin
+if not (Key  in ['a'..'z','A'..'Z','0'..'9',#8]) then
   begin
    Key := #0;
    Beep;

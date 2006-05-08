@@ -207,7 +207,7 @@ begin
  with adProc do
   begin
    Active:=False;
-   SQL.Text:='DELETE FROM FiltersParams WHERE ' + RowSQL;
+   SQL.Text:='DELETE FROM Accounts WHERE ' + RowSQL;
    ExecSQL;
   end;
  FadAccounts.Requery;

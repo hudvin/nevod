@@ -29,18 +29,6 @@ object FAccountEditor: TFAccountEditor
     ClientRectBottom = 226
     ClientRectRight = 258
     ClientRectTop = 0
-    object leMessage: TLabel
-      Left = 48
-      Top = 160
-      Width = 3
-      Height = 13
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clRed
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = []
-      ParentFont = False
-    end
     object leAccountName: TLabeledEdit
       Left = 88
       Top = 8
@@ -51,6 +39,7 @@ object FAccountEditor: TFAccountEditor
       EditLabel.Caption = 'AccountName  '
       LabelPosition = lpLeft
       TabOrder = 0
+      OnKeyPress = leAccountNameKeyPress
     end
     object leUsername: TLabeledEdit
       Left = 88
@@ -62,6 +51,7 @@ object FAccountEditor: TFAccountEditor
       EditLabel.Caption = 'Username  '
       LabelPosition = lpLeft
       TabOrder = 1
+      OnKeyPress = leUsernameKeyPress
     end
     object lePassword: TLabeledEdit
       Left = 88
@@ -72,7 +62,9 @@ object FAccountEditor: TFAccountEditor
       EditLabel.Height = 13
       EditLabel.Caption = 'Password  '
       LabelPosition = lpLeft
+      PasswordChar = '*'
       TabOrder = 2
+      OnKeyPress = lePasswordKeyPress
     end
     object leHost: TLabeledEdit
       Left = 88
@@ -84,6 +76,7 @@ object FAccountEditor: TFAccountEditor
       EditLabel.Caption = 'Host  '
       LabelPosition = lpLeft
       TabOrder = 3
+      OnKeyPress = leHostKeyPress
     end
     object lePort: TLabeledEdit
       Left = 88
