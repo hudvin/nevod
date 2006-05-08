@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 176
-  Top = 121
+  Left = 158
+  Top = 188
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -58,7 +58,17 @@ object FMain: TFMain
     LookAndFeel.Kind = lfOffice11
     LookAndFeel.NativeStyle = False
     OptionsBehavior.DragFocusing = True
+    OptionsBehavior.Sorting = False
+    OptionsBehavior.MultiSort = False
     OptionsBehavior.WaitForExpandNodeTime = 5
+    OptionsCustomizing.BandCustomizing = False
+    OptionsCustomizing.BandHorzSizing = False
+    OptionsCustomizing.BandMoving = False
+    OptionsCustomizing.BandVertSizing = False
+    OptionsCustomizing.ColumnCustomizing = False
+    OptionsCustomizing.ColumnHorzSizing = False
+    OptionsCustomizing.ColumnMoving = False
+    OptionsCustomizing.ColumnVertSizing = False
     OptionsData.Editing = False
     OptionsData.Deleting = False
     OptionsSelection.InvertSelect = False
@@ -94,31 +104,21 @@ object FMain: TFMain
       Position.BandIndex = 0
     end
   end
-  object cxSplitter1: TcxSplitter
+  object stPages: TcxPageControl
     Left = 177
     Top = 49
-    Width = 8
+    Width = 599
     Height = 421
-    HotZoneClassName = 'TcxMediaPlayer9Style'
-    AutoSnap = True
-    ResizeUpdate = True
-    Control = SettingsTree
-  end
-  object stPages: TcxPageControl
-    Left = 185
-    Top = 49
-    Width = 591
-    Height = 421
-    ActivePage = cxTab_Settings
+    ActivePage = cxTab_Filters
     Align = alClient
     DragMode = dmAutomatic
     HideTabs = True
     LookAndFeel.Kind = lfOffice11
     LookAndFeel.NativeStyle = False
     Style = 8
-    TabOrder = 3
+    TabOrder = 2
     ClientRectBottom = 421
-    ClientRectRight = 591
+    ClientRectRight = 599
     ClientRectTop = 0
     object cxTab_Accounts: TcxTabSheet
       Caption = 'cxTab_Accounts'
@@ -126,9 +126,10 @@ object FMain: TFMain
       object cxAccountsGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 591
+        Width = 599
         Height = 421
         Align = alClient
+        BorderWidth = 2
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
         LookAndFeel.NativeStyle = False
@@ -198,7 +199,7 @@ object FMain: TFMain
       object cxLogGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 591
+        Width = 599
         Height = 421
         Align = alClient
         TabOrder = 0
@@ -260,7 +261,7 @@ object FMain: TFMain
       object cxFiltersGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 591
+        Width = 599
         Height = 421
         Align = alClient
         TabOrder = 0
@@ -269,6 +270,7 @@ object FMain: TFMain
         object cxFilters: TcxGridDBTableView
           DragMode = dmAutomatic
           PopupMenu = pFilters
+          OnDblClick = cxFiltersDblClick
           OnEndDrag = cxFiltersEndDrag
           OnKeyDown = cxFiltersKeyDown
           OnStartDrag = cxFiltersStartDrag
@@ -613,7 +615,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = False
         TabOrder = 2
         Height = 185
-        Width = 337
+        Width = 273
         object leSpyFor: TLabel
           Left = 8
           Top = 88
@@ -695,6 +697,36 @@ object FMain: TFMain
           StyleHot.LookAndFeel.NativeStyle = True
           TabOrder = 3
           Width = 121
+        end
+      end
+      object gbHotKeys: TcxGroupBox
+        Left = 288
+        Top = 216
+        Caption = #1043#1086#1088#1103#1095#1080#1077' '#1082#1083#1072#1074#1080#1096#1080
+        Style.LookAndFeel.Kind = lfOffice11
+        StyleDisabled.LookAndFeel.Kind = lfOffice11
+        StyleFocused.LookAndFeel.Kind = lfOffice11
+        StyleHot.LookAndFeel.Kind = lfOffice11
+        TabOrder = 3
+        Height = 177
+        Width = 297
+        object leAddHotKey: TLabel
+          Left = 8
+          Top = 24
+          Width = 109
+          Height = 13
+          Caption = #1044#1086#1073#1072#1074#1083#1077#1085#1080#1077' '#1092#1080#1083#1100#1090#1088#1072
+        end
+        object JvAddHotKey: TJvHotKey
+          Left = 128
+          Top = 22
+          Width = 105
+          Height = 19
+          HotKey = 32833
+          TabOrder = 0
+          OnEnter = JvAddHotKeyEnter
+          OnExit = JvAddHotKeyExit
+          ParentColor = False
         end
       end
     end
@@ -5252,16 +5284,19 @@ object FMain: TFMain
     Top = 344
     object alAddAccount: TAction
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+      ShortCut = 16449
       OnExecute = alAddAccountExecute
     end
     object alEditAccount: TAction
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
       Enabled = False
+      ShortCut = 16453
       OnExecute = alEditAccountExecute
     end
     object alDeleteAccount: TAction
       Caption = #1059#1076#1072#1083#1080#1090#1100
       Enabled = False
+      ShortCut = 16452
       OnExecute = alDeleteAccountExecute
     end
     object alAppTerminate: TAction
@@ -5302,6 +5337,7 @@ object FMain: TFMain
     object alRemoveFilterElement: TAction
       Caption = #1059#1076#1072#1083#1080#1090#1100' '#1092#1080#1083#1100#1090#1088
       Enabled = False
+      ShortCut = 16452
       OnExecute = alRemoveFilterElementExecute
     end
     object alOnFiltersPopUp: TAction
@@ -5311,6 +5347,7 @@ object FMain: TFMain
     object alEditFilterElement: TAction
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100' '#1092#1080#1083#1100#1090#1088
       Enabled = False
+      ShortCut = 16453
       OnExecute = alEditFilterElementExecute
     end
     object alClearLog: TAction
@@ -5331,6 +5368,11 @@ object FMain: TFMain
     object alOnLogPopUp: TAction
       Caption = 'alOnLogPopUp'
       OnExecute = alOnLogPopUpExecute
+    end
+    object alHideToTray: TAction
+      Caption = #1057#1074#1077#1088#1085#1091#1090#1100' '#1074' '#1090#1088#1077#1081
+      ShortCut = 16456
+      OnExecute = alHideToTrayExecute
     end
   end
   object dxBar: TdxBarManager
@@ -5426,6 +5468,7 @@ object FMain: TFMain
           Visible = True
         end
         item
+          BeginGroup = True
           Item = msStopThread
           Visible = True
         end
@@ -5447,6 +5490,10 @@ object FMain: TFMain
         end
         item
           BeginGroup = True
+          Item = msHideToTray
+          Visible = True
+        end
+        item
           Item = msAppExit
           Visible = True
         end>
@@ -5468,22 +5515,34 @@ object FMain: TFMain
     object msAppExit: TdxBarButton
       Action = alAppTerminate
       Category = 0
+      ShortCut = 32883
     end
     object msStopThread: TdxBarButton
       Action = alStopThread
+      Caption = #1054#1089#1090#1072#1085#1086#1074#1080#1090#1100
       Category = 0
+      Hint = #1054#1089#1090#1072#1085#1086#1074#1080#1090#1100
+      ShortCut = 16467
     end
     object msStartThread: TdxBarButton
       Action = alStartThread
+      Caption = #1055#1088#1086#1074#1077#1088#1080#1090#1100
       Category = 0
+      Hint = #1055#1088#1086#1074#1077#1088#1080#1090#1100
+      ShortCut = 16451
     end
     object msStartAllThreads: TdxBarButton
       Action = alStartAllThreads
+      Caption = #1055#1088#1086#1074#1077#1088#1080#1090#1100' '#1074#1089#1077' '
       Category = 0
+      Hint = #1055#1088#1086#1074#1077#1088#1080#1090#1100' '#1074#1089#1077' '
+      ShortCut = 16459
     end
     object msStopAllThreads: TdxBarButton
       Action = alStopAllThreads
+      Caption = #1054#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1074#1089#1077
       Category = 0
+      Hint = #1054#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1074#1089#1077
     end
     object msCanCheckAccounts: TdxBarButton
       Action = alCanCheckAccounts
@@ -5533,11 +5592,11 @@ object FMain: TFMain
           Visible = True
         end
         item
-          Item = msRemoveFiltersElement
+          Item = msEditFilterElement
           Visible = True
         end
         item
-          Item = msEditFilterElement
+          Item = msRemoveFiltersElement
           Visible = True
         end>
       OnPopup = alOnFiltersPopUpExecute
@@ -5663,6 +5722,10 @@ object FMain: TFMain
       Action = alAppTerminate
       Category = 0
     end
+    object msHideToTray: TdxBarButton
+      Action = alHideToTray
+      Category = 0
+    end
   end
   object AccountsUpdater: TTimer
     Interval = 1500
@@ -5741,8 +5804,8 @@ object FMain: TFMain
   end
   object sdLog: TSaveDialog
     Filter = 'Text files|*.txt'
-    Left = 713
-    Top = 251
+    Left = 737
+    Top = 195
   end
   object pLog: TdxBarPopupMenu
     BarManager = dxBar
@@ -5761,8 +5824,8 @@ object FMain: TFMain
       end>
     UseOwnFont = False
     OnPopup = alOnLogPopUpExecute
-    Left = 713
-    Top = 283
+    Left = 745
+    Top = 219
   end
   object cxStyleRepository1: TcxStyleRepository
     object cxStyle1: TcxStyle
@@ -5803,7 +5866,15 @@ object FMain: TFMain
         Visible = True
       end>
     UseOwnFont = False
-    Left = 705
-    Top = 385
+    Left = 737
+    Top = 161
+  end
+  object JvAppAddHotKey: TJvApplicationHotKey
+    Active = True
+    HotKey = 0
+    OnHotKey = JvAppAddHotKeyHotKey
+    OnHotKeyRegisterFailed = JvAppAddHotKeyHotKeyRegisterFailed
+    Left = 472
+    Top = 408
   end
 end

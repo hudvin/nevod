@@ -1,9 +1,5 @@
 unit AccountEditor;
-{
 
- интервал проверки отображать в минутах
-
-}
 interface
 
 uses  ADOdb,DB,  Shared,
@@ -41,6 +37,7 @@ type
     constructor Create(adAccounts:TADOQuery;AccountManager:TAccountManager);
         reintroduce; overload;
     procedure CleanFields;
+    procedure FilterKey(var Key:Char);
     procedure SetCaptions;
     procedure ShowModal; reintroduce; overload; virtual;
     procedure ShowModal(AccountId:integer); reintroduce; overload; virtual;
@@ -167,62 +164,47 @@ begin
 
 end;
 
-procedure TFAccountEditor.lePortKeyPress(Sender: TObject; var Key: Char);
+procedure TFAccountEditor.FilterKey(var Key:Char);
 begin
-if not (Key  in ['0'..'9',#8]) then
+ if Ord(key)>127 then
   begin
    Key := #0;
    Beep;
   end;
+end;
+
+procedure TFAccountEditor.lePortKeyPress(Sender: TObject; var Key: Char);
+begin
+ FilterKey(Key);
 end;
 
 procedure TFAccountEditor.leTimeoutKeyPress(Sender: TObject;
   var Key: Char);
 begin
-if not (Key  in ['0'..'9',#8]) then
-  begin
-   Key := #0;
-   Beep;
-  end;
+ FilterKey(Key);
 end;
 
 procedure TFAccountEditor.leAccountNameKeyPress(Sender: TObject;
   var Key: Char);
 begin
-if not (Key  in ['a'..'z','A'..'Z','0'..'9',#8]) then
-  begin
-   Key := #0;
-   Beep;
-  end;
+ FilterKey(Key);
 end;
 
 procedure TFAccountEditor.leUsernameKeyPress(Sender: TObject;
   var Key: Char);
 begin
-if not (Key  in ['a'..'z','A'..'Z','0'..'9',#8]) then
-  begin
-   Key := #0;
-   Beep;
-  end;
+ FilterKey(Key);
 end;
 
 procedure TFAccountEditor.lePasswordKeyPress(Sender: TObject;
   var Key: Char);
 begin
-if not (Key  in ['a'..'z','A'..'Z','0'..'9',#8]) then
-  begin
-   Key := #0;
-   Beep;
-  end;
+ FilterKey(Key);
 end;
 
 procedure TFAccountEditor.leHostKeyPress(Sender: TObject; var Key: Char);
 begin
-if not (Key  in ['a'..'z','A'..'Z','0'..'9',#8]) then
-  begin
-   Key := #0;
-   Beep;
-  end;
+ FilterKey(Key);
 end;
 
 end.

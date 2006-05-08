@@ -10,7 +10,6 @@ uses
 type
   TThreadManager = class(TThread)
   private
-    Accounts: TADOStoredProc;
     aCopyData: TCopyDataStruct;
     FAccountManager: TAccountManager;
     FADOCon: TADOConnection;
@@ -19,7 +18,6 @@ type
     PostReceivers: TList;
     SProvider: TSettings;
     Mess:TWMMessanger;
-    procedure CheckForConnection;
     procedure Clean;
     function GetActiveThreads: Integer;
     function GetCanExecute: Boolean;
@@ -82,15 +80,6 @@ begin
   Mess.Free;
   PostReceivers.Free;
   inherited;
-end;
-
-procedure TThreadManager.CheckForConnection;
-begin
-{ if  StrToBool(SProvider.GetValue('CheckIfNotConnected')) then
-  FCanExecute:=True
-   else
-    if IsConnected then  FCanExecute:=True
-     else FCanExecute:=False;    }
 end;
 
 procedure TThreadManager.Clean;
@@ -254,7 +243,6 @@ end;
 
 procedure TThreadManager.StartAllThreads(Intro:boolean=True);
 var
-  AParams: TAccountParams;
   i:integer;
 begin
 // FCanExecute:=True;

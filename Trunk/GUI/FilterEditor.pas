@@ -1,4 +1,4 @@
-unit CustomEditor;
+unit FilterEditor;
 
 interface
 

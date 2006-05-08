@@ -18,7 +18,8 @@ uses Commctrl,tlhelp32, StdCtrls, Dialogs, ImgList, Controls, dxBar,
   XPStyleActnCtrls, ActnMan,  Clipbrd, PerlRegEx,
    ToolWin, ActnCtrls, ActnColorMaps,
   ActnPopupCtrl,  cxRichEdit,
-  cxButtons, cxDropDownEdit, JvClipView;
+  cxButtons, cxDropDownEdit, JvClipView, ComCtrls, JvHotKey, JvComponent,
+  JvAppHotKey, JvHotkeyEx;
 
  
 
@@ -33,7 +34,6 @@ type
   TFMain = class(TForm)
     stBar: TdxStatusBar;
     SettingsTree: TcxTreeList;
-    cxSplitter1: TcxSplitter;
     STree: TcxTreeListColumn;
     stPages: TcxPageControl;
     cxTab_Accounts: TcxTabSheet;
@@ -223,6 +223,12 @@ type
     pTray: TdxBarPopupMenu;
     ptStartAllThreads: TdxBarButton;
     ptAppTerminate: TdxBarButton;
+    JvAppAddHotKey: TJvApplicationHotKey;
+    gbHotKeys: TcxGroupBox;
+    leAddHotKey: TLabel;
+    JvAddHotKey: TJvHotKey;
+    alHideToTray: TAction;
+    msHideToTray: TdxBarButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -321,19 +327,26 @@ type
     procedure cxAccountsDblClick(Sender: TObject);
     procedure trayMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure JvAppAddHotKeyHotKey(Sender: TObject);
+    procedure JvAddHotKeyEnter(Sender: TObject);
+    procedure JvAddHotKeyExit(Sender: TObject);
+    procedure JvAppAddHotKeyHotKeyRegisterFailed(Sender: TObject;
+      var HotKey: TShortCut);
+    procedure alHideToTrayExecute(Sender: TObject);
+    procedure cxFiltersDblClick(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
-    CurrNode:TcxTreeListNode;
     PrevHwnd: Hwnd;
     Exp:TPerlRegEx;
+     id1, id2, id3, id4: Integer;
     FRegisteredSessionNotification : Boolean;
+    TmpKey: Integer;
     function GetFilterState(FilterType:TFilterType): Boolean;
     procedure WMChangeCBChain(var Msg: TWMChangeCBChain);
      message WM_CHANGECBCHAIN;
     procedure WMDrawClipboard(var Msg: TWMDrawClipboard);
     message WM_DRAWCLIPBOARD;
-
     procedure WMCopyData(var Msg: TWMCopyData); message WM_COPYDATA;
 
     { Private declarations }
@@ -361,7 +374,6 @@ type
     procedure SetCurrentParams(Grid:TcxGridDBTableView;Filter:TFilterType);
   end;
 
-
 var
   FMain: TFMain;
   DragState:boolean=False;
@@ -381,6 +393,8 @@ uses  MultInst,CRc32;
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
 {$R ..\Resources\Messages.res}
+
+
 
 procedure TFMain.ShowEditor(var AMessage: TMessage);
 begin
@@ -429,7 +443,7 @@ var
   P: PChar;
   H: THandle;
   Len:integer;
-  buf,Res:String;
+  buf:String;
   Sounder:TSounder;
 begin
   SendMessage(PrevHWnd, WM_DRAWCLIPBOARD, 0, 0);
@@ -471,18 +485,15 @@ begin
 end;
 
 
-
-
-
 procedure TFMain.FormCreate(Sender: TObject);
+
 var
  Headers:TColumnsHeaders;
- TmAppl,buf,Con:boolean;
+ TmAppl,buf:boolean;
  Key:TRegistry;
  Sel:Integer;
 begin
  adCon.ConnectionString:=GetConnectionString;
-
  WriteAppPath(Application.ExeName);
 
  FPortEditor:=TFPortEditor.Create(adCon);
@@ -546,7 +557,7 @@ begin
  Exp:=TPerlRegEx.Create(nil);
 
  AddClb:=TFilterType(GetEnumValue(TypeInfo(TFilterType),SProvider.GetValue('AddClb')));
- 
+
 
  adProc:=TADOQuery.Create(nil);
  adProc.Connection:=adCon;
@@ -563,8 +574,6 @@ begin
  adAccounts.Active:=True;
 
  ThreadManager:=TThreadManager.Create(adCon,AccountManager);
-
-
 
  cbStamp.Checked:=FilterState[ftStamp];
  cbWhiteWord.Checked:=FilterState[ftWhiteWord];
@@ -595,8 +604,11 @@ begin
  cbSoundOnReceive.Checked:=StrToBool(SProvider.GetValue('SoundOnNew'));
  cbSoundOnError.Checked:=StrToBool(SProvider.GetValue('SoundOnError'));
  cbSoundOnAdd.Checked:=StrToBool(SProvider.GetValue('SoundOnAdd'));
-
  cbShowEditor.Checked:=StrToBool(SProvider.GetValue('ShowspyEditor'));
+
+ JvAddHotKey.HotKey:=StrToInt(SProvider.GetValue('AddHotKey'));
+ JvAppAddHotKey.HotKey:=StrToInt(SProvider.GetValue('AddHotKey'));
+
 
  Sel:=-1;
  case TCLbHookMode(GetEnumValue(TypeInfo(TClbHookMode),SProvider.GetValue('ClbHookMode'))) of    //
@@ -633,6 +645,15 @@ end;
 
 procedure TFMain.FormDestroy(Sender: TObject);
 begin
+   UnRegisterHotKey(Handle, id1);
+   GlobalDeleteAtom(id1);
+   UnRegisterHotKey(Handle, id2);
+   GlobalDeleteAtom(id2);
+   UnRegisterHotKey(Handle, id3);
+   GlobalDeleteAtom(id3);
+   UnRegisterHotKey(Handle, id4);
+   GlobalDeleteAtom(id4);
+
  if POP3Server<>nil then POP3Server.Free;
  tray.Enabled:=False;
  ThreadManager.Free;
@@ -656,8 +677,6 @@ end;
 procedure TFMain.SettingsTreeSelectionChanged(Sender: TObject);
 var
  NodeIndex:Integer;
- FilterType:TFilterType;
- RowSQL:String;
  Res:TSNConvert;
 begin
 
@@ -1170,13 +1189,7 @@ end;
 procedure TFMain.alAddFilterElementExecute(Sender: TObject);
 begin
   with FEditor do
-           SetWindowPos(Handle,
-                        HWND_TOPMOST,
-                        Left,
-                        Top,
-                        Width,
-                        Height,
-                        SWP_NOACTIVATE or SWP_NOMOVE or SWP_NOSIZE);
+   SetWindowPos(Handle, HWND_TOPMOST, Left,Top,Width,Height,SWP_NOACTIVATE or SWP_NOMOVE or SWP_NOSIZE);
  FEditor.Show(STree.TreeList.FocusedNode.AbsoluteIndex);
 end;
 
@@ -1201,6 +1214,10 @@ procedure TFMain.alOnFiltersPopUpExecute(Sender: TObject);
 var
  Res:TSNConvert;
 begin
+
+  
+ alAddFilterElement.ShortCut:=StrToInt(SProvider.GetValue('AddHotKey'));
+
  SNConverter.Find(STree.TreeList.FocusedNode.AbsoluteIndex,Res);
  if (Res.FilterType<>ftNone) and (cxFilters.Controller.SelectedRowCount>0) then
   begin
@@ -1238,21 +1255,34 @@ end;
 procedure TFMain.cxAccountsKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-if (Key=46) or (Key=110) then
- begin
+ alOnAccountsPopUp.Execute;
+ if (Key=46) or (Key=110) then
+  begin
    alOnAccountsPopUp.Execute;
    alDeleteAccount.Execute;
   end;
+ if Key=13 then
+  begin
+   alOnAccountsPopUp.Execute;
+   alEditAccount.Execute;
+  end;
+
 end;
 
 procedure TFMain.cxFiltersKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-if (Key=46) or (Key=110) then
- begin
+ if (Key=46) or (Key=110) then  // удалить фильтр
+  begin
    alOnFiltersPopUp.Execute;
    alRemoveFilterElement.Execute;
   end;
+ if Key=13 then     // редактировать фильтр
+  begin
+   alOnFiltersPopUp.Execute;
+   alEditFilterElement.Execute;
+  end;
+   
 end;
 
 procedure TFMain.cbRunAtStartUpPropertiesChange(Sender: TObject);
@@ -1521,6 +1551,43 @@ begin
    SetForegroundWindow(Handle);
    pTray.PopupFromCursorPos;
   end;
+end;
+
+procedure TFMain.JvAppAddHotKeyHotKey(Sender: TObject);
+begin
+ alAddFilterElement.Execute;
+end;
+
+procedure TFMain.JvAddHotKeyEnter(Sender: TObject);
+begin
+ tmpKey:=JvAddHotKey.HotKey;
+end;
+
+procedure TFMain.JvAddHotKeyExit(Sender: TObject);
+begin
+ JvAppAddHotKey.HotKey:=JvAddHotKey.HotKey;
+ SProvider.SetValue('AddHotKey',IntToStr(JvAddHotKey.HotKey));
+ alAddFilterElement.ShortCut:=JvAppAddHotKey.HotKey;
+end;
+
+procedure TFMain.JvAppAddHotKeyHotKeyRegisterFailed(Sender: TObject;
+  var HotKey: TShortCut);
+begin
+ JvAddHotKey.HotKey:=TmpKey;
+ JvAppAddHotKey.HotKey:=TmpKey;
+ SProvider.SetValue('AddHotKey',IntToStr(TmpKey));
+ alAddFilterElement.ShortCut:=JvAppAddHotKey.HotKey;
+end;
+
+procedure TFMain.alHideToTrayExecute(Sender: TObject);
+begin
+ tray.HideMainForm;
+end;
+
+procedure TFMain.cxFiltersDblClick(Sender: TObject);
+begin
+  alOnFiltersPopUp.Execute;
+  alEditFilterElement.Execute;
 end;
 
 end.

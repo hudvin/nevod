@@ -19,7 +19,7 @@ uses
   RegExpr in '..\Libs\RegExpr.pas',
   PerlRegEx in '..\Libs\RegExp\PerlRegEx.pas',
   FilterManager in '..\Shared\FilterManager.pas',
-  CustomEditor in 'CustomEditor.pas' {FCustomEditor},
+  FilterEditor in 'FilterEditor.pas' {FCustomEditor},
   AccountManager in '..\Shared\AccountManager.pas',
   AccountEditor in 'AccountEditor.pas' {FAccountEditor},
   PostReceiver in '..\MailReceiver\PostReceiver.pas',
