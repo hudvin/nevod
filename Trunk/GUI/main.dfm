@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 234
-  Top = 182
+  Left = 126
+  Top = 163
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -43,7 +43,7 @@ object FMain: TFMain
   object SettingsTree: TcxTreeList
     Left = 0
     Top = 49
-    Width = 177
+    Width = 161
     Height = 421
     Align = alLeft
     Bands = <
@@ -105,11 +105,11 @@ object FMain: TFMain
     end
   end
   object stPages: TcxPageControl
-    Left = 177
+    Left = 161
     Top = 49
-    Width = 599
+    Width = 615
     Height = 421
-    ActivePage = cxTab_Filters
+    ActivePage = cxTab_DFSettings
     Align = alClient
     DragMode = dmAutomatic
     HideTabs = True
@@ -118,7 +118,7 @@ object FMain: TFMain
     Style = 8
     TabOrder = 2
     ClientRectBottom = 421
-    ClientRectRight = 599
+    ClientRectRight = 615
     ClientRectTop = 0
     object cxTab_Accounts: TcxTabSheet
       Caption = 'cxTab_Accounts'
@@ -126,7 +126,7 @@ object FMain: TFMain
       object cxAccountsGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 599
+        Width = 615
         Height = 421
         Align = alClient
         BorderWidth = 2
@@ -199,7 +199,7 @@ object FMain: TFMain
       object cxLogGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 599
+        Width = 615
         Height = 421
         Align = alClient
         TabOrder = 0
@@ -261,7 +261,7 @@ object FMain: TFMain
       object cxFiltersGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 599
+        Width = 615
         Height = 421
         Align = alClient
         TabOrder = 0
@@ -449,7 +449,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 1
         Height = 185
-        Width = 305
+        Width = 329
         object cbBallonOnReceive: TcxCheckBox
           Left = 8
           Top = 16
@@ -708,7 +708,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.Kind = lfOffice11
         TabOrder = 3
         Height = 177
-        Width = 297
+        Width = 313
         object leAddHotKey: TLabel
           Left = 8
           Top = 24
@@ -719,13 +719,21 @@ object FMain: TFMain
         object JvAddHotKey: TJvHotKey
           Left = 128
           Top = 22
-          Width = 105
+          Width = 97
           Height = 19
           HotKey = 32833
           TabOrder = 0
           OnEnter = JvAddHotKeyEnter
-          OnExit = JvAddHotKeyExit
           ParentColor = False
+        end
+        object btAddHotKey: TButton
+          Left = 232
+          Top = 20
+          Width = 75
+          Height = 22
+          Caption = #1053#1072#1079#1085#1072#1095#1080#1090#1100
+          TabOrder = 1
+          OnClick = btAddHotKeyClick
         end
       end
     end
@@ -5391,6 +5399,11 @@ object FMain: TFMain
       Caption = #1047#1072#1087#1091#1089#1090#1080#1090#1100' '#1087#1086#1095#1090#1086#1074#1099#1081' '#1082#1083#1080#1077#1085#1090
       OnExecute = alRunMailClientExecute
     end
+    object alMoveSelectedFiltersElements: TAction
+      Caption = #1055#1077#1088#1077#1085#1077#1089#1090#1080' '#1074' '#1095#1077#1088#1085#1099#1081' '#1089#1087#1080#1089#1086#1082
+      Enabled = False
+      OnExecute = alMoveSelectedFiltersElementsExecute
+    end
   end
   object dxBar: TdxBarManager
     Font.Charset = DEFAULT_CHARSET
@@ -5627,6 +5640,10 @@ object FMain: TFMain
         item
           Item = msSetToNonActive
           Visible = True
+        end
+        item
+          Item = msMoveSelectedFiltersEsements
+          Visible = True
         end>
       OnPopup = alOnFiltersPopUpExecute
     end
@@ -5779,6 +5796,16 @@ object FMain: TFMain
       Action = alRunMailClient
       Category = 0
     end
+    object pmMoveSelectedFiltersElements: TdxBarButton
+      Action = alMoveSelectedFiltersElements
+      Category = 0
+      Hint = #1055#1077#1088#1077#1085#1077#1089#1090#1080' '#1074' '#1095#1077#1088#1085#1099#1081' '#1089#1087#1080#1089#1086#1082
+    end
+    object msMoveSelectedFiltersEsements: TdxBarButton
+      Action = alMoveSelectedFiltersElements
+      Category = 0
+      Hint = #1055#1077#1088#1077#1085#1077#1089#1090#1080' '#1074' '#1095#1077#1088#1085#1099#1081' '#1089#1087#1080#1089#1086#1082
+    end
   end
   object AccountsUpdater: TTimer
     Interval = 1500
@@ -5847,6 +5874,10 @@ object FMain: TFMain
       end
       item
         Item = pmSetToNonActive
+        Visible = True
+      end
+      item
+        Item = pmMoveSelectedFiltersElements
         Visible = True
       end>
     UseOwnFont = False
@@ -5939,7 +5970,7 @@ object FMain: TFMain
     HotKey = 0
     OnHotKey = JvAppAddHotKeyHotKey
     OnHotKeyRegisterFailed = JvAppAddHotKeyHotKeyRegisterFailed
-    Left = 472
-    Top = 408
+    Left = 696
+    Top = 432
   end
 end

@@ -21,6 +21,7 @@ type
     btCancel: TButton;
     leLocation: TLabel;
     cCBLocation: TcxComboBox;
+    leMessage: TLabel;
     procedure cCBFilterPropertiesChange(Sender: TObject);
     procedure btOKClick(Sender: TObject);
     procedure btCancelClick(Sender: TObject);
@@ -86,7 +87,7 @@ var
  Res:TSNConvert;
 begin
  FEditorMode:=emAdd;
- caption:='Добавление нового фильтра';
+ Caption:='Добавление нового фильтра';
  cCBFilter.Enabled:=True;
  if FSNConverter.Find(NodeIndex,Res) then
   if Res.FilterType=ftNone then // фильтр не был выбран
@@ -168,8 +169,8 @@ begin
   FFiltersTable.Requery;
   Close;
  except
-  on e: Exception do
-    ShowMessage(e.Message);
+  on e: Exception do   leMessage.Caption:=E.Message;
+   // ShowMessage(e.Message);
  end;
 end;
 
@@ -184,13 +185,14 @@ begin
  cxCbActive.Checked:=True;
  leValue.Text:='';
  leDescription.Text:='';
+ leMessage.Caption:='';
 end;
 
 procedure TFCustomEditor.Show(ElementValue:String; FilterType:TFilterType);
 begin
  leValue.Text:=ElementValue;
  FEditorMode:=emAdd;
- caption:='Редактировать элемент';
+ caption:='Добавление фильтра';
  cCBFilter.Enabled:=True;
  cCBFilter.ItemIndex:=FSNConverter.FindIndex(FilterType);
  inherited Show;

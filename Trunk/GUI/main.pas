@@ -239,6 +239,10 @@ type
     alRunMailClient: TAction;
     ptRunMailClient: TdxBarButton;
     msRunMailClient: TdxBarButton;
+    btAddHotKey: TButton;
+    alMoveSelectedFiltersElements: TAction;
+    pmMoveSelectedFiltersElements: TdxBarButton;
+    msMoveSelectedFiltersEsements: TdxBarButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -339,7 +343,6 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure JvAppAddHotKeyHotKey(Sender: TObject);
     procedure JvAddHotKeyEnter(Sender: TObject);
-    procedure JvAddHotKeyExit(Sender: TObject);
     procedure JvAppAddHotKeyHotKeyRegisterFailed(Sender: TObject;
       var HotKey: TShortCut);
     procedure alHideToTrayExecute(Sender: TObject);
@@ -347,6 +350,8 @@ type
     procedure alSetSelectedFiltersToActiveExecute(Sender: TObject);
     procedure alSetSelectedFiltersToNonActiveExecute(Sender: TObject);
     procedure alRunMailClientExecute(Sender: TObject);
+    procedure btAddHotKeyClick(Sender: TObject);
+    procedure alMoveSelectedFiltersElementsExecute(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -400,6 +405,7 @@ var
   POP3Server:TPOPServer;
   Mutex:THandle;
   pp:integer;
+  IsCreated:boolean;
 implementation
 
 uses  MultInst,CRc32;
@@ -471,8 +477,11 @@ begin
       begin
        ClbHookMode:=TClbHookMode(GetEnumValue(TypeInfo(TCLbHookMode),SProvider.GetValue('ClbHookMode')));
        buf:=FindElement(P,CLbHookMode);
-       if (buf<>'')and (not FManager.ElementExists(buf,AddClb)) and (not FManager.ElementExists(buf,FManager.TwinFilter(AddClb))) then
+       if  (IsCreated) and(buf<>'')and (LastHooked<>buf) and (not FManager.ElementExists(buf,AddClb)) and (not FManager.ElementExists(buf,FManager.TwinFilter(AddClb))) then
         begin
+       //  FEditor.FilterValue:=10;
+        //  (FEditor.leValue.Text<>buf) and
+         LastHooked:=buf;
          if StrToBool(SProvider.GetValue('SoundOnAdd'))=True then
           Sounder:=TSounder.Create(SProvider.GetValue('AddSound'));
 
@@ -480,7 +489,7 @@ begin
           begin
            FEditor.Show(buf,TFIlterType(GetEnumValue(TypeInfo(TFilterType),SProvider.GetValue('AddClb'))));
            with FEditor do
-           SetWindowPos(Handle, HWND_TOPMOST,Left,Top,Width,Height,SWP_NOACTIVATE or SWP_NOMOVE or SWP_NOSIZE);
+            SetWindowPos(Handle, HWND_TOPMOST,Left,Top,Width,Height,SWP_NOACTIVATE or SWP_NOMOVE or SWP_NOSIZE);
           end
          else
           begin
@@ -488,7 +497,7 @@ begin
           end;
          adFilters.Active:=True;
          adFilters.Requery;
-         LastHooked:=buf;
+
         end;
       end
     else LastHooked:='';
@@ -506,6 +515,7 @@ var
  Key:TRegistry;
  Sel:Integer;
 begin
+ IsCreated:=False;
  adCon.ConnectionString:=GetConnectionString;
  WriteAppPath(Application.ExeName);
 
@@ -652,6 +662,8 @@ begin
    else Key.DeleteValue('Nevod AntiSpam');
  Key.CloseKey;
  Key.Free;
+
+ IsCreated:=True;
 
 end;
 
@@ -1224,11 +1236,34 @@ end;
 procedure TFMain.alOnFiltersPopUpExecute(Sender: TObject);
 var
  Res:TSNConvert;
+ tFilter:TFilterType;
+ btCaption,FilterString:String;
 begin
  alAddFilterElement.ShortCut:=StrToInt(SProvider.GetValue('AddHotKey'));
  SNConverter.Find(STree.TreeList.FocusedNode.AbsoluteIndex,Res);
+ tFilter:=FManager.TwinFilter(Res.FilterType);
  if (Res.FilterType<>ftNone) and (cxFilters.Controller.SelectedRowCount>0) then
   begin
+   if tFilter<>ftNone then
+    begin
+     btCaption:='';
+     FilterString:=GetEnumName(TypeInfo(TFilterType), Ord(tFilter));
+     if pos('White',FilterString)<>0 then
+      btCaption:='Перенести в белый список';
+     if pos('Black',FilterString)<>0 then
+       btCaption:='Перенести в черный  список';
+     alMoveSelectedFiltersElements.Enabled:=True;
+     if btCaption<>'' then   alMoveSelectedFiltersElements.Caption:=btCaption;
+   //  alMoveSelectedFiltersElements.Visible:=True;
+    end
+     else
+      begin
+       alRemoveFilterElement.Enabled:=False;
+    //   alMoveSelectedFiltersElements.Visible:=False;
+      end;
+
+  
+
    alRemoveFilterElement.Enabled:=True;
    alEditFilterElement.Enabled:=True;
    if   IsDiffFrom(False) then alSetSelectedFiltersToNonActive.Enabled:=True
@@ -1239,6 +1274,10 @@ begin
  else
   begin
    alRemoveFilterElement.Enabled:=False;
+ //  if tFilter=ftNone then
+ //   alMoveSelectedFiltersElements.Visible:=False
+  //   else
+     alMoveSelectedFiltersElements.Enabled:=False;
    alEditFilterElement.Enabled:=False;
    alSetSelectedFiltersToNonActive.Enabled:=False;
    alSetSelectedFiltersToActive.Enabled:=False;
@@ -1371,7 +1410,7 @@ begin
     begin
      beSoundOnNew.Text:=selSound.FileName;
      SProvider.SetValue('NewSound',selSound.FileName)
-     
+
     end;
   end
  else
@@ -1568,22 +1607,15 @@ end;
 
 procedure TFMain.JvAddHotKeyEnter(Sender: TObject);
 begin
- tmpKey:=JvAddHotKey.HotKey;
-end;
-
-procedure TFMain.JvAddHotKeyExit(Sender: TObject);
-begin
- JvAppAddHotKey.HotKey:=JvAddHotKey.HotKey;
- SProvider.SetValue('AddHotKey',IntToStr(JvAddHotKey.HotKey));
- alAddFilterElement.ShortCut:=JvAppAddHotKey.HotKey;
+ btAddHotKey.Tag:=JvAddHotKey.HotKey;
 end;
 
 procedure TFMain.JvAppAddHotKeyHotKeyRegisterFailed(Sender: TObject;
   var HotKey: TShortCut);
 begin
- JvAddHotKey.HotKey:=TmpKey;
- JvAppAddHotKey.HotKey:=TmpKey;
- SProvider.SetValue('AddHotKey',IntToStr(TmpKey));
+ JvAddHotKey.HotKey:=btAddHotKey.Tag;
+ JvAppAddHotKey.HotKey:=btAddHotKey.Tag;
+ SProvider.SetValue('AddHotKey',IntToStr(btAddHotKey.Tag));
  alAddFilterElement.ShortCut:=JvAppAddHotKey.HotKey;
 end;
 
@@ -1610,7 +1642,6 @@ begin
    then Flag:=True
     else inc(i);
  Result:=Flag; // возврашает True, если есть различия
-
 end;
 
 procedure TFMain.SetStatusTo(Status:boolean);
@@ -1639,13 +1670,36 @@ begin
 end;
 
 
-
-
 procedure TFMain.alRunMailClientExecute(Sender: TObject);
 var
  MRunner:TMailClientRunner;
 begin
  MRunner:=TMailClientRunner.Create;
+end;
+
+procedure TFMain.btAddHotKeyClick(Sender: TObject);
+begin
+ JvAppAddHotKey.HotKey:=JvAddHotKey.HotKey;
+ SProvider.SetValue('AddHotKey',IntToStr(JvAddHotKey.HotKey));
+ alAddFilterElement.ShortCut:=JvAppAddHotKey.HotKey;
+end;
+
+
+procedure TFMain.alMoveSelectedFiltersElementsExecute(Sender: TObject);
+var
+ Res:TSNConvert;
+ ElementsId:Array of integer;
+ i:integer;
+begin
+ SNConverter.Find(STree.TreeList.FocusedNode.AbsoluteIndex,Res);
+ with cxFilters.Controller do
+  begin
+   SetLength(ElementsId,SelectedRowCount);
+   for i:=0 to SelectedRowCount-1 do
+    ElementsId[i]:=SelectedRows[i].Values[cxFiltersid.Index];
+  end;
+ FManager.ChangeFilterElementType(ElementsId,FManager.TwinFilter(Res.FilterType));
+ adFilters.Requery;
 end;
 
 end.

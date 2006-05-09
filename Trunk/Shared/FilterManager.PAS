@@ -21,6 +21,8 @@ type
     procedure Activate(ElementsId:Array of integer;Status:boolean);
     procedure AddElement(ElementValue:String;FilterType:TFilterType;
         Description:String; Status:Boolean;Params:Variant);
+    procedure ChangeFilterElementType(ElementsId:Array of integer;
+        FilterType:TFilterType);
     procedure DeleteElement(ElementValue:String;FilterType:TFilterType);
     function ElementExists(ElementValue:String;FilterType:TFilterType): Boolean;
         overload;
@@ -143,6 +145,25 @@ begin
    
  Add(ElementValue,FilterType,Description,Status,Params);
 
+end;
+
+procedure TFilterManager.ChangeFilterElementType(ElementsId:Array of integer;
+    FilterType:TFilterType);
+var
+ RowSQl:String;
+ i:integer;
+begin
+ with adProc do
+  begin
+   for i:=Low(ElementsId) to High(ElementsId) do
+    begin
+      RowSQL:=RowSQL+ ' id='+IntToStr(ElementsId[i]);
+      if i<>High(ElementsId) then RowSQL:=RowSQl+' OR ';
+    end;
+    Active:=False;
+    SQL.Text:='UPDATE FiltersParams SET mid='+IntToStr(MidByFilterType(FilterType)) +' WHERE ' +RowSQl;
+    ExecSQL;
+  end;
 end;
 
 procedure TFilterManager.DeleteElement(ElementValue:String;

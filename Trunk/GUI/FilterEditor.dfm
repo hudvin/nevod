@@ -4,7 +4,7 @@ object FCustomEditor: TFCustomEditor
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1044#1086#1073#1072#1074#1083#1077#1085#1080#1077' '#1085#1086#1074#1086#1075#1086' '#1092#1080#1083#1100#1090#1088#1072
-  ClientHeight = 192
+  ClientHeight = 196
   ClientWidth = 312
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -20,12 +20,12 @@ object FCustomEditor: TFCustomEditor
     Left = 0
     Top = 0
     Width = 312
-    Height = 192
+    Height = 196
     Align = alClient
     LookAndFeel.Kind = lfOffice11
     LookAndFeel.NativeStyle = False
     TabOrder = 0
-    ClientRectBottom = 192
+    ClientRectBottom = 196
     ClientRectRight = 312
     ClientRectTop = 0
     object leFilter: TLabel
@@ -41,6 +41,18 @@ object FCustomEditor: TFCustomEditor
       Width = 75
       Height = 13
       Caption = #1056#1072#1089#1087#1086#1083#1086#1078#1077#1085#1080#1077
+    end
+    object leMessage: TLabel
+      Left = 56
+      Top = 136
+      Width = 3
+      Height = 13
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clRed
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
     end
     object cCBFilter: TcxComboBox
       Left = 88
@@ -84,6 +96,7 @@ object FCustomEditor: TFCustomEditor
       EditLabel.Caption = #1047#1085#1072#1095#1077#1085#1080#1077'  '
       LabelPosition = lpLeft
       TabOrder = 2
+      Text = '  '
       OnKeyPress = leValueKeyPress
     end
     object leDescription: TLabeledEdit
@@ -99,7 +112,7 @@ object FCustomEditor: TFCustomEditor
     end
     object btOK: TButton
       Left = 40
-      Top = 152
+      Top = 160
       Width = 97
       Height = 25
       Caption = 'OK'
@@ -108,7 +121,7 @@ object FCustomEditor: TFCustomEditor
     end
     object btCancel: TButton
       Left = 176
-      Top = 152
+      Top = 160
       Width = 97
       Height = 25
       Caption = #1054#1090#1084#1077#1085#1072
