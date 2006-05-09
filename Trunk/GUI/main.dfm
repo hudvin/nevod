@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 158
-  Top = 188
+  Left = 234
+  Top = 182
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -283,7 +283,6 @@ object FMain: TFMain
           OptionsData.CancelOnExit = False
           OptionsData.Deleting = False
           OptionsData.DeletingConfirmation = False
-          OptionsData.Editing = False
           OptionsData.Inserting = False
           OptionsSelection.CellSelect = False
           OptionsSelection.InvertSelect = False
@@ -5347,7 +5346,7 @@ object FMain: TFMain
     object alEditFilterElement: TAction
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100' '#1092#1080#1083#1100#1090#1088
       Enabled = False
-      ShortCut = 16453
+      ShortCut = 16463
       OnExecute = alEditFilterElementExecute
     end
     object alClearLog: TAction
@@ -5373,6 +5372,24 @@ object FMain: TFMain
       Caption = #1057#1074#1077#1088#1085#1091#1090#1100' '#1074' '#1090#1088#1077#1081
       ShortCut = 16456
       OnExecute = alHideToTrayExecute
+    end
+    object alSetToActive: TAction
+      Caption = #1057#1076#1077#1083#1072#1090#1100' '#1072#1082#1090#1080#1074#1085#1099#1084
+      Enabled = False
+    end
+    object alSetSelectedFiltersToActive: TAction
+      Caption = #1040#1082#1090#1080#1074#1080#1088#1086#1074#1072#1090#1100
+      Enabled = False
+      OnExecute = alSetSelectedFiltersToActiveExecute
+    end
+    object alSetSelectedFiltersToNonActive: TAction
+      Caption = #1044#1077#1072#1082#1090#1080#1074#1080#1088#1086#1074#1072#1090#1100
+      Enabled = False
+      OnExecute = alSetSelectedFiltersToNonActiveExecute
+    end
+    object alRunMailClient: TAction
+      Caption = #1047#1072#1087#1091#1089#1090#1080#1090#1100' '#1087#1086#1095#1090#1086#1074#1099#1081' '#1082#1083#1080#1077#1085#1090
+      OnExecute = alRunMailClientExecute
     end
   end
   object dxBar: TdxBarManager
@@ -5490,6 +5507,10 @@ object FMain: TFMain
         end
         item
           BeginGroup = True
+          Item = msRunMailClient
+          Visible = True
+        end
+        item
           Item = msHideToTray
           Visible = True
         end
@@ -5598,6 +5619,14 @@ object FMain: TFMain
         item
           Item = msRemoveFiltersElement
           Visible = True
+        end
+        item
+          Item = msSetToActive
+          Visible = True
+        end
+        item
+          Item = msSetToNonActive
+          Visible = True
         end>
       OnPopup = alOnFiltersPopUpExecute
     end
@@ -5618,7 +5647,7 @@ object FMain: TFMain
       Action = alEditFilterElement
       Category = 0
     end
-    object dxAccountsBarButton1: TdxBarButton
+    object pmAddFilterElement: TdxBarButton
       Action = alAddFilterElement
       Category = 0
     end
@@ -5726,6 +5755,30 @@ object FMain: TFMain
       Action = alHideToTray
       Category = 0
     end
+    object pmSetToActive: TdxBarButton
+      Action = alSetSelectedFiltersToActive
+      Category = 0
+    end
+    object pmSetToNonActive: TdxBarButton
+      Action = alSetSelectedFiltersToNonActive
+      Category = 0
+    end
+    object msSetToActive: TdxBarButton
+      Action = alSetSelectedFiltersToActive
+      Category = 0
+    end
+    object msSetToNonActive: TdxBarButton
+      Action = alSetSelectedFiltersToNonActive
+      Category = 0
+    end
+    object ptRunMailClient: TdxBarButton
+      Action = alRunMailClient
+      Category = 0
+    end
+    object msRunMailClient: TdxBarButton
+      Action = alRunMailClient
+      Category = 0
+    end
   end
   object AccountsUpdater: TTimer
     Interval = 1500
@@ -5781,11 +5834,19 @@ object FMain: TFMain
         Visible = True
       end
       item
-        Item = dxAccountsBarButton1
+        Item = pmAddFilterElement
         Visible = True
       end
       item
         Item = pmRemoveFilterElement
+        Visible = True
+      end
+      item
+        Item = pmSetToActive
+        Visible = True
+      end
+      item
+        Item = pmSetToNonActive
         Visible = True
       end>
     UseOwnFont = False
@@ -5857,6 +5918,10 @@ object FMain: TFMain
   object pTray: TdxBarPopupMenu
     BarManager = dxBar
     ItemLinks = <
+      item
+        Item = ptRunMailClient
+        Visible = True
+      end
       item
         Item = ptStartAllThreads
         Visible = True

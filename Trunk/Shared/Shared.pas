@@ -172,17 +172,6 @@ type
 type
   PSNConvert=^TSNConvert;
 type
-  TStringSeacher = class(TObject)
-  private
-    sTable: PBMTable;
-    function BMSearch(StartPos, lp: Integer; const S: string; BMT: PBMTable):
-        Integer;
-    function FindRightmost(const S, P: string; n: Integer): Integer;
-    procedure MakeBMTable(var BMT: PBMTable; const P: string);
-  public
-    function Find(SearchString:string;Text:string): Integer;
-  end;
-
   TCompressor = class(TObject)
   public
     procedure CompressStream(InputStream, OutputStream: TStream);
@@ -301,6 +290,14 @@ type
     procedure Execute; override;
   end;
 
+  TMailClientRunner = class(TThread)
+  private
+    procedure OpenMailClient;
+  public
+    constructor Create;
+    procedure Execute; override;
+  end;
+
 function BindPort(Port:integer): Boolean;
 function IsConnected():Boolean;
 function WSAIoctl(s: TSocket; cmd: DWORD; lpInBuffer: PCHAR; dwInBufferLen:
@@ -339,101 +336,6 @@ function DBPassword: string;
 
 implementation
 
-
-{
-******************************** TStringSeacher ********************************
-}
-function TStringSeacher.BMSearch(StartPos, lp: Integer; const S: string; BMT:
-    PBMTable): Integer;
-var
-  Pos, i: Integer;
-begin
-  Pos := StartPos + lp -1;
-  while Pos<= Length(S) do   // исправлено < на <=
-   for i := lp downto 1 do
-     if BMT^[i - 1][Byte(S[Pos - lp + i])] <> 0 then
-       begin
-         Pos := Pos + BMT^[i - 1][Byte(S[Pos - lp + i])];
-         Break;
-       end
-        else if i = 1 then
-        begin
-          Result := Pos - lp + 1;
-          Exit;
-        end;
-      Result := 0;
-end;
-
-function TStringSeacher.Find(SearchString:string;Text:string): Integer;
-var
-  count, PatPos: Integer;
-begin
-  if (Length(Trim(SearchString))>0) AND  (Length(Trim(Text))>0) then
-    begin
-      Text:=LowerCase(Text);
-      count:=0;
-      MakeBMTable(sTable, LowerCase(SearchString));
-      PatPos := BMSearch(1, Length(SearchString),Text, sTable);
-      while  PatPos <> 0 do
-        begin
-         PatPos := BMSearch(PatPos + 1, Length(SearchString),Text, sTable);
-         inc(Count);
-        end;
-      FreeMem(sTable);
-      Result:=count;
-    end
-    else
-     Result:=-1; // если входные строки не заданы
-end;
-
-function TStringSeacher.FindRightmost(const S, P: string; n: Integer): Integer;
-var
-  i, j, lp: Integer;
-begin
-  Result := 0;
-  lp := Length(P);
-  if lp > n then Exit;
-  for i := n - lp + 1 downto 1 do
-    for j := 1 to lp do
-      if P[j] <> S[i + j - 1] then Break
-        else if j = lp then
-        begin
-          Result := i;
-          Exit;
-        end;
-end;
-
-procedure TStringSeacher.MakeBMTable(var BMT: PBMTable; const P: string);
-var
-  i, j, lp, MaxShift, CurShift, SufPos: Integer;
-  Suffix: string;
-begin
-  lp := Length(P);
-  GetMem(BMT, SizeOf(TIntVect) * lp);
-  for i := 0 to 255 do
-    BMT^[lp - 1][i] := lp;
-  for i := lp downto 1 do
-    if BMT^[lp - 1][Byte(P[i])] = lp then
-      BMT^[lp - 1][Byte(P[i])] := lp - i;
-  MaxShift := lp;
-  for i := lp - 1 downto 1 do
-    begin
-     SetLength(Suffix, lp - i);
-     Move(P[i + 1], Suffix[1], lp - i);
-     if Pos(Suffix, P) = 1 then MaxShift := i;
-     for j := 0 to 255 do
-       begin
-         CurShift := MaxShift;
-         SetLength(Suffix, lp - i + 1);
-         Suffix[1] := Char(j);
-         Move(P[i + 1], Suffix[2], lp - i);
-         SufPos := FindRightmost(P, Suffix, lp - 1);
-         if SufPos <> 0 then CurShift := i - SufPos;
-         BMT^[i - 1][j] := CurShift;
-       end;
-     BMT^[i - 1][Byte(P[i])] := 0;
-    end;
-end;
 
 {
 ********************************* TCompressor **********************************
@@ -1389,6 +1291,40 @@ procedure TSounder.Execute;
 begin
   MMSystem.PlaySound(PChar(FFilePath),0,SND_FILENAME);
   Terminate;
+end;
+
+constructor TMailClientRunner.Create;
+begin
+  inherited Create(False) ;
+  FreeOnTerminate:=True;
+end;
+
+procedure TMailClientRunner.Execute;
+begin
+ OpenMailClient;
+ Terminate;
+end;
+
+procedure TMailClientRunner.OpenMailClient;
+const
+   cMailClient = '\SOFTWARE\Clients\Mail\';
+var
+ reg: TRegistry;
+ RegClientDefault: string;
+begin
+ reg := TRegistry.Create;
+ try
+  with reg do
+   begin
+    CloseKey;
+    RootKey := HKEY_LOCAL_MACHINE;
+    if OpenKeyReadOnly(cMailClient) then  RegClientDefault := reg.ReadString('');
+    if OpenKeyReadOnly(cMailClient + RegClientDefault + '\shell\open\command') then
+     WinExec(PChar(ReadString('')), SW_SHOWNORMAL);
+   end;
+ finally
+    reg.Free;
+ end;
 end;
 
 

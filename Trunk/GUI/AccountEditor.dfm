@@ -1,11 +1,11 @@
 object FAccountEditor: TFAccountEditor
-  Left = 413
+  Left = 417
   Top = 198
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'FAccountEditor'
   ClientHeight = 226
-  ClientWidth = 258
+  ClientWidth = 254
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,14 +20,14 @@ object FAccountEditor: TFAccountEditor
   object cxTab: TcxTabControl
     Left = 0
     Top = 0
-    Width = 258
+    Width = 254
     Height = 226
     Align = alClient
     LookAndFeel.Kind = lfOffice11
     LookAndFeel.NativeStyle = False
     TabOrder = 0
     ClientRectBottom = 226
-    ClientRectRight = 258
+    ClientRectRight = 254
     ClientRectTop = 0
     object leAccountName: TLabeledEdit
       Left = 88
@@ -105,18 +105,18 @@ object FAccountEditor: TFAccountEditor
       OnKeyPress = leTimeoutKeyPress
     end
     object btOK: TButton
-      Left = 40
-      Top = 184
-      Width = 75
+      Left = 24
+      Top = 176
+      Width = 81
       Height = 25
       Caption = 'Add'
       TabOrder = 6
       OnClick = btOKClick
     end
     object btCancel: TButton
-      Left = 152
-      Top = 184
-      Width = 75
+      Left = 136
+      Top = 176
+      Width = 81
       Height = 25
       Caption = #1054#1090#1084#1077#1085#1072
       TabOrder = 7

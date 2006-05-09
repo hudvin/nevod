@@ -18,6 +18,7 @@ type
   public
     constructor Create(adCon:TADOConnection); virtual;
     destructor Destroy; override;
+    procedure Activate(ElementsId:Array of integer;Status:boolean);
     procedure AddElement(ElementValue:String;FilterType:TFilterType;
         Description:String; Status:Boolean;Params:Variant);
     procedure DeleteElement(ElementValue:String;FilterType:TFilterType);
@@ -46,6 +47,25 @@ destructor TFilterManager.Destroy;
 begin
  adProc.Free;
  Exp.Free;
+end;
+
+procedure TFilterManager.Activate(ElementsId:Array of integer;Status:boolean);
+var
+ RowSQl:String;
+ i:integer;
+begin
+ with adProc do
+   begin
+    for i:=Low(ElementsId) to High(ElementsId) do
+     begin
+      RowSQL:=RowSQL+ ' id='+IntToStr(ElementsId[i]);
+      if i<>High(ElementsId) then RowSQL:=RowSQl+' OR ';
+     end;
+    Active:=False;
+    SQL.Text:='UPDATE  FiltersParams SET Active=:Status WHERE ' + RowSQL;
+    Parameters.ParamByName('Status').Value:=Status;
+    ExecSQL;
+   end;  
 end;
 
 procedure TFilterManager.Add(ElementValue:String;FilterType:TFilterType;
@@ -308,7 +328,7 @@ begin
     RowSQL:=RowSQL+ ' id='+IntToStr(ElementsId[i]);
     if i<>High(ElementsId) then RowSQL:=RowSQl+' OR ';
    end;
-   
+
  with adProc do
   begin
    Active:=False;
@@ -330,13 +350,8 @@ begin
  if FilterType=ftWhiteAttach then buff:=ftBlackAttach;
  if FilterType=ftStamp then buff:=ftNone;
    
-   
  Result:=buff;
 end;
- {
 
- все управление фильтрами перенести в один класс
-
- }
 end.
 

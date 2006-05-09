@@ -1,6 +1,6 @@
 object FCustomEditor: TFCustomEditor
-  Left = 464
-  Top = 221
+  Left = 379
+  Top = 290
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1044#1086#1073#1072#1074#1083#1077#1085#1080#1077' '#1085#1086#1074#1086#1075#1086' '#1092#1080#1083#1100#1090#1088#1072

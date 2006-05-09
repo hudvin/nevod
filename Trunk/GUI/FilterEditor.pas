@@ -104,7 +104,7 @@ begin
      cCBLocation.Enabled:=False;
     cCBFilter.ItemIndex:=FSNConverter.FindIndex(ftWhiteSender);
    end;
- }    
+}
  inherited Show;
 end;
 
@@ -128,8 +128,8 @@ begin
  cCBFilter.Enabled:=False;
  if not (Res.FilterType in [ftBlackWord,ftWhiteWord]) then
   begin
-   cCBLocation.Enabled:=False;
-   cCBFilter.ItemIndex:=0;
+ //  cCBLocation.Enabled:=False;
+  // cCBFilter.ItemIndex:=0;
   end
   else
    begin

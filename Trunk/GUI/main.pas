@@ -14,7 +14,7 @@ uses Commctrl,tlhelp32, StdCtrls, Dialogs, ImgList, Controls, dxBar,
 
     Menus,   Messages, ThreadManager, POPServer,
   cxGridCustomPopupMenu, cxGridPopupMenu,
-   cxLookAndFeels,CustomEditor,
+   cxLookAndFeels,FilterEditor,
   XPStyleActnCtrls, ActnMan,  Clipbrd, PerlRegEx,
    ToolWin, ActnCtrls, ActnColorMaps,
   ActnPopupCtrl,  cxRichEdit,
@@ -163,7 +163,7 @@ type
     msEditFilterElement: TdxBarButton;
     pFilters: TdxBarPopupMenu;
     pmEditFilterElement: TdxBarButton;
-    dxAccountsBarButton1: TdxBarButton;
+    pmAddFilterElement: TdxBarButton;
     pmRemoveFilterElement: TdxBarButton;
     dxBarButton1: TdxBarButton;
     dxBarButton2: TdxBarButton;
@@ -229,6 +229,16 @@ type
     JvAddHotKey: TJvHotKey;
     alHideToTray: TAction;
     msHideToTray: TdxBarButton;
+    alSetToActive: TAction;
+    alSetSelectedFiltersToActive: TAction;
+    alSetSelectedFiltersToNonActive: TAction;
+    pmSetToActive: TdxBarButton;
+    pmSetToNonActive: TdxBarButton;
+    msSetToActive: TdxBarButton;
+    msSetToNonActive: TdxBarButton;
+    alRunMailClient: TAction;
+    ptRunMailClient: TdxBarButton;
+    msRunMailClient: TdxBarButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -334,6 +344,9 @@ type
       var HotKey: TShortCut);
     procedure alHideToTrayExecute(Sender: TObject);
     procedure cxFiltersDblClick(Sender: TObject);
+    procedure alSetSelectedFiltersToActiveExecute(Sender: TObject);
+    procedure alSetSelectedFiltersToNonActiveExecute(Sender: TObject);
+    procedure alRunMailClientExecute(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -355,8 +368,7 @@ type
     CurrentFilterType:TFilterType;  // тип текущего фильтра
     TwinFilterType:TFilterType;
     SNConverter:TSNIndexConverter;
-     SProvider:TSettings;
- //   PSManager: TPostManager;
+    SProvider:TSettings;
     FManager:TFilterManager;
     procedure ActivateNode(NodeIndex:Integer);
     function FindElement(Text:String;SType:TClbHookMode): string;
@@ -365,6 +377,8 @@ type
     procedure UpdateHeaders(Headers:TColumnsHeaders);
     property FilterState[FilterType:TFilterType]: Boolean read GetFilterState write
         SetFilterState; default;
+    function IsDiffFrom(Status:boolean): Boolean;
+    procedure SetStatusTo(Status:boolean);
     procedure ShowEditor(var AMessage: TMessage); message
         WM_ShowCEditor;
     { Public declarations }
@@ -481,7 +495,6 @@ begin
     GlobalUnlock(H);
   end;
   Msg.Result := 0;
- // FCustomEditor.Show;
 end;
 
 
@@ -873,8 +886,6 @@ end;
 procedure TFMain.trayClick(Sender: TObject);
 begin
  tray.ShowMainForm;
-// SetForegroundWindow(Handle);
-// pAccounts.PopupFromCursorPos;
 end;
 
 procedure TFMain.alAddAccountExecute(Sender: TObject);
@@ -1214,20 +1225,23 @@ procedure TFMain.alOnFiltersPopUpExecute(Sender: TObject);
 var
  Res:TSNConvert;
 begin
-
-  
  alAddFilterElement.ShortCut:=StrToInt(SProvider.GetValue('AddHotKey'));
-
  SNConverter.Find(STree.TreeList.FocusedNode.AbsoluteIndex,Res);
  if (Res.FilterType<>ftNone) and (cxFilters.Controller.SelectedRowCount>0) then
   begin
    alRemoveFilterElement.Enabled:=True;
    alEditFilterElement.Enabled:=True;
+   if   IsDiffFrom(False) then alSetSelectedFiltersToNonActive.Enabled:=True
+    else alSetSelectedFiltersToNonActive.Enabled:=False;
+   if   IsDiffFrom(True) then alSetSelectedFiltersToActive.Enabled:=True
+    else alSetSelectedFiltersToActive.Enabled:=False;
   end
  else
   begin
    alRemoveFilterElement.Enabled:=False;
    alEditFilterElement.Enabled:=False;
+   alSetSelectedFiltersToNonActive.Enabled:=False;
+   alSetSelectedFiltersToActive.Enabled:=False;
  end;
 end;
 
@@ -1272,17 +1286,11 @@ end;
 procedure TFMain.cxFiltersKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
+  alOnFiltersPopUp.Execute;
  if (Key=46) or (Key=110) then  // удалить фильтр
-  begin
-   alOnFiltersPopUp.Execute;
    alRemoveFilterElement.Execute;
-  end;
  if Key=13 then     // редактировать фильтр
-  begin
-   alOnFiltersPopUp.Execute;
    alEditFilterElement.Execute;
-  end;
-   
 end;
 
 procedure TFMain.cbRunAtStartUpPropertiesChange(Sender: TObject);
@@ -1588,6 +1596,56 @@ procedure TFMain.cxFiltersDblClick(Sender: TObject);
 begin
   alOnFiltersPopUp.Execute;
   alEditFilterElement.Execute;
+end;
+
+function TFMain.IsDiffFrom(Status:boolean): Boolean;
+var
+ i:integer;
+ flag:boolean;
+begin
+ i:=0;
+ Flag:=False;
+ while (not Flag) and (i<cxFilters.Controller.SelectedRowCount) do
+  if cxFilters.Controller.SelectedRows[i].Values[cxFiltersActive.Index]<>Status
+   then Flag:=True
+    else inc(i);
+ Result:=Flag; // возврашает True, если есть различия
+
+end;
+
+procedure TFMain.SetStatusTo(Status:boolean);
+var
+ ElementsId:Array of integer;
+ i:integer;
+begin
+ with cxFilters.Controller do
+  begin
+   SetLength(ElementsId,SelectedRowCount);
+   for i:=0 to SelectedRowCount-1 do
+    ElementsId[i]:=SelectedRows[i].Values[cxFiltersid.Index];
+  end;
+ FManager.Activate(ElementsId,Status);
+ adFilters.Requery;
+end;
+
+procedure TFMain.alSetSelectedFiltersToActiveExecute(Sender: TObject);
+begin
+ SetStatusTo(True);
+end;
+
+procedure TFMain.alSetSelectedFiltersToNonActiveExecute(Sender: TObject);
+begin
+ SetStatusTo(False);
+end;
+
+
+
+
+procedure TFMain.alRunMailClientExecute(Sender: TObject);
+var
+ MRunner:TMailClientRunner;
+begin
+ MRunner:=TMailClientRunner.Create;
 end;
 
 end.
