@@ -334,6 +334,8 @@ procedure PackDB(DatabaseName: string; DestDatabaseName: string = ''; Password:
 
 function DBPassword: string;
 
+procedure WriteAppHandle(Handle:DWORD);
+
 implementation
 
 
@@ -1033,6 +1035,25 @@ end;
 function DBPassword: string;
 begin
   Result := Copy((md5(CriptKey+MutexName)),0,15);
+end;
+
+procedure WriteAppHandle(Handle:DWORD);
+var
+ Reg: TRegistry;
+ Key: string;
+begin
+ Reg := TRegistry.Create;
+ try
+  Reg.RootKey := HKEY_CURRENT_USER;
+  Key := '\Software\Nevilon\Nevod AntiSpam';
+  if Reg.OpenKey(Key, True) then
+   begin
+    Reg.WriteInteger('Handle',Handle);
+    Reg.CloseKey;
+   end;
+ finally
+  Reg.Free
+ end;
 end;
 
 function TRegExp.BuildExp(const Value: string): string;

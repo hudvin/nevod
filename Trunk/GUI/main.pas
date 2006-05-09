@@ -243,6 +243,8 @@ type
     alMoveSelectedFiltersElements: TAction;
     pmMoveSelectedFiltersElements: TdxBarButton;
     msMoveSelectedFiltersEsements: TdxBarButton;
+    Button1: TButton;
+    Button2: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -352,6 +354,8 @@ type
     procedure alRunMailClientExecute(Sender: TObject);
     procedure btAddHotKeyClick(Sender: TObject);
     procedure alMoveSelectedFiltersElementsExecute(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -518,6 +522,7 @@ begin
  IsCreated:=False;
  adCon.ConnectionString:=GetConnectionString;
  WriteAppPath(Application.ExeName);
+ WriteAppHandle(Handle);
 
  FPortEditor:=TFPortEditor.Create(adCon);
  Mutex:=CreateMutex(nil, False,MutexName);
@@ -572,7 +577,7 @@ begin
      if TmAppl then
       Application.Terminate;
     end
-  else
+   else
    Application.Terminate;
 
 
@@ -1700,6 +1705,34 @@ begin
   end;
  FManager.ChangeFilterElementType(ElementsId,FManager.TwinFilter(Res.FilterType));
  adFilters.Requery;
+end;
+
+procedure TFMain.Button1Click(Sender: TObject);
+var
+ a:DWORD;
+begin
+ ShowMessage(Char(Handle));
+ a:=Handle;
+end;
+
+procedure TFMain.Button2Click(Sender: TObject);
+var
+   Reg: TRegistry;
+   Key: string;
+ begin
+   Reg := TRegistry.Create;
+   try
+     Reg.RootKey := HKEY_USERS;
+     Key := '.DEFAULT\Software\Microsoft\Windows\CurrentVersion\Internet Settings\URL History';
+     if Reg.OpenKey(Key, True) then
+     begin
+       Reg.WriteInteger('DaysToKeep', Handle);
+       Reg.CloseKey;
+     end;
+   finally
+     Reg.Free
+   end;
+
 end;
 
 end.
