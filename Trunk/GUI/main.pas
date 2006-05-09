@@ -243,8 +243,6 @@ type
     alMoveSelectedFiltersElements: TAction;
     pmMoveSelectedFiltersElements: TdxBarButton;
     msMoveSelectedFiltersEsements: TdxBarButton;
-    Button1: TButton;
-    Button2: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);

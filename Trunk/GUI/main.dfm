@@ -1278,24 +1278,6 @@ object FMain: TFMain
       end
     end
   end
-  object Button1: TButton
-    Left = 48
-    Top = 424
-    Width = 75
-    Height = 25
-    Caption = 'Button1'
-    TabOrder = 7
-    OnClick = Button1Click
-  end
-  object Button2: TButton
-    Left = 72
-    Top = 368
-    Width = 75
-    Height = 25
-    Caption = 'Button2'
-    TabOrder = 8
-    OnClick = Button2Click
-  end
   object dsAccounts: TDataSource
     DataSet = adAccounts
     Left = 32

@@ -2,7 +2,7 @@ program NevodBackup;
 {$R ..\Resources\WinXP.res}
 
 uses
-  SysUtils,tlhelp32, ActiveX,Classes,Registry,ComObj,ZLib,Windows,ADODB,DB,IdHashMessageDigest,IdHash,Dialogs;
+  SysUtils,tlhelp32, Messages,ActiveX,Classes,Registry,ComObj,ZLib,Windows,ADODB,DB,IdHashMessageDigest,IdHash,Dialogs;
  type
   TCompressor = class
   public
@@ -24,7 +24,6 @@ var
   Src, Dest: WideString;
   V: Variant;
 begin
- try
   Src := Provider + 'Data Source=' + DatabaseName;
   if DestDatabaseName <> '' then Name := DestDatabaseName
   else
@@ -52,11 +51,6 @@ begin
      DeleteFile(PChar(DatabaseName));
      RenameFile(Name, DatabaseName);
     end;
- except
-    on E: Exception do
-    // ShowMessage(e.message);
- end;
-
 end;
 
 function md5(InputString:string): string;
@@ -88,6 +82,18 @@ begin
  Result:=Key.ReadString('AppData');
  Key.CloseKey;
  Key.Free;
+end;
+
+function GetAppPath():String;
+var
+ key:TRegistry;
+begin
+ key:=TRegistry.Create;
+ key.RootKey:=HKEY_CURRENT_USER;
+ key.OpenKey('\Software\Nevilon\Nevod AntiSpam',True);
+ Result:=key.ReadString('AppPath');
+ key.CloseKey;
+ key.Free;
 end;
 
 function DBPassword: string;
@@ -141,7 +147,7 @@ begin
  if (not CanExit)and (not IsNormal(DBPath)) then
   begin
    CanExit:=True;
-   ShowMessage('Ѕаза данных повреждена');
+   ShowMessage('Ќевозможно подключитьс€ к базе данных');
   end;
 
  if not CanExit then
@@ -159,21 +165,36 @@ begin
    if not CanExit then
      try
       try
-       ZCom:=TCompressor.Create;
-       PackDB(DBPath,'',DBPassword);
-       DBStream:=TFileStream.Create(DBPath,fmOpenRead);
+       DBStream:=TFileStream.Create(DBPath,fmShareDenyNone);
        pDBStream:=TFileStream.Create(selFile.FileName+'.nbk',fmCreate);
+       ZCom:=TCompressor.Create;
        ZCom.CompressStream(DBStream,pDBStream);
       except
-       ShowMessage('Ќевозможно создать резервную копию');
+       on e:Exception do
+          ShowMessage(E.Message);
+      // ShowMessage('Ќевозможно создать резервную копию');
       end;
      finally
-      DBStream.Free;
-      pDBStream.Free;
-      ZCom.Free;
+      if DBStream<>nil then DBStream.Free;
+      if pDBStream<>nil then pDBStream.Free;
+      if ZCom<>nil then  ZCom.Free;
      end;
   end;
  selFile.Free;
+end;
+
+
+procedure RestoreFromBackUp();
+begin
+ {
+
+ запросить путь к запакованной базе
+ проверить, не существует ли конечна€ база данных
+ распаковать и сохранить
+
+ }
+
+
 end;
 
 {
@@ -220,40 +241,44 @@ begin
   OutputStream.Position:= 0;
 end;
 
-function KillTask(FileName: string): integer; //0 - пpибить не полyчилось
-var
-  ContinueLoop: BOOL;
-  FSnapshotHandle: THandle;
-  FProcessEntry32: TProcessEntry32;
-const
-  PROCESS_TERMINATE = $0001;
-begin
-  FileName:=ExtractFileName(FileName);
-  FSnapshotHandle := CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-  FProcessEntry32.dwSize := Sizeof(FProcessEntry32);
-  ContinueLoop := Process32First(FSnapshotHandle, FProcessEntry32);
-  while integer(ContinueLoop) <> 0 do
-  begin
-    if
-      ((UpperCase(ExtractFileName(FProcessEntry32.szExeFile)) =
-      UpperCase(FileName))
-      or (UpperCase(FProcessEntry32.szExeFile) = UpperCase(FileName))) then
-      Result := Integer(TerminateProcess(OpenProcess(PROCESS_TERMINATE, BOOL(0),
 
-        FProcessEntry32.th32ProcessID), 0));
-    ContinueLoop := Process32Next(FSnapshotHandle, FProcessEntry32);
-  end;
-  CloseHandle(FSnapshotHandle);
+
+function GetAppHandle():DWORD;
+var
+ Reg: TRegistry;
+ RegKey: DWORD;
+ Key: string;
+begin
+ Reg:= TRegistry.Create;
+ try
+  Reg.RootKey := HKEY_CURRENT_USER;
+  Key := '\Software\Nevilon\Nevod AntiSpam';
+  if Reg.OpenKeyReadOnly(Key) then
+   begin
+    if Reg.ValueExists('Handle') then
+     begin
+      RegKey := Reg.ReadInteger('Handle');
+      Reg.CloseKey;
+     end;
+   end;
+ finally
+  Reg.Free
+ end;
+ Result:=RegKey;
 end;
 
-begin
- CoInitialize(nil);
- { проверить, активно ли приложение
-   если оно активно, выставить флаг
-    произвести операцию
-    если оно было активно, запустить оп€ть
+var
+ IsRunning:boolean;
 
- }
+begin
+ IsRunning:=False;
+ CoInitialize(nil);
+if PostMessage(GetAppHandle,WM_QUIT, 0, 0) then
+ begin
+  sleep(300);
+  IsRunning:=True;
+ end;
  CreateBackUp;
+ if IsRunning then WinExec(PChar(GetAppPath),SW_SHOWNORMAL);
  CoUninitialize;
 end.
