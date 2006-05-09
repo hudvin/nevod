@@ -129,6 +129,18 @@ begin
  end;
 end;
 
+function GetTempFile(const Extension: string): string;
+var
+ Buffer: array[0..MAX_PATH] of Char;
+ aFile: string;
+begin
+ repeat
+  GetTempPath(SizeOf(Buffer) - 1, Buffer);
+  GetTempFileName(Buffer, '~', 0, Buffer);
+  Result := ChangeFileExt(Buffer, Extension);
+ until not FileExists(Result);
+end;
+
 procedure CreateBackUp();
 var
  selFile:TSaveDialog;
@@ -154,7 +166,8 @@ begin
    try
     PackDB(DBPath,'',DBPassword);
    except
-    ShowMessage('Невозможно запаковать базу ');
+    if MessageBox(GetStdHandle(STD_INPUT_HANDLE),'Невозможно сжать базу','Ошибка сжатия',MB_OKCANCEL)=IDCancel
+     then Exit;
    end;
 
  selFile:=TSaveDialog.Create(nil);
@@ -162,7 +175,6 @@ begin
  selFile.Filter:='Резервный копии(*.nbk)|*.nbk';   //'|*.nbk';
  if (not CanExit)and (selFile.Execute)  then
   begin
-   if not CanExit then
      try
       try
        DBStream:=TFileStream.Create(DBPath,fmShareDenyNone);
@@ -185,16 +197,48 @@ end;
 
 
 procedure RestoreFromBackUp();
+var
+ selFile:TOpenDialog;
+ pStream,DBStream:TFileStream;
+ ZCom:TCompressor;
+ DBPath,tmpFileName:String;
+ canExit,res:boolean;
 begin
- {
-
- запросить путь к запакованной базе
- проверить, не существует ли конечная база данных
- распаковать и сохранить
-
- }
-
-
+ canExit:=False;
+ DBPath:=GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb';
+ selFile:=TOpenDialog.Create(nil);
+ selFile.Options:=[ofOverwritePrompt];
+ selFile.Filter:='Резервный копии(*.nbk)|*.nbk';
+ if selFile.Execute then
+  begin
+    try
+     try
+       tmpFileName:=GetTempFile('.~tp');
+       pStream:=TFileStream.Create(DBPath,fmShareDenyWrite); // сжатый поток
+       DBStream:=TFileStream.Create(tmpFileName,fmCreate); //   selFile.FileName+'.nbk'
+       ZCom:=TCompressor.Create;
+       ZCom.CompressStream(pStream,DBStream);
+       if FileExists(DBPath) then
+        begin
+        if MessageBox(GetStdHandle(STD_INPUT_HANDLE),'Текущая база данных будет удалена','Сообшение',MB_OKCANCEL)=IDCancel
+         then Exit
+          else
+           begin
+            DeleteFile(PChar(DBPath));
+            CopyFile(PChar(tmpFileName),PChar(DBPath),Res);
+           end;
+        end;
+      except
+       on e:Exception do
+          ShowMessage(E.Message);
+     //  ShowMessage('Невозможно распаковать резервную копию');
+      end;
+     finally
+      if pStream<>nil then pStream.Free;
+      if DBStream<>nil then DBStream.Free;
+      if ZCom<>nil then  ZCom.Free;
+     end;
+    end;
 end;
 
 {
@@ -269,7 +313,6 @@ end;
 
 var
  IsRunning:boolean;
-
 begin
  IsRunning:=False;
  CoInitialize(nil);
@@ -278,7 +321,8 @@ if PostMessage(GetAppHandle,WM_QUIT, 0, 0) then
   sleep(300);
   IsRunning:=True;
  end;
- CreateBackUp;
+// CreateBackUp;
+ RestoreFromBackUp;
  if IsRunning then WinExec(PChar(GetAppPath),SW_SHOWNORMAL);
  CoUninitialize;
 end.
