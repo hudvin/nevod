@@ -27,8 +27,7 @@ uses
   POPServer in '..\POP3Server\POPServer.pas',
   PortEditor in 'PortEditor.pas' {FPortEditor},
   ASFilter in '..\MessagesFilter\ASFilter.pas',
-  MultInst in 'MultInst.pas',
-  Crc32 in '..\Shared\Crc32.pas';
+  MultInst in 'MultInst.pas';
 
 {$R *.res}
 var

@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 84
-  Top = 165
+  Left = 120
+  Top = 111
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
@@ -6103,7 +6103,6 @@ object FMain: TFMain
     Top = 57
   end
   object JvAppAddHotKey: TJvApplicationHotKey
-    Active = True
     HotKey = 0
     OnHotKey = JvAppAddHotKeyHotKey
     OnHotKeyRegisterFailed = JvAppAddHotKeyHotKeyRegisterFailed
@@ -6111,7 +6110,6 @@ object FMain: TFMain
     Top = 248
   end
   object JvAppShowMainWindow: TJvApplicationHotKey
-    Active = True
     HotKey = 0
     OnHotKey = JvAppShowMainWindowHotKey
     OnHotKeyRegisterFailed = JvAppShowMainWindowHotKeyRegisterFailed
@@ -6119,7 +6117,6 @@ object FMain: TFMain
     Top = 279
   end
   object JvAppCheckAllAccounts: TJvApplicationHotKey
-    Active = True
     HotKey = 0
     OnHotKey = JvAppCheckAllAccountsHotKey
     OnHotKeyRegisterFailed = JvAppCheckAllAccountsHotKeyRegisterFailed
@@ -6127,7 +6124,6 @@ object FMain: TFMain
     Top = 303
   end
   object jvAppRunMailClient: TJvApplicationHotKey
-    Active = True
     HotKey = 0
     OnHotKey = jvAppRunMailClientHotKey
     OnHotKeyRegisterFailed = jvAppRunMailClientHotKeyRegisterFailed

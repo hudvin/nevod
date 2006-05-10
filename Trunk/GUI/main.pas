@@ -444,7 +444,7 @@ var
   IsCreated:boolean;
 implementation
 
-uses  MultInst,CRc32;
+uses  MultInst;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
@@ -666,11 +666,21 @@ begin
  cbSoundOnAdd.Checked:=StrToBool(SProvider.GetValue('SoundOnAdd'));
  cbShowEditor.Checked:=StrToBool(SProvider.GetValue('ShowspyEditor'));
 
- (* JvAddHotKey.HotKey:=StrToInt(SProvider.GetValue('AddHotKey'));                       
+ 
  JvAppAddHotKey.HotKey:=StrToInt(SProvider.GetValue('AddHotKey'));
+ JvAppAddHotKey.Active:=True;
  JvAppShowMainWindow.HotKey:=StrToInt(SProvider.GetValue('ShowMainWindowHotKey'));
- JvAppCheckAllAccounts.HotKey:=StrToInt(SProvider.GetValue('CheckAllAccountshotKey')); *)
+ JvAppShowMainWindow.Active:=True;
+ JvAppCheckAllAccounts.HotKey:=StrToInt(SProvider.GetValue('CheckAllAccountshotKey'));
+ JvAppCheckAllAccounts.Active:=True;
  jvAppRunMailClient.HotKey:=StrToInt(SProvider.GetValue('RunMailClientHotKey'));
+ jvAppRunMailClient.Active:=True;
+
+
+ JvAddHotKey.HotKey:= JvAppAddHotKey.HotKey;
+ jvShowMainWindow.HotKey:=JvAppShowMainWindow.HotKey;
+ JvCheckAllAccounts.HotKey:=JvAppCheckAllAccounts.HotKey;
+ JvRunMailClient.HotKey:=jvAppRunMailClient.HotKey;
 
  Sel:=-1;
  case TCLbHookMode(GetEnumValue(TypeInfo(TClbHookMode),SProvider.GetValue('ClbHookMode'))) of    //
@@ -1770,12 +1780,12 @@ procedure TFMain.btRunMailClientClick(Sender: TObject);
 begin
  jvAppRunMailClient.HotKey:=JvRunMailClient.HotKey;
  SProvider.SetValue('RunMailClientHotKey',IntToStr(JvRunMailClient.HotKey));
- alRunMailClient.ShortCut:=jvAppRunMailClient.HotKey;
 end;
 
 procedure TFMain.JvAppShowMainWindowHotKey(Sender: TObject);
 begin
- Show;
+ tray.ShowMainForm;
+ SetActiveWindow(Handle);
 end;
 
 procedure TFMain.JvAppCheckAllAccountsHotKey(Sender: TObject);
