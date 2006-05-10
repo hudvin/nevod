@@ -110,13 +110,19 @@ begin
             'Jet OLEDB:Database Password='+DBPassword;
 end;
 
+function BuildConnectionString(DBPath:String):String;
+begin
+ Result:='Provider=Microsoft.Jet.OLEDB.4.0;'+'Data Source='+DBPath+';'+'Jet OLEDB:Database Password='+DBPassword;
+end;
+
 function IsNormal(DBPath:String): Boolean;
 var
  adCon:TADOConnection;
 begin
   try
     adCon:=TADOConnection.Create(nil);
-    adCon.ConnectionString:=GetConnectionString;
+   // adCon.ConnectionString:=GetConnectionString;
+   adCon.ConnectionString:=BuildConnectionString(DBPath);
    try
     adCon.Connected:=True;
     adCon.Connected:=False;
@@ -211,33 +217,34 @@ begin
  selFile.Filter:='Резервный копии(*.nbk)|*.nbk';
  if selFile.Execute then
   begin
-    try
      try
        tmpFileName:=GetTempFile('.~tp');
-       pStream:=TFileStream.Create(DBPath,fmShareDenyWrite); // сжатый поток
+       pStream:=TFileStream.Create(selFile.FileName,fmShareDenyWrite); // сжатый поток
        DBStream:=TFileStream.Create(tmpFileName,fmCreate); //   selFile.FileName+'.nbk'
        ZCom:=TCompressor.Create;
-       ZCom.CompressStream(pStream,DBStream);
-       if FileExists(DBPath) then
+       ZCom.DecompressStream(pStream,DBStream);
+       pStream.Free;
+       DBStream.Free;
+       ZCom.Free;
+       if not IsNormal(tmpFileName) then
         begin
-        if MessageBox(GetStdHandle(STD_INPUT_HANDLE),'Текущая база данных будет удалена','Сообшение',MB_OKCANCEL)=IDCancel
-         then Exit
-          else
-           begin
-            DeleteFile(PChar(DBPath));
-            CopyFile(PChar(tmpFileName),PChar(DBPath),Res);
-           end;
+         ShowMessage('База повреждена');
+         CanExit:=True;
+         DeleteFile(PChar(tmpFileName));
+        end;
+
+       if  FileExists(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb') then
+         if MessageBox(GetStdHandle(STD_INPUT_HANDLE),'Текущая база данных будет удалена','Сообшение',MB_OKCANCEL)=IDCancel
+          then  DeleteFile(PChar(DBPath));
+       if not FileExists(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb')and (FileExists(PChar(tmpFileName))) then
+        begin
+         CopyFile(PChar(tmpFileName),PChar(DBPath),Res);
+         DeleteFile(PChar(tmpFileName));
         end;
       except
        on e:Exception do
           ShowMessage(E.Message);
-     //  ShowMessage('Невозможно распаковать резервную копию');
       end;
-     finally
-      if pStream<>nil then pStream.Free;
-      if DBStream<>nil then DBStream.Free;
-      if ZCom<>nil then  ZCom.Free;
-     end;
     end;
 end;
 
@@ -314,15 +321,30 @@ end;
 var
  IsRunning:boolean;
 begin
- IsRunning:=False;
- CoInitialize(nil);
-if PostMessage(GetAppHandle,WM_QUIT, 0, 0) then
- begin
-  sleep(300);
-  IsRunning:=True;
- end;
-// CreateBackUp;
- RestoreFromBackUp;
- if IsRunning then WinExec(PChar(GetAppPath),SW_SHOWNORMAL);
- CoUninitialize;
+ if ParamCount>0 then
+  begin
+    CoInitialize(nil);
+    IsRunning:=False;
+    if ParamStr(1)='-rb' then
+     begin
+      if PostMessage(GetAppHandle,WM_QUIT, 0, 0) then
+       begin
+       sleep(300);
+       IsRunning:=True;
+       end;
+      RestoreFromBackUp;
+      if IsRunning then WinExec(PChar(GetAppPath),SW_SHOWNORMAL);
+     end;
+    if ParamStr(1)='-sb' then
+     begin
+      if PostMessage(GetAppHandle,WM_QUIT, 0, 0) then
+       begin
+       sleep(300);
+       IsRunning:=True;
+       end;
+      CreateBackUp;
+      if IsRunning then WinExec(PChar(GetAppPath),SW_SHOWNORMAL);
+     end;
+    CoUninitialize;
+  end;
 end.
