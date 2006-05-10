@@ -19,7 +19,8 @@ uses Commctrl,tlhelp32, StdCtrls, Dialogs, ImgList, Controls, dxBar,  Math,
    ToolWin, ActnCtrls, ActnColorMaps,
   ActnPopupCtrl,  cxRichEdit,
   cxButtons, cxDropDownEdit, JvClipView, ComCtrls, JvHotKey, JvComponent,
-  JvAppHotKey, JvHotkeyEx;
+  JvAppHotKey, JvHotkeyEx, JvSerialMaker, JvTranslator, JvGradientCaption,
+  JvDlg, JvComputerInfo, JvHtControls, JvaScrollText, JvEditor, JvTransLED;
 
  
 
@@ -268,6 +269,12 @@ type
     alEnableFiltering: TAction;
     ptEnableFiltering: TdxBarButton;
     ptAddFilterElement: TdxBarButton;
+    JvTransLED1: TJvTransLED;
+    JvEditor1: TJvEditor;
+    JvaScrollText1: TJvaScrollText;
+    JvHTLabel1: TJvHTLabel;
+    alShowAbout: TAction;
+    msShowAbout: TdxBarButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -377,7 +384,6 @@ type
     procedure alRunMailClientExecute(Sender: TObject);
     procedure btAddHotKeyClick(Sender: TObject);
     procedure alMoveSelectedFiltersElementsExecute(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
     procedure alRestoreFromBackUpExecute(Sender: TObject);
     procedure alSaveToBackUpExecute(Sender: TObject);
     procedure btShowMainWindowClick(Sender: TObject);
@@ -396,6 +402,7 @@ type
     procedure JvCheckAllAccountsEnter(Sender: TObject);
     procedure JvRunMailClientEnter(Sender: TObject);
     procedure alEnableFilteringExecute(Sender: TObject);
+    procedure alShowAboutExecute(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -451,7 +458,7 @@ var
   IsCreated:boolean;
 implementation
 
-uses  MultInst;
+uses  MultInst, About;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
@@ -1005,14 +1012,13 @@ begin
     Sounder:=TSounder.Create(SProvider.GetValue('ErrorSound'));  /////
    if StrToBool(SProvider.GetValue('SoundOnNew')) and (mess.BallonType=bitInfo) then
     Sounder:=TSounder.Create(SProvider.GetValue('NewSound'));
-
   end;
 end;
 
 
-
 procedure TFMain.AccountsUpdaterTimer(Sender: TObject);
 begin
+ stBar.Panels.Items[1].Text:='Количество сообщений в базе данных : ' + IntToStr(GetTotalMessCount);
  stBar.Panels.Items[0].Text:='Размер базы данных : '+ FloatToStr(RoundTo((Shared.GetFileSize(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb'))/(1024*1024),-2))+' Мб';
  if FMain.Active then
   begin
@@ -1022,8 +1028,6 @@ begin
    adLog.Requery;
   end;
 end;
-
-
 
 procedure TFMain.alStopThreadExecute(Sender: TObject);
 var
@@ -1075,7 +1079,6 @@ begin
    if Status=asFree then
     alStartThread.Enabled:=True
       else alStartThread.Enabled:=False;
-
   end
    else
     begin
@@ -1084,7 +1087,6 @@ begin
      alStopThread.Enabled:=False;
      alStartThread.Enabled:=False;
     end;
-
 end;
 
 procedure TFMain.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1753,14 +1755,6 @@ begin
  adFilters.Requery;
 end;
 
-procedure TFMain.Button1Click(Sender: TObject);
-var
- a:DWORD;
-begin
- ShowMessage(Char(Handle));
- a:=Handle;
-end;
-
 procedure TFMain.alRestoreFromBackUpExecute(Sender: TObject);
 begin
  if MessageBox(Handle,'Приложение будет завершено','Сообщение',MB_OKCANCEL)=IDOK then
@@ -1868,6 +1862,11 @@ begin
     Result:=Fields[0].AsInteger;
     Active:=False;
    end;
+end;
+
+procedure TFMain.alShowAboutExecute(Sender: TObject);
+begin
+ FAbout.ShowModal;
 end;
 
 end.

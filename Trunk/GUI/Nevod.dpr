@@ -27,7 +27,8 @@ uses
   POPServer in '..\POP3Server\POPServer.pas',
   PortEditor in 'PortEditor.pas' {FPortEditor},
   ASFilter in '..\MessagesFilter\ASFilter.pas',
-  MultInst in 'MultInst.pas';
+  MultInst in 'MultInst.pas',
+  About in 'About.pas' {FAbout};
 
 {$R *.res}
 var
@@ -62,6 +63,7 @@ begin
    else
     begin
      Application.CreateForm(TFMain, FMain);
+  Application.CreateForm(TFAbout, FAbout);
   if (ParamCount>0) and (ParamStr(1)='-h') then
      Application.MainForm.WindowState:=wsMinimized;
      Application.Run;

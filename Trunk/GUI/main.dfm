@@ -19,6 +19,17 @@ object FMain: TFMain
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
+  object JvTransLED1: TJvTransLED
+    Left = 80
+    Top = 328
+  end
+  object JvHTLabel1: TJvHTLabel
+    Left = 120
+    Top = 400
+    Width = 62
+    Height = 13
+    Caption = 'JvHTLabel1'
+  end
   object stBar: TdxStatusBar
     Left = 0
     Top = 469
@@ -5211,6 +5222,39 @@ object FMain: TFMain
       end
     end
   end
+  object JvEditor1: TJvEditor
+    Left = 24
+    Top = 208
+    Width = 233
+    Height = 81
+    Cursor = crIBeam
+    GutterWidth = 0
+    RightMarginColor = clSilver
+    Completion.ItemHeight = 13
+    Completion.Interval = 800
+    Completion.ListBoxStyle = lbStandard
+    Completion.CaretChar = '|'
+    Completion.CRLF = '/n'
+    Completion.Separator = '='
+    TabStops = '3 5'
+    SelForeColor = clHighlightText
+    SelBackColor = clHighlight
+    Ctl3D = True
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'Courier New'
+    Font.Style = []
+    ParentColor = False
+    ParentFont = False
+    TabStop = True
+    UseDockManager = False
+  end
+  object JvaScrollText1: TJvaScrollText
+    Left = 128
+    Top = 144
+    RightMargin = 0
+  end
   object dsAccounts: TDataSource
     DataSet = adAccounts
     Left = 32
@@ -9348,6 +9392,10 @@ object FMain: TFMain
       Checked = True
       OnExecute = alEnableFilteringExecute
     end
+    object alShowAbout: TAction
+      Caption = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077
+      OnExecute = alShowAboutExecute
+    end
   end
   object dxBar: TdxBarManager
     Font.Charset = DEFAULT_CHARSET
@@ -9792,7 +9840,11 @@ object FMain: TFMain
       Caption = #1057#1087#1088#1072#1074#1082#1072
       Category = 0
       Visible = ivAlways
-      ItemLinks = <>
+      ItemLinks = <
+        item
+          Item = msShowAbout
+          Visible = True
+        end>
     end
     object dxBarSubItem1: TdxBarSubItem
       Caption = 'New Item'
@@ -9825,6 +9877,10 @@ object FMain: TFMain
     end
     object ptAddFilterElement: TdxBarButton
       Action = alAddFilterElement
+      Category = 0
+    end
+    object msShowAbout: TdxBarButton
+      Action = alShowAbout
       Category = 0
     end
   end
