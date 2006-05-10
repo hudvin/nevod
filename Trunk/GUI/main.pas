@@ -169,7 +169,6 @@ type
     dxBarButton2: TdxBarButton;
     dxBarStatic1: TdxBarStatic;
     btAddAccount: TdxBarLargeButton;
-    btImages: TImageList;
     gbSystem: TcxGroupBox;
     lbServerPort: TLabeledEdit;
     cbRunAtStartUp: TcxCheckBox;
@@ -243,6 +242,16 @@ type
     alMoveSelectedFiltersElements: TAction;
     pmMoveSelectedFiltersElements: TdxBarButton;
     msMoveSelectedFiltersEsements: TdxBarButton;
+    msTools: TdxBarSubItem;
+    msRestoreFromBackUp: TdxBarButton;
+    msSaveToBackUp: TdxBarButton;
+    alRestoreFromBackUp: TAction;
+    alSaveToBackUp: TAction;
+    msHelp: TdxBarSubItem;
+    dxBarSubItem1: TdxBarSubItem;
+    dxBarButton6: TdxBarButton;
+    dxBarButton7: TdxBarButton;
+    ImageList1: TImageList;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -354,6 +363,8 @@ type
     procedure alMoveSelectedFiltersElementsExecute(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
+    procedure alRestoreFromBackUpExecute(Sender: TObject);
+    procedure alSaveToBackUpExecute(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -1731,6 +1742,18 @@ var
      Reg.Free
    end;
 
+end;
+
+procedure TFMain.alRestoreFromBackUpExecute(Sender: TObject);
+begin
+ if MessageBox(Handle,'Приложение будет завершено','Сообщение',MB_OKCANCEL)=IDOK then
+  WinExec(PChar('NevodBackup.exe -rb'),SW_SHOWNORMAL);
+end;
+
+procedure TFMain.alSaveToBackUpExecute(Sender: TObject);
+begin
+ if MessageBox(Handle,'Приложение будет завершено','Сообщение',MB_OKCANCEL)=IDOK then
+  WinExec(PChar('NevodBackup.exe -sb'),SW_SHOWNORMAL);
 end;
 
 end.
