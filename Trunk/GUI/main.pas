@@ -251,7 +251,18 @@ type
     dxBarSubItem1: TdxBarSubItem;
     dxBarButton6: TdxBarButton;
     dxBarButton7: TdxBarButton;
-    ImageList1: TImageList;
+    leShowMainWindow: TLabel;
+    jvShowMainWindow: TJvHotKey;
+    JvCheckAllAccounts: TJvHotKey;
+    JvRunMailClient: TJvHotKey;
+    JvAppShowMainWindow: TJvApplicationHotKey;
+    JvAppCheckAllAccounts: TJvApplicationHotKey;
+    jvAppRunMailClient: TJvApplicationHotKey;
+    btShowMainWindow: TButton;
+    leCheckAllAccounts: TLabel;
+    btCheckAllAccounts: TButton;
+    leRunMailClient: TLabel;
+    btRunMailClient: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -362,17 +373,29 @@ type
     procedure btAddHotKeyClick(Sender: TObject);
     procedure alMoveSelectedFiltersElementsExecute(Sender: TObject);
     procedure Button1Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
     procedure alRestoreFromBackUpExecute(Sender: TObject);
     procedure alSaveToBackUpExecute(Sender: TObject);
+    procedure btShowMainWindowClick(Sender: TObject);
+    procedure btCheckAllAccountsClick(Sender: TObject);
+    procedure btRunMailClientClick(Sender: TObject);
+    procedure JvAppShowMainWindowHotKey(Sender: TObject);
+    procedure JvAppCheckAllAccountsHotKey(Sender: TObject);
+    procedure jvAppRunMailClientHotKey(Sender: TObject);
+    procedure JvAppShowMainWindowHotKeyRegisterFailed(Sender: TObject;
+      var HotKey: TShortCut);
+    procedure JvAppCheckAllAccountsHotKeyRegisterFailed(Sender: TObject;
+      var HotKey: TShortCut);
+    procedure jvAppRunMailClientHotKeyRegisterFailed(Sender: TObject;
+      var HotKey: TShortCut);
+    procedure jvShowMainWindowEnter(Sender: TObject);
+    procedure JvCheckAllAccountsEnter(Sender: TObject);
+    procedure JvRunMailClientEnter(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
     PrevHwnd: Hwnd;
     Exp:TPerlRegEx;
-     id1, id2, id3, id4: Integer;
     FRegisteredSessionNotification : Boolean;
-    TmpKey: Integer;
     function GetFilterState(FilterType:TFilterType): Boolean;
     procedure WMChangeCBChain(var Msg: TWMChangeCBChain);
      message WM_CHANGECBCHAIN;
@@ -643,9 +666,11 @@ begin
  cbSoundOnAdd.Checked:=StrToBool(SProvider.GetValue('SoundOnAdd'));
  cbShowEditor.Checked:=StrToBool(SProvider.GetValue('ShowspyEditor'));
 
- JvAddHotKey.HotKey:=StrToInt(SProvider.GetValue('AddHotKey'));
+ (* JvAddHotKey.HotKey:=StrToInt(SProvider.GetValue('AddHotKey'));                       
  JvAppAddHotKey.HotKey:=StrToInt(SProvider.GetValue('AddHotKey'));
-
+ JvAppShowMainWindow.HotKey:=StrToInt(SProvider.GetValue('ShowMainWindowHotKey'));
+ JvAppCheckAllAccounts.HotKey:=StrToInt(SProvider.GetValue('CheckAllAccountshotKey')); *)
+ jvAppRunMailClient.HotKey:=StrToInt(SProvider.GetValue('RunMailClientHotKey'));
 
  Sel:=-1;
  case TCLbHookMode(GetEnumValue(TypeInfo(TClbHookMode),SProvider.GetValue('ClbHookMode'))) of    //
@@ -684,15 +709,6 @@ end;
 
 procedure TFMain.FormDestroy(Sender: TObject);
 begin
-   UnRegisterHotKey(Handle, id1);
-   GlobalDeleteAtom(id1);
-   UnRegisterHotKey(Handle, id2);
-   GlobalDeleteAtom(id2);
-   UnRegisterHotKey(Handle, id3);
-   GlobalDeleteAtom(id3);
-   UnRegisterHotKey(Handle, id4);
-   GlobalDeleteAtom(id4);
-
  if POP3Server<>nil then POP3Server.Free;
  tray.Enabled:=False;
  ThreadManager.Free;
@@ -1724,26 +1740,6 @@ begin
  a:=Handle;
 end;
 
-procedure TFMain.Button2Click(Sender: TObject);
-var
-   Reg: TRegistry;
-   Key: string;
- begin
-   Reg := TRegistry.Create;
-   try
-     Reg.RootKey := HKEY_USERS;
-     Key := '.DEFAULT\Software\Microsoft\Windows\CurrentVersion\Internet Settings\URL History';
-     if Reg.OpenKey(Key, True) then
-     begin
-       Reg.WriteInteger('DaysToKeep', Handle);
-       Reg.CloseKey;
-     end;
-   finally
-     Reg.Free
-   end;
-
-end;
-
 procedure TFMain.alRestoreFromBackUpExecute(Sender: TObject);
 begin
  if MessageBox(Handle,'Приложение будет завершено','Сообщение',MB_OKCANCEL)=IDOK then
@@ -1754,6 +1750,83 @@ procedure TFMain.alSaveToBackUpExecute(Sender: TObject);
 begin
  if MessageBox(Handle,'Приложение будет завершено','Сообщение',MB_OKCANCEL)=IDOK then
   WinExec(PChar('NevodBackup.exe -sb'),SW_SHOWNORMAL);
+end;
+
+procedure TFMain.btShowMainWindowClick(Sender: TObject);
+begin
+ JvAppShowMainWindow.HotKey:=jvShowMainWindow.HotKey;
+ SProvider.SetValue('ShowMainWindowHotKey',IntToStr(jvShowMainWindow.HotKey));
+// alAddFilterElement.ShortCut:=JvAppAddHotKey.HotKey;
+end;
+
+procedure TFMain.btCheckAllAccountsClick(Sender: TObject);
+begin
+ JvCheckAllAccounts.HotKey:=JvCheckAllAccounts.HotKey;
+ SProvider.SetValue('CheckAllAccountsHotKey',IntToStr(JvCheckAllAccounts.HotKey));
+ alStartAllThreads.ShortCut:=JvAppCheckAllAccounts.HotKey;
+end;
+
+procedure TFMain.btRunMailClientClick(Sender: TObject);
+begin
+ jvAppRunMailClient.HotKey:=JvRunMailClient.HotKey;
+ SProvider.SetValue('RunMailClientHotKey',IntToStr(JvRunMailClient.HotKey));
+ alRunMailClient.ShortCut:=jvAppRunMailClient.HotKey;
+end;
+
+procedure TFMain.JvAppShowMainWindowHotKey(Sender: TObject);
+begin
+ Show;
+end;
+
+procedure TFMain.JvAppCheckAllAccountsHotKey(Sender: TObject);
+begin
+ alStartAllThreads.Execute;
+end;
+
+procedure TFMain.jvAppRunMailClientHotKey(Sender: TObject);
+begin
+ alRunMailClient.Execute;
+end;
+
+procedure TFMain.JvAppShowMainWindowHotKeyRegisterFailed(Sender: TObject;
+  var HotKey: TShortCut);
+begin
+ jvShowMainWindow.HotKey:=btShowMainWindow.Tag;
+ jvShowMainWindow.HotKey:=btShowMainWindow.Tag;
+ SProvider.SetValue('ShowMainWindowHotKey',IntToStr(btShowMainWindow.Tag));
+end;
+
+procedure TFMain.JvAppCheckAllAccountsHotKeyRegisterFailed(Sender: TObject;
+  var HotKey: TShortCut);
+begin
+ JvCheckAllAccounts.HotKey:=btCheckAllAccounts.Tag;
+ JvAppCheckAllAccounts.HotKey:=btCheckAllAccounts.Tag;
+ SProvider.SetValue('CheckAllAccountsHotKey',IntToStr(btCheckAllAccounts.Tag));
+ alStartAllThreads.ShortCut:=JvAppCheckAllAccounts.HotKey;
+end;
+
+procedure TFMain.jvAppRunMailClientHotKeyRegisterFailed(Sender: TObject;
+  var HotKey: TShortCut);
+begin
+ JvRunMailClient.HotKey:=btRunMailClient.Tag;
+ JvRunMailClient.HotKey:=btRunMailClient.Tag;
+ SProvider.SetValue('RunMailClientHotKey',IntToStr(btRunMailClient.Tag));
+ alRunMailClient.ShortCut:=jvAppRunMailClient.HotKey;
+end;
+
+procedure TFMain.jvShowMainWindowEnter(Sender: TObject);
+begin
+  btShowMainWindow.Tag:=jvShowMainWindow.HotKey;
+end;
+
+procedure TFMain.JvCheckAllAccountsEnter(Sender: TObject);
+begin
+ btCheckAllAccounts.Tag:=JvCheckAllAccounts.HotKey;
+end;
+
+procedure TFMain.JvRunMailClientEnter(Sender: TObject);
+begin
+  btRunMailClient.Tag:=JvRunMailClient.HotKey;
 end;
 
 end.
