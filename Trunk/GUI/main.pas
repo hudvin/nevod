@@ -2,7 +2,7 @@ unit main;
 
 interface
 
-uses Commctrl,tlhelp32, StdCtrls, Dialogs, ImgList, Controls, dxBar,
+uses Commctrl,tlhelp32, StdCtrls, Dialogs, ImgList, Controls, dxBar,  Math,
   ExtCtrls, dxBarExtItems, Classes, ActnList, CoolTrayIcon, DB, ADODB,
   cxMemo, cxButtonEdit, cxTextEdit, cxMaskEdit, cxSpinEdit, cxCheckBox,
   cxContainer, cxEdit, cxGroupBox, cxGridLevel, cxGridCustomTableView,
@@ -263,6 +263,11 @@ type
     btCheckAllAccounts: TButton;
     leRunMailClient: TLabel;
     btRunMailClient: TButton;
+    cxRichEdit1: TcxRichEdit;
+    msEnableFiltering: TdxBarButton;
+    alEnableFiltering: TAction;
+    ptEnableFiltering: TdxBarButton;
+    ptAddFilterElement: TdxBarButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -390,6 +395,7 @@ type
     procedure jvShowMainWindowEnter(Sender: TObject);
     procedure JvCheckAllAccountsEnter(Sender: TObject);
     procedure JvRunMailClientEnter(Sender: TObject);
+    procedure alEnableFilteringExecute(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -418,6 +424,7 @@ type
     procedure UpdateHeaders(Headers:TColumnsHeaders);
     property FilterState[FilterType:TFilterType]: Boolean read GetFilterState write
         SetFilterState; default;
+    function GetTotalMessCount: Integer;
     function IsDiffFrom(Status:boolean): Boolean;
     procedure SetStatusTo(Status:boolean);
     procedure ShowEditor(var AMessage: TMessage); message
@@ -1006,6 +1013,7 @@ end;
 
 procedure TFMain.AccountsUpdaterTimer(Sender: TObject);
 begin
+ stBar.Panels.Items[0].Text:='Размер базы данных : '+ FloatToStr(RoundTo((Shared.GetFileSize(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb'))/(1024*1024),-2))+' Мб';
  if FMain.Active then
   begin
    if not adAccounts.Active then adAccounts.Active:=True;
@@ -1279,7 +1287,10 @@ var
  tFilter:TFilterType;
  btCaption,FilterString:String;
 begin
- alAddFilterElement.ShortCut:=StrToInt(SProvider.GetValue('AddHotKey'));
+// alAddFilterElement.ShortCut:=StrToInt(SProvider.GetValue('AddHotKey'));
+// ,BoolToStr(,True));
+// alEnableFiltering.Checked:=StrToBool(SProvider.GetValue('EnableFiltering'));
+
  SNConverter.Find(STree.TreeList.FocusedNode.AbsoluteIndex,Res);
  tFilter:=FManager.TwinFilter(Res.FilterType);
  if (Res.FilterType<>ftNone) and (cxFilters.Controller.SelectedRowCount>0) then
@@ -1837,6 +1848,26 @@ end;
 procedure TFMain.JvRunMailClientEnter(Sender: TObject);
 begin
   btRunMailClient.Tag:=JvRunMailClient.HotKey;
+end;
+
+procedure TFMain.alEnableFilteringExecute(Sender: TObject);
+begin
+
+ alEnableFiltering.Checked:= NOT alEnableFiltering.Checked;
+ SProvider.SetValue('EnableFiltering',BoolToStr(alEnableFiltering.Checked,True));
+
+end;
+
+function TFMain.GetTotalMessCount: Integer;
+begin
+ with adProc do
+   begin
+    Active:=False;
+    SQL.Text:='SELECT COUNT(*) FROM Messages ';
+    Active:=True;
+    Result:=Fields[0].AsInteger;
+    Active:=False;
+   end;
 end;
 
 end.

@@ -336,6 +336,8 @@ function DBPassword: string;
 
 procedure WriteAppHandle(Handle:DWORD);
 
+function GetFileSize(FileName: String): Integer;
+
 implementation
 
 
@@ -630,6 +632,19 @@ begin
      if RecordCount>0 then Result:=Fields[0].AsString else Result:='Error';
      Close;
     end;
+end;
+
+function GetFileSize(FileName: String): Integer;
+var
+  FS: TFileStream;
+begin
+  try
+    FS := TFileStream.Create(Filename, fmShareDenyNone);
+  except
+    Result := -1;
+  end;
+  if Result <> -1 then Result := FS.Size;
+  FS.Free;
 end;
 
 function TSettings.SetValue(SettingName,Value:string): Boolean;
