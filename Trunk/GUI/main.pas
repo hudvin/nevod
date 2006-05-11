@@ -747,8 +747,6 @@ begin
  Exp.Free;
  SProvider.Free;
  adProc.Free;
-  if FRegisteredSessionNotification then
-   UnRegisterSessionNotification(Handle); 
  CloseHandle(Mutex);
 
 end;

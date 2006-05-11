@@ -34,7 +34,7 @@ implementation
 
 procedure TFAbout.leSiteClick(Sender: TObject);
 begin
- ShellExecute(Handle, nil, 'http://www.nevilon.com', nil, nil, SW_SHOW);
+ ShellExecute(Handle, nil, 'mailto:support@nevilon.com', nil, nil, SW_SHOW);
 end;
 
 procedure TFAbout.FormShow(Sender: TObject);

@@ -9,7 +9,7 @@ MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
 DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
-PROJECTS = Nevod.exe NevodBackup.exe
+PROJECTS = Nevod.exe NevodBackup.exe Shared.dll
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -18,6 +18,9 @@ Nevod.exe: Nevod.dpr
   $(DCC)
 
 NevodBackup.exe: NevodBackup.dpr
+  $(DCC)
+
+Shared.dll: Shared.dpr
   $(DCC)
 
 

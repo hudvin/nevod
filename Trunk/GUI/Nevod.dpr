@@ -28,21 +28,32 @@ uses
   PortEditor in 'PortEditor.pas' {FPortEditor},
   ASFilter in '..\MessagesFilter\ASFilter.pas',
   MultInst in 'MultInst.pas',
-  About in 'About.pas' {FAbout};
+  About in 'About.pas' {FAbout},
+  SplashScreen in 'SplashScreen.pas' {FSplashScreen},
+  ADODB_TLB in '..\Shared\ADODB_TLB.pas',
+  JRO_TLB in '..\Shared\JRO_TLB.pas';
 
 {$R *.res}
+
+//function md5(InputString:ShortString): ShortString; external 'Shared.DLL';
+
 var
  Con,CanExit:boolean;
  aCon:TADOConnection;
-
+ Lab:String;
 
 begin
   if InitInstance then
   begin
   Application.Initialize;
-
+  FSplashScreen := TFSplashScreen.Create(Application);
+  FSplashScreen.Show;
+  FSplashScreen.Update;
+  while FSplashScreen.Timer1.Enabled do
+    Application.ProcessMessages;
   try
- //  PackDB(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb','',DBPassword);
+  // PackDB(PChar(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb'),PChar(''),DBPassword);
+   DatabaseCompact(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb',DBPassword);
   except;
   end;
   aCon:=TADOConnection.Create(nil);
@@ -66,6 +77,8 @@ begin
   Application.CreateForm(TFAbout, FAbout);
   if (ParamCount>0) and (ParamStr(1)='-h') then
      Application.MainForm.WindowState:=wsMinimized;
+      FSplashScreen.Hide;
+      FSplashScreen.Free;
      Application.Run;
     end;
 

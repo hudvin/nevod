@@ -1,11 +1,10 @@
-object FAbout: TFAbout
-  Left = 425
-  Top = 282
-  BorderIcons = [biSystemMenu]
-  BorderStyle = bsSingle
-  Caption = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077
-  ClientHeight = 251
-  ClientWidth = 298
+object FSplashScreen: TFSplashScreen
+  Left = 431
+  Top = 319
+  BorderStyle = bsNone
+  Caption = 'FSplashScreen'
+  ClientHeight = 153
+  ClientWidth = 296
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,8 +19,8 @@ object FAbout: TFAbout
   object bkImage: TJvImage
     Left = 0
     Top = 0
-    Width = 298
-    Height = 251
+    Width = 296
+    Height = 153
     Align = alClient
     Picture.Data = {
       0A544A504547496D61676565A40000FFD8FFE000104A46494600010201004800
@@ -1341,120 +1340,31 @@ object FAbout: TFAbout
       EEBDD7BDFBAF75EF7EEBDD7BDFBAF75EF7EEBDD7BDFBAF75EF7EEBDD7BDFBAF7
       5EF7EEBDD7BDFBAF75EF7EEBDD7BDFBAF75FFFD9}
   end
-  object leSite: TJvLinkLabel
+  object pBar: TcxProgressBar
     Left = 16
-    Top = 128
-    Width = 177
-    Height = 13
-    Cursor = crHandPoint
-    Caption = 'Web : http://www.nevilon.com'
-    Text.Strings = (
-      'Web : http://www.nevilon.com')
-    Transparent = True
-    LinkColor = clBlue
-    LinkColorClicked = clRed
-    LinkColorHot = clPurple
-    LinkStyle = [fsBold, fsItalic, fsUnderline]
-    HotLinks = True
-    AutoHeight = True
-    MarginWidth = 0
-    MarginHeight = 0
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clHighlight
-    Font.Height = -11
-    Font.Name = 'MS Sans Serif'
-    Font.Style = []
-    ParentFont = False
-    OnClick = leSiteClick
+    Top = 96
+    Style.BorderStyle = ebsOffice11
+    Style.LookAndFeel.Kind = lfOffice11
+    Style.LookAndFeel.NativeStyle = True
+    StyleDisabled.LookAndFeel.Kind = lfOffice11
+    StyleDisabled.LookAndFeel.NativeStyle = True
+    StyleFocused.LookAndFeel.Kind = lfOffice11
+    StyleFocused.LookAndFeel.NativeStyle = True
+    StyleHot.LookAndFeel.Kind = lfOffice11
+    StyleHot.LookAndFeel.NativeStyle = True
+    TabOrder = 0
+    Width = 257
   end
-  object leMail: TJvLinkLabel
-    Left = 16
-    Top = 144
-    Width = 177
-    Height = 13
-    Cursor = crHandPoint
-    Caption = 'Email : support@nevilon.com'
-    Text.Strings = (
-      'Email : support@nevilon.com')
-    Transparent = True
-    LinkColor = clBlue
-    LinkColorClicked = clRed
-    LinkColorHot = clPurple
-    LinkStyle = [fsBold, fsItalic, fsUnderline]
-    HotLinks = True
-    AutoHeight = True
-    MarginWidth = 0
-    MarginHeight = 0
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clHighlight
-    Font.Height = -11
-    Font.Name = 'MS Sans Serif'
-    Font.Style = []
-    ParentFont = False
-    OnClick = leSiteClick
+  object Timer1: TTimer
+    Interval = 3000
+    OnTimer = Timer1Timer
+    Left = 264
+    Top = 16
   end
-  object leOS: TLabel
-    Left = 32
-    Top = 168
-    Width = 23
-    Height = 13
-    Caption = 'leOS'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clHighlight
-    Font.Height = -11
-    Font.Name = 'MS Sans Serif'
-    Font.Style = []
-    ParentFont = False
-  end
-  object leCompName: TLabel
-    Left = 32
-    Top = 184
-    Width = 23
-    Height = 13
-    Caption = 'leOS'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clHighlight
-    Font.Height = -11
-    Font.Name = 'MS Sans Serif'
-    Font.Style = []
-    ParentFont = False
-  end
-  object leTimeRunning: TLabel
-    Left = 32
-    Top = 200
-    Width = 23
-    Height = 13
-    Caption = 'leOS'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clHighlight
-    Font.Height = -11
-    Font.Name = 'MS Sans Serif'
-    Font.Style = []
-    ParentFont = False
-  end
-  object leCurrentUser: TLabel
-    Left = 32
-    Top = 216
-    Width = 23
-    Height = 13
-    Caption = 'leOS'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clHighlight
-    Font.Height = -11
-    Font.Name = 'MS Sans Serif'
-    Font.Style = []
-    ParentFont = False
-  end
-  object cInfo: TJvComputerInfo
-    ComputerName = 'NEVOD'
-    Username = 'neiroman'
-    Company = 'Nevod'
-    ProductID = '55683-OEM-0013514-73984'
-    ProductName = 'Microsoft Windows XP'
-    DVDRegion = -1
-    TimeRunning = 0.009427442129629629
-    DayRunning = 0
-    Left = 8
-    Top = 216
+  object Timer2: TTimer
+    Interval = 50
+    OnTimer = Timer2Timer
+    Left = 128
+    Top = 104
   end
 end

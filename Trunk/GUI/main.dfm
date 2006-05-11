@@ -5225,7 +5225,7 @@ object FMain: TFMain
   object JvEditor1: TJvEditor
     Left = 24
     Top = 208
-    Width = 233
+    Width = 113
     Height = 81
     Cursor = crIBeam
     GutterWidth = 0
@@ -5251,8 +5251,8 @@ object FMain: TFMain
     UseDockManager = False
   end
   object JvaScrollText1: TJvaScrollText
-    Left = 128
-    Top = 144
+    Left = 24
+    Top = 80
     RightMargin = 0
   end
   object dsAccounts: TDataSource

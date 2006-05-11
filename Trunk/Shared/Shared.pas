@@ -298,6 +298,13 @@ type
     procedure Execute; override;
   end;
 
+function md5(InputString:ShortString): ShortString; external 'Shared.DLL';
+function GetAppDataPath: PChar;external 'Shared.DLL';
+function DBPassword:ShortString;external 'Shared.DLL';
+procedure PackDB(DatabaseName:PChar; DestDatabaseName:PChar; Password:ShortString);external 'Shared.DLL';
+procedure WriteAppHandle(Handle:DWORD);external 'Shared.DLL';
+function DatabaseCompact(const sdbName: WideString;Password:ShortString): boolean;external 'Shared.DLL';
+
 function BindPort(Port:integer): Boolean;
 function IsConnected():Boolean;
 function WSAIoctl(s: TSocket; cmd: DWORD; lpInBuffer: PCHAR; dwInBufferLen:
@@ -307,8 +314,6 @@ function WSAIoctl(s: TSocket; cmd: DWORD; lpInBuffer: PCHAR; dwInBufferLen:
   lpOverLapped: POINTER;
   lpOverLappedRoutine: POINTER): Integer; stdcall; external 'WS2_32.DLL';
 
-function RegisterSessionNotification(Wnd: HWND; dwFlags: DWORD): Boolean;
-function UnRegisterSessionNotification(Wnd: HWND): Boolean;
 function GetCurrentSessionID: Integer;
 function GetLocalIP: String;
 
@@ -319,9 +324,8 @@ function ObtainTextSid(hToken: THandle; pszSid: PChar;
 
 procedure PlaySound(FilePath:String);
 
-function md5(InputString:string): string;
+//function md5(InputString:string): string;
 
-function GetAppDataPath: string;
 
 procedure WriteAppPath(AppPath:String);
 
@@ -329,12 +333,8 @@ function GetConnectionString: string;
 
 procedure RestoreDB;
 
-procedure PackDB(DatabaseName: string; DestDatabaseName: string = ''; Password:
-    string = '');
 
-function DBPassword: string;
 
-procedure WriteAppHandle(Handle:DWORD);
 
 function GetFileSize(FileName: String): Integer;
 
@@ -666,54 +666,6 @@ end;
 
 
 
-function RegisterSessionNotification(Wnd: HWND; dwFlags: DWORD): Boolean;
-type
-  TWTSRegisterSessionNotification = function(Wnd: HWND; dwFlags: DWORD): BOOL; stdcall;
-var
-  hWTSapi32dll: THandle;
-  WTSRegisterSessionNotification: TWTSRegisterSessionNotification;
-begin
-  Result := False;
-  hWTSAPI32DLL := LoadLibrary('Wtsapi32.dll');
-  if (hWTSAPI32DLL > 0) then
-  begin
-    try @WTSRegisterSessionNotification :=
-        GetProcAddress(hWTSAPI32DLL, 'WTSRegisterSessionNotification');
-      if Assigned(WTSRegisterSessionNotification) then
-      begin
-        Result:= WTSRegisterSessionNotification(Wnd, dwFlags);
-      end;
-    finally
-      if hWTSAPI32DLL > 0 then
-        FreeLibrary(hWTSAPI32DLL);
-    end;
-  end;
-end;
-
-function UnRegisterSessionNotification(Wnd: HWND): Boolean;
-type
-  TWTSUnRegisterSessionNotification = function(Wnd: HWND): BOOL; stdcall;
-var
-  hWTSapi32dll: THandle;
-  WTSUnRegisterSessionNotification: TWTSUnRegisterSessionNotification;
-begin
-  Result := False;
-  hWTSAPI32DLL := LoadLibrary('Wtsapi32.dll');
-  if (hWTSAPI32DLL > 0) then
-  begin
-    try @WTSUnRegisterSessionNotification :=
-        GetProcAddress(hWTSAPI32DLL, 'WTSUnRegisterSessionNotification');
-      if Assigned(WTSUnRegisterSessionNotification) then
-      begin
-        Result:= WTSUnRegisterSessionNotification(Wnd);
-      end;
-    finally
-      if hWTSAPI32DLL > 0 then
-        FreeLibrary(hWTSAPI32DLL);
-    end;
-  end;
-end;
-
 function GetCurrentSessionID: Integer;
 type
   TProcessIdToSessionId = function(dwProcessId: DWORD; pSessionId: DWORD): BOOL; stdcall;
@@ -935,7 +887,7 @@ begin
   MMSystem.PlaySound(PChar(FilePath),0,SND_FILENAME);
 end;
 
-function md5(InputString:string): string;
+{ function md5(InputString:string): string;
 var
   Digest: T4x4LongWordRecord;
   S, S1: string;
@@ -952,19 +904,9 @@ begin
       Result:=s1;
       Free;
     end;
-end;
+end; }
 
-function GetAppDataPath: string;
-var
- Key:TRegistry;
-begin
- Key:=TRegistry.Create;
- Key.RootKey:=HKEY_CURRENT_USER;
- Key.OpenKey('\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders',False);
- Result:=Key.ReadString('AppData');
- Key.CloseKey;
- Key.Free;
-end;
+
 
 procedure WriteAppPath(AppPath:String);
 var
@@ -1002,74 +944,8 @@ begin
  end;
 end;
 
-procedure PackDB(DatabaseName: string; DestDatabaseName: string = ''; Password:
-    string = '');
-const
-  Provider = 'Provider=Microsoft.Jet.OLEDB.4.0;';
-var
-  TempName: array[0..MAX_PATH] of Char;
-  TempPath,Name: string;
-  Src, Dest: WideString;
-  V: Variant;
-begin
- try
-  Src := Provider + 'Data Source=' + DatabaseName;
-  if DestDatabaseName <> '' then Name := DestDatabaseName
-  else
-   begin
-    TempPath := ExtractFilePath(DatabaseName);
-    if TempPath = '' then TempPath := GetCurrentDir;
-    GetTempFileName(PChar(TempPath), 'ndb', 0, TempName);
-    Name := StrPas(TempName);
-   end;
-   DeleteFile(PChar(Name));
-   Dest := Provider + 'Data Source=' + Name;
-   if Password <> '' then
-    begin
-     Src := Src + ';Jet OLEDB:Database Password=' + Password;
-     Dest := Dest + ';Jet OLEDB:Database Password=' + Password;
-    end;
-    V := CreateOleObject('jro.JetEngine');
-    try
-      V.CompactDatabase(Src, Dest);
-    finally
-      V := 0;
-    end;
-    if DestDatabaseName = '' then
-    begin
-     DeleteFile(PChar(DatabaseName));
-     RenameFile(Name, DatabaseName);
-    end;
- except
-    on E: Exception do  
-    // ShowMessage(e.message);
- end;
 
-end;
 
-function DBPassword: string;
-begin
-  Result := Copy((md5(CriptKey+MutexName)),0,15);
-end;
-
-procedure WriteAppHandle(Handle:DWORD);
-var
- Reg: TRegistry;
- Key: string;
-begin
- Reg := TRegistry.Create;
- try
-  Reg.RootKey := HKEY_CURRENT_USER;
-  Key := '\Software\Nevilon\Nevod AntiSpam';
-  if Reg.OpenKey(Key, True) then
-   begin
-    Reg.WriteInteger('Handle',Handle);
-    Reg.CloseKey;
-   end;
- finally
-  Reg.Free
- end;
-end;
 
 function TRegExp.BuildExp(const Value: string): string;
 var inpString,buff,symbols:String;
