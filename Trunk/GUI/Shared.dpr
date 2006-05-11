@@ -16,7 +16,7 @@ uses
 
 const
   CriptKey=' &(5428396%:?(__*:?:(_(%fGfhhKJHFGHD12_= ';
-  MutexName='{94FA4497-A317-4C45-9B57-A0558F8221D7}';
+
 
 {$R *.res}
 
@@ -53,7 +53,6 @@ begin
 end;
 
 
-
 function GetAppDataPath: PChar;
 var
  Key:TRegistry;
@@ -70,7 +69,7 @@ function DBPassword:ShortString;
 var
  Sum:ShortString;
 begin
-  Sum:=md5(CriptKey+MutexName);
+  Sum:=md5(CriptKey);
   Result :=Copy(Sum,0,15);
 end;
 
@@ -92,7 +91,7 @@ begin
    DeleteFile(PChar(sdbName));
    RenameFile(sdbTemp, sdbName);
   except
-   on E: Exception do ShowMessage(E.Message);
+//   on E: Exception do ShowMessage(E.Message);
   end;
  finally
   JE.FreeOnRelease;
@@ -119,7 +118,91 @@ begin
  end;
 end;
 
-exports md5,GetAppDataPath,DBPassword,DatabaseCompact,GetTempFile,WriteAppHandle;
+function GetConnectionString: PChar;
+var
+ DBPath:String;
+begin
+ DBPath:=GetAppDataPath+'\Nevilon Software\Nevod AntiSpam';
+ Result:=PChar('Provider=Microsoft.Jet.OLEDB.4.0;'+'Data Source='+DBPath+'\messages.ndb;'+
+            'Jet OLEDB:Database Password='+DBPassword);
+end;
+
+procedure WriteAppPath(AppPath:PChar);
+var
+ key:TRegistry;
+begin
+ key:=TRegistry.Create;
+ key.RootKey:=HKEY_CURRENT_USER;
+ key.OpenKey('\Software\Nevilon\Nevod AntiSpam',True);
+ key.WriteString('AppPath',AppPath);
+ key.CloseKey;
+ key.Free;
+end;
+
+function GetAppPath():PChar;
+var
+ key:TRegistry;
+begin
+ key:=TRegistry.Create;
+ key.RootKey:=HKEY_CURRENT_USER;
+ key.OpenKey('\Software\Nevilon\Nevod AntiSpam',True);
+ Result:=PChar(key.ReadString('AppPath'));
+ key.CloseKey;
+ key.Free;
+end;
+
+function GetAppHandle():DWORD;
+var
+ Reg: TRegistry;
+ RegKey: DWORD;
+ Key: string;
+begin
+ Reg:= TRegistry.Create;
+ try
+  Reg.RootKey := HKEY_CURRENT_USER;
+  Key := '\Software\Nevilon\Nevod AntiSpam';
+  if Reg.OpenKeyReadOnly(Key) then
+   begin
+    if Reg.ValueExists('Handle') then
+     begin
+      RegKey := Reg.ReadInteger('Handle');
+      Reg.CloseKey;
+     end;
+   end;
+ finally
+  Reg.Free
+ end;
+ Result:=RegKey;
+end;
+
+function IsNormal(DBPath:PChar): Boolean;
+var
+ adCon:TADOConnection;
+ ConStr:PChar;
+begin
+ ConStr:=PChar('Provider=Microsoft.Jet.OLEDB.4.0;'+'Data Source='+DBPath+';'+
+            'Jet OLEDB:Database Password='+DBPassword);
+
+
+  Coinitialize(nil);
+  try
+  adCon:=TADOConnection.Create(nil);
+   adCon.ConnectionString:=ConStr;
+   try
+    adCon.Connected:=True;
+    adCon.Connected:=False;
+    Result:=True;
+   except
+    Result:=False;
+   end;
+  finally
+   adCon.Free;
+ end;
+  CoUninitialize;
+end;
+
+exports md5,GetAppDataPath,DBPassword,DatabaseCompact,GetTempFile,WriteAppHandle,
+         GetConnectionString,WriteAppPath,GetAppPath,GetAppHandle,IsNormal;
 
 begin
 end.

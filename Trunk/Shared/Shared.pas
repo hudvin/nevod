@@ -27,7 +27,7 @@ const
   IFF_POINTTOPOINT = $00000008;
   IFF_MULTICAST = $00000010;
   HEAP_ZERO_MEMORY = $00000008;
-  SID_REVISION     = 1; 
+  SID_REVISION     = 1;
 
   WM_WTSSESSION_CHANGE = $2B1;
   WTS_CONSOLE_CONNECT = 1;
@@ -299,10 +299,11 @@ type
   end;
 
 function md5(InputString:ShortString): ShortString; external 'Shared.DLL';
+function GetConnectionString: PChar; external 'Shared.DLL';
 function GetAppDataPath: PChar;external 'Shared.DLL';
 function DBPassword:ShortString;external 'Shared.DLL';
-procedure PackDB(DatabaseName:PChar; DestDatabaseName:PChar; Password:ShortString);external 'Shared.DLL';
 procedure WriteAppHandle(Handle:DWORD);external 'Shared.DLL';
+procedure WriteAppPath(AppPath:PChar);external 'Shared.DLL';
 function DatabaseCompact(const sdbName: WideString;Password:ShortString): boolean;external 'Shared.DLL';
 
 function BindPort(Port:integer): Boolean;
@@ -323,13 +324,6 @@ function ObtainTextSid(hToken: THandle; pszSid: PChar;
    var dwBufferLen: DWORD): BOOL;
 
 procedure PlaySound(FilePath:String);
-
-//function md5(InputString:string): string;
-
-
-procedure WriteAppPath(AppPath:String);
-
-function GetConnectionString: string;
 
 procedure RestoreDB;
 
@@ -887,47 +881,7 @@ begin
   MMSystem.PlaySound(PChar(FilePath),0,SND_FILENAME);
 end;
 
-{ function md5(InputString:string): string;
-var
-  Digest: T4x4LongWordRecord;
-  S, S1: string;
-  i: Integer;
-begin
-  SetLength(S, 16);
-  with TIdHashMessageDigest5.Create do
-    begin
-      Digest := HashValue(InputString);
-      Move(Digest, S[1], 16);
-      for i := 1 to Length(InputString) do
-        S1 := S1 + Format('%02x', [Byte(S[i])]);
-      while Pos(' ', S1) > 0 do S1[Pos(' ', S1)] := '0';
-      Result:=s1;
-      Free;
-    end;
-end; }
 
-
-
-procedure WriteAppPath(AppPath:String);
-var
- key:TRegistry;
-begin
- key:=TRegistry.Create;
- key.RootKey:=HKEY_CURRENT_USER;
- key.OpenKey('\Software\Nevilon\Nevod AntiSpam',True);
- key.WriteString('AppPath',AppPath);
- key.CloseKey;
- key.Free;
-end;
-
-function GetConnectionString: string;
-var
- DBPath:String;
-begin
- DBPath:=GetAppDataPath+'\Nevilon Software\Nevod AntiSpam';
- Result:='Provider=Microsoft.Jet.OLEDB.4.0;'+'Data Source='+DBPath+'\messages.ndb;'+
-            'Jet OLEDB:Database Password='+DBPassword;
-end;
 
 procedure RestoreDB;
 var

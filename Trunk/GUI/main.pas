@@ -18,9 +18,9 @@ uses Commctrl,tlhelp32, StdCtrls, Dialogs, ImgList, Controls, dxBar,  Math,
   XPStyleActnCtrls, ActnMan,  Clipbrd, PerlRegEx,
    ToolWin, ActnCtrls, ActnColorMaps,
   ActnPopupCtrl,  cxRichEdit,
-  cxButtons, cxDropDownEdit, JvClipView, ComCtrls, JvHotKey, JvComponent,
-  JvAppHotKey, JvHotkeyEx, JvSerialMaker, JvTranslator, JvGradientCaption,
-  JvDlg, JvComputerInfo, JvHtControls, JvaScrollText, JvEditor, JvTransLED;
+  cxButtons, cxDropDownEdit,  ComCtrls, JvHotKey, JvComponent,
+  JvAppHotKey, JvHotkeyEx,
+  JvDlg, JvComputerInfo, JvHtControls, JvTransLED;
 
  
 
@@ -264,14 +264,11 @@ type
     btCheckAllAccounts: TButton;
     leRunMailClient: TLabel;
     btRunMailClient: TButton;
-    cxRichEdit1: TcxRichEdit;
     msEnableFiltering: TdxBarButton;
     alEnableFiltering: TAction;
     ptEnableFiltering: TdxBarButton;
     ptAddFilterElement: TdxBarButton;
     JvTransLED1: TJvTransLED;
-    JvEditor1: TJvEditor;
-    JvaScrollText1: TJvaScrollText;
     JvHTLabel1: TJvHTLabel;
     alShowAbout: TAction;
     msShowAbout: TdxBarButton;
@@ -567,7 +564,7 @@ var
 begin
  IsCreated:=False;
  adCon.ConnectionString:=GetConnectionString;
- WriteAppPath(Application.ExeName);
+ WriteAppPath(PChar(Application.ExeName));
  WriteAppHandle(Handle);
 
  FPortEditor:=TFPortEditor.Create(adCon);
