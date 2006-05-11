@@ -10,6 +10,7 @@ uses
   SysUtils,
   WinSock,
   main in 'main.pas' {FMain},
+  PBThreadedSplashscreenU in 'PBThreadedSplashscreenU.pas',
   Shared in '..\Shared\Shared.pas',
   Base64 in '..\Crypt\Base64.pas',
   Blowfish in '..\Crypt\Blowfish.pas',
@@ -35,8 +36,6 @@ uses
 
 {$R *.res}
 
-//function md5(InputString:ShortString): ShortString; external 'Shared.DLL';
-
 var
  Con,CanExit:boolean;
  aCon:TADOConnection;
@@ -46,13 +45,9 @@ begin
   if InitInstance then
   begin
   Application.Initialize;
-  FSplashScreen := TFSplashScreen.Create(Application);
-  FSplashScreen.Show;
-  FSplashScreen.Update;
-  while FSplashScreen.Timer1.Enabled do
-    Application.ProcessMessages;
+   ShowSplashScreen;
   try
-  // PackDB(PChar(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb'),PChar(''),DBPassword);
+   ShowSplashScreenMessage('Упаковка базы данных');
    DatabaseCompact(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb',DBPassword);
   except;
   end;
@@ -63,6 +58,7 @@ begin
   CanExit:=False;
   while (not Con) and (not canExit) do
    try
+    ShowSplashScreenMessage('Проверка целостности базы данных');
     aCon.Connected:=True;
     Con:=True;
    except
@@ -73,16 +69,13 @@ begin
   if CanExit  then  Application.Terminate
    else
     begin
+     ShowSplashScreenMessage('Инициализация интерфейса');
      Application.CreateForm(TFMain, FMain);
   Application.CreateForm(TFAbout, FAbout);
   if (ParamCount>0) and (ParamStr(1)='-h') then
-     Application.MainForm.WindowState:=wsMinimized;
-      FSplashScreen.Hide;
-      FSplashScreen.Free;
+   Application.MainForm.WindowState:=wsMinimized;
+      HideSplashScreen;
      Application.Run;
     end;
-
-
-  
   end;
 end.

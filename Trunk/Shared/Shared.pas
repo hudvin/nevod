@@ -47,7 +47,7 @@ const
   WaitTime=5000;      // время между проверками состояний
   WM_BallonMessage = WM_USER + 1;
   WM_ShowCEditor=WM_USER+2;
-
+  UM_ACTIVATE = WM_APP + 123;
 type
  TClbHookMode=(chEmail,chURL,chEmailURL);
 

@@ -13,7 +13,6 @@ object FSplashScreen: TFSplashScreen
   Font.Style = []
   OldCreateOrder = False
   Position = poDesktopCenter
-  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object bkImage: TJvImage
@@ -1339,32 +1338,5 @@ object FSplashScreen: TFSplashScreen
       D7BDFBAF75EF7EEBDD7BDFBAF75EF7EEBDD7BDFBAF75EF7EEBDD7BDFBAF75EF7
       EEBDD7BDFBAF75EF7EEBDD7BDFBAF75EF7EEBDD7BDFBAF75EF7EEBDD7BDFBAF7
       5EF7EEBDD7BDFBAF75EF7EEBDD7BDFBAF75FFFD9}
-  end
-  object pBar: TcxProgressBar
-    Left = 16
-    Top = 96
-    Style.BorderStyle = ebsOffice11
-    Style.LookAndFeel.Kind = lfOffice11
-    Style.LookAndFeel.NativeStyle = True
-    StyleDisabled.LookAndFeel.Kind = lfOffice11
-    StyleDisabled.LookAndFeel.NativeStyle = True
-    StyleFocused.LookAndFeel.Kind = lfOffice11
-    StyleFocused.LookAndFeel.NativeStyle = True
-    StyleHot.LookAndFeel.Kind = lfOffice11
-    StyleHot.LookAndFeel.NativeStyle = True
-    TabOrder = 0
-    Width = 257
-  end
-  object Timer1: TTimer
-    Interval = 3000
-    OnTimer = Timer1Timer
-    Left = 264
-    Top = 16
-  end
-  object Timer2: TTimer
-    Interval = 50
-    OnTimer = Timer2Timer
-    Left = 128
-    Top = 104
   end
 end

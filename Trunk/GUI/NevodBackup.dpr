@@ -173,7 +173,6 @@ var
 begin
  if ParamCount>0 then
   begin
-  //  CoInitialize(nil);
     IsRunning:=False;
     if ParamStr(1)='-rb' then
      begin
@@ -195,6 +194,5 @@ begin
       CreateBackUp;
       if IsRunning then WinExec(PChar(GetAppPath),SW_SHOWNORMAL);
      end;
-   // CoUninitialize;
   end;
 end.

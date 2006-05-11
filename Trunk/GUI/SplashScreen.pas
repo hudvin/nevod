@@ -2,52 +2,82 @@ unit SplashScreen;
 
 interface
 
-uses
+uses PBThreadedSplashscreenU,
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, jpeg, JvImage, StdCtrls, cxControls, cxContainer,
   cxEdit, cxProgressBar;
 
 type
   TFSplashScreen = class(TForm)
-    Timer1: TTimer;
     bkImage: TJvImage;
-    Timer2: TTimer;
-    pBar: TcxProgressBar;
-    procedure Timer1Timer(Sender: TObject);
-    procedure FormShow(Sender: TObject);
-    procedure Timer2Timer(Sender: TObject);
   private
     { Private declarations }
   public
     { Public declarations }
   end;
 
-var
-  FSplashScreen: TFSplashScreen;
 
+Procedure ShowSplashscreen;
+Procedure HideSplashScreen;
+Procedure ShowSplashScreenMessage( const S: String );
 implementation
 
 {$R *.dfm}
 
-procedure TFSplashScreen.Timer1Timer(Sender: TObject);
-begin
- Timer1.Enabled := false;
-end;
+var
+ // FSplashScreen: TFSplashScreen;
+  ThreadedSplashForm: TPBThreadedSplashscreen;
 
-procedure TFSplashScreen.FormShow(Sender: TObject);
-begin
- { while Timer1.Enabled do                         
-  begin
-   sleep(50);
-   
-  // Update;
- //  UpdateControlState;
-  end; }
-end;
+Procedure ShowSplashscreen;
+  Var
+    SplashForm: TFSplashScreen;
+    bmp: TBitmap;
+  Begin
+    If Assigned( ThreadedSplashForm ) Then Exit;
 
-procedure TFSplashScreen.Timer2Timer(Sender: TObject);
-begin
- pBar.Position:=pBar.Position+2;
-end;
+    Splashform := TFSplashScreen.Create( Application );
+    try
+      ThreadedSplashForm:= TPBThreadedSplashscreen.Create( nil );
+      Try
+        ThreadedSplashform.Left  := Splashform.Left;
+        ThreadedSplashform.Top   := Splashform.Top;
+        ThreadedSplashform.Center:=
+           Splashform.Position in [ poScreenCenter, poMainFormCenter,
+                                    poDesktopCenter ];
+        bmp:= Splashform.GetFormImage;
+        try
+          ThreadedSplashform.Image := bmp;
+        finally
+          bmp.Free;
+        end;
+        ThreadedSplashForm.UseStatusbar  := True;
+        // ThreadedSplashForm.TopMost := true;
+
+        ThreadedSplashForm.Show;
+      Except
+        FreeAndNil(ThreadedSplashForm);
+        raise;
+      End; { Except }
+    finally
+      Splashform.Free;
+    end;
+  End;
+
+Procedure HideSplashScreen;
+  Begin
+    FreeAndNil(ThreadedSplashForm);
+  End;
+
+Procedure ShowSplashScreenMessage( const S: String );
+  Begin
+    If Assigned( ThreadedSplashForm ) Then
+      ThreadedSplashForm.ShowStatusMessage( S );
+  End;
+
+
+
+
+
+
 
 end.

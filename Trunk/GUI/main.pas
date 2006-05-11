@@ -412,7 +412,7 @@ type
     procedure WMDrawClipboard(var Msg: TWMDrawClipboard);
     message WM_DRAWCLIPBOARD;
     procedure WMCopyData(var Msg: TWMCopyData); message WM_COPYDATA;
-
+    procedure UMActivate( var msg: TMessage ); message UM_ACTIVATE;
     { Private declarations }
   public
     SignList:TSignalDescriptorsList;
@@ -455,7 +455,7 @@ var
   IsCreated:boolean;
 implementation
 
-uses  MultInst, About;
+uses  MultInst, About,SplashScreen;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
@@ -553,6 +553,10 @@ begin
   Msg.Result := 0;
 end;
 
+procedure TFMain.UMActivate(var msg: TMessage);
+begin
+  SetForegroundWindow( handle );
+end;
 
 procedure TFMain.FormCreate(Sender: TObject);
 
@@ -560,7 +564,7 @@ var
  Headers:TColumnsHeaders;
  TmAppl,buf:boolean;
  Key:TRegistry;
- Sel:Integer;
+ Sel,i:Integer;
 begin
  IsCreated:=False;
  adCon.ConnectionString:=GetConnectionString;
