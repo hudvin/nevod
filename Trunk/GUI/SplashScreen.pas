@@ -40,6 +40,7 @@ Procedure ShowSplashscreen;
       ThreadedSplashForm:= TPBThreadedSplashscreen.Create( nil );
       Try
         ThreadedSplashform.Left  := Splashform.Left;
+
         ThreadedSplashform.Top   := Splashform.Top;
         ThreadedSplashform.Center:=
            Splashform.Position in [ poScreenCenter, poMainFormCenter,
@@ -50,8 +51,8 @@ Procedure ShowSplashscreen;
         finally
           bmp.Free;
         end;
-        ThreadedSplashForm.UseStatusbar  := True;
-        // ThreadedSplashForm.TopMost := true;
+     //   ThreadedSplashForm.UseStatusbar  := True;
+         ThreadedSplashForm.TopMost := true;
 
         ThreadedSplashForm.Show;
       Except

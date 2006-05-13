@@ -1391,7 +1391,7 @@ object FAbout: TFAbout
     Font.Name = 'MS Sans Serif'
     Font.Style = []
     ParentFont = False
-    OnClick = leSiteClick
+    OnClick = leMailClick
   end
   object leOS: TLabel
     Left = 32
@@ -1452,7 +1452,7 @@ object FAbout: TFAbout
     ProductID = '55683-OEM-0013514-73984'
     ProductName = 'Microsoft Windows XP'
     DVDRegion = -1
-    TimeRunning = 0.009427442129629629
+    TimeRunning = 0.171118368055555600
     DayRunning = 0
     Left = 8
     Top = 216

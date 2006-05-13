@@ -1,11 +1,11 @@
 object FMain: TFMain
-  Left = 271
-  Top = 122
+  Left = 219
+  Top = 226
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'FMain'
-  ClientHeight = 489
-  ClientWidth = 804
+  ClientHeight = 446
+  ClientWidth = 772
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,21 +19,10 @@ object FMain: TFMain
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
-  object JvTransLED1: TJvTransLED
-    Left = 80
-    Top = 328
-  end
-  object JvHTLabel1: TJvHTLabel
-    Left = 120
-    Top = 400
-    Width = 62
-    Height = 13
-    Caption = 'JvHTLabel1'
-  end
   object stBar: TdxStatusBar
     Left = 0
-    Top = 469
-    Width = 804
+    Top = 426
+    Width = 772
     Height = 20
     Panels = <
       item
@@ -55,8 +44,8 @@ object FMain: TFMain
   object SettingsTree: TcxTreeList
     Left = 0
     Top = 23
-    Width = 161
-    Height = 446
+    Width = 137
+    Height = 403
     Align = alLeft
     Bands = <
       item
@@ -117,10 +106,10 @@ object FMain: TFMain
     end
   end
   object stPages: TcxPageControl
-    Left = 161
+    Left = 137
     Top = 23
-    Width = 643
-    Height = 446
+    Width = 635
+    Height = 403
     ActivePage = cxTab_DFSettings
     Align = alClient
     DragMode = dmAutomatic
@@ -129,8 +118,8 @@ object FMain: TFMain
     LookAndFeel.NativeStyle = False
     Style = 8
     TabOrder = 2
-    ClientRectBottom = 446
-    ClientRectRight = 643
+    ClientRectBottom = 403
+    ClientRectRight = 635
     ClientRectTop = 0
     object cxTab_Accounts: TcxTabSheet
       Caption = 'cxTab_Accounts'
@@ -138,8 +127,8 @@ object FMain: TFMain
       object cxAccountsGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 643
-        Height = 446
+        Width = 635
+        Height = 403
         Align = alClient
         BorderWidth = 2
         TabOrder = 0
@@ -212,8 +201,8 @@ object FMain: TFMain
       object cxLogGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 643
-        Height = 446
+        Width = 635
+        Height = 403
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
@@ -274,8 +263,8 @@ object FMain: TFMain
       object cxFiltersGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 643
-        Height = 446
+        Width = 635
+        Height = 403
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
@@ -835,6 +824,7 @@ object FMain: TFMain
       object cxWhiteWordDescription: TcxMemo
         Left = 8
         Top = 32
+        Enabled = False
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090' '#1087#1088#1080' '#1086#1073#1085#1072#1088#1091#1078#1077#1085#1080#1080' '#1074' '#1089#1086#1086#1073#1097#1077#1085#1080#1080' ('#1074' '#1090#1077#1084#1077', '#1074 +
@@ -848,16 +838,18 @@ object FMain: TFMain
         Style.Color = clInfoBk
         Style.LookAndFeel.Kind = lfOffice11
         Style.LookAndFeel.NativeStyle = False
-        Style.Shadow = True
+        Style.Shadow = False
+        StyleDisabled.Color = clInfoBk
         StyleDisabled.LookAndFeel.Kind = lfOffice11
         StyleDisabled.LookAndFeel.NativeStyle = False
+        StyleDisabled.TextColor = clBlack
         StyleFocused.LookAndFeel.Kind = lfOffice11
         StyleFocused.LookAndFeel.NativeStyle = False
         StyleHot.LookAndFeel.Kind = lfOffice11
         StyleHot.LookAndFeel.NativeStyle = False
         TabOrder = 0
         Height = 49
-        Width = 561
+        Width = 609
       end
       object cbStamp: TcxCheckBox
         Left = 8
@@ -896,6 +888,7 @@ object FMain: TFMain
       object cxStampDescription: TcxMemo
         Left = 11
         Top = 112
+        Enabled = False
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090' '#1087#1088#1080' '#1086#1073#1085#1072#1088#1091#1078#1077#1085#1080#1080' '#1074' '#1089#1086#1086#1073#1097#1077#1085#1080#1080' '#1074' '#1090#1077#1082#1089#1090#1077' '#1089 +
@@ -911,15 +904,17 @@ object FMain: TFMain
         Style.LookAndFeel.Kind = lfStandard
         Style.LookAndFeel.NativeStyle = True
         Style.Shadow = True
+        StyleDisabled.Color = clInfoBk
         StyleDisabled.LookAndFeel.Kind = lfStandard
         StyleDisabled.LookAndFeel.NativeStyle = True
+        StyleDisabled.TextColor = clBlack
         StyleFocused.LookAndFeel.Kind = lfStandard
         StyleFocused.LookAndFeel.NativeStyle = True
         StyleHot.LookAndFeel.Kind = lfStandard
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 3
         Height = 49
-        Width = 561
+        Width = 606
       end
       object cbWhiteSender: TcxCheckBox
         Left = 8
@@ -941,6 +936,7 @@ object FMain: TFMain
       object cxSenderDescription: TcxMemo
         Left = 11
         Top = 192
+        Enabled = False
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090' '#1087#1088#1080' '#1086#1073#1085#1072#1088#1091#1078#1077#1085#1080#1080' '#1074' '#1089#1086#1086#1073#1097#1077#1085#1080#1080' '#1074' '#1090#1077#1082#1089#1090#1077' '#1089 +
@@ -956,15 +952,17 @@ object FMain: TFMain
         Style.LookAndFeel.Kind = lfStandard
         Style.LookAndFeel.NativeStyle = True
         Style.Shadow = True
+        StyleDisabled.Color = clInfoBk
         StyleDisabled.LookAndFeel.Kind = lfStandard
         StyleDisabled.LookAndFeel.NativeStyle = True
+        StyleDisabled.TextColor = clBlack
         StyleFocused.LookAndFeel.Kind = lfStandard
         StyleFocused.LookAndFeel.NativeStyle = True
         StyleHot.LookAndFeel.Kind = lfStandard
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 5
         Height = 49
-        Width = 561
+        Width = 606
       end
       object cbWhiteAttach: TcxCheckBox
         Left = 8
@@ -986,6 +984,7 @@ object FMain: TFMain
       object cxWhiteAttachDescription: TcxMemo
         Left = 11
         Top = 272
+        Enabled = False
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090','#1077#1089#1083#1080' '#1088#1072#1089#1096#1080#1088#1077#1085#1080#1077' '#1087#1088#1080#1083#1086#1078#1077#1085#1085#1086#1075#1086' '#1092#1072#1081#1083#1072' '#1085#1072#1093 +
@@ -997,15 +996,17 @@ object FMain: TFMain
         Style.LookAndFeel.Kind = lfStandard
         Style.LookAndFeel.NativeStyle = True
         Style.Shadow = True
+        StyleDisabled.Color = clInfoBk
         StyleDisabled.LookAndFeel.Kind = lfStandard
         StyleDisabled.LookAndFeel.NativeStyle = True
+        StyleDisabled.TextColor = clBlack
         StyleFocused.LookAndFeel.Kind = lfStandard
         StyleFocused.LookAndFeel.NativeStyle = True
         StyleHot.LookAndFeel.Kind = lfStandard
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 7
         Height = 49
-        Width = 561
+        Width = 606
       end
     end
     object cxTab_DFSettings: TcxTabSheet
@@ -1031,6 +1032,7 @@ object FMain: TFMain
       object cxBlackWordDescription: TcxMemo
         Left = 11
         Top = 32
+        Enabled = False
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090' '#1087#1088#1080' '#1086#1073#1085#1072#1088#1091#1078#1077#1085#1080#1080' '#1074' '#1089#1086#1086#1073#1097#1077#1085#1080#1080' ('#1074' '#1090#1077#1084#1077', '#1074 +
@@ -1045,15 +1047,17 @@ object FMain: TFMain
         Style.LookAndFeel.Kind = lfStandard
         Style.LookAndFeel.NativeStyle = True
         Style.Shadow = True
+        StyleDisabled.Color = clInfoBk
         StyleDisabled.LookAndFeel.Kind = lfStandard
         StyleDisabled.LookAndFeel.NativeStyle = True
+        StyleDisabled.TextColor = clBlack
         StyleFocused.LookAndFeel.Kind = lfStandard
         StyleFocused.LookAndFeel.NativeStyle = True
         StyleHot.LookAndFeel.Kind = lfStandard
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 1
         Height = 33
-        Width = 561
+        Width = 614
       end
       object cbBlackSender: TcxCheckBox
         Left = 8
@@ -1075,6 +1079,7 @@ object FMain: TFMain
       object cxBlackSenderDescription: TcxMemo
         Left = 11
         Top = 88
+        Enabled = False
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090' '#1087#1088#1080' '#1086#1073#1085#1072#1088#1091#1078#1077#1085#1080#1080' '#1074' '#1089#1086#1086#1073#1097#1077#1085#1080#1080' ('#1074' '#1090#1077#1084#1077', '#1074 +
@@ -1089,15 +1094,17 @@ object FMain: TFMain
         Style.LookAndFeel.Kind = lfStandard
         Style.LookAndFeel.NativeStyle = True
         Style.Shadow = True
+        StyleDisabled.Color = clInfoBk
         StyleDisabled.LookAndFeel.Kind = lfStandard
         StyleDisabled.LookAndFeel.NativeStyle = True
+        StyleDisabled.TextColor = clBlack
         StyleFocused.LookAndFeel.Kind = lfStandard
         StyleFocused.LookAndFeel.NativeStyle = True
         StyleHot.LookAndFeel.Kind = lfStandard
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 3
         Height = 33
-        Width = 561
+        Width = 614
       end
       object cbBlackAttach: TcxCheckBox
         Left = 8
@@ -1119,6 +1126,7 @@ object FMain: TFMain
       object cxBlackAttachDescription: TcxMemo
         Left = 11
         Top = 144
+        Enabled = False
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090','#1077#1089#1083#1080' '#1088#1072#1089#1096#1080#1088#1077#1085#1080#1077' '#1087#1088#1080#1083#1086#1078#1077#1085#1085#1086#1075#1086' '#1092#1072#1081#1083#1072' '#1085#1072#1093 +
@@ -1130,15 +1138,18 @@ object FMain: TFMain
         Style.LookAndFeel.Kind = lfStandard
         Style.LookAndFeel.NativeStyle = True
         Style.Shadow = True
+        StyleDisabled.BorderColor = clBtnShadow
+        StyleDisabled.Color = clInfoBk
         StyleDisabled.LookAndFeel.Kind = lfStandard
         StyleDisabled.LookAndFeel.NativeStyle = True
+        StyleDisabled.TextColor = clBlack
         StyleFocused.LookAndFeel.Kind = lfStandard
         StyleFocused.LookAndFeel.NativeStyle = True
         StyleHot.LookAndFeel.Kind = lfStandard
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 5
         Height = 25
-        Width = 561
+        Width = 614
       end
       object cxSpinLinks: TcxSpinEdit
         Left = 296
@@ -1179,6 +1190,7 @@ object FMain: TFMain
       object cxMaxLinksDescription: TcxMemo
         Left = 11
         Top = 200
+        Enabled = False
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090','#1077#1089#1083#1080' '#1088#1072#1089#1096#1080#1088#1077#1085#1080#1077' '#1087#1088#1080#1083#1086#1078#1077#1085#1085#1086#1075#1086' '#1092#1072#1081#1083#1072' '#1085#1072#1093 +
@@ -1190,15 +1202,17 @@ object FMain: TFMain
         Style.LookAndFeel.Kind = lfStandard
         Style.LookAndFeel.NativeStyle = True
         Style.Shadow = True
+        StyleDisabled.Color = clInfoBk
         StyleDisabled.LookAndFeel.Kind = lfStandard
         StyleDisabled.LookAndFeel.NativeStyle = True
+        StyleDisabled.TextColor = clBlack
         StyleFocused.LookAndFeel.Kind = lfStandard
         StyleFocused.LookAndFeel.NativeStyle = True
         StyleHot.LookAndFeel.Kind = lfStandard
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 8
         Height = 25
-        Width = 561
+        Width = 614
       end
       object cbMaxImages: TcxCheckBox
         Left = 8
@@ -1235,6 +1249,7 @@ object FMain: TFMain
       object cxMaxImagesDescription: TcxMemo
         Left = 11
         Top = 256
+        Enabled = False
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090','#1077#1089#1083#1080' '#1088#1072#1089#1096#1080#1088#1077#1085#1080#1077' '#1087#1088#1080#1083#1086#1078#1077#1085#1085#1086#1075#1086' '#1092#1072#1081#1083#1072' '#1085#1072#1093 +
@@ -1246,15 +1261,17 @@ object FMain: TFMain
         Style.LookAndFeel.Kind = lfStandard
         Style.LookAndFeel.NativeStyle = True
         Style.Shadow = True
+        StyleDisabled.Color = clInfoBk
         StyleDisabled.LookAndFeel.Kind = lfStandard
         StyleDisabled.LookAndFeel.NativeStyle = True
+        StyleDisabled.TextColor = clBlack
         StyleFocused.LookAndFeel.Kind = lfStandard
         StyleFocused.LookAndFeel.NativeStyle = True
         StyleHot.LookAndFeel.Kind = lfStandard
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 11
         Height = 25
-        Width = 561
+        Width = 614
       end
       object cbMaxSpamWords: TcxCheckBox
         Left = 8
@@ -1291,6 +1308,7 @@ object FMain: TFMain
       object cxMaxSpamWords: TcxMemo
         Left = 11
         Top = 312
+        Enabled = False
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090','#1077#1089#1083#1080' '#1088#1072#1089#1096#1080#1088#1077#1085#1080#1077' '#1087#1088#1080#1083#1086#1078#1077#1085#1085#1086#1075#1086' '#1092#1072#1081#1083#1072' '#1085#1072#1093 +
@@ -1302,15 +1320,17 @@ object FMain: TFMain
         Style.LookAndFeel.Kind = lfStandard
         Style.LookAndFeel.NativeStyle = True
         Style.Shadow = True
+        StyleDisabled.Color = clInfoBk
         StyleDisabled.LookAndFeel.Kind = lfStandard
         StyleDisabled.LookAndFeel.NativeStyle = True
+        StyleDisabled.TextColor = clBlack
         StyleFocused.LookAndFeel.Kind = lfStandard
         StyleFocused.LookAndFeel.NativeStyle = True
         StyleHot.LookAndFeel.Kind = lfStandard
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 14
         Height = 25
-        Width = 561
+        Width = 614
       end
       object cbMaxSize: TcxCheckBox
         Left = 8
@@ -1347,6 +1367,7 @@ object FMain: TFMain
       object cxMaxSizeDescription: TcxMemo
         Left = 11
         Top = 368
+        Enabled = False
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090','#1077#1089#1083#1080' '#1088#1072#1089#1096#1080#1088#1077#1085#1080#1077' '#1087#1088#1080#1083#1086#1078#1077#1085#1085#1086#1075#1086' '#1092#1072#1081#1083#1072' '#1085#1072#1093 +
@@ -1358,15 +1379,17 @@ object FMain: TFMain
         Style.LookAndFeel.Kind = lfStandard
         Style.LookAndFeel.NativeStyle = True
         Style.Shadow = True
+        StyleDisabled.Color = clInfoBk
         StyleDisabled.LookAndFeel.Kind = lfStandard
         StyleDisabled.LookAndFeel.NativeStyle = True
+        StyleDisabled.TextColor = clBlack
         StyleFocused.LookAndFeel.Kind = lfStandard
         StyleFocused.LookAndFeel.NativeStyle = True
         StyleHot.LookAndFeel.Kind = lfStandard
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 17
         Height = 25
-        Width = 561
+        Width = 614
       end
     end
   end
@@ -6105,7 +6128,7 @@ object FMain: TFMain
     UseOwnFont = False
     OnPopup = alOnLogPopUpExecute
     Left = 681
-    Top = 59
+    Top = 43
   end
   object cxStyleRepository1: TcxStyleRepository
     object cxStyle1: TcxStyle
@@ -6159,7 +6182,7 @@ object FMain: TFMain
       end>
     UseOwnFont = False
     Left = 745
-    Top = 57
+    Top = 73
   end
   object JvAppAddHotKey: TJvApplicationHotKey
     HotKey = 0

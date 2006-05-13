@@ -19,6 +19,7 @@ type
     leCurrentUser: TLabel;
     procedure leSiteClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure leMailClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -34,7 +35,7 @@ implementation
 
 procedure TFAbout.leSiteClick(Sender: TObject);
 begin
- ShellExecute(Handle, nil, 'mailto:support@nevilon.com', nil, nil, SW_SHOW);
+ ShellExecute(Handle, nil, 'http://www.nevilon.com', nil, nil, SW_SHOW);
 end;
 
 procedure TFAbout.FormShow(Sender: TObject);
@@ -43,6 +44,11 @@ begin
  leCompName.Caption:='Имя компьютера : '+cInfo.ComputerName;
  leCurrentUser.Caption:='Имя текущего пользователя : '+cInfo.Username;
  leTimeRunning.Caption:= 'Время работы : '+TimeToStr(cInfo.TimeRunning);
+end;
+
+procedure TFAbout.leMailClick(Sender: TObject);
+begin
+ ShellExecute(Handle, nil, 'mailto:support@nevilon.com', nil, nil, SW_SHOW);
 end;
 
 end.

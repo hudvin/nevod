@@ -12,7 +12,7 @@ uses Commctrl,tlhelp32, StdCtrls, Dialogs, ImgList, Controls, dxBar,  Math,
   WinSock,  IdGlobalProtocols,  ShellAPI, PortEditor,
   SysUtils, Typinfo, FilterManager, AccountManager,  AccountEditor,  Graphics,
 
-    Menus,   Messages, ThreadManager, POPServer,
+    Menus,   Messages, ThreadManager, POPServer,   padgen,
   cxGridCustomPopupMenu, cxGridPopupMenu,
    cxLookAndFeels,FilterEditor,
   XPStyleActnCtrls, ActnMan,  Clipbrd, PerlRegEx,
@@ -20,7 +20,8 @@ uses Commctrl,tlhelp32, StdCtrls, Dialogs, ImgList, Controls, dxBar,  Math,
   ActnPopupCtrl,  cxRichEdit,
   cxButtons, cxDropDownEdit,  ComCtrls, JvHotKey, JvComponent,
   JvAppHotKey, JvHotkeyEx,
-  JvDlg, JvComputerInfo, JvHtControls, JvTransLED;
+  JvDlg, JvComputerInfo, JvHtControls, JvTransLED, JvEditor, JvaScrollText,
+  JvMemo;
 
  
 
@@ -268,8 +269,6 @@ type
     alEnableFiltering: TAction;
     ptEnableFiltering: TdxBarButton;
     ptAddFilterElement: TdxBarButton;
-    JvTransLED1: TJvTransLED;
-    JvHTLabel1: TJvHTLabel;
     alShowAbout: TAction;
     msShowAbout: TdxBarButton;
     procedure FormCreate(Sender: TObject);
@@ -400,6 +399,7 @@ type
     procedure JvRunMailClientEnter(Sender: TObject);
     procedure alEnableFilteringExecute(Sender: TObject);
     procedure alShowAboutExecute(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -439,6 +439,9 @@ type
     AddClb:TFilterType;
     procedure SetCurrentParams(Grid:TcxGridDBTableView;Filter:TFilterType);
   end;
+
+const
+ Caggption='fdsfasfa'^M'gfsgfs';
 
 var
   FMain: TFMain;
@@ -564,7 +567,7 @@ var
  Headers:TColumnsHeaders;
  TmAppl,buf:boolean;
  Key:TRegistry;
- Sel,i:Integer;
+ Sel:Integer;
 begin
  IsCreated:=False;
  adCon.ConnectionString:=GetConnectionString;
@@ -1866,6 +1869,20 @@ end;
 procedure TFMain.alShowAboutExecute(Sender: TObject);
 begin
  FAbout.ShowModal;
+end;
+
+procedure TFMain.Button1Click(Sender: TObject);
+//var
+ //tab:IXMLUpdateType;
+begin
+
+// HideCaret(cxRichEdit1.Handle);
+
+// DestroyCursor(cxRichEdit1.Cursor);
+
+ { tab:=LoadUpdate('C:\Projects\Nevod\Resources\Update.xml');
+ ShowMessage(tab.ProductName); }
+// Label2.Caption:=Caggption;//'fdsfasfa'^M'gfsgfs';
 end;
 
 end.
