@@ -390,15 +390,15 @@ var
 begin
   wsize.cx := FSurface.Width + GetSystemMetrics( SM_CXEDGE ) * 2;
   wsize.cy := FSurface.Height + GetSystemMetrics( SM_CYEDGE ) * 2;
-  FWnd := CreateWindowEx(
-            TopmostStyle[ FTopmost ] or WS_EX_TOOLWINDOW
+  FWnd := CreateWindowEx(    WS_EX_TOPMOST
+            {  TopmostStyle[ FTopmost ] or WS_EX_TOOLWINDOW or WS_EX_STATICEDGE
             or WS_EX_STATICEDGE or WS_EX_CLIENTEDGE
-            or NoActivateStyle[ Win32MajorVersion >= 5 ],
+            or NoActivateStyle[ Win32MajorVersion >= 5 ] },
             MakeIntResource( FWndClass ),
-            nil,
-            WS_POPUP or WS_BORDER,
-            Forigin.x, Forigin.y,
-            wsize.cx, wsize.cy,
+            nil,WS_POPUP ,
+           // WS_POPUP or //WS_BORDER,
+         Forigin.x, Forigin.y,
+           wsize.cx, wsize.cy,
             0, 0, hInstance, self );
   If FWnd = 0 Then
     raise exception.create('TPBSplashThread.CreateSplashWindow: CreateWindowEx failed');

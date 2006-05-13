@@ -45,9 +45,9 @@ begin
   if InitInstance then
   begin
   Application.Initialize;
-   ShowSplashScreen;
+ //  ShowSplashScreen;
   try
-   ShowSplashScreenMessage('Упаковка базы данных');
+ //  ShowSplashScreenMessage('Упаковка базы данных');
    DatabaseCompact(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb',DBPassword);
   except;
   end;
@@ -58,7 +58,7 @@ begin
   CanExit:=False;
   while (not Con) and (not canExit) do
    try
-    ShowSplashScreenMessage('Проверка целостности базы данных');
+ //   ShowSplashScreenMessage('Проверка целостности базы данных');
     aCon.Connected:=True;
     Con:=True;
    except
@@ -69,12 +69,12 @@ begin
   if CanExit  then  Application.Terminate
    else
     begin
-     ShowSplashScreenMessage('Инициализация интерфейса');
+ //    ShowSplashScreenMessage('Инициализация интерфейса');
      Application.CreateForm(TFMain, FMain);
   Application.CreateForm(TFAbout, FAbout);
   if (ParamCount>0) and (ParamStr(1)='-h') then
    Application.MainForm.WindowState:=wsMinimized;
-      HideSplashScreen;
+ //     HideSplashScreen;
      Application.Run;
     end;
   end;

@@ -5,7 +5,7 @@ interface
 uses PBThreadedSplashscreenU,
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, jpeg, JvImage, StdCtrls, cxControls, cxContainer,
-  cxEdit, cxProgressBar;
+  cxEdit, cxProgressBar, JvGIF;
 
 type
   TFSplashScreen = class(TForm)
@@ -44,14 +44,15 @@ Procedure ShowSplashscreen;
         ThreadedSplashform.Top   := Splashform.Top;
         ThreadedSplashform.Center:=
            Splashform.Position in [ poScreenCenter, poMainFormCenter,
-                                    poDesktopCenter ];
+                                  poDesktopCenter ];
         bmp:= Splashform.GetFormImage;
+        ThreadedSplashForm.UseStatusbar:=False;
         try
           ThreadedSplashform.Image := bmp;
         finally
           bmp.Free;
         end;
-     //   ThreadedSplashForm.UseStatusbar  := True;
+      //  ThreadedSplashForm.UseStatusbar  := True;
          ThreadedSplashForm.TopMost := true;
 
         ThreadedSplashForm.Show;

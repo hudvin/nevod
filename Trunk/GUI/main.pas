@@ -12,7 +12,7 @@ uses Commctrl,tlhelp32, StdCtrls, Dialogs, ImgList, Controls, dxBar,  Math,
   WinSock,  IdGlobalProtocols,  ShellAPI, PortEditor,
   SysUtils, Typinfo, FilterManager, AccountManager,  AccountEditor,  Graphics,
 
-    Menus,   Messages, ThreadManager, POPServer,   padgen,
+    Menus,   Messages, ThreadManager, POPServer,
   cxGridCustomPopupMenu, cxGridPopupMenu,
    cxLookAndFeels,FilterEditor,
   XPStyleActnCtrls, ActnMan,  Clipbrd, PerlRegEx,
@@ -271,6 +271,25 @@ type
     ptAddFilterElement: TdxBarButton;
     alShowAbout: TAction;
     msShowAbout: TdxBarButton;
+    alCheckForUpdates: TAction;
+    alGotoNevilon: TAction;
+    alBuyNow: TAction;
+    msCheckForUpdates: TdxBarButton;
+    msBuyNow: TdxBarButton;
+    msGotoNevilon: TdxBarButton;
+    ptAbout: TdxBarButton;
+    pGotoNevilon: TdxBarButton;
+    alRunAtStartUp: TAction;
+    msRunAtStartUp: TdxBarButton;
+    pRunAtStartUp: TdxBarButton;
+    dxBarButton8: TdxBarButton;
+    pCanCheckAccounts: TdxBarButton;
+    alEnableClbSpy: TAction;
+    msEnableClbSpy: TdxBarButton;
+    pEnableClbSpy: TdxBarButton;
+    alShowEditorForm: TAction;
+    msShowSpyEditor: TdxBarButton;
+    pShowSpyEditor: TdxBarButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -399,7 +418,12 @@ type
     procedure JvRunMailClientEnter(Sender: TObject);
     procedure alEnableFilteringExecute(Sender: TObject);
     procedure alShowAboutExecute(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
+    procedure alCheckForUpdatesExecute(Sender: TObject);
+    procedure alGotoNevilonExecute(Sender: TObject);
+    procedure alBuyNowExecute(Sender: TObject);
+    procedure alRunAtStartUpExecute(Sender: TObject);
+    procedure alEnableClbSpyExecute(Sender: TObject);
+    procedure alShowEditorFormExecute(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -672,8 +696,8 @@ begin
  lbServerPort.Text:=SProvider.GetValue('ServerPort');
  seCheckInterval.Value:=StrToInt(SProvider.GetValue('CheckInterval'))/(1000*60);
  cbCheckIfNotConnected.Checked:=StrToBool(SProvider.GetValue('CheckIfNotConnected'));
- cbCanCheckAccounts.Checked:=StrToBool(SProvider.GetValue('CanCheckAccounts'));
- cbEnableFiltering.Checked:=StrToBool(SProvider.GetValue('EnableFiltering'));
+ alCanCheckAccounts.Checked:=StrToBool(SProvider.GetValue('CanCheckAccounts'));
+ alEnableFiltering.Checked:=StrToBool(SProvider.GetValue('EnableFiltering'));
  cbBallonOnReceive.Checked:=StrToBool(SProvider.GetValue('BaloonOnNew'));
  cbBaloonOnError.Checked:=StrToBool(SProvider.GetValue('BaloonOnError'));
  beSoundOnNew.Text:=SProvider.GetValue('NewSound');
@@ -682,7 +706,7 @@ begin
  cbSoundOnReceive.Checked:=StrToBool(SProvider.GetValue('SoundOnNew'));
  cbSoundOnError.Checked:=StrToBool(SProvider.GetValue('SoundOnError'));
  cbSoundOnAdd.Checked:=StrToBool(SProvider.GetValue('SoundOnAdd'));
- cbShowEditor.Checked:=StrToBool(SProvider.GetValue('ShowspyEditor'));
+ alShowEditorForm.Checked:=StrToBool(SProvider.GetValue('ShowspyEditor'));
 
  
  JvAppAddHotKey.HotKey:=StrToInt(SProvider.GetValue('AddHotKey'));
@@ -717,10 +741,11 @@ begin
  cmAddTo.ItemIndex:=Sel;
 
 
- cbActivateClbSpy.Checked:=StrToBool(SProvider.GetValue('EnableClbSpy'));
+ alEnableClbSpy.Checked:=StrToBool(SProvider.GetValue('EnableClbSpy'));
 
  buf:=StrToBool(SProvider.GetValue('RunAtStartUp'));
  cbRunAtStartUp.Checked:=buf;
+ alRunAtStartUp.Checked:=buf;
  Key:=TRegistry.Create;
  Key.RootKey:=HKEY_CURRENT_USER;
  Key.OpenKey('\Software\Microsoft\Windows\CurrentVersion\Run',True);
@@ -729,9 +754,7 @@ begin
    else Key.DeleteValue('Nevod AntiSpam');
  Key.CloseKey;
  Key.Free;
-
  IsCreated:=True;
-
 end;
 
 
@@ -1059,7 +1082,8 @@ end;
 
 procedure TFMain.alCanCheckAccountsExecute(Sender: TObject);
 begin
- SProvider.SetValue('CanCheckAccounts',BoolToStr(NOT alCanCheckAccounts.Checked,True));
+ alCanCheckAccounts.Checked:=NOT alCanCheckAccounts.Checked;
+ SProvider.SetValue('CanCheckAccounts',BoolToStr(alCanCheckAccounts.Checked,True));
 end;
 
 procedure TFMain.alOnAccountsPopUpExecute(Sender: TObject);
@@ -1388,10 +1412,10 @@ begin
 end;
 
 procedure TFMain.cbRunAtStartUpPropertiesChange(Sender: TObject);
-var
- Key:TRegistry;
+{ var
+ Key:TRegistry; }
 begin
- Key:=TRegistry.Create;
+ { Key:=TRegistry.Create;
  Key.RootKey:=HKEY_CURRENT_USER;
  Key.OpenKey('\Software\Microsoft\Windows\CurrentVersion\Run',True);
  if cbRunAtStartUp.Checked then
@@ -1399,7 +1423,7 @@ begin
    else Key.DeleteValue('Nevod AntiSpam');
  Key.CloseKey;
  Key.Free;
- SProvider.SetValue('RunAtStartUp',BoolToStr(cbRunAtStartUp.Checked,True));
+ SProvider.SetValue('RunAtStartUp',BoolToStr(cbRunAtStartUp.Checked,True)); }
 
 end;
 
@@ -1435,7 +1459,7 @@ end;
 
 procedure TFMain.cbCanCheckAccountsPropertiesChange(Sender: TObject);
 begin
- SProvider.SetValue('CanCheckAccounts',BoolToStr(cbCanCheckAccounts.Checked,True));
+// SProvider.SetValue('CanCheckAccounts',BoolToStr(cbCanCheckAccounts.Checked,True));
 end;
 
 procedure TFMain.cbEnableFilteringPropertiesChange(Sender: TObject);
@@ -1613,7 +1637,7 @@ end;
 
 procedure TFMain.cbShowEditorPropertiesChange(Sender: TObject);
 begin
- SProvider.SetValue('ShowspyEditor',BoolToStr(cbShowEditor.Checked,True));
+ //SProvider.SetValue('ShowspyEditor',BoolToStr(cbShowEditor.Checked,True));
 end;
 
 procedure TFMain.cbSoundOnAddPropertiesChange(Sender: TObject);
@@ -1848,10 +1872,8 @@ end;
 
 procedure TFMain.alEnableFilteringExecute(Sender: TObject);
 begin
-
  alEnableFiltering.Checked:= NOT alEnableFiltering.Checked;
  SProvider.SetValue('EnableFiltering',BoolToStr(alEnableFiltering.Checked,True));
-
 end;
 
 function TFMain.GetTotalMessCount: Integer;
@@ -1871,18 +1893,48 @@ begin
  FAbout.ShowModal;
 end;
 
-procedure TFMain.Button1Click(Sender: TObject);
-//var
- //tab:IXMLUpdateType;
+procedure TFMain.alCheckForUpdatesExecute(Sender: TObject);
 begin
+ ShellExecute(Handle, nil, 'http:\\www.nevilon.com\products\NevodAntiSpam', nil, nil, SW_SHOW);
+end;
 
-// HideCaret(cxRichEdit1.Handle);
+procedure TFMain.alGotoNevilonExecute(Sender: TObject);
+begin
+ ShellExecute(Handle, nil, 'http:\\www.nevilon.com', nil, nil, SW_SHOW);
+end;
 
-// DestroyCursor(cxRichEdit1.Cursor);
+procedure TFMain.alBuyNowExecute(Sender: TObject);
+begin
+ ShellExecute(Handle, nil, 'http:\\www.emetrix.com', nil, nil, SW_SHOW);
+end;
 
- { tab:=LoadUpdate('C:\Projects\Nevod\Resources\Update.xml');
- ShowMessage(tab.ProductName); }
-// Label2.Caption:=Caggption;//'fdsfasfa'^M'gfsgfs';
+procedure TFMain.alRunAtStartUpExecute(Sender: TObject);
+var
+ Key:TRegistry;
+begin
+ alRunAtStartUp.Checked:=NOT alRunAtStartUp.Checked;
+ Key:=TRegistry.Create;
+ Key.RootKey:=HKEY_CURRENT_USER;
+ Key.OpenKey('\Software\Microsoft\Windows\CurrentVersion\Run',True);
+ if alRunAtStartUp.Checked then
+  Key.WriteString('Nevod AntiSpam',Application.ExeName+' -h')
+   else Key.DeleteValue('Nevod AntiSpam');
+ Key.CloseKey;
+ Key.Free;
+ SProvider.SetValue('RunAtStartUp',BoolToStr(alRunAtStartUp.Checked,True));
+
+end;
+
+procedure TFMain.alEnableClbSpyExecute(Sender: TObject);
+begin
+ alEnableClbSpy.Checked:=NOT alEnableClbSpy.Checked;
+ SProvider.SetValue('EnableClbSpy',BoolToStr(cbActivateClbSpy.Checked,True));
+end;
+
+procedure TFMain.alShowEditorFormExecute(Sender: TObject);
+begin
+ alShowEditorForm.Checked:=NOT alShowEditorForm.Checked;
+ SProvider.SetValue('ShowspyEditor',BoolToStr(alShowEditorForm.Checked,True));
 end;
 
 end.
