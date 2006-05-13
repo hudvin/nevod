@@ -4,8 +4,8 @@ object FCustomEditor: TFCustomEditor
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1044#1086#1073#1072#1074#1083#1077#1085#1080#1077' '#1085#1086#1074#1086#1075#1086' '#1092#1080#1083#1100#1090#1088#1072
-  ClientHeight = 196
-  ClientWidth = 312
+  ClientHeight = 160
+  ClientWidth = 251
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,44 +19,32 @@ object FCustomEditor: TFCustomEditor
   object TabControl: TcxTabControl
     Left = 0
     Top = 0
-    Width = 312
-    Height = 196
+    Width = 251
+    Height = 160
     Align = alClient
     LookAndFeel.Kind = lfOffice11
     LookAndFeel.NativeStyle = False
     TabOrder = 0
-    ClientRectBottom = 196
-    ClientRectRight = 312
+    ClientRectBottom = 160
+    ClientRectRight = 251
     ClientRectTop = 0
     object leFilter: TLabel
-      Left = 32
-      Top = 72
+      Left = 16
+      Top = 60
       Width = 43
       Height = 13
       Caption = #1060#1080#1083#1100#1090#1088' '
     end
     object leLocation: TLabel
-      Left = 32
-      Top = 96
-      Width = 75
+      Left = 16
+      Top = 84
+      Width = 41
       Height = 13
-      Caption = #1056#1072#1089#1087#1086#1083#1086#1078#1077#1085#1080#1077
-    end
-    object leMessage: TLabel
-      Left = 56
-      Top = 136
-      Width = 3
-      Height = 13
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clRed
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = []
-      ParentFont = False
+      Caption = 'Location'
     end
     object cCBFilter: TcxComboBox
-      Left = 88
-      Top = 64
+      Left = 72
+      Top = 56
       Properties.DropDownListStyle = lsFixedList
       Properties.OnChange = cCBFilterPropertiesChange
       Style.LookAndFeel.Kind = lfOffice11
@@ -68,11 +56,11 @@ object FCustomEditor: TFCustomEditor
       StyleHot.LookAndFeel.Kind = lfOffice11
       StyleHot.LookAndFeel.NativeStyle = False
       TabOrder = 0
-      Width = 201
+      Width = 161
     end
     object cxCbActive: TcxCheckBox
-      Left = 32
-      Top = 112
+      Left = 8
+      Top = 104
       Caption = #1040#1082#1090#1080#1074#1077#1085' '
       Style.LookAndFeel.Kind = lfOffice11
       Style.LookAndFeel.NativeStyle = False
@@ -87,9 +75,9 @@ object FCustomEditor: TFCustomEditor
       Width = 121
     end
     object leValue: TLabeledEdit
-      Left = 88
-      Top = 16
-      Width = 201
+      Left = 72
+      Top = 8
+      Width = 161
       Height = 21
       EditLabel.Width = 54
       EditLabel.Height = 13
@@ -100,9 +88,9 @@ object FCustomEditor: TFCustomEditor
       OnKeyPress = leValueKeyPress
     end
     object leDescription: TLabeledEdit
-      Left = 88
-      Top = 40
-      Width = 201
+      Left = 72
+      Top = 32
+      Width = 161
       Height = 21
       EditLabel.Width = 53
       EditLabel.Height = 13
@@ -111,8 +99,8 @@ object FCustomEditor: TFCustomEditor
       TabOrder = 3
     end
     object btOK: TButton
-      Left = 40
-      Top = 160
+      Left = 16
+      Top = 128
       Width = 97
       Height = 25
       Caption = 'OK'
@@ -120,8 +108,8 @@ object FCustomEditor: TFCustomEditor
       OnClick = btOKClick
     end
     object btCancel: TButton
-      Left = 176
-      Top = 160
+      Left = 136
+      Top = 128
       Width = 97
       Height = 25
       Caption = #1054#1090#1084#1077#1085#1072
@@ -129,8 +117,8 @@ object FCustomEditor: TFCustomEditor
       OnClick = btCancelClick
     end
     object cCBLocation: TcxComboBox
-      Left = 120
-      Top = 88
+      Left = 72
+      Top = 80
       Properties.DropDownListStyle = lsFixedList
       Style.LookAndFeel.Kind = lfOffice11
       Style.LookAndFeel.NativeStyle = False
@@ -141,7 +129,7 @@ object FCustomEditor: TFCustomEditor
       StyleHot.LookAndFeel.Kind = lfOffice11
       StyleHot.LookAndFeel.NativeStyle = False
       TabOrder = 6
-      Width = 169
+      Width = 161
     end
   end
 end

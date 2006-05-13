@@ -39,8 +39,6 @@ uses
 var
  Con,CanExit:boolean;
  aCon:TADOConnection;
- Lab:String;
-
 begin
   if InitInstance then
   begin

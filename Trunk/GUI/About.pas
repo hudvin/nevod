@@ -17,9 +17,11 @@ type
     leCompName: TLabel;
     leTimeRunning: TLabel;
     leCurrentUser: TLabel;
+    btClose: TButton;
     procedure leSiteClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure leMailClick(Sender: TObject);
+    procedure btCloseClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -49,6 +51,11 @@ end;
 procedure TFAbout.leMailClick(Sender: TObject);
 begin
  ShellExecute(Handle, nil, 'mailto:support@nevilon.com', nil, nil, SW_SHOW);
+end;
+
+procedure TFAbout.btCloseClick(Sender: TObject);
+begin
+ Close;
 end;
 
 end.

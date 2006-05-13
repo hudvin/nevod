@@ -4,8 +4,8 @@ object FAccountEditor: TFAccountEditor
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'FAccountEditor'
-  ClientHeight = 241
-  ClientWidth = 254
+  ClientHeight = 194
+  ClientWidth = 226
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,19 +20,19 @@ object FAccountEditor: TFAccountEditor
   object cxTab: TcxTabControl
     Left = 0
     Top = 0
-    Width = 254
-    Height = 241
+    Width = 226
+    Height = 194
     Align = alClient
     LookAndFeel.Kind = lfOffice11
     LookAndFeel.NativeStyle = False
     TabOrder = 0
-    ClientRectBottom = 241
-    ClientRectRight = 254
+    ClientRectBottom = 194
+    ClientRectRight = 226
     ClientRectTop = 0
     object leAccountName: TLabeledEdit
       Left = 88
       Top = 8
-      Width = 161
+      Width = 121
       Height = 21
       EditLabel.Width = 74
       EditLabel.Height = 13
@@ -44,7 +44,7 @@ object FAccountEditor: TFAccountEditor
     object leUsername: TLabeledEdit
       Left = 88
       Top = 32
-      Width = 161
+      Width = 121
       Height = 21
       EditLabel.Width = 54
       EditLabel.Height = 13
@@ -56,7 +56,7 @@ object FAccountEditor: TFAccountEditor
     object lePassword: TLabeledEdit
       Left = 88
       Top = 56
-      Width = 161
+      Width = 121
       Height = 21
       EditLabel.Width = 52
       EditLabel.Height = 13
@@ -69,7 +69,7 @@ object FAccountEditor: TFAccountEditor
     object leHost: TLabeledEdit
       Left = 88
       Top = 80
-      Width = 161
+      Width = 121
       Height = 21
       EditLabel.Width = 28
       EditLabel.Height = 13
@@ -81,7 +81,7 @@ object FAccountEditor: TFAccountEditor
     object lePort: TLabeledEdit
       Left = 88
       Top = 104
-      Width = 161
+      Width = 57
       Height = 21
       EditLabel.Width = 25
       EditLabel.Height = 13
@@ -94,7 +94,7 @@ object FAccountEditor: TFAccountEditor
     object leTimeout: TLabeledEdit
       Left = 88
       Top = 128
-      Width = 161
+      Width = 57
       Height = 21
       EditLabel.Width = 68
       EditLabel.Height = 13
@@ -105,8 +105,8 @@ object FAccountEditor: TFAccountEditor
       OnKeyPress = leTimeoutKeyPress
     end
     object btOK: TButton
-      Left = 24
-      Top = 184
+      Left = 16
+      Top = 160
       Width = 81
       Height = 25
       Caption = 'Add'
@@ -115,7 +115,7 @@ object FAccountEditor: TFAccountEditor
     end
     object btCancel: TButton
       Left = 136
-      Top = 184
+      Top = 160
       Width = 81
       Height = 25
       Caption = #1054#1090#1084#1077#1085#1072

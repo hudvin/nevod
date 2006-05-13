@@ -4,7 +4,7 @@ object FAbout: TFAbout
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077
-  ClientHeight = 251
+  ClientHeight = 275
   ClientWidth = 298
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -21,7 +21,7 @@ object FAbout: TFAbout
     Left = 0
     Top = 0
     Width = 298
-    Height = 251
+    Height = 275
     Align = alClient
     Picture.Data = {
       0A544A504547496D61676565A40000FFD8FFE000104A46494600010201004800
@@ -1360,7 +1360,7 @@ object FAbout: TFAbout
     MarginWidth = 0
     MarginHeight = 0
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clHighlight
+    Font.Color = clNavy
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = []
@@ -1386,7 +1386,7 @@ object FAbout: TFAbout
     MarginWidth = 0
     MarginHeight = 0
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clHighlight
+    Font.Color = clNavy
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = []
@@ -1400,7 +1400,7 @@ object FAbout: TFAbout
     Height = 13
     Caption = 'leOS'
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clHighlight
+    Font.Color = clNavy
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = []
@@ -1413,7 +1413,7 @@ object FAbout: TFAbout
     Height = 13
     Caption = 'leOS'
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clHighlight
+    Font.Color = clNavy
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = []
@@ -1426,7 +1426,7 @@ object FAbout: TFAbout
     Height = 13
     Caption = 'leOS'
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clHighlight
+    Font.Color = clNavy
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = []
@@ -1439,11 +1439,20 @@ object FAbout: TFAbout
     Height = 13
     Caption = 'leOS'
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clHighlight
+    Font.Color = clNavy
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = []
     ParentFont = False
+  end
+  object btClose: TButton
+    Left = 96
+    Top = 240
+    Width = 97
+    Height = 25
+    Caption = #1047#1072#1082#1088#1099#1090#1100
+    TabOrder = 0
+    OnClick = btCloseClick
   end
   object cInfo: TJvComputerInfo
     ComputerName = 'NEVOD'
@@ -1452,7 +1461,7 @@ object FAbout: TFAbout
     ProductID = '55683-OEM-0013514-73984'
     ProductName = 'Microsoft Windows XP'
     DVDRegion = -1
-    TimeRunning = 0.171118368055555600
+    TimeRunning = 0.274949120370370400
     DayRunning = 0
     Left = 8
     Top = 216

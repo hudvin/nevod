@@ -21,7 +21,6 @@ type
     btCancel: TButton;
     leLocation: TLabel;
     cCBLocation: TcxComboBox;
-    leMessage: TLabel;
     procedure cCBFilterPropertiesChange(Sender: TObject);
     procedure btOKClick(Sender: TObject);
     procedure btCancelClick(Sender: TObject);
@@ -53,7 +52,7 @@ var
   FCustomEditor: TFCustomEditor;
 
 implementation
-
+uses main;
 {$R *.dfm}
 
 constructor TFCustomEditor.Create(SNConverter:TSNIndexConverter;
@@ -62,10 +61,8 @@ constructor TFCustomEditor.Create(SNConverter:TSNIndexConverter;
 var
  i:integer;
 begin
-
   inherited Create(nil);
   FSignList:=SignList;
-
   for i:=0 to FSignList.Count-1 do
    cCBLocation.Properties.Items.Add(FSignList.Items[i].Description);
   cCBLocation.ItemIndex:=0;
@@ -77,9 +74,7 @@ begin
       if FSNConverter.Item[i].FilterType in [ftBlackSender,ftWhiteSender,ftStamp,ftBlackWord,ftWhiteWord,
                ftBlackAttach,ftWhiteAttach,ftSpamWord] then
          cCBFilter.Properties.Items.Add(FSNConverter.Item[i].Name);
-
     end;
-
 end;
 
 procedure TFCustomEditor.Show(NodeIndex:integer);
@@ -138,6 +133,7 @@ begin
       if cCBLocation.Properties.Items.Strings[i]=Desc then  cCBLocation.ItemIndex:=i;
    end;
  inherited Show;
+ if not main.FMain.Showing then main.FMain.Hide;
 end;
 
 procedure TFCustomEditor.cCBFilterPropertiesChange(Sender: TObject);
@@ -169,8 +165,8 @@ begin
   FFiltersTable.Requery;
   Close;
  except
-  on e: Exception do   leMessage.Caption:=E.Message;
-   // ShowMessage(e.Message);
+  on e: Exception do  // leMessage.Caption:=E.Message;
+    MessageBox(Handle,PChar(e.Message),'Ошибка',MB_OK);
  end;
 end;
 
@@ -185,7 +181,6 @@ begin
  cxCbActive.Checked:=True;
  leValue.Text:='';
  leDescription.Text:='';
- leMessage.Caption:='';
 end;
 
 procedure TFCustomEditor.Show(ElementValue:String; FilterType:TFilterType);
@@ -196,6 +191,9 @@ begin
  cCBFilter.Enabled:=True;
  cCBFilter.ItemIndex:=FSNConverter.FindIndex(FilterType);
  inherited Show;
+ if not main.FMain.Showing then
+  main.FMain.Hide;
+   
 end;
 
 procedure TFCustomEditor.leValueKeyPress(Sender: TObject; var Key: Char);
