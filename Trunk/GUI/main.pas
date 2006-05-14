@@ -290,6 +290,8 @@ type
     alShowEditorForm: TAction;
     msShowSpyEditor: TdxBarButton;
     pShowSpyEditor: TdxBarButton;
+    alShowMainWindow: TAction;
+    pShowMain: TdxBarButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -424,6 +426,7 @@ type
     procedure alRunAtStartUpExecute(Sender: TObject);
     procedure alEnableClbSpyExecute(Sender: TObject);
     procedure alShowEditorFormExecute(Sender: TObject);
+    procedure alShowMainWindowExecute(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -723,6 +726,13 @@ begin
  jvShowMainWindow.HotKey:=JvAppShowMainWindow.HotKey;
  JvCheckAllAccounts.HotKey:=JvAppCheckAllAccounts.HotKey;
  JvRunMailClient.HotKey:=jvAppRunMailClient.HotKey;
+
+ // присвоение хоткеев
+
+ alRunMailClient.ShortCut:=jvAppRunMailClient.HotKey;
+ alStartAllThreads.ShortCut:=JvCheckAllAccounts.HotKey;
+ alShowMainWindow.ShortCut:=JvAppShowMainWindow.HotKey;
+ alAddFilterElement.ShortCut:=JvAddHotKey.HotKey;
 
  Sel:=-1;
  case TCLbHookMode(GetEnumValue(TypeInfo(TClbHookMode),SProvider.GetValue('ClbHookMode'))) of    //
@@ -1796,13 +1806,15 @@ end;
 procedure TFMain.btShowMainWindowClick(Sender: TObject);
 begin
  JvAppShowMainWindow.HotKey:=jvShowMainWindow.HotKey;
+ JvAppShowMainWindow.Active:=True;
  SProvider.SetValue('ShowMainWindowHotKey',IntToStr(jvShowMainWindow.HotKey));
-// alAddFilterElement.ShortCut:=JvAppAddHotKey.HotKey;
+ alShowMainWindow.ShortCut:=JvAppShowMainWindow.HotKey;
 end;
 
 procedure TFMain.btCheckAllAccountsClick(Sender: TObject);
 begin
- JvCheckAllAccounts.HotKey:=JvCheckAllAccounts.HotKey;
+ JvAppCheckAllAccounts.HotKey:=JvCheckAllAccounts.HotKey;
+ JvAppCheckAllAccounts.Active:=True;
  SProvider.SetValue('CheckAllAccountsHotKey',IntToStr(JvCheckAllAccounts.HotKey));
  alStartAllThreads.ShortCut:=JvAppCheckAllAccounts.HotKey;
 end;
@@ -1811,6 +1823,8 @@ procedure TFMain.btRunMailClientClick(Sender: TObject);
 begin
  jvAppRunMailClient.HotKey:=JvRunMailClient.HotKey;
  SProvider.SetValue('RunMailClientHotKey',IntToStr(JvRunMailClient.HotKey));
+ alRunMailClient.ShortCut:=jvAppRunMailClient.HotKey;
+ jvAppRunMailClient.Active:=True;
 end;
 
 procedure TFMain.JvAppShowMainWindowHotKey(Sender: TObject);
@@ -1935,6 +1949,12 @@ procedure TFMain.alShowEditorFormExecute(Sender: TObject);
 begin
  alShowEditorForm.Checked:=NOT alShowEditorForm.Checked;
  SProvider.SetValue('ShowspyEditor',BoolToStr(alShowEditorForm.Checked,True));
+end;
+
+procedure TFMain.alShowMainWindowExecute(Sender: TObject);
+begin
+ tray.ShowMainForm;
+ SetActiveWindow(Handle);
 end;
 
 end.
