@@ -147,9 +147,6 @@ begin
  FADOCommand.CommandText:=' UPDATE Accounts SET Status='+''''+'asFree'+'''';
  FADOCommand.Execute;
 end;
- {
- в базе хранить uid сообшений !
 
- }
 end.
 

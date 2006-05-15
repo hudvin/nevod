@@ -3,7 +3,7 @@ unit PortEditor;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants,ADOdb,DB, Classes, Graphics, Controls, Forms,
+  Windows, Messages,gnugettext, SysUtils, Variants,ADOdb,DB, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, Shared, cxControls, cxPC;
 
 type
@@ -35,13 +35,14 @@ uses main;
 
 constructor TFPortEditor.Create(adCon:TADOConnection);
 begin
+ 
   SProvider:=TSettings.Create(adCon);
   inherited Create(nil);
+  TranslateComponent(self);
 end;
 
 function TFPortEditor.GetServerPort: string;
 begin
-// ShowMessage(SProvider.GetValue('ServerPort'));
  Result:=SProvider.GetValue('ServerPort');
 end;
 

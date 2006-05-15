@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 145
-  Top = 273
+  Left = 284
+  Top = 225
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Nevod AntiSpam'
@@ -25476,35 +25476,42 @@ object FMain: TFMain
             Visible = False
           end
           object cxAccountsAccountName: TcxGridDBColumn
+            Caption = #1059#1095#1077#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
             DataBinding.FieldName = 'AccountName'
-            Width = 125
+            Width = 134
           end
           object cxAccountsusername: TcxGridDBColumn
+            Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1100
             DataBinding.FieldName = 'username'
-            Width = 85
+            Width = 92
           end
           object cxAccountspass: TcxGridDBColumn
+            Caption = #1055#1072#1088#1086#1083#1100
             DataBinding.FieldName = 'pass'
             PropertiesClassName = 'TcxTextEditProperties'
             Properties.EchoMode = eemPassword
             Properties.PasswordChar = '*'
-            Width = 79
+            Width = 85
           end
           object cxAccountshost: TcxGridDBColumn
+            Caption = #1057#1077#1088#1074#1077#1088
             DataBinding.FieldName = 'host'
-            Width = 89
+            Width = 77
           end
           object cxAccountsport: TcxGridDBColumn
+            Caption = #1055#1086#1088#1090
             DataBinding.FieldName = 'port'
-            Width = 59
+            Width = 65
           end
           object cxAccountsTimeout: TcxGridDBColumn
+            Caption = #1042#1088#1077#1084#1103' '#1086#1078#1080#1076#1072#1085#1080#1103
             DataBinding.FieldName = 'Timeout'
-            Width = 78
+            Width = 102
           end
           object cxAccountsstatus: TcxGridDBColumn
+            Caption = #1057#1086#1089#1090#1086#1103#1085#1080#1077
             DataBinding.FieldName = 'status'
-            Width = 63
+            Width = 66
           end
         end
         object cxAccountsGridLevel1: TcxGridLevel
@@ -25615,18 +25622,22 @@ object FMain: TFMain
             Width = 53
           end
           object cxFiltersFValue: TcxGridDBColumn
+            Caption = #1047#1085#1072#1095#1077#1085#1080#1077
             DataBinding.FieldName = 'FValue'
             Width = 168
           end
           object cxFiltersDescription: TcxGridDBColumn
+            Caption = #1054#1087#1080#1089#1072#1085#1080#1077
             DataBinding.FieldName = 'Description'
             Width = 168
           end
           object cxFiltersParams: TcxGridDBColumn
+            Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099
             DataBinding.FieldName = 'Params'
             Width = 123
           end
           object cxFiltersActive: TcxGridDBColumn
+            Caption = #1040#1082#1090#1080#1074#1077#1085
             DataBinding.FieldName = 'Active'
             Width = 66
           end
@@ -25724,7 +25735,6 @@ object FMain: TFMain
           Left = 8
           Top = 136
           Action = alCanCheckAccounts
-          Properties.OnChange = cbCanCheckAccountsPropertiesChange
           Style.LookAndFeel.Kind = lfOffice11
           Style.LookAndFeel.NativeStyle = True
           StyleDisabled.LookAndFeel.Kind = lfOffice11
@@ -26001,7 +26011,6 @@ object FMain: TFMain
           Left = 8
           Top = 40
           Action = alShowEditorForm
-          Properties.OnChange = cbShowEditorPropertiesChange
           Style.LookAndFeel.Kind = lfOffice11
           Style.LookAndFeel.NativeStyle = True
           StyleDisabled.LookAndFeel.Kind = lfOffice11
@@ -26696,6 +26705,15 @@ object FMain: TFMain
         Width = 614
       end
     end
+  end
+  object Button1: TButton
+    Left = 48
+    Top = 360
+    Width = 75
+    Height = 25
+    Caption = 'Button1'
+    TabOrder = 7
+    OnClick = Button1Click
   end
   object dsAccounts: TDataSource
     DataSet = adAccounts
@@ -30745,7 +30763,7 @@ object FMain: TFMain
       OnExecute = alStartAllThreadsExecute
     end
     object alStopAllThreads: TAction
-      Caption = #1054#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1074#1089#1077' '#1087#1086#1090#1086#1082#1080
+      Caption = #1054#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1087#1088#1086#1074#1077#1088#1082#1091' '#1074#1089#1077#1093' '#1072#1082#1082#1072#1091#1085#1090#1086#1074
       OnExecute = alStopAllThreadsExecute
     end
     object alCanCheckAccounts: TAction
@@ -30959,7 +30977,7 @@ object FMain: TFMain
       23
       0)
     object msAccounts: TdxBarSubItem
-      Caption = #1040#1082#1082#1072#1091#1085#1090#1099
+      Caption = #1059#1095#1077#1090#1085#1099#1077' '#1079#1072#1087#1080#1089#1080
       Category = 0
       Visible = ivAlways
       ItemLinks = <
@@ -31051,9 +31069,7 @@ object FMain: TFMain
     end
     object msStartAllThreads: TdxBarButton
       Action = alStartAllThreads
-      Caption = #1055#1088#1086#1074#1077#1088#1080#1090#1100' '#1074#1089#1077' '
       Category = 0
-      Hint = #1055#1088#1086#1074#1077#1088#1080#1090#1100' '#1074#1089#1077' '
     end
     object msStopAllThreads: TdxBarButton
       Action = alStopAllThreads
@@ -31093,6 +31109,7 @@ object FMain: TFMain
     object pmStopAllThreads: TdxBarButton
       Action = alStopAllThreads
       Category = 0
+      Hint = #1054#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1087#1088#1086#1074#1077#1088#1082#1091' '#1074#1089#1077#1093' '#1072#1082#1082#1072#1091#1085#1090#1086#1074
     end
     object pmCheckAccounts: TdxBarButton
       Action = alCanCheckAccounts
@@ -31674,5 +31691,10 @@ object FMain: TFMain
     OnHotKeyRegisterFailed = jvAppRunMailClientHotKeyRegisterFailed
     Left = 673
     Top = 335
+  end
+  object IdECHOServer1: TIdECHOServer
+    Bindings = <>
+    Left = 209
+    Top = 383
   end
 end

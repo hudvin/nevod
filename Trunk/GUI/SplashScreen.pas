@@ -2,7 +2,7 @@ unit SplashScreen;
 
 interface
 
-uses PBThreadedSplashscreenU,
+uses PBThreadedSplashscreenU, gnugettext,
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, jpeg, JvImage, StdCtrls, cxControls, cxContainer,
   cxEdit, cxProgressBar, JvGIF;
@@ -36,6 +36,7 @@ Procedure ShowSplashscreen;
     If Assigned( ThreadedSplashForm ) Then Exit;
 
     Splashform := TFSplashScreen.Create( Application );
+    TranslateComponent(SplashForm);
     try
       ThreadedSplashForm:= TPBThreadedSplashscreen.Create( nil );
       Try
@@ -75,11 +76,6 @@ Procedure ShowSplashScreenMessage( const S: String );
     If Assigned( ThreadedSplashForm ) Then
       ThreadedSplashForm.ShowStatusMessage( S );
   End;
-
-
-
-
-
 
 
 end.

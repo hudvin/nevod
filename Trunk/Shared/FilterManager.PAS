@@ -1,7 +1,7 @@
 unit FilterManager;
 
 interface
-uses
+uses gnugettext,
  Windows,DB,Exceptions,Shared,Dialogs, ADODB,Typinfo,PerlRegEx, Messages,  SysUtils,
  Variants, Classes;
 
@@ -111,10 +111,10 @@ begin
 
  ElementValue:=Trim(ElementValue);
  if ElementValue='' then
-  Raise EInvalidFilterParams.Create('Фильтр не может быть пустым');
+  Raise EInvalidFilterParams.Create(_('Фильтр не может быть пустым'));
  if not (FilterType in [ftBlackSender,ftWhiteSender,ftStamp,ftBlackWord,ftWhiteWord,
                ftBlackAttach,ftWhiteAttach,ftSpamWord]) then
-   Raise EInvalidFilterParams.Create('Неправильный тип фильтра');
+   Raise EInvalidFilterParams.Create(_('Неправильный тип фильтра'));
 
  Flag:=False;;
  if FilterType in [ftWhiteSender,ftBlackSender] then
@@ -129,19 +129,19 @@ begin
      ElementValue:='*@' +Exp.SubExpressions[2];
     end;
    if not Flag then
-     Raise EInvalidFilterParams.Create('Адрес отправителя некорректен');
+     Raise EInvalidFilterParams.Create(_('Адрес отправителя некорректен'));
   end;
 
 
  // разобраться с преобразованиями  
  if ((FilterType=ftWhiteWord) or (FilterType=ftBlackWord)) and not( (Params=slAnywhere) or (Params=slSubject)  or (Params=slBody) ) then
-   Raise EInvalidFilterParams.Create('Неправильное расположение спам-слова');
+   Raise EInvalidFilterParams.Create(_('Неправильное расположение спам-слова'));
  if ElementExists(ElementValue,FilterType) then
-   Raise EInvalidFilterParams.Create('Фильтр уже есть в данной группе');
+   Raise EInvalidFilterParams.Create(_('Фильтр уже есть в данной группе'));
  tFilter:=TwinFilter(FilterType);
  if tFilter<>FilterType then
   if ElementExists(ElementValue,tFilter) then
-   Raise EInvalidFilterParams.Create(' Фильтр уже есть в противоположной группе ');
+   Raise EInvalidFilterParams.Create(_(' Фильтр уже есть в противоположной группе '));
    
  Add(ElementValue,FilterType,Description,Status,Params);
 
@@ -301,10 +301,10 @@ var
 begin
  ElementValue:=Trim(ElementValue);
  if ElementValue='' then
-  Raise EInvalidFilterParams.Create('Фильтр не может быть пустым');
+  Raise EInvalidFilterParams.Create(_('Фильтр не может быть пустым'));
  if not (FilterType in [ftBlackSender,ftWhiteSender,ftStamp,ftBlackWord,ftWhiteWord,
                ftBlackAttach,ftWhiteAttach,ftSpamWord]) then
-   Raise EInvalidFilterParams.Create('Неправильный тип фильтра');
+   Raise EInvalidFilterParams.Create(_('Неправильный тип фильтра'));
 
  // проверки на корректность адресов
 
@@ -321,19 +321,19 @@ begin
      ElementValue:='*@' +Exp.SubExpressions[2];
     end;
    if not Flag then
-     Raise EInvalidFilterParams.Create('Адрес отправителя некорректен');
+     Raise EInvalidFilterParams.Create(_('Адрес отправителя некорректен'));
   end;
 
 
  if ((FilterType=ftWhiteWord) or (FilterType=ftBlackWord)) and not( (Params=slAnywhere) or (Params=slSubject)  or (Params=slBody) ) then
-   Raise EInvalidFilterParams.Create('Неправильное расположение спам-слова');
+   Raise EInvalidFilterParams.Create(_('Неправильное расположение спам-слова'));
 
  if ElementExists(ElementValue,ElementId,FilterType) then
-   Raise EInvalidFilterParams.Create('Фильтр уже есть в данной группе');
+   Raise EInvalidFilterParams.Create(_('Фильтр уже есть в данной группе'));
  tFilter:=TwinFilter(FilterType);
  if tFilter<>FilterType then
   if ElementExists(ElementValue,ElementId,tFilter) then
-   Raise EInvalidFilterParams.Create(' Фильтр уже есть в противоположной группе ');
+   Raise EInvalidFilterParams.Create(_(' Фильтр уже есть в противоположной группе '));
  Modify(ElementId,ElementValue,FilterType,Description,Status,Params);
 
 end;

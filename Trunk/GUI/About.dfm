@@ -14,6 +14,7 @@ object FAbout: TFAbout
   Font.Style = []
   OldCreateOrder = False
   Position = poDesktopCenter
+  OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -1461,7 +1462,7 @@ object FAbout: TFAbout
     ProductID = '55683-OEM-0013514-73984'
     ProductName = 'Microsoft Windows XP'
     DVDRegion = -1
-    TimeRunning = 0.274949120370370400
+    TimeRunning = 0.344377175925926000
     DayRunning = 0
     Left = 8
     Top = 216

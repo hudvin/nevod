@@ -2,7 +2,7 @@ unit ThreadManager;
 
 interface
 
-uses
+uses  gnugettext,
       Exceptions, DB, StrUtils, Shared,PostReceiver,WinSock, Messages,  CoolTrayIcon,
      SysUtils,TypInfo, Windows,Classes,DateUtils,Dialogs, ADODB, AccountManager;
 
@@ -95,25 +95,25 @@ begin
 
          if SuccessFul=False then
           begin
-           Logger.Add('Ошибка при получении почты : ' +LogMessage,AccountId,ltPostReceiver);
+           Logger.Add(_('Ошибка при получении почты : ') +LogMessage,AccountId,ltPostReceiver);
 
            SendHintMessage(AccountParams.AccountName,
-               ' Ошибка при получении почты для  '+ '"'+AccountParams.AccountName +'"',
-               ' Ошибка при получении почты  : '+  ' '+LogMessage,
+               _(' Ошибка при получении почты для  ')+ '"'+AccountParams.AccountName +'"',
+               _(' Ошибка при получении почты  : ')+  ' '+LogMessage,
                bitError,
                MessagesCount);
           end
            else
             if MessagesCount>0 then
             begin
-             Mess.Caption:=' Получена новая почта  для  '+ '"'+AccountParams.AccountName +'"';
-             Mess.LogMessage:=' Загружено '+  ' '+IntToStr(MessagesCount)+ ' новых писем';
+             Mess.Caption:=_(' Получена новая почта  для  ')+ '"'+AccountParams.AccountName +'"';
+             Mess.LogMessage:=_(' Загружено ')+  ' '+IntToStr(MessagesCount)+ _(' новых писем');
              Mess.MessagesCount:=MessagesCount;
              Mess.BallonType:=bitInfo;
              SendHintMessage(
                 AccountParams.AccountName,
-                ' Получена новая почта  для  '+ '"'+AccountParams.AccountName +'"',
-                ' Загружено '+  ' '+IntToStr(MessagesCount)+ ' новых писем',
+                _(' Получена новая почта  для  ')+ '"'+AccountParams.AccountName +'"',
+                _(' Загружено ')+  ' '+IntToStr(MessagesCount)+ _(' новых писем'),
                 bitInfo,
                 MessagesCount
              );

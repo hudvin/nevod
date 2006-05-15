@@ -2,7 +2,7 @@ unit AccountEditor;
 
 interface
 
-uses  ADOdb,DB,  Shared,
+uses  ADOdb,DB,  Shared,gnugettext,
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, cxControls, cxPC, AccountManager;
 
@@ -57,6 +57,7 @@ begin
   inherited Create(nil);
   FadAccounts:=adAccounts;
   FAccountManager:=AccountManager;
+  TranslateComponent(self);
 end;
 
 procedure TFAccountEditor.CleanFields;
@@ -105,13 +106,13 @@ procedure TFAccountEditor.SetCaptions;
 begin
  if FEditorMode=emEdit then
   begin
-   Caption:='Изменение параметров аккаунта';
-   btOK.Caption:='Изменить';
+   Caption:=_('Изменение параметров аккаунта');
+   btOK.Caption:=_('Изменить');
   end
    else
     begin
-     Caption:='Добавление нового аккаунта';
-     btOK.Caption:='Добавить';
+     Caption:=_('Добавление нового аккаунта');
+     btOK.Caption:=_('Добавить');
     end;   
 end;
 

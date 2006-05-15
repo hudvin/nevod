@@ -17,11 +17,11 @@ uses Commctrl,tlhelp32, StdCtrls, Dialogs, ImgList, Controls, dxBar,  Math,
    cxLookAndFeels,FilterEditor,
   XPStyleActnCtrls, ActnMan,  Clipbrd, PerlRegEx,
    ToolWin, ActnCtrls, ActnColorMaps,
-  ActnPopupCtrl,  cxRichEdit,
+  ActnPopupCtrl,  cxRichEdit,  gnugettext,
   cxButtons, cxDropDownEdit,  ComCtrls, JvHotKey, JvComponent,
   JvAppHotKey, JvHotkeyEx,
   JvDlg, JvComputerInfo, JvHtControls, JvTransLED, JvEditor, JvaScrollText,
-  JvMemo;
+  JvMemo, IdBaseComponent, IdComponent, IdCustomTCPServer, IdEchoServer;
 
  
 
@@ -292,6 +292,8 @@ type
     pShowSpyEditor: TdxBarButton;
     alShowMainWindow: TAction;
     pShowMain: TdxBarButton;
+    Button1: TButton;
+    IdECHOServer1: TIdECHOServer;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -358,7 +360,6 @@ type
       Shift: TShiftState);
     procedure cxFiltersKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure cbRunAtStartUpPropertiesChange(Sender: TObject);
     procedure lbServerPortKeyPress(Sender: TObject; var Key: Char);
     procedure lbServerPortExit(Sender: TObject);
     procedure seCheckIntervalPropertiesValidate(Sender: TObject;
@@ -366,7 +367,6 @@ type
       var Error: Boolean);
     procedure seCheckIntervalExit(Sender: TObject);
     procedure cbCheckIfNotConnectedPropertiesChange(Sender: TObject);
-    procedure cbCanCheckAccountsPropertiesChange(Sender: TObject);
     procedure cbEnableFilteringPropertiesChange(Sender: TObject);
     procedure cbBallonOnReceivePropertiesChange(Sender: TObject);
     procedure cbBaloonOnErrorPropertiesChange(Sender: TObject);
@@ -383,7 +383,6 @@ type
     procedure cbActivateClbSpyPropertiesChange(Sender: TObject);
     procedure cmSpyForPropertiesChange(Sender: TObject);
     procedure cmAddToPropertiesChange(Sender: TObject);
-    procedure cbShowEditorPropertiesChange(Sender: TObject);
     procedure cbSoundOnAddPropertiesChange(Sender: TObject);
     procedure beSoundOnAddPropertiesButtonClick(Sender: TObject;
       AButtonIndex: Integer);
@@ -427,6 +426,7 @@ type
     procedure alEnableClbSpyExecute(Sender: TObject);
     procedure alShowEditorFormExecute(Sender: TObject);
     procedure alShowMainWindowExecute(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -467,8 +467,7 @@ type
     procedure SetCurrentParams(Grid:TcxGridDBTableView;Filter:TFilterType);
   end;
 
-const
- Caggption='fdsfasfa'^M'gfsgfs';
+
 
 var
   FMain: TFMain;
@@ -500,31 +499,6 @@ begin
  Showmessage(SysErrorMessage(GetLastError));
 end;
 
-function KillTask(FileName: string): integer; //0 - пpибить не полyчилось
-var
-  ContinueLoop: BOOL;
-  FSnapshotHandle: THandle;
-  FProcessEntry32: TProcessEntry32;
-const
-  PROCESS_TERMINATE = $0001;
-begin
-  FileName:=ExtractFileName(FileName);
-  FSnapshotHandle := CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-  FProcessEntry32.dwSize := Sizeof(FProcessEntry32);
-  ContinueLoop := Process32First(FSnapshotHandle, FProcessEntry32);
-  while integer(ContinueLoop) <> 0 do
-  begin
-    if
-      ((UpperCase(ExtractFileName(FProcessEntry32.szExeFile)) =
-      UpperCase(FileName))
-      or (UpperCase(FProcessEntry32.szExeFile) = UpperCase(FileName))) then
-      Result := Integer(TerminateProcess(OpenProcess(PROCESS_TERMINATE, BOOL(0),
-
-        FProcessEntry32.th32ProcessID), 0));
-    ContinueLoop := Process32Next(FSnapshotHandle, FProcessEntry32);
-  end;
-  CloseHandle(FSnapshotHandle);
-end;
 
 
 procedure TFMain.WMChangeCBChain(var Msg: TWMChangeCBChain);
@@ -596,6 +570,8 @@ var
  Key:TRegistry;
  Sel:Integer;
 begin
+ TranslateComponent(self);
+
  IsCreated:=False;
  adCon.ConnectionString:=GetConnectionString;
  WriteAppPath(PChar(Application.ExeName));
@@ -608,29 +584,29 @@ begin
 
  SNConverter:=TSNIndexConverter.Create;
  SignList:=TSignalDescriptorsList.Create;
- SignList.Add(slAnywhere,' в теле и в теме сообщения ');
- SignList.Add(slSubject,' в теме сообщения ');
- SignList.Add(slBody,' в теле сообщения ');
+ SignList.Add(slAnywhere,_(' в теле и в теме сообщения '));
+ SignList.Add(slSubject,_(' в теме сообщения '));
+ SignList.Add(slBody,_(' в теле сообщения '));
 
- Headers.Active:='Active';
- Headers.Description:='Description';
+ Headers.Active:=('Активен');
+ Headers.Description:=_('Описание');
  with SNConverter do
    begin
-    Headers.FValue:='Sender';
-    Add(6,ftWhiteSender,'Добавить адрес/домен в белый список',cxTab_Filters,Headers); //адрес в белый список
+    Headers.FValue:=('Отправитель');
+    Add(6,ftWhiteSender,_('Добавить адрес/домен в белый список'),cxTab_Filters,Headers); //адрес в белый список
     Add(10,ftBlackSender,'Добавить адрес/домен в черный список',cxTab_Filters,Headers); //адрес в черный список
 
-    Headers.FValue:='File Extension';
-    Add(7,ftWhiteAttach,'Добавить расширений приложенного файла в белый список',cxTab_Filters,Headers); // расширение в белый список
-    Add(11,ftBlackAttach,'Добавить расширений приложенного файла в черный список',cxTab_Filters,Headers);// расширение в черный список
+    Headers.FValue:=_('Расширение файла');
+    Add(7,ftWhiteAttach,_('Добавить расширений приложенного файла в белый список'),cxTab_Filters,Headers); // расширение в белый список
+    Add(11,ftBlackAttach,_('Добавить расширений приложенного файла в черный список'),cxTab_Filters,Headers);// расширение в черный список
 
-    Headers.Params:='Location';
-    Headers.FValue:='Word';
-    Add(4,ftWhiteWord,'Добавить слово в белый список',cxTab_Filters,Headers); // слово в белый список
-    Add(9,ftBlackWord,'Добавить слово в черный список',cxTab_Filters,Headers); // слово в черный список
+    Headers.Params:=_('Расположение');
+    Headers.FValue:=_('Слово');
+    Add(4,ftWhiteWord,_('Добавить слово в белый список'),cxTab_Filters,Headers); // слово в белый список
+    Add(9,ftBlackWord,_('Добавить слово в черный список'),cxTab_Filters,Headers); // слово в черный список
 
     Headers.FValue:='Nevod Stamp';
-    Add(5,ftStamp,'Добавить штамп',cxTab_Filters,Headers); // штамп
+    Add(5,ftStamp,_('Добавить штамп'),cxTab_Filters,Headers); // штамп
     // добавление панелей не-фильтров
    Add(0,ftNone,'',cxTab_Settings);      // основные настройки
    Add(1,ftNone,'Accounts',cxTab_Accounts);      // учетные записи
@@ -643,7 +619,7 @@ begin
  POP3Server:=TPOPServer.Create(adCon,AccountManager);
  TmAppl:=False;
  if not POP3Server.LoadParams then
-   if MessageBox(Handle,' Ошибка запуска сервера ',' Стандартный порт фильтра занят. Хотите сменить порт ? ',MB_OKCANCEL)=IDOK then
+   if MessageBox(Handle,PChar(_(' Стандартный порт фильтра занят. Хотите сменить порт ? ')),PChar(_(' Ошибка запуска сервера ')),MB_OKCANCEL)=IDOK then
     begin
      while (not POP3Server.LoadParams) and (not TmAppl) do
       begin
@@ -670,8 +646,6 @@ begin
  PrevHwnd := SetClipboardViewer(Handle);
  Coder:=TBFCoder.Create;
  Coder.Key:=CriptKey;
-
-
 
  FEditor:=TFCustomEditor.Create(SNConverter,FManager,adFilters,SignList);
  FAccountEditor:=TFAccountEditor.Create(adAccounts,AccountManager);
@@ -711,7 +685,7 @@ begin
  cbSoundOnAdd.Checked:=StrToBool(SProvider.GetValue('SoundOnAdd'));
  alShowEditorForm.Checked:=StrToBool(SProvider.GetValue('ShowspyEditor'));
 
- 
+
  JvAppAddHotKey.HotKey:=StrToInt(SProvider.GetValue('AddHotKey'));
  JvAppAddHotKey.Active:=True;
  JvAppShowMainWindow.HotKey:=StrToInt(SProvider.GetValue('ShowMainWindowHotKey'));
@@ -769,7 +743,25 @@ end;
 
 
 procedure TFMain.FormDestroy(Sender: TObject);
+var i:integer;
 begin
+
+
+ with POP3Server.pop.Contexts.LockList do
+   try
+      for i := 0 to Count - 1 do begin
+         TIdContext(Items[i]).Connection.Disconnect(False);
+      end;
+   finally
+      POP3Server.pop.Contexts.UnLockList;
+   end;
+
+
+
+
+ 
+
+
  if POP3Server<>nil then POP3Server.Free;
  tray.Enabled:=False;
  ThreadManager.Free;
@@ -779,7 +771,7 @@ begin
  SignList.Free;
  AccountManager.Free;
  FAccountEditor.Free;
- //FPortEditor.Free;
+ FPortEditor.Free;
  Coder.Free;
  Exp.Free;
  SProvider.Free;
@@ -978,9 +970,9 @@ var
 begin
  AStatus:=TAccountStatus(GetEnumValue(TypeInfo(TAccountStatus),Sender.Value));
  case AStatus of    //
-   asFree: Text:='свободен' ;
-   asClient:Text:='загружается почта ' ;
-   asServer: Text:='подключен локальный клиент' ;
+   asFree: Text:=_('свободен') ;
+   asClient:Text:=_('загружается почта ') ;
+   asServer: Text:=_('подключен локальный клиент') ;
  end;
 end;
 
@@ -1016,7 +1008,7 @@ var
  AccountId:integer;
 begin
  AccountId:= cxAccounts.Controller.SelectedRows[0].Values[cxAccountsid.Index];
- if Application.MessageBox('Are you are sure ?','Deleting Account',MB_OKCANCEL)=IDOK then
+ if Application.MessageBox(PChar(_('Вы действительно хотите удалить учетную запись')),PChar(_('Удаление учетной записи')),MB_OKCANCEL)=IDOK then
   begin
    ThreadManager.StopThread(AccountId);
    AccountManager.DeleteAccount([AccountId]);
@@ -1053,8 +1045,8 @@ end;
 
 procedure TFMain.AccountsUpdaterTimer(Sender: TObject);
 begin
- stBar.Panels.Items[1].Text:='Количество сообщений в базе данных : ' + IntToStr(GetTotalMessCount);
- stBar.Panels.Items[0].Text:='Размер базы данных : '+ FloatToStr(RoundTo((Shared.GetFileSize(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb'))/(1024*1024),-2))+' Мб';
+ stBar.Panels.Items[1].Text:=_('Количество сообщений в базе данных : ') + IntToStr(GetTotalMessCount);
+ stBar.Panels.Items[0].Text:=_('Размер базы данных : ')+ FloatToStr(RoundTo((Shared.GetFileSize(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb'))/(1024*1024),-2))+' Мб';
  if FMain.Active then
   begin
    if not adAccounts.Active then adAccounts.Active:=True;
@@ -1309,7 +1301,7 @@ var
  i:integer;
 begin
  SelCount:=cxFilters.Controller.SelectedRowCount;
- if (SelCount>0) and ( Application.MessageBox(' Вы дейтсвительно хотите удалить фильтры ?','Удаление фильтров',MB_OKCANCEL)=IDOK) then
+ if (SelCount>0) and ( Application.MessageBox(PChar(_(' Вы дейтсвительно хотите удалить фильтры ?')),PChar(_('Удаление фильтров')),MB_OKCANCEL)=IDOK) then
   begin
    SetLength(ElementsId,SelCount);
    for I:=0 to SelCount - 1 do
@@ -1338,9 +1330,9 @@ begin
      btCaption:='';
      FilterString:=GetEnumName(TypeInfo(TFilterType), Ord(tFilter));
      if pos('White',FilterString)<>0 then
-      btCaption:='Перенести в белый список';
+      btCaption:=_('Перенести в белый список');
      if pos('Black',FilterString)<>0 then
-       btCaption:='Перенести в черный  список';
+       btCaption:=_('Перенести в черный  список');
      alMoveSelectedFiltersElements.Enabled:=True;
      if btCaption<>'' then   alMoveSelectedFiltersElements.Caption:=btCaption;
    //  alMoveSelectedFiltersElements.Visible:=True;
@@ -1351,7 +1343,7 @@ begin
     //   alMoveSelectedFiltersElements.Visible:=False;
       end;
 
-  
+
 
    alRemoveFilterElement.Enabled:=True;
    alEditFilterElement.Enabled:=True;
@@ -1421,22 +1413,6 @@ begin
    alEditFilterElement.Execute;
 end;
 
-procedure TFMain.cbRunAtStartUpPropertiesChange(Sender: TObject);
-{ var
- Key:TRegistry; }
-begin
- { Key:=TRegistry.Create;
- Key.RootKey:=HKEY_CURRENT_USER;
- Key.OpenKey('\Software\Microsoft\Windows\CurrentVersion\Run',True);
- if cbRunAtStartUp.Checked then
-  Key.WriteString('Nevod AntiSpam',Application.ExeName+' -h')
-   else Key.DeleteValue('Nevod AntiSpam');
- Key.CloseKey;
- Key.Free;
- SProvider.SetValue('RunAtStartUp',BoolToStr(cbRunAtStartUp.Checked,True)); }
-
-end;
-
 procedure TFMain.lbServerPortKeyPress(Sender: TObject; var Key: Char);
 begin
 if not (Key  in ['0'..'9',#8]) then
@@ -1465,11 +1441,6 @@ end;
 procedure TFMain.cbCheckIfNotConnectedPropertiesChange(Sender: TObject);
 begin
  SProvider.SetValue('CheckIfNotConnected',BoolToStr(cbCheckIfNotConnected.Checked,True));
-end;
-
-procedure TFMain.cbCanCheckAccountsPropertiesChange(Sender: TObject);
-begin
-// SProvider.SetValue('CanCheckAccounts',BoolToStr(cbCanCheckAccounts.Checked,True));
 end;
 
 procedure TFMain.cbEnableFilteringPropertiesChange(Sender: TObject);
@@ -1645,11 +1616,6 @@ begin
 
 end;
 
-procedure TFMain.cbShowEditorPropertiesChange(Sender: TObject);
-begin
- //SProvider.SetValue('ShowspyEditor',BoolToStr(cbShowEditor.Checked,True));
-end;
-
 procedure TFMain.cbSoundOnAddPropertiesChange(Sender: TObject);
 begin
  SProvider.SetValue('SoundOnAdd',BoolToStr(cbSoundOnAdd.Checked,True));
@@ -1793,13 +1759,13 @@ end;
 
 procedure TFMain.alRestoreFromBackUpExecute(Sender: TObject);
 begin
- if MessageBox(Handle,'Приложение будет завершено','Сообщение',MB_OKCANCEL)=IDOK then
+ if MessageBox(Handle,PChar(_('Приложение будет завершено')),PChar(_('Сообщение')),MB_OKCANCEL)=IDOK then
   WinExec(PChar('NevodBackup.exe -rb'),SW_SHOWNORMAL);
 end;
 
 procedure TFMain.alSaveToBackUpExecute(Sender: TObject);
 begin
- if MessageBox(Handle,'Приложение будет завершено','Сообщение',MB_OKCANCEL)=IDOK then
+ if MessageBox(Handle,PChar(_('Приложение будет завершено')),PChar(_('Сообщение')),MB_OKCANCEL)=IDOK then
   WinExec(PChar('NevodBackup.exe -sb'),SW_SHOWNORMAL);
 end;
 
@@ -1955,6 +1921,12 @@ procedure TFMain.alShowMainWindowExecute(Sender: TObject);
 begin
  tray.ShowMainForm;
  SetActiveWindow(Handle);
+end;
+
+procedure TFMain.Button1Click(Sender: TObject);
+begin
+ UseLanguage ('en');
+ TranslateComponent(self);
 end;
 
 end.

@@ -1,11 +1,11 @@
 object FAccountEditor: TFAccountEditor
-  Left = 357
-  Top = 258
+  Left = 499
+  Top = 259
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'FAccountEditor'
   ClientHeight = 194
-  ClientWidth = 226
+  ClientWidth = 237
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,85 +20,85 @@ object FAccountEditor: TFAccountEditor
   object cxTab: TcxTabControl
     Left = 0
     Top = 0
-    Width = 226
+    Width = 237
     Height = 194
     Align = alClient
     LookAndFeel.Kind = lfOffice11
     LookAndFeel.NativeStyle = False
     TabOrder = 0
     ClientRectBottom = 194
-    ClientRectRight = 226
+    ClientRectRight = 237
     ClientRectTop = 0
     object leAccountName: TLabeledEdit
-      Left = 88
+      Left = 112
       Top = 8
       Width = 121
       Height = 21
-      EditLabel.Width = 74
+      EditLabel.Width = 103
       EditLabel.Height = 13
-      EditLabel.Caption = 'AccountName  '
+      EditLabel.Caption = #1048#1084#1103' '#1091#1095#1077#1090#1085#1086#1081' '#1079#1072#1087#1080#1089#1080
       LabelPosition = lpLeft
       TabOrder = 0
       OnKeyPress = leAccountNameKeyPress
     end
     object leUsername: TLabeledEdit
-      Left = 88
+      Left = 112
       Top = 32
       Width = 121
       Height = 21
-      EditLabel.Width = 54
+      EditLabel.Width = 99
       EditLabel.Height = 13
-      EditLabel.Caption = 'Username  '
+      EditLabel.Caption = #1048#1084#1103' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1103' '
       LabelPosition = lpLeft
       TabOrder = 1
       OnKeyPress = leUsernameKeyPress
     end
     object lePassword: TLabeledEdit
-      Left = 88
+      Left = 112
       Top = 56
       Width = 121
       Height = 21
-      EditLabel.Width = 52
+      EditLabel.Width = 38
       EditLabel.Height = 13
-      EditLabel.Caption = 'Password  '
+      EditLabel.Caption = #1055#1072#1088#1086#1083#1100
       LabelPosition = lpLeft
       PasswordChar = '*'
       TabOrder = 2
       OnKeyPress = lePasswordKeyPress
     end
     object leHost: TLabeledEdit
-      Left = 88
+      Left = 112
       Top = 80
       Width = 121
       Height = 21
-      EditLabel.Width = 28
+      EditLabel.Width = 37
       EditLabel.Height = 13
-      EditLabel.Caption = 'Host  '
+      EditLabel.Caption = #1057#1077#1088#1074#1077#1088
       LabelPosition = lpLeft
       TabOrder = 3
       OnKeyPress = leHostKeyPress
     end
     object lePort: TLabeledEdit
-      Left = 88
+      Left = 112
       Top = 104
       Width = 57
       Height = 21
-      EditLabel.Width = 25
+      EditLabel.Width = 28
       EditLabel.Height = 13
-      EditLabel.Caption = 'Port  '
+      EditLabel.Caption = #1055#1086#1088#1090' '
       LabelPosition = lpLeft
       TabOrder = 4
       Text = '110'
       OnKeyPress = lePortKeyPress
     end
     object leTimeout: TLabeledEdit
-      Left = 88
+      Left = 112
       Top = 128
       Width = 57
       Height = 21
-      EditLabel.Width = 68
+      EditLabel.Width = 76
       EditLabel.Height = 13
-      EditLabel.Caption = 'Timeout  ('#1089#1077#1082')'
+      EditLabel.Caption = #1058#1072#1081#1084#1072#1091#1090'  ('#1089#1077#1082') '
       LabelPosition = lpLeft
       TabOrder = 5
       Text = '60'

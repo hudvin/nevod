@@ -2,7 +2,7 @@ unit FilterEditor;
 
 interface
 
-uses  Shared,   FilterManager, TypInfo,
+uses  Shared,   FilterManager, TypInfo,  gnugettext,
   Windows, Messages, SysUtils,ADODB,DB, Classes, Controls, cxControls, cxPC ,Variants, Graphics,  Forms,
   Dialogs,   StdCtrls, cxContainer, cxEdit, cxTextEdit, cxMaskEdit,
   cxDropDownEdit, ExtCtrls, cxCheckBox, cxButtons;
@@ -75,6 +75,7 @@ begin
                ftBlackAttach,ftWhiteAttach,ftSpamWord] then
          cCBFilter.Properties.Items.Add(FSNConverter.Item[i].Name);
     end;
+  TranslateComponent(Self);
 end;
 
 procedure TFCustomEditor.Show(NodeIndex:integer);
@@ -82,7 +83,7 @@ var
  Res:TSNConvert;
 begin
  FEditorMode:=emAdd;
- Caption:='Добавление нового фильтра';
+ Caption:=_('Добавление нового фильтра');
  cCBFilter.Enabled:=True;
  if FSNConverter.Find(NodeIndex,Res) then
   if Res.FilterType=ftNone then // фильтр не был выбран
@@ -112,7 +113,7 @@ var
  Desc:String;
 begin
  FEditorMode:=emEdit;
- Caption:='Редактирование фильтра';
+ Caption:=_('Редактирование фильтра');
  FElementId:=ElementId;
  leValue.Text:=ElementValue;
  leDescription.Text:=Description;
@@ -166,7 +167,7 @@ begin
   Close;
  except
   on e: Exception do  // leMessage.Caption:=E.Message;
-    MessageBox(Handle,PChar(e.Message),'Ошибка',MB_OK);
+    MessageBox(Handle,PChar(e.Message),PChar(_('Ошибка')),MB_OK);
  end;
 end;
 
@@ -187,7 +188,7 @@ procedure TFCustomEditor.Show(ElementValue:String; FilterType:TFilterType);
 begin
  leValue.Text:=ElementValue;
  FEditorMode:=emAdd;
- caption:='Добавление фильтра';
+ caption:=_('Добавление фильтра');
  cCBFilter.Enabled:=True;
  cCBFilter.ItemIndex:=FSNConverter.FindIndex(FilterType);
  inherited Show;

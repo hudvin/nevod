@@ -1,11 +1,11 @@
 object FPortEditor: TFPortEditor
-  Left = 210
-  Top = 162
+  Left = 587
+  Top = 332
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1053#1086#1074#1099#1081' '#1087#1086#1088#1090' '#1089#1077#1088#1074#1077#1088#1072
-  ClientHeight = 77
-  ClientWidth = 144
+  ClientHeight = 80
+  ClientWidth = 149
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,13 +19,13 @@ object FPortEditor: TFPortEditor
   object cxTabControl1: TcxTabControl
     Left = 0
     Top = 0
-    Width = 144
-    Height = 77
+    Width = 149
+    Height = 80
     Align = alClient
     LookAndFeel.Kind = lfOffice11
     TabOrder = 3
-    ClientRectBottom = 77
-    ClientRectRight = 144
+    ClientRectBottom = 80
+    ClientRectRight = 149
     ClientRectTop = 0
   end
   object leServerPort: TLabeledEdit
@@ -36,7 +36,7 @@ object FPortEditor: TFPortEditor
     EditLabel.Width = 79
     EditLabel.Height = 13
     EditLabel.Caption = #1055#1086#1088#1090' '#1089#1077#1088#1074#1077#1088#1072'   '
-    LabelPosition = lpLeft
+    LabelPosition = lpBelow
     TabOrder = 0
   end
   object btOK: TButton

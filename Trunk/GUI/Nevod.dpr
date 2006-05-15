@@ -32,7 +32,8 @@ uses
   About in 'About.pas' {FAbout},
   SplashScreen in 'SplashScreen.pas' {FSplashScreen},
   ADODB_TLB in '..\Shared\ADODB_TLB.pas',
-  JRO_TLB in '..\Shared\JRO_TLB.pas';
+  JRO_TLB in '..\Shared\JRO_TLB.pas',
+  gnugettext in '..\..\..\Program Files\dxgettext\gnugettext.pas';
 
 {$R *.res}
 
@@ -40,6 +41,9 @@ var
  Con,CanExit:boolean;
  aCon:TADOConnection;
 begin
+ AddDomainForResourceString ('delphi');
+// Force program to use Danish instead of the current Windows settings
+//UseLanguage ('ru');
   if InitInstance then
   begin
   Application.Initialize;
@@ -60,7 +64,7 @@ begin
     aCon.Connected:=True;
     Con:=True;
    except
-    if MessageBox(Application.Handle,'Ошибка загрузки','База данных не найдена или повреждена. Заменить ?',MB_OKCANCEL)=ID_OK then
+    if MessageBox(Application.Handle,PChar(_('Ошибка загрузки')),PChar(_('База данных не найдена или повреждена. Заменить ?')),MB_OKCANCEL)=ID_OK then
      RestoreDB
    else canExit:=True;
   end;

@@ -3,7 +3,7 @@ unit Shared;
 interface
 
 uses  PerlRegEx, MMSystem,
-  cxEdit,
+  cxEdit, gnugettext,
   cxCheckBox, cxGridLevel, cxGridCustomTableView, cxGridTableView,
   
 
@@ -525,7 +525,7 @@ begin
       CoUninitialize;
     end;
    except
-     on E:Exception do ShowMessage('Cannot add log record !!!' + E.Message);
+     on E:Exception do ShowMessage(_('Ќевозможно добавить сообщение в лог :') + E.Message);
    end;
 end;
 
@@ -1192,9 +1192,6 @@ begin
     reg.Free;
  end;
 end;
-
-
-
 
 end.
 

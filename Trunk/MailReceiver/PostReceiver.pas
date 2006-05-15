@@ -1,7 +1,7 @@
 unit PostReceiver;
 
 interface
-uses   Shared, IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient,
+uses gnugettext,  Shared, IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient,
   IdExplicitTLSClientServerBase, IdMessageClient, IdPOP3,  IdStackBSDBase,
   IdThread, IdMessage,Variants, Classes,DBTables, IdStack,IdreplyPOP3,
   Windows, SysUtils, ADODB,DB, DateUtils,  ActiveX;
@@ -219,12 +219,12 @@ begin
     on EIdSocketError do
       begin
        FSuccessFul:=False;
-       FLogMessage:='Невозможно подключиться к серверу';
+       FLogMessage:=_('Невозможно подключиться к серверу');
       end;
     on  EIdReplyPOP3Error  do
       begin
        FSuccessFul:=False;
-       FLogMessage:='Неправильные  параметры аккаунта';
+       FLogMessage:=_('Неправильные  параметры аккаунта');
       end;
    end;
 end;
