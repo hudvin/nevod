@@ -34,10 +34,11 @@ var
  key:String;
 begin
  cd:=TBFCoder.Create;
- key:=leUsername.Text+leCRC.Text+GetCryptKey;
- cd.Key:=GetCryptKey;
- key:=cd.Crypt(key);
- key:=md5(key);
+ key:=leUsername.Text+leCRC.Text+String(GetCryptKey);
+ cd.Key:=String(GetCryptKey);
+ key:=trim(cd.Crypt(key));
+ key:=md5('ShortString(key)');
+ ShowMessage(IntToStr(Length(key)));
  leActivationKeu.Text:=key;
  cd.Free;
 end;

@@ -84,7 +84,7 @@ begin
  try
  pop.Active:=False;
  Port:=ServerPort;
- if 1<>1 then //not (BindPort(Port)) then
+ if not (BindPort(Port)) then
   Result:=False
    else
     begin
