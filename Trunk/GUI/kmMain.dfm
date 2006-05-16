@@ -1,11 +1,11 @@
 object FMain: TFMain
-  Left = 248
-  Top = 210
+  Left = 238
+  Top = 400
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Nevod AntiSpam KeyMaker'
   ClientHeight = 127
-  ClientWidth = 277
+  ClientWidth = 364
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,7 +18,7 @@ object FMain: TFMain
   object btGenerate: TButton
     Left = 8
     Top = 96
-    Width = 257
+    Width = 345
     Height = 25
     Caption = 'Generate'
     TabOrder = 0
@@ -27,7 +27,7 @@ object FMain: TFMain
   object leUsername: TLabeledEdit
     Left = 88
     Top = 16
-    Width = 169
+    Width = 257
     Height = 21
     EditLabel.Width = 51
     EditLabel.Height = 13
@@ -35,10 +35,10 @@ object FMain: TFMain
     LabelPosition = lpLeft
     TabOrder = 1
   end
-  object leActivationKeu: TLabeledEdit
+  object leActivationKey: TLabeledEdit
     Left = 88
     Top = 64
-    Width = 169
+    Width = 257
     Height = 21
     EditLabel.Width = 71
     EditLabel.Height = 13
@@ -49,7 +49,7 @@ object FMain: TFMain
   object leCRC: TLabeledEdit
     Left = 88
     Top = 40
-    Width = 169
+    Width = 257
     Height = 21
     EditLabel.Width = 25
     EditLabel.Height = 13

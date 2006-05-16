@@ -3,7 +3,7 @@ unit kmMain;
 interface
 
 uses
-  Windows, Shared,Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Windows,Shared, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, XPMan;
 
 type
@@ -11,7 +11,7 @@ type
     XPManifest1: TXPManifest;
     btGenerate: TButton;
     leUsername: TLabeledEdit;
-    leActivationKeu: TLabeledEdit;
+    leActivationKey: TLabeledEdit;
     leCRC: TLabeledEdit;
     procedure btGenerateClick(Sender: TObject);
   private
@@ -23,23 +23,21 @@ type
 var
   FMain: TFMain;
 function GetCryptKey:PChar;external 'Shared.dll';
-function md5(InputString:ShortString): ShortString; external 'Shared.DLL';
+function md5_32(InputString:WideString):WideString;external 'Shared.dll';
 implementation
 
 {$R *.dfm}
 
 procedure TFMain.btGenerateClick(Sender: TObject);
 var
- cd:TBFCoder;
  key:String;
+ cd:TBFCoder;
 begin
  cd:=TBFCoder.Create;
  key:=leUsername.Text+leCRC.Text+String(GetCryptKey);
  cd.Key:=String(GetCryptKey);
  key:=trim(cd.Crypt(key));
- key:=md5('ShortString(key)');
- ShowMessage(IntToStr(Length(key)));
- leActivationKeu.Text:=key;
+ leActivationKey.Text:=md5_32(key);
  cd.Free;
 end;
 

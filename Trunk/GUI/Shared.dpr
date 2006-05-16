@@ -12,7 +12,9 @@ uses
   Windows,
   ComObj,
   Classes,
-  JRO_TLB in '..\Shared\JRO_TLB.pas';
+  JRO_TLB in '..\Shared\JRO_TLB.pas',
+  ADODB_TLB in '..\Shared\ADODB_TLB.pas',
+  md5 in '..\Shared\md5.pas';
 
 const
   CriptKey=' &(5428396%:?(__*:?:(_(%fGfhhKJHFGHD12_= ';
@@ -20,10 +22,17 @@ const
 
 {$R *.res}
 
+
 function GetCryptKey:PChar;
 begin
  Result:=CriptKey;
 end;
+
+function md5_32(InputString:WideString):WideString;
+begin
+ Result:=MD5DigestToStr(MD5String(InputString));
+end;
+
 
 function GetTempFile(const Extension: ShortString):PChar;
 var
@@ -38,13 +47,13 @@ begin
 end;
 
 
-function md5(InputString:ShortString): ShortString;
+function md5(InputString:ShortString): PChar;
 var
   Digest: T4x4LongWordRecord;
   S, S1: string;
   i: Integer;
 begin
-  SetLength(S, 16);
+ SetLength(S, 16);
   with TIdHashMessageDigest5.Create do
     begin
       Digest := HashValue(InputString);
@@ -52,7 +61,7 @@ begin
       for i := 1 to Length(InputString) do
         S1 := S1 + Format('%02x', [Byte(S[i])]);
       while Pos(' ', S1) > 0 do S1[Pos(' ', S1)] := '0';
-      Result:=s1;
+      Result:=PChar(s1);
       Free;
     end;
 end;
@@ -206,7 +215,7 @@ begin
   CoUninitialize;
 end;
 
-exports md5,GetCryptKey,GetAppDataPath,DBPassword,DatabaseCompact,GetTempFile,WriteAppHandle,
+exports md5,md5_32,GetCryptKey,GetAppDataPath,DBPassword,DatabaseCompact,GetTempFile,WriteAppHandle,
          GetConnectionString,WriteAppPath,GetAppPath,GetAppHandle,IsNormal;
 
 begin

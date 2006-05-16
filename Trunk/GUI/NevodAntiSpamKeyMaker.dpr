@@ -9,8 +9,7 @@ uses
   Base64 in '..\Crypt\Base64.pas',
   Blowfish in '..\Crypt\Blowfish.pas',
   DCPcrypt in '..\Crypt\DCPcrypt.pas',
-  SHA1 in '..\Crypt\SHA1.pas',
-  ADODB_TLB in '..\Shared\ADODB_TLB.pas';
+  SHA1 in '..\Crypt\SHA1.pas';
 
 {$R *.res}
 

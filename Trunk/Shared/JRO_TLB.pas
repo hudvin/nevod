@@ -43,7 +43,7 @@ unit JRO_TLB;
 {$VARPROPSETTER ON}
 interface
 
-uses Windows, ActiveX, ADO_ Classes, Graphics, OleServer, StdVCL, Variants;
+uses Windows, ActiveX, ADODB_TLB, Classes, Graphics, OleServer, StdVCL, Variants;
   
 
 
