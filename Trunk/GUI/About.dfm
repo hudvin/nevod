@@ -1,11 +1,11 @@
 object FAbout: TFAbout
-  Left = 425
-  Top = 282
+  Left = 426
+  Top = 283
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077
-  ClientHeight = 275
-  ClientWidth = 298
+  ClientHeight = 273
+  ClientWidth = 296
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,8 +21,8 @@ object FAbout: TFAbout
   object bkImage: TJvImage
     Left = 0
     Top = 0
-    Width = 298
-    Height = 275
+    Width = 296
+    Height = 273
     Align = alClient
     Picture.Data = {
       0A544A504547496D61676565A40000FFD8FFE000104A46494600010201004800
@@ -1462,7 +1462,7 @@ object FAbout: TFAbout
     ProductID = '55683-OEM-0013514-73984'
     ProductName = 'Microsoft Windows XP'
     DVDRegion = -1
-    TimeRunning = 0.344377175925926000
+    TimeRunning = 0.518269722222222200
     DayRunning = 0
     Left = 8
     Top = 216

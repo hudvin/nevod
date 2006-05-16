@@ -1,9 +1,16 @@
 program NevodBackup;
-{$R ..\Resources\WinXP.res}
+
 
 uses
-  SysUtils,Windows,Messages, Classes,ZLib,Dialogs;
- type
+  SysUtils,
+  Windows,
+  Messages,
+  Classes,
+  ZLib,
+  Dialogs,
+  gnugettext in '..\..\..\Program Files\dxgettext\gnugettext.pas';
+
+type
   TCompressor = class
   public
     procedure CompressStream(InputStream, OutputStream: TStream);
@@ -33,26 +40,26 @@ begin
  DBPath:=GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb';
  if not FileExists(DBPath) then
   begin
-   ShowMessage('Пользовательская база данных не обнаружена !');
+   ShowMessage(_('Пользовательская база данных не обнаружена !'));
    CanExit:=True;
   end;
  if (not CanExit)and (not IsNormal(PChar(DBPath))) then
   begin
    CanExit:=True;
-   ShowMessage('Невозможно подключиться к базе данных');
+   ShowMessage(_('Невозможно подключиться к базе данных'));
   end;
 
  if not CanExit then
    try
     DatabaseCompact(DBPath,DBPassword);
    except
-    if MessageBox(GetStdHandle(STD_INPUT_HANDLE),'Невозможно сжать базу','Ошибка сжатия',MB_OKCANCEL)=IDCancel
+    if MessageBox(GetStdHandle(STD_INPUT_HANDLE),PChar(_('Невозможно сжать базу')),PChar(_('Ошибка сжатия')),MB_OKCANCEL)=IDCancel
      then Exit;
    end;
 
  selFile:=TSaveDialog.Create(nil);
  selFile.Options:=[ofOverwritePrompt];
- selFile.Filter:='Резервный копии(*.nbk)|*.nbk';   //'|*.nbk';
+ selFile.Filter:=_('Резервный копии(*.nbk)|*.nbk');   //'|*.nbk';
  if (not CanExit)and (selFile.Execute)  then
   begin
      try
@@ -88,7 +95,7 @@ begin
  DBPath:=GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb';
  selFile:=TOpenDialog.Create(nil);
  selFile.Options:=[ofOverwritePrompt];
- selFile.Filter:='Резервный копии(*.nbk)|*.nbk';
+ selFile.Filter:=_('Резервный копии(*.nbk)|*.nbk');
  if selFile.Execute then
   begin
      try
@@ -102,13 +109,13 @@ begin
        ZCom.Free;
        if not IsNormal(PChar(tmpFileName)) then
         begin
-         ShowMessage('База повреждена');
+         ShowMessage(_('База повреждена'));
          CanExit:=True;
          DeleteFile(PChar(tmpFileName));
         end;
 
        if  FileExists(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb') then
-         if MessageBox(GetStdHandle(STD_INPUT_HANDLE),'Текущая база данных будет удалена','Сообшение',MB_OKCANCEL)=IDCancel
+         if MessageBox(GetStdHandle(STD_INPUT_HANDLE),PChar(_('Текущая база данных будет удалена')),PChar(_('Сообшение')),MB_OKCANCEL)=IDCancel
           then  DeleteFile(PChar(DBPath));
        if not FileExists(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb')and (FileExists(PChar(tmpFileName))) then
         begin

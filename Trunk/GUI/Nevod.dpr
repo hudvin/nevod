@@ -41,9 +41,9 @@ var
  Con,CanExit:boolean;
  aCon:TADOConnection;
 begin
- AddDomainForResourceString ('delphi');
+ AddDomainForResourceString ('ru-en');
 // Force program to use Danish instead of the current Windows settings
-//UseLanguage ('ru');
+ UseLanguage ('en');
   if InitInstance then
   begin
   Application.Initialize;

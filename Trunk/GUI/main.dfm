@@ -1,11 +1,11 @@
 object FMain: TFMain
-  Left = 284
-  Top = 225
+  Left = 87
+  Top = 145
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Nevod AntiSpam'
-  ClientHeight = 446
-  ClientWidth = 772
+  ClientHeight = 444
+  ClientWidth = 770
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,8 +21,8 @@ object FMain: TFMain
   TextHeight = 13
   object stBar: TdxStatusBar
     Left = 0
-    Top = 426
-    Width = 772
+    Top = 424
+    Width = 770
     Height = 20
     Panels = <
       item
@@ -45,7 +45,7 @@ object FMain: TFMain
     Left = 0
     Top = 23
     Width = 145
-    Height = 403
+    Height = 401
     Align = alLeft
     Bands = <
       item
@@ -108,9 +108,9 @@ object FMain: TFMain
   object stPages: TcxPageControl
     Left = 145
     Top = 23
-    Width = 627
-    Height = 403
-    ActivePage = cxTab_Settings
+    Width = 625
+    Height = 401
+    ActivePage = cxTab_Accounts
     Align = alClient
     DragMode = dmAutomatic
     HideTabs = True
@@ -119,8 +119,8 @@ object FMain: TFMain
     Options = []
     Style = 8
     TabOrder = 2
-    ClientRectBottom = 403
-    ClientRectRight = 627
+    ClientRectBottom = 401
+    ClientRectRight = 625
     ClientRectTop = 0
     object cxTab_Accounts: TcxTabSheet
       Caption = 'cxTab_Accounts'
@@ -128,8 +128,8 @@ object FMain: TFMain
       object cxAccountsGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 627
-        Height = 403
+        Width = 625
+        Height = 401
         Align = alClient
         BorderWidth = 2
         TabOrder = 0
@@ -25525,8 +25525,8 @@ object FMain: TFMain
       object cxLogGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 627
-        Height = 403
+        Width = 625
+        Height = 401
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
@@ -25587,8 +25587,8 @@ object FMain: TFMain
       object cxFiltersGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 627
-        Height = 403
+        Width = 625
+        Height = 401
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
@@ -26705,15 +26705,6 @@ object FMain: TFMain
         Width = 614
       end
     end
-  end
-  object Button1: TButton
-    Left = 48
-    Top = 360
-    Width = 75
-    Height = 25
-    Caption = 'Button1'
-    TabOrder = 7
-    OnClick = Button1Click
   end
   object dsAccounts: TDataSource
     DataSet = adAccounts
@@ -31468,6 +31459,7 @@ object FMain: TFMain
     end
   end
   object AccountsUpdater: TTimer
+    Enabled = False
     Interval = 1500
     OnTimer = AccountsUpdaterTimer
     Left = 627
@@ -31691,10 +31683,5 @@ object FMain: TFMain
     OnHotKeyRegisterFailed = jvAppRunMailClientHotKeyRegisterFailed
     Left = 673
     Top = 335
-  end
-  object IdECHOServer1: TIdECHOServer
-    Bindings = <>
-    Left = 209
-    Top = 383
   end
 end

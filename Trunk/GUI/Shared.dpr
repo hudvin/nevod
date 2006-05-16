@@ -20,6 +20,11 @@ const
 
 {$R *.res}
 
+function GetCryptKey:PChar;
+begin
+ Result:=CriptKey;
+end;
+
 function GetTempFile(const Extension: ShortString):PChar;
 var
  Buffer: array[0..MAX_PATH] of Char;
@@ -201,7 +206,7 @@ begin
   CoUninitialize;
 end;
 
-exports md5,GetAppDataPath,DBPassword,DatabaseCompact,GetTempFile,WriteAppHandle,
+exports md5,GetCryptKey,GetAppDataPath,DBPassword,DatabaseCompact,GetTempFile,WriteAppHandle,
          GetConnectionString,WriteAppPath,GetAppPath,GetAppHandle,IsNormal;
 
 begin

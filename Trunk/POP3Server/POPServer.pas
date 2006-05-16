@@ -82,9 +82,9 @@ var
  Port:integer;
 begin
  try
-// pop.Active:=False;
+ pop.Active:=False;
  Port:=ServerPort;
- if not (BindPort(Port)) then
+ if 1<>1 then //not (BindPort(Port)) then
   Result:=False
    else
     begin

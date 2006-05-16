@@ -292,8 +292,6 @@ type
     pShowSpyEditor: TdxBarButton;
     alShowMainWindow: TAction;
     pShowMain: TdxBarButton;
-    Button1: TButton;
-    IdECHOServer1: TIdECHOServer;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -426,7 +424,6 @@ type
     procedure alEnableClbSpyExecute(Sender: TObject);
     procedure alShowEditorFormExecute(Sender: TObject);
     procedure alShowMainWindowExecute(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -570,8 +567,6 @@ var
  Key:TRegistry;
  Sel:Integer;
 begin
- TranslateComponent(self);
-
  IsCreated:=False;
  adCon.ConnectionString:=GetConnectionString;
  WriteAppPath(PChar(Application.ExeName));
@@ -619,7 +614,7 @@ begin
  POP3Server:=TPOPServer.Create(adCon,AccountManager);
  TmAppl:=False;
  if not POP3Server.LoadParams then
-   if MessageBox(Handle,PChar(_(' Стандартный порт фильтра занят. Хотите сменить порт ? ')),PChar(_(' Ошибка запуска сервера ')),MB_OKCANCEL)=IDOK then
+   if MessageBox(Handle,PChar(' Стандартный порт фильтра занят. Хотите сменить порт ? '),PChar(_(' Ошибка запуска сервера ')),MB_OKCANCEL)=IDOK then
     begin
      while (not POP3Server.LoadParams) and (not TmAppl) do
       begin
@@ -633,12 +628,10 @@ begin
    else
    Application.Terminate;
 
-
  FManager:=TFilterManager.Create(adCon);
  Exp:=TPerlRegEx.Create(nil);
 
  AddClb:=TFilterType(GetEnumValue(TypeInfo(TFilterType),SProvider.GetValue('AddClb')));
-
 
  adProc:=TADOQuery.Create(nil);
  adProc.Connection:=adCon;
@@ -739,31 +732,42 @@ begin
  Key.CloseKey;
  Key.Free;
  IsCreated:=True;
+ AccountsUpdater.Enabled:=True;
+ TranslateComponent(self);
+
 end;
 
+function KillTask(FileName: string): integer; //0 - пpибить не полyчилось
+var
+  ContinueLoop: BOOL;
+  FSnapshotHandle: THandle;
+  FProcessEntry32: TProcessEntry32;
+const
+  PROCESS_TERMINATE = $0001;
+begin
+  FileName:=ExtractFileName(FileName);
+  FSnapshotHandle := CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+  FProcessEntry32.dwSize := Sizeof(FProcessEntry32);
+  ContinueLoop := Process32First(FSnapshotHandle, FProcessEntry32);
+  while integer(ContinueLoop) <> 0 do
+  begin
+    if
+      ((UpperCase(ExtractFileName(FProcessEntry32.szExeFile)) =
+      UpperCase(FileName))
+      or (UpperCase(FProcessEntry32.szExeFile) = UpperCase(FileName))) then
+      Result := Integer(TerminateProcess(OpenProcess(PROCESS_TERMINATE, BOOL(0),
+
+        FProcessEntry32.th32ProcessID), 0));
+    ContinueLoop := Process32Next(FSnapshotHandle, FProcessEntry32);
+  end;
+  CloseHandle(FSnapshotHandle);
+end;
 
 procedure TFMain.FormDestroy(Sender: TObject);
 var i:integer;
 begin
-
-
- with POP3Server.pop.Contexts.LockList do
-   try
-      for i := 0 to Count - 1 do begin
-         TIdContext(Items[i]).Connection.Disconnect(False);
-      end;
-   finally
-      POP3Server.pop.Contexts.UnLockList;
-   end;
-
-
-
-
- 
-
-
- if POP3Server<>nil then POP3Server.Free;
  tray.Enabled:=False;
+ tray.Free;
  ThreadManager.Free;
  FManager.Free;
  SNConverter.Free;
@@ -777,8 +781,12 @@ begin
  SProvider.Free;
  adProc.Free;
  CloseHandle(Mutex);
-
+ if POP3Server<>nil then POP3Server.Free;
+ KillTask(Application.ExeName);
 end;
+
+
+
 
 procedure TFMain.SettingsTreeSelectionChanged(Sender: TObject);
 var
@@ -1921,12 +1929,6 @@ procedure TFMain.alShowMainWindowExecute(Sender: TObject);
 begin
  tray.ShowMainForm;
  SetActiveWindow(Handle);
-end;
-
-procedure TFMain.Button1Click(Sender: TObject);
-begin
- UseLanguage ('en');
- TranslateComponent(self);
 end;
 
 end.

@@ -1,11 +1,11 @@
 object FAccountEditor: TFAccountEditor
-  Left = 499
-  Top = 259
+  Left = 500
+  Top = 260
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'FAccountEditor'
-  ClientHeight = 194
-  ClientWidth = 237
+  ClientHeight = 192
+  ClientWidth = 235
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,14 +20,14 @@ object FAccountEditor: TFAccountEditor
   object cxTab: TcxTabControl
     Left = 0
     Top = 0
-    Width = 237
-    Height = 194
+    Width = 235
+    Height = 192
     Align = alClient
     LookAndFeel.Kind = lfOffice11
     LookAndFeel.NativeStyle = False
     TabOrder = 0
-    ClientRectBottom = 194
-    ClientRectRight = 237
+    ClientRectBottom = 192
+    ClientRectRight = 235
     ClientRectTop = 0
     object leAccountName: TLabeledEdit
       Left = 112

@@ -1,11 +1,11 @@
 object FCustomEditor: TFCustomEditor
-  Left = 379
-  Top = 290
+  Left = 380
+  Top = 291
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1044#1086#1073#1072#1074#1083#1077#1085#1080#1077' '#1085#1086#1074#1086#1075#1086' '#1092#1080#1083#1100#1090#1088#1072
-  ClientHeight = 160
-  ClientWidth = 251
+  ClientHeight = 158
+  ClientWidth = 249
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,14 +19,14 @@ object FCustomEditor: TFCustomEditor
   object TabControl: TcxTabControl
     Left = 0
     Top = 0
-    Width = 251
-    Height = 160
+    Width = 249
+    Height = 158
     Align = alClient
     LookAndFeel.Kind = lfOffice11
     LookAndFeel.NativeStyle = False
     TabOrder = 0
-    ClientRectBottom = 160
-    ClientRectRight = 251
+    ClientRectBottom = 158
+    ClientRectRight = 249
     ClientRectTop = 0
     object leFilter: TLabel
       Left = 16
