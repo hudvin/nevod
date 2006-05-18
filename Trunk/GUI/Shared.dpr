@@ -1,7 +1,7 @@
 library Shared;
 
 uses
-  Dialogs,
+  Dialogs,Controls,
   Registry,
   ActiveX,
   SysUtils,
@@ -14,13 +14,83 @@ uses
   Classes,
   JRO_TLB in '..\Shared\JRO_TLB.pas',
   ADODB_TLB in '..\Shared\ADODB_TLB.pas',
-  md5 in '..\Shared\md5.pas';
+  md5 in '..\Shared\md5.pas',
+  Base64 in '..\Crypt\Base64.pas',
+  Blowfish in '..\Crypt\Blowfish.pas',
+  DCPcrypt in '..\Crypt\DCPcrypt.pas',
+  SHA1 in '..\Crypt\SHA1.pas';
+type
+ TBFCoder = class(TObject)
+  private
+    DCP_BF: TDCP_Blowfish;
+    FKey: string;
+  protected
+    function Hash(InputString:string): string;
+    procedure SetKey(const Value: string);
+  public
+    constructor Create; virtual;
+    destructor Destroy;override;
+    function Crypt(InputString:string): string;
+    function DeCrypt(OutPutString:string): string;
+    property Key: string read FKey write SetKey;
+  end;
 
 const
   CriptKey=' &(5428396%:?(__*:?:(_(%fGfhhKJHFGHD12_= ';
 
 
 {$R *.res}
+
+function Encrypt(InputString:WideString;Key:WideString):WideString;
+var
+ cd:TBFCoder;
+begin
+ try
+  try
+   cd:=TBFCoder.Create;
+   cd.Key:=Key;
+   Result:=cd.Crypt(InputString);
+  except
+   Result:='';
+  end;
+ finally
+  cd.Free;
+ end;
+end;
+
+
+function Decrypt(InputString:WideString;Key:WideString):WideString;
+var
+ cd:TBFCoder;
+begin
+ try
+  try
+   cd:=TBFCoder.Create;
+   cd.Key:=Key;
+   Result:=cd.DeCrypt(InputString);
+  except
+   Result:='';
+  end;
+ finally
+  cd.Free;
+ end;
+end;
+
+
+procedure tReg();      // передавать в параметрах данные
+var
+ key:TRegistry;
+ guid:TGUID;
+ tGuid,lDay:String;
+ sDate:TDate;
+ 
+begin
+ CreateGUID(guid);
+ tGuid:=GUIDToString(guid);
+ sDate:=Now;
+
+
+end;
 
 
 function GetCryptKey:PChar;
@@ -215,7 +285,79 @@ begin
   CoUninitialize;
 end;
 
-exports md5,md5_32,GetCryptKey,GetAppDataPath,DBPassword,DatabaseCompact,GetTempFile,WriteAppHandle,
+{
+*********************************** TBFCoder ***********************************
+}
+constructor TBFCoder.Create;
+begin
+  DCP_BF:=TDCP_Blowfish.Create(nil);
+end;
+
+destructor TBFCoder.Destroy;
+begin
+  DCP_BF.Free;
+end;
+
+function TBFCoder.Crypt(InputString:string): string;
+var
+  Cipher: TDCP_blockcipher;
+begin
+  with Cipher do
+    begin
+      Cipher:= TDCP_blockcipher(DCP_BF);
+      InitStr(Key);
+      EncryptCFB(InputString[1],InputString[1],Length(InputString));
+      Reset;
+      Burn;
+    end;
+  Result:= B64Encode(InputString); // перемещено !!!
+end;
+
+function TBFCoder.DeCrypt(OutPutString:string): string;
+var
+  Cipher: TDCP_blockcipher;
+begin
+  with Cipher do
+    begin
+      Cipher:= TDCP_blockcipher(DCP_BF);
+      InitStr(key);
+      OutputString:= B64Decode(OutputString);
+      DecryptCFB(OutputString[1],OutputString[1],Length(OutputString));
+      Reset;
+      Burn;
+    end;
+  Result:=OutputString;
+end;
+
+function TBFCoder.Hash(InputString:string): string;
+var
+  Digest: T4x4LongWordRecord;
+  S, S1: string;
+  i: Integer;
+begin
+  SetLength(S, 16);
+  with TIdHashMessageDigest5.Create do
+    begin
+      Digest := HashValue(InputString);
+      Move(Digest, S[1], 16);
+      for i := 1 to Length(InputString) do
+        S1 := S1 + Format('%02x', [Byte(S[i])]);
+      while Pos(' ', S1) > 0 do S1[Pos(' ', S1)] := '0';
+      Result:=s1;
+      Free;
+    end;
+end;
+
+procedure TBFCoder.SetKey(const Value: string);
+begin
+  if FKey <> Value then
+  begin
+    FKey := Value;
+  end;
+end;
+
+
+exports md5,md5_32,Encrypt,Decrypt,GetCryptKey,GetAppDataPath,DBPassword,DatabaseCompact,GetTempFile,WriteAppHandle,
          GetConnectionString,WriteAppPath,GetAppPath,GetAppHandle,IsNormal;
 
 begin

@@ -292,6 +292,7 @@ type
     pShowSpyEditor: TdxBarButton;
     alShowMainWindow: TAction;
     pShowMain: TdxBarButton;
+    cxSplitter1: TcxSplitter;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);

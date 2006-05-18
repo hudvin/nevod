@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 87
-  Top = 145
+  Left = 186
+  Top = 191
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Nevod AntiSpam'
@@ -106,9 +106,9 @@ object FMain: TFMain
     end
   end
   object stPages: TcxPageControl
-    Left = 145
+    Left = 150
     Top = 23
-    Width = 625
+    Width = 620
     Height = 401
     ActivePage = cxTab_Accounts
     Align = alClient
@@ -120,7 +120,7 @@ object FMain: TFMain
     Style = 8
     TabOrder = 2
     ClientRectBottom = 401
-    ClientRectRight = 625
+    ClientRectRight = 620
     ClientRectTop = 0
     object cxTab_Accounts: TcxTabSheet
       Caption = 'cxTab_Accounts'
@@ -128,7 +128,7 @@ object FMain: TFMain
       object cxAccountsGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 625
+        Width = 620
         Height = 401
         Align = alClient
         BorderWidth = 2
@@ -25525,7 +25525,7 @@ object FMain: TFMain
       object cxLogGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 625
+        Width = 620
         Height = 401
         Align = alClient
         TabOrder = 0
@@ -25587,7 +25587,7 @@ object FMain: TFMain
       object cxFiltersGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 625
+        Width = 620
         Height = 401
         Align = alClient
         TabOrder = 0
@@ -26705,6 +26705,15 @@ object FMain: TFMain
         Width = 614
       end
     end
+  end
+  object cxSplitter1: TcxSplitter
+    Left = 145
+    Top = 23
+    Width = 5
+    Height = 401
+    AutoSnap = True
+    ResizeUpdate = True
+    Control = SettingsTree
   end
   object dsAccounts: TDataSource
     DataSet = adAccounts

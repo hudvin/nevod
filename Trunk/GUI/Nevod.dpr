@@ -10,7 +10,6 @@ uses
   SysUtils,
   WinSock,
   main in 'main.pas' {FMain},
-  PBThreadedSplashscreenU in 'PBThreadedSplashscreenU.pas',
   Shared in '..\Shared\Shared.pas',
   Base64 in '..\Crypt\Base64.pas',
   Blowfish in '..\Crypt\Blowfish.pas',
@@ -30,10 +29,10 @@ uses
   ASFilter in '..\MessagesFilter\ASFilter.pas',
   MultInst in 'MultInst.pas',
   About in 'About.pas' {FAbout},
-  SplashScreen in 'SplashScreen.pas' {FSplashScreen},
   ADODB_TLB in '..\Shared\ADODB_TLB.pas',
   JRO_TLB in '..\Shared\JRO_TLB.pas',
-  gnugettext in '..\..\..\Program Files\dxgettext\gnugettext.pas';
+  gnugettext in '..\..\..\Program Files\dxgettext\gnugettext.pas',
+  Register in 'Register.pas' {FRegister};
 
 {$R *.res}
 
@@ -47,9 +46,7 @@ begin
   if InitInstance then
   begin
   Application.Initialize;
- //  ShowSplashScreen;
   try
- //  ShowSplashScreenMessage('Упаковка базы данных');
    DatabaseCompact(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb',DBPassword);
   except;
   end;
@@ -60,7 +57,7 @@ begin
   CanExit:=False;
   while (not Con) and (not canExit) do
    try
- //   ShowSplashScreenMessage('Проверка целостности базы данных');
+   // ShowSplashScreenMessage('Проверка целостности базы данных');
     aCon.Connected:=True;
     Con:=True;
    except
@@ -71,12 +68,13 @@ begin
   if CanExit  then  Application.Terminate
    else
     begin
- //    ShowSplashScreenMessage('Инициализация интерфейса');
+   //  ShowSplashScreenMessage('Инициализация интерфейса');
      Application.CreateForm(TFMain, FMain);
   Application.CreateForm(TFAbout, FAbout);
+  Application.CreateForm(TFRegister, FRegister);
   if (ParamCount>0) and (ParamStr(1)='-h') then
    Application.MainForm.WindowState:=wsMinimized;
- //     HideSplashScreen;
+   //   HideSplashScreen;
      Application.Run;
     end;
   end;

@@ -5,11 +5,12 @@ interface
 uses PBThreadedSplashscreenU, gnugettext,
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, jpeg, JvImage, StdCtrls, cxControls, cxContainer,
-  cxEdit, cxProgressBar, JvGIF;
+  cxEdit, cxProgressBar, JvGIF, cxButtons, cxPC;
 
 type
   TFSplashScreen = class(TForm)
-    bkImage: TJvImage;
+    Button1: TButton;
+    procedure FormShow(Sender: TObject);
   private
     { Private declarations }
   public
@@ -77,5 +78,10 @@ Procedure ShowSplashScreenMessage( const S: String );
       ThreadedSplashForm.ShowStatusMessage( S );
   End;
 
+
+procedure TFSplashScreen.FormShow(Sender: TObject);
+begin
+ sleep(15000);
+end;
 
 end.
