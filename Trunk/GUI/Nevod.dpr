@@ -33,7 +33,8 @@ uses
   JRO_TLB in '..\Shared\JRO_TLB.pas',
   gnugettext in '..\..\..\Program Files\dxgettext\gnugettext.pas',
   Register in 'Register.pas' {FRegister},
-  RegistrationKey in 'RegistrationKey.pas' {FRegistrationKey};
+  RegistrationKey in 'RegistrationKey.pas' {FRegistrationKey},
+  aspr_api in '..\ASProtect\aspr_api.pas';
 
 {$R *.res}
 
@@ -41,6 +42,7 @@ var
  Con,CanExit:boolean;
  aCon:TADOConnection;
  RegistrationForm:TFRegister;
+ ModeStatus : TModeStatus;
 begin
  AddDomainForResourceString ('ru-en');
  UseLanguage ('en');
@@ -66,11 +68,23 @@ begin
   end;
  if CanExit  then  Application.Terminate
   else
-    begin
-     { вывод форм для регистрации }
-      RegistrationForm:=TFRegister.Create(nil);
-      RegistrationForm.ShowModal;
-      if not(RegistrationForm.Result=0) then
+   begin
+     GetRegistrationInformation(UserKey,UserName );
+     if not((UserKey <> nil) AND (StrLen(UserKey) > 0)) then
+      begin
+       RegistrationForm:=TFRegister.Create(nil);
+       RegistrationForm.ShowModal;
+       if RegistrationForm.Result=1 then
+        begin
+         Application.CreateForm(TFMain, FMain);
+         Application.CreateForm(TFAbout, FAbout);
+         if (ParamCount>0) and (ParamStr(1)='-h') then
+          Application.MainForm.WindowState:=wsMinimized;
+         Application.Run;
+        end;
+       RegistrationForm.Free;
+      end
+       else
         begin
          Application.CreateForm(TFMain, FMain);
          Application.CreateForm(TFAbout, FAbout);
@@ -78,6 +92,6 @@ begin
          Application.MainForm.WindowState:=wsMinimized;
          Application.Run;
         end;
-    end;
+   end;
   end;
 end.

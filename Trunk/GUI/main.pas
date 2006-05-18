@@ -13,13 +13,13 @@ uses Commctrl,tlhelp32, StdCtrls, Dialogs, ImgList, Controls, dxBar,  Math,
   SysUtils, Typinfo, FilterManager, AccountManager,  AccountEditor,  Graphics,
 
     Menus,   Messages, ThreadManager, POPServer,
-  cxGridCustomPopupMenu, cxGridPopupMenu,
+  cxGridCustomPopupMenu, cxGridPopupMenu, aspr_api,
    cxLookAndFeels,FilterEditor,  Register,
   XPStyleActnCtrls, ActnMan,  Clipbrd, PerlRegEx,
    ToolWin, ActnCtrls, ActnColorMaps,
   ActnPopupCtrl,  cxRichEdit,  gnugettext,
   cxButtons, cxDropDownEdit,  ComCtrls, JvHotKey, JvComponent,
-  JvAppHotKey, JvHotkeyEx,
+  JvAppHotKey, JvHotkeyEx,   RegistrationKey,
   JvDlg, JvComputerInfo, JvHtControls, JvTransLED, JvEditor, JvaScrollText,
   JvMemo, IdBaseComponent, IdComponent, IdCustomTCPServer, IdEchoServer;
 
@@ -292,6 +292,8 @@ type
     alShowMainWindow: TAction;
     pShowMain: TdxBarButton;
     cxSplitter1: TcxSplitter;
+    alRegister: TAction;
+    msRegister: TdxBarButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -424,6 +426,7 @@ type
     procedure alEnableClbSpyExecute(Sender: TObject);
     procedure alShowEditorFormExecute(Sender: TObject);
     procedure alShowMainWindowExecute(Sender: TObject);
+    procedure alRegisterExecute(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -1928,6 +1931,22 @@ procedure TFMain.alShowMainWindowExecute(Sender: TObject);
 begin
  tray.ShowMainForm;
  SetActiveWindow(Handle);
+end;
+
+procedure TFMain.alRegisterExecute(Sender: TObject);
+var
+ ModeStatus : TModeStatus;
+ RegistrationKey:TFRegistrationKey;
+begin
+ GetRegistrationInformation(UserKey,UserName );
+ if ((UserKey <> nil) AND (StrLen(UserKey) > 0)) then
+   MessageBox(Handle, 'Программа зарегистрирована', 'Регистрация', MB_ICONINFORMATION)
+  else
+   begin
+     RegistrationKey:=TFRegistrationKey.Create(nil);
+     RegistrationKey.ShowModal;
+     RegistrationKey.Free;
+   end;
 end;
 
 end.
