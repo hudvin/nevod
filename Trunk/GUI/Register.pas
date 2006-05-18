@@ -90,7 +90,7 @@ procedure TFRegister.FormShow(Sender: TObject);
 var
   ModeStatus : TModeStatus;
 begin
- Caption := 'Ознакомительный период истек';
+ Caption := 'Nevod AntiSpam - Ознакомительный период истек';
  GetRegistrationInformation(UserKey,UserName );
  if (UserKey <> nil) AND (StrLen(UserKey) > 0) then
   begin
@@ -104,11 +104,11 @@ begin
    begin
     if TrialDaysLeft = 0 then
      begin
-        Caption := 'Ознакомительынй период истек';
+        Caption := ' Nevod AntiSpam - Ознакомительынй период истек';
      end
     else
      begin
-      Caption:=  'Незарегистрированная версия';
+      Caption:=  'Nevod AntiSpam - Незарегистрированная версия';
       cxProgressBar.Position:=TrialDaysLeft;
       leNag.Caption:='Осталось дней :'+ IntToStr(TrialDaysLeft);
       btLater.Caption:= IntToStr(15-TrialDaysLeft);

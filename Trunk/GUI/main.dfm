@@ -110,7 +110,7 @@ object FMain: TFMain
     Top = 23
     Width = 620
     Height = 401
-    ActivePage = cxTab_Accounts
+    ActivePage = cxTab_Settings
     Align = alClient
     DragMode = dmAutomatic
     HideTabs = True

@@ -1,11 +1,11 @@
 object FAbout: TFAbout
-  Left = 426
-  Top = 283
+  Left = 362
+  Top = 157
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077
-  ClientHeight = 273
-  ClientWidth = 296
+  ClientHeight = 281
+  ClientWidth = 299
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,8 +21,8 @@ object FAbout: TFAbout
   object bkImage: TJvImage
     Left = 0
     Top = 0
-    Width = 296
-    Height = 273
+    Width = 299
+    Height = 281
     Align = alClient
     Picture.Data = {
       0A544A504547496D61676565A40000FFD8FFE000104A46494600010201004800
@@ -1344,7 +1344,7 @@ object FAbout: TFAbout
   end
   object leSite: TJvLinkLabel
     Left = 16
-    Top = 128
+    Top = 96
     Width = 177
     Height = 13
     Cursor = crHandPoint
@@ -1370,7 +1370,7 @@ object FAbout: TFAbout
   end
   object leMail: TJvLinkLabel
     Left = 16
-    Top = 144
+    Top = 112
     Width = 177
     Height = 13
     Cursor = crHandPoint
@@ -1395,8 +1395,8 @@ object FAbout: TFAbout
     OnClick = leMailClick
   end
   object leOS: TLabel
-    Left = 32
-    Top = 168
+    Left = 16
+    Top = 136
     Width = 23
     Height = 13
     Caption = 'leOS'
@@ -1408,8 +1408,8 @@ object FAbout: TFAbout
     ParentFont = False
   end
   object leCompName: TLabel
-    Left = 32
-    Top = 184
+    Left = 16
+    Top = 152
     Width = 23
     Height = 13
     Caption = 'leOS'
@@ -1421,8 +1421,8 @@ object FAbout: TFAbout
     ParentFont = False
   end
   object leTimeRunning: TLabel
-    Left = 32
-    Top = 200
+    Left = 16
+    Top = 168
     Width = 23
     Height = 13
     Caption = 'leOS'
@@ -1434,8 +1434,34 @@ object FAbout: TFAbout
     ParentFont = False
   end
   object leCurrentUser: TLabel
-    Left = 32
-    Top = 216
+    Left = 16
+    Top = 184
+    Width = 23
+    Height = 13
+    Caption = 'leOS'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clNavy
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
+    ParentFont = False
+  end
+  object leLicenseUsername: TLabel
+    Left = 16
+    Top = 208
+    Width = 23
+    Height = 13
+    Caption = 'leOS'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clNavy
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
+    ParentFont = False
+  end
+  object leLicanseKey: TLabel
+    Left = 16
+    Top = 224
     Width = 23
     Height = 13
     Caption = 'leOS'
@@ -1448,7 +1474,7 @@ object FAbout: TFAbout
   end
   object btClose: TButton
     Left = 96
-    Top = 240
+    Top = 248
     Width = 97
     Height = 25
     Caption = #1047#1072#1082#1088#1099#1090#1100
@@ -1462,9 +1488,8 @@ object FAbout: TFAbout
     ProductID = '55683-OEM-0013514-73984'
     ProductName = 'Microsoft Windows XP'
     DVDRegion = -1
-    TimeRunning = 0.518269722222222200
+    TimeRunning = 0.325146875000000000
     DayRunning = 0
-    Left = 8
-    Top = 216
+    Top = 8
   end
 end
