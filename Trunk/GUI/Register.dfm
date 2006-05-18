@@ -5,7 +5,7 @@ object FRegister: TFRegister
   BorderStyle = bsSingle
   Caption = 'Registration'
   ClientHeight = 129
-  ClientWidth = 354
+  ClientWidth = 349
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,19 +13,20 @@ object FRegister: TFRegister
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  OnDeactivate = FormDeactivate
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
   object cxTab: TcxTabControl
     Left = 0
     Top = 0
-    Width = 354
+    Width = 349
     Height = 129
     Align = alClient
     LookAndFeel.Kind = lfOffice11
     TabOrder = 0
     ClientRectBottom = 129
-    ClientRectRight = 354
+    ClientRectRight = 349
     ClientRectTop = 0
     object cxProgressBar: TcxProgressBar
       Left = 8
@@ -63,6 +64,7 @@ object FRegister: TFRegister
       Height = 25
       Caption = #1042#1074#1077#1089#1090#1080' '#1082#1086#1076
       TabOrder = 2
+      OnClick = btEnterCodeClick
     end
     object btLater: TButton
       Left = 184
@@ -79,6 +81,7 @@ object FRegister: TFRegister
       Height = 25
       Caption = #1042#1099#1093#1086#1076
       TabOrder = 4
+      OnClick = btExitClick
     end
   end
 end

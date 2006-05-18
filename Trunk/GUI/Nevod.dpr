@@ -32,50 +32,52 @@ uses
   ADODB_TLB in '..\Shared\ADODB_TLB.pas',
   JRO_TLB in '..\Shared\JRO_TLB.pas',
   gnugettext in '..\..\..\Program Files\dxgettext\gnugettext.pas',
-  Register in 'Register.pas' {FRegister};
+  Register in 'Register.pas' {FRegister},
+  RegistrationKey in 'RegistrationKey.pas' {FRegistrationKey};
 
 {$R *.res}
 
 var
  Con,CanExit:boolean;
  aCon:TADOConnection;
+ RegistrationForm:TFRegister;
 begin
  AddDomainForResourceString ('ru-en');
-// Force program to use Danish instead of the current Windows settings
  UseLanguage ('en');
-  if InitInstance then
+ if InitInstance then
   begin
-  Application.Initialize;
-  try
-   DatabaseCompact(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb',DBPassword);
-  except;
-  end;
-  aCon:=TADOConnection.Create(nil);
-  aCon.LoginPrompt:=False;
-  aCon.ConnectionString:=GetConnectionString;
-  Con:=False;
-  CanExit:=False;
-  while (not Con) and (not canExit) do
+   Application.Initialize;
    try
-   // ShowSplashScreenMessage('Проверка целостности базы данных');
-    aCon.Connected:=True;
-    Con:=True;
-   except
-    if MessageBox(Application.Handle,PChar(_('Ошибка загрузки')),PChar(_('База данных не найдена или повреждена. Заменить ?')),MB_OKCANCEL)=ID_OK then
-     RestoreDB
-   else canExit:=True;
+    DatabaseCompact(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb',DBPassword);
+   except;
+   end;
+ aCon:=TADOConnection.Create(nil);
+ aCon.LoginPrompt:=False;
+ aCon.ConnectionString:=GetConnectionString;
+ Con:=False;
+ CanExit:=False;
+ while (not Con) and (not canExit) do
+  try
+   aCon.Connected:=True;
+   Con:=True;
+  except
+   if MessageBox(Application.Handle,PChar(_('Ошибка загрузки')),PChar(_('База данных не найдена или повреждена. Заменить ?')),MB_OKCANCEL)=ID_OK then
+    RestoreDB else canExit:=True;
   end;
-  if CanExit  then  Application.Terminate
-   else
+ if CanExit  then  Application.Terminate
+  else
     begin
-   //  ShowSplashScreenMessage('Инициализация интерфейса');
-     Application.CreateForm(TFMain, FMain);
-  Application.CreateForm(TFAbout, FAbout);
-  Application.CreateForm(TFRegister, FRegister);
-  if (ParamCount>0) and (ParamStr(1)='-h') then
-   Application.MainForm.WindowState:=wsMinimized;
-   //   HideSplashScreen;
-     Application.Run;
+     { вывод форм для регистрации }
+      RegistrationForm:=TFRegister.Create(nil);
+      RegistrationForm.ShowModal;
+      if not(RegistrationForm.Result=0) then
+        begin
+         Application.CreateForm(TFMain, FMain);
+         Application.CreateForm(TFAbout, FAbout);
+         if (ParamCount>0) and (ParamStr(1)='-h') then
+         Application.MainForm.WindowState:=wsMinimized;
+         Application.Run;
+        end;
     end;
   end;
 end.

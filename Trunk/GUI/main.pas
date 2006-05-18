@@ -14,7 +14,7 @@ uses Commctrl,tlhelp32, StdCtrls, Dialogs, ImgList, Controls, dxBar,  Math,
 
     Menus,   Messages, ThreadManager, POPServer,
   cxGridCustomPopupMenu, cxGridPopupMenu,
-   cxLookAndFeels,FilterEditor,
+   cxLookAndFeels,FilterEditor,  Register,
   XPStyleActnCtrls, ActnMan,  Clipbrd, PerlRegEx,
    ToolWin, ActnCtrls, ActnColorMaps,
   ActnPopupCtrl,  cxRichEdit,  gnugettext,
@@ -23,9 +23,8 @@ uses Commctrl,tlhelp32, StdCtrls, Dialogs, ImgList, Controls, dxBar,  Math,
   JvDlg, JvComputerInfo, JvHtControls, JvTransLED, JvEditor, JvaScrollText,
   JvMemo, IdBaseComponent, IdComponent, IdCustomTCPServer, IdEchoServer;
 
- 
 
-type 
+type
   TCopyDataStruct = packed record
     dwData: DWORD;
     cbData: DWORD;
@@ -569,173 +568,172 @@ var
  Sel:Integer;
 begin
  IsCreated:=False;
- adCon.ConnectionString:=GetConnectionString;
- WriteAppPath(PChar(Application.ExeName));
- WriteAppHandle(Handle);
+   adCon.ConnectionString:=GetConnectionString;
+   WriteAppPath(PChar(Application.ExeName));
+   WriteAppHandle(Handle);
 
- FPortEditor:=TFPortEditor.Create(adCon);
- Mutex:=CreateMutex(nil, False,MutexName);
- AccountManager:=TAccountManager.Create(adAccounts);
- SProvider:=TSettings.Create(adCon);
+   FPortEditor:=TFPortEditor.Create(adCon);
+   Mutex:=CreateMutex(nil, False,MutexName);
+   AccountManager:=TAccountManager.Create(adAccounts);
+   SProvider:=TSettings.Create(adCon);
 
- SNConverter:=TSNIndexConverter.Create;
- SignList:=TSignalDescriptorsList.Create;
- SignList.Add(slAnywhere,_(' в теле и в теме сообщения '));
- SignList.Add(slSubject,_(' в теме сообщения '));
- SignList.Add(slBody,_(' в теле сообщения '));
+   SNConverter:=TSNIndexConverter.Create;
+   SignList:=TSignalDescriptorsList.Create;
+   SignList.Add(slAnywhere,_(' в теле и в теме сообщения '));
+   SignList.Add(slSubject,_(' в теме сообщения '));
+   SignList.Add(slBody,_(' в теле сообщения '));
 
- Headers.Active:=('Активен');
- Headers.Description:=_('Описание');
- with SNConverter do
-   begin
-    Headers.FValue:=('Отправитель');
-    Add(6,ftWhiteSender,_('Добавить адрес/домен в белый список'),cxTab_Filters,Headers); //адрес в белый список
-    Add(10,ftBlackSender,'Добавить адрес/домен в черный список',cxTab_Filters,Headers); //адрес в черный список
+   Headers.Active:=('Активен');
+   Headers.Description:=_('Описание');
+   with SNConverter do
+     begin
+      Headers.FValue:=('Отправитель');
+      Add(6,ftWhiteSender,_('Добавить адрес/домен в белый список'),cxTab_Filters,Headers); //адрес в белый список
+      Add(10,ftBlackSender,'Добавить адрес/домен в черный список',cxTab_Filters,Headers); //адрес в черный список
 
-    Headers.FValue:=_('Расширение файла');
-    Add(7,ftWhiteAttach,_('Добавить расширений приложенного файла в белый список'),cxTab_Filters,Headers); // расширение в белый список
-    Add(11,ftBlackAttach,_('Добавить расширений приложенного файла в черный список'),cxTab_Filters,Headers);// расширение в черный список
+      Headers.FValue:=_('Расширение файла');
+      Add(7,ftWhiteAttach,_('Добавить расширений приложенного файла в белый список'),cxTab_Filters,Headers); // расширение в белый список
+      Add(11,ftBlackAttach,_('Добавить расширений приложенного файла в черный список'),cxTab_Filters,Headers);// расширение в черный список
 
-    Headers.Params:=_('Расположение');
-    Headers.FValue:=_('Слово');
-    Add(4,ftWhiteWord,_('Добавить слово в белый список'),cxTab_Filters,Headers); // слово в белый список
-    Add(9,ftBlackWord,_('Добавить слово в черный список'),cxTab_Filters,Headers); // слово в черный список
+      Headers.Params:=_('Расположение');
+      Headers.FValue:=_('Слово');
+      Add(4,ftWhiteWord,_('Добавить слово в белый список'),cxTab_Filters,Headers); // слово в белый список
+      Add(9,ftBlackWord,_('Добавить слово в черный список'),cxTab_Filters,Headers); // слово в черный список
 
-    Headers.FValue:='Nevod Stamp';
-    Add(5,ftStamp,_('Добавить штамп'),cxTab_Filters,Headers); // штамп
-    // добавление панелей не-фильтров
-   Add(0,ftNone,'',cxTab_Settings);      // основные настройки
-   Add(1,ftNone,'Accounts',cxTab_Accounts);      // учетные записи
-   Add(13,ftNone,'',cxTab_Log);
-   Add(3,ftNone,'',cxTab_AFSettings);
-   Add(8,ftNone,'',cxTab_DFSettings);
-   Add(12,ftNone,'',cxTab_Log);
-   end;
+      Headers.FValue:='Nevod Stamp';
+      Add(5,ftStamp,_('Добавить штамп'),cxTab_Filters,Headers); // штамп
+      // добавление панелей не-фильтров
+     Add(0,ftNone,'',cxTab_Settings);      // основные настройки
+     Add(1,ftNone,'Accounts',cxTab_Accounts);      // учетные записи
+     Add(13,ftNone,'',cxTab_Log);
+     Add(3,ftNone,'',cxTab_AFSettings);
+     Add(8,ftNone,'',cxTab_DFSettings);
+     Add(12,ftNone,'',cxTab_Log);
+     end;
 
- POP3Server:=TPOPServer.Create(adCon,AccountManager);
- TmAppl:=False;
- if not POP3Server.LoadParams then
-   if MessageBox(Handle,PChar(' Стандартный порт фильтра занят. Хотите сменить порт ? '),PChar(_(' Ошибка запуска сервера ')),MB_OKCANCEL)=IDOK then
-    begin
-     while (not POP3Server.LoadParams) and (not TmAppl) do
+   POP3Server:=TPOPServer.Create(adCon,AccountManager);
+   TmAppl:=False;
+   if not POP3Server.LoadParams then
+     if MessageBox(Handle,PChar(' Стандартный порт фильтра занят. Хотите сменить порт ? '),PChar(_(' Ошибка запуска сервера ')),MB_OKCANCEL)=IDOK then
       begin
-       FPortEditor.ShowModal;
-       if FPortEditor.CanExit=True then
-        TmAppl:=True;
-      end;
-     if TmAppl then
-      Application.Terminate;
-    end
-   else
-   Application.Terminate;
+       while (not POP3Server.LoadParams) and (not TmAppl) do
+        begin
+         FPortEditor.ShowModal;
+         if FPortEditor.CanExit=True then
+          TmAppl:=True;
+        end;
+       if TmAppl then
+        Application.Terminate;
+      end
+     else
+     Application.Terminate;
 
- FManager:=TFilterManager.Create(adCon);
- Exp:=TPerlRegEx.Create(nil);
+   FManager:=TFilterManager.Create(adCon);
+   Exp:=TPerlRegEx.Create(nil);
 
- AddClb:=TFilterType(GetEnumValue(TypeInfo(TFilterType),SProvider.GetValue('AddClb')));
+   AddClb:=TFilterType(GetEnumValue(TypeInfo(TFilterType),SProvider.GetValue('AddClb')));
 
- adProc:=TADOQuery.Create(nil);
- adProc.Connection:=adCon;
+   adProc:=TADOQuery.Create(nil);
+   adProc.Connection:=adCon;
 
- PrevHwnd := SetClipboardViewer(Handle);
- Coder:=TBFCoder.Create;
- Coder.Key:=CriptKey;
+   PrevHwnd := SetClipboardViewer(Handle);
+   Coder:=TBFCoder.Create;
+   Coder.Key:=CriptKey;
 
- FEditor:=TFCustomEditor.Create(SNConverter,FManager,adFilters,SignList);
- FAccountEditor:=TFAccountEditor.Create(adAccounts,AccountManager);
+   FEditor:=TFCustomEditor.Create(SNConverter,FManager,adFilters,SignList);
+   FAccountEditor:=TFAccountEditor.Create(adAccounts,AccountManager);
 
- adAccounts.Active:=True;
+   adAccounts.Active:=True;
 
- ThreadManager:=TThreadManager.Create(adCon,AccountManager);
+   ThreadManager:=TThreadManager.Create(adCon,AccountManager);
 
- cbStamp.Checked:=FilterState[ftStamp];
- cbWhiteWord.Checked:=FilterState[ftWhiteWord];
- cbWhiteSender.Checked:=FilterState[ftWhiteSender];
- cbWhiteAttach.Checked:=FilterState[ftWhiteAttach];
- cbBlackWord.Checked:=FilterState[ftBlackWord];
- cbBlackSender.Checked:=FilterState[ftBlackSender];
- cbBlackAttach.Checked:=FilterState[ftBlackAttach];
- cbMaxLinks.Checked:=FilterState[ftLinkFilter];
- cbMaxSize.Checked:=FilterState[ftMessSize];
- cbMaxSpamWords.Checked:=FilterState[ftSpamWord];
+   cbStamp.Checked:=FilterState[ftStamp];
+   cbWhiteWord.Checked:=FilterState[ftWhiteWord];
+   cbWhiteSender.Checked:=FilterState[ftWhiteSender];
+   cbWhiteAttach.Checked:=FilterState[ftWhiteAttach];
+   cbBlackWord.Checked:=FilterState[ftBlackWord];
+   cbBlackSender.Checked:=FilterState[ftBlackSender];
+   cbBlackAttach.Checked:=FilterState[ftBlackAttach];
+   cbMaxLinks.Checked:=FilterState[ftLinkFilter];
+   cbMaxSize.Checked:=FilterState[ftMessSize];
+   cbMaxSpamWords.Checked:=FilterState[ftSpamWord];
 
- cxSpinLinks.Value:=StrToInt(SProvider.GetValue('MaxLinks'));
- cxSpinImages.Value:=StrToInt(SProvider.GetValue('MaxImg'));
- cxSpinSpamWords.Value:=StrToInt(SProvider.GetValue('MaxSpamWords'));
- cxSpinMaxSize.Value:=StrToInt(SProvider.GetValue('MaxSize'))/1000;
+   cxSpinLinks.Value:=StrToInt(SProvider.GetValue('MaxLinks'));
+   cxSpinImages.Value:=StrToInt(SProvider.GetValue('MaxImg'));
+   cxSpinSpamWords.Value:=StrToInt(SProvider.GetValue('MaxSpamWords'));
+   cxSpinMaxSize.Value:=StrToInt(SProvider.GetValue('MaxSize'))/1000;
 
- lbServerPort.Text:=SProvider.GetValue('ServerPort');
- seCheckInterval.Value:=StrToInt(SProvider.GetValue('CheckInterval'))/(1000*60);
- cbCheckIfNotConnected.Checked:=StrToBool(SProvider.GetValue('CheckIfNotConnected'));
- alCanCheckAccounts.Checked:=StrToBool(SProvider.GetValue('CanCheckAccounts'));
- alEnableFiltering.Checked:=StrToBool(SProvider.GetValue('EnableFiltering'));
- cbBallonOnReceive.Checked:=StrToBool(SProvider.GetValue('BaloonOnNew'));
- cbBaloonOnError.Checked:=StrToBool(SProvider.GetValue('BaloonOnError'));
- beSoundOnNew.Text:=SProvider.GetValue('NewSound');
- beSoundOnError.Text:=SProvider.GetValue('ErrorSound');
- beSoundOnAdd.Text:=SProvider.GetValue('AddSound');
- cbSoundOnReceive.Checked:=StrToBool(SProvider.GetValue('SoundOnNew'));
- cbSoundOnError.Checked:=StrToBool(SProvider.GetValue('SoundOnError'));
- cbSoundOnAdd.Checked:=StrToBool(SProvider.GetValue('SoundOnAdd'));
- alShowEditorForm.Checked:=StrToBool(SProvider.GetValue('ShowspyEditor'));
-
-
- JvAppAddHotKey.HotKey:=StrToInt(SProvider.GetValue('AddHotKey'));
- JvAppAddHotKey.Active:=True;
- JvAppShowMainWindow.HotKey:=StrToInt(SProvider.GetValue('ShowMainWindowHotKey'));
- JvAppShowMainWindow.Active:=True;
- JvAppCheckAllAccounts.HotKey:=StrToInt(SProvider.GetValue('CheckAllAccountshotKey'));
- JvAppCheckAllAccounts.Active:=True;
- jvAppRunMailClient.HotKey:=StrToInt(SProvider.GetValue('RunMailClientHotKey'));
- jvAppRunMailClient.Active:=True;
+   lbServerPort.Text:=SProvider.GetValue('ServerPort');
+   seCheckInterval.Value:=StrToInt(SProvider.GetValue('CheckInterval'))/(1000*60);
+   cbCheckIfNotConnected.Checked:=StrToBool(SProvider.GetValue('CheckIfNotConnected'));
+   alCanCheckAccounts.Checked:=StrToBool(SProvider.GetValue('CanCheckAccounts'));
+   alEnableFiltering.Checked:=StrToBool(SProvider.GetValue('EnableFiltering'));
+   cbBallonOnReceive.Checked:=StrToBool(SProvider.GetValue('BaloonOnNew'));
+   cbBaloonOnError.Checked:=StrToBool(SProvider.GetValue('BaloonOnError'));
+   beSoundOnNew.Text:=SProvider.GetValue('NewSound');
+   beSoundOnError.Text:=SProvider.GetValue('ErrorSound');
+   beSoundOnAdd.Text:=SProvider.GetValue('AddSound');
+   cbSoundOnReceive.Checked:=StrToBool(SProvider.GetValue('SoundOnNew'));
+   cbSoundOnError.Checked:=StrToBool(SProvider.GetValue('SoundOnError'));
+   cbSoundOnAdd.Checked:=StrToBool(SProvider.GetValue('SoundOnAdd'));
+   alShowEditorForm.Checked:=StrToBool(SProvider.GetValue('ShowspyEditor'));
 
 
- JvAddHotKey.HotKey:= JvAppAddHotKey.HotKey;
- jvShowMainWindow.HotKey:=JvAppShowMainWindow.HotKey;
- JvCheckAllAccounts.HotKey:=JvAppCheckAllAccounts.HotKey;
- JvRunMailClient.HotKey:=jvAppRunMailClient.HotKey;
-
- // присвоение хоткеев
-
- alRunMailClient.ShortCut:=jvAppRunMailClient.HotKey;
- alStartAllThreads.ShortCut:=JvCheckAllAccounts.HotKey;
- alShowMainWindow.ShortCut:=JvAppShowMainWindow.HotKey;
- alAddFilterElement.ShortCut:=JvAddHotKey.HotKey;
-
- Sel:=-1;
- case TCLbHookMode(GetEnumValue(TypeInfo(TClbHookMode),SProvider.GetValue('ClbHookMode'))) of    //
-   chEmail:Sel:=0 ;
-   chURL: Sel:=1;
-   chEmailURL:Sel:=2 ;
-
- end;
- cmSpyFor.ItemIndex:=Sel;
- Sel:=-1;
-
- case TFIlterType(GetEnumValue(TypeInfo(TFilterType),SProvider.GetValue('AddClb'))) of    //
-   ftWhiteSender:Sel:=0 ;
-   ftBlackSender: Sel:=1;
- end;
- cmAddTo.ItemIndex:=Sel;
+   JvAppAddHotKey.HotKey:=StrToInt(SProvider.GetValue('AddHotKey'));
+   JvAppAddHotKey.Active:=True;
+   JvAppShowMainWindow.HotKey:=StrToInt(SProvider.GetValue('ShowMainWindowHotKey'));
+   JvAppShowMainWindow.Active:=True;
+   JvAppCheckAllAccounts.HotKey:=StrToInt(SProvider.GetValue('CheckAllAccountshotKey'));
+   JvAppCheckAllAccounts.Active:=True;
+   jvAppRunMailClient.HotKey:=StrToInt(SProvider.GetValue('RunMailClientHotKey'));
+   jvAppRunMailClient.Active:=True;
 
 
- alEnableClbSpy.Checked:=StrToBool(SProvider.GetValue('EnableClbSpy'));
+   JvAddHotKey.HotKey:= JvAppAddHotKey.HotKey;
+   jvShowMainWindow.HotKey:=JvAppShowMainWindow.HotKey;
+   JvCheckAllAccounts.HotKey:=JvAppCheckAllAccounts.HotKey;
+   JvRunMailClient.HotKey:=jvAppRunMailClient.HotKey;
 
- buf:=StrToBool(SProvider.GetValue('RunAtStartUp'));
- cbRunAtStartUp.Checked:=buf;
- alRunAtStartUp.Checked:=buf;
- Key:=TRegistry.Create;
- Key.RootKey:=HKEY_CURRENT_USER;
- Key.OpenKey('\Software\Microsoft\Windows\CurrentVersion\Run',True);
- if buf then
-  Key.WriteString('Nevod AntiSpam',Application.ExeName+' -h')
-   else Key.DeleteValue('Nevod AntiSpam');
- Key.CloseKey;
- Key.Free;
- IsCreated:=True;
- AccountsUpdater.Enabled:=True;
- TranslateComponent(self);
+   // присвоение хоткеев
 
+   alRunMailClient.ShortCut:=jvAppRunMailClient.HotKey;
+   alStartAllThreads.ShortCut:=JvCheckAllAccounts.HotKey;
+   alShowMainWindow.ShortCut:=JvAppShowMainWindow.HotKey;
+   alAddFilterElement.ShortCut:=JvAddHotKey.HotKey;
+
+   Sel:=-1;
+   case TCLbHookMode(GetEnumValue(TypeInfo(TClbHookMode),SProvider.GetValue('ClbHookMode'))) of    //
+     chEmail:Sel:=0 ;
+     chURL: Sel:=1;
+     chEmailURL:Sel:=2 ;
+
+   end;
+   cmSpyFor.ItemIndex:=Sel;
+   Sel:=-1;
+
+   case TFIlterType(GetEnumValue(TypeInfo(TFilterType),SProvider.GetValue('AddClb'))) of    //
+     ftWhiteSender:Sel:=0 ;
+     ftBlackSender: Sel:=1;
+   end;
+   cmAddTo.ItemIndex:=Sel;
+
+
+   alEnableClbSpy.Checked:=StrToBool(SProvider.GetValue('EnableClbSpy'));
+
+   buf:=StrToBool(SProvider.GetValue('RunAtStartUp'));
+   cbRunAtStartUp.Checked:=buf;
+   alRunAtStartUp.Checked:=buf;
+   Key:=TRegistry.Create;
+   Key.RootKey:=HKEY_CURRENT_USER;
+   Key.OpenKey('\Software\Microsoft\Windows\CurrentVersion\Run',True);
+   if buf then
+    Key.WriteString('Nevod AntiSpam',Application.ExeName+' -h')
+     else Key.DeleteValue('Nevod AntiSpam');
+   Key.CloseKey;
+   Key.Free;
+   IsCreated:=True;
+   AccountsUpdater.Enabled:=True;
+   TranslateComponent(self);
 end;
 
 function KillTask(FileName: string): integer; //0 - пpибить не полyчилось
