@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 183
-  Top = 134
+  Left = 170
+  Top = 177
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Nevod AntiSpam'
@@ -549,12 +549,13 @@ object FMain: TFMain
           Width = 121
         end
         object beSoundOnError: TcxButtonEdit
-          Left = 200
+          Left = 184
           Top = 88
           Properties.Buttons = <
             item
+              Caption = 'Browse'
               Default = True
-              Kind = bkEllipsis
+              Kind = bkText
             end
             item
               Kind = bkGlyph
@@ -569,7 +570,7 @@ object FMain: TFMain
           StyleHot.LookAndFeel.Kind = lfOffice11
           StyleHot.LookAndFeel.NativeStyle = True
           TabOrder = 5
-          Width = 97
+          Width = 129
         end
         object cbSoundOnAdd: TcxCheckBox
           Left = 8
@@ -588,12 +589,13 @@ object FMain: TFMain
           Width = 177
         end
         object beSoundOnAdd: TcxButtonEdit
-          Left = 200
+          Left = 184
           Top = 112
           Properties.Buttons = <
             item
+              Caption = 'Browse'
               Default = True
-              Kind = bkEllipsis
+              Kind = bkText
             end
             item
               Kind = bkGlyph
@@ -608,7 +610,7 @@ object FMain: TFMain
           StyleHot.LookAndFeel.Kind = lfOffice11
           StyleHot.LookAndFeel.NativeStyle = True
           TabOrder = 7
-          Width = 97
+          Width = 129
         end
       end
       object gbSpy: TcxGroupBox
@@ -6165,7 +6167,7 @@ object FMain: TFMain
   end
   object AccountsUpdater: TTimer
     Enabled = False
-    Interval = 1500
+    Interval = 150000
     OnTimer = AccountsUpdaterTimer
     Left = 627
     Top = 117
@@ -6269,8 +6271,8 @@ object FMain: TFMain
       end>
     UseOwnFont = False
     OnPopup = alOnLogPopUpExecute
-    Left = 681
-    Top = 115
+    Left = 625
+    Top = 83
   end
   object cxStyleRepository1: TcxStyleRepository
     Top = 40

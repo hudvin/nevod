@@ -3,7 +3,7 @@ unit AccountManager;
 interface
 
 uses
-  TypInfo, SysUtils, cxGridCustomTableView, cxGridTableView,
+  TypInfo, SysUtils, cxGridCustomTableView, cxGridTableView, Messages,Windows,
    ADODB,DB,Exceptions,Shared;
 
 type
@@ -37,7 +37,7 @@ type
   end;
 
 implementation
-
+uses main;
 
 constructor TAccountManager.Create(adAccounts:TADOQuery);
 begin
@@ -343,6 +343,7 @@ begin
     Parameters.ParamByName('AccountId').Value:=AccountId;
     ExecSQL;
    end;
+  SendMessage(main.FMain.Handle, WM_UpdateAccountStatus,0,0);
 end;
 
 end.

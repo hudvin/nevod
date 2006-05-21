@@ -162,8 +162,9 @@ begin
   if FEditorMode=emAdd
    then FFilterManager.AddElement(leValue.Text,Res.FilterType,leDescription.Text,cxCbActive.Checked,Location)
     else FFilterManager.ModifyElement(FElementId,leValue.Text,Res.FilterType,leDescription.Text,cxCbActive.Checked,Location);
-  FFIltersTable.Active:=True;
-  FFiltersTable.Requery;
+  PostMessage(main.FMain.Handle,WM_UpdateFilters,0,0);
+  { FFIltersTable.Active:=True;
+  FFiltersTable.Requery; }
   Close;
  except
   on e: Exception do  // leMessage.Caption:=E.Message;

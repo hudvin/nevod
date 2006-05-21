@@ -432,7 +432,6 @@ type
     LastHooked:String;  // содержит последний захваченный из буфера элемент
     PrevHwnd: Hwnd;
     Exp:TPerlRegEx;
-    FRegisteredSessionNotification : Boolean;
     function GetFilterState(FilterType:TFilterType): Boolean;
     procedure WMChangeCBChain(var Msg: TWMChangeCBChain);
      message WM_CHANGECBCHAIN;
@@ -440,6 +439,9 @@ type
     message WM_DRAWCLIPBOARD;
     procedure WMCopyData(var Msg: TWMCopyData); message WM_COPYDATA;
     procedure UMActivate( var msg: TMessage ); message UM_ACTIVATE;
+    procedure UpdateLog(var Msg: TMessage); message WM_UpdateLog;
+    procedure UpdateAccountStatus(var Msg: TMessage); message WM_UpdateAccountStatus;
+    procedure UpdateFilters(var Msg: TMessage); message WM_UpdateFilters;
     { Private declarations }
   public
     SignList:TSignalDescriptorsList;
@@ -494,11 +496,38 @@ uses  MultInst, About,SplashScreen;
 
 procedure TFMain.ShowEditor(var AMessage: TMessage);
 begin
- SetLastError(0);
+// SetLastError(0);
  FEditor.Show;
- Showmessage(SysErrorMessage(GetLastError));
+// Showmessage(SysErrorMessage(GetLastError));
 end;
 
+
+procedure TFMain.UpdateLog(var Msg: TMessage);
+begin
+ if (Application.MainForm <>nil ) and ( Application.MainForm.Visible) and(cxTab_Log.Showing) then
+  begin
+   if not adLog.Active then adLog.Active:=True;
+   adLog.Requery;
+  end;
+end;
+
+procedure TFMain.UpdateAccountStatus(var Msg: TMessage);
+begin
+ if (Application.MainForm <>nil ) and  ( Application.MainForm.Visible) and(cxTab_Accounts.Showing) then
+  begin
+   if not adAccounts.Active then adAccounts.Active:=True;
+    adAccounts.Requery;
+  end;
+end;
+
+procedure TFMain.UpdateFilters(var Msg: TMessage);
+begin
+ if  (Application.MainForm <>nil ) and ( Application.MainForm.Visible) and (cxTab_Filters.Showing) then
+  begin
+   if not adFilters.Active then adFilters.Active:=True;
+    adFilters.Requery;
+  end;
+end;
 
 
 procedure TFMain.WMChangeCBChain(var Msg: TWMChangeCBChain);
@@ -646,7 +675,7 @@ begin
    FEditor:=TFCustomEditor.Create(SNConverter,FManager,adFilters,SignList);
    FAccountEditor:=TFAccountEditor.Create(adAccounts,AccountManager);
 
-   adAccounts.Active:=True;
+
 
    ThreadManager:=TThreadManager.Create(adCon,AccountManager);
 
@@ -720,7 +749,6 @@ begin
    end;
    cmAddTo.ItemIndex:=Sel;
 
-
    alEnableClbSpy.Checked:=StrToBool(SProvider.GetValue('EnableClbSpy'));
 
    buf:=StrToBool(SProvider.GetValue('RunAtStartUp'));
@@ -735,8 +763,9 @@ begin
    Key.CloseKey;
    Key.Free;
    IsCreated:=True;
-   AccountsUpdater.Enabled:=True;
    TranslateComponent(self);
+   adAccounts.Active:=True;
+   adLog.Active:=True;
 end;
 
 function KillTask(FileName: string): integer; //0 - пpибить не полyчилось
@@ -1055,7 +1084,7 @@ end;
 
 procedure TFMain.AccountsUpdaterTimer(Sender: TObject);
 begin
- stBar.Panels.Items[1].Text:=_('Количество сообщений в базе данных : ') + IntToStr(GetTotalMessCount);
+ { stBar.Panels.Items[1].Text:=_('Количество сообщений в базе данных : ') + IntToStr(GetTotalMessCount);
  stBar.Panels.Items[0].Text:=_('Размер базы данных : ')+ FloatToStr(RoundTo((Shared.GetFileSize(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb'))/(1024*1024),-2))+' Мб';
  if FMain.Active then
   begin
@@ -1063,7 +1092,7 @@ begin
    if not adLog.Active then adLog.Active:=True;
    adAccounts.Requery;
    adLog.Requery;
-  end;
+  end; }
 end;
 
 procedure TFMain.alStopThreadExecute(Sender: TObject);

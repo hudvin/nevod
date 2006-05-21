@@ -44,8 +44,8 @@ var
  RegistrationForm:TFRegister;
  ModeStatus : TModeStatus;
 begin
- AddDomainForResourceString ('ru-en');
- UseLanguage ('en');
+// AddDomainForResourceString ('ru-en');
+// UseLanguage ('en');
  if InitInstance then
   begin
    Application.Initialize;
@@ -94,4 +94,5 @@ begin
         end;
    end;
   end;
+  // else ShowMessage('!');
 end.

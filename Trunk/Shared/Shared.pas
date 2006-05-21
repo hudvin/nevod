@@ -2,22 +2,11 @@ unit Shared;
 
 interface
 
-uses  PerlRegEx, MMSystem,
-  cxEdit, gnugettext,
-  cxCheckBox, cxGridLevel, cxGridCustomTableView, cxGridTableView,
-  
-
-  cxGridCustomView, cxGrid, Menus,  CoolTrayIcon,
-  cxGridCustomPopupMenu, cxGridPopupMenu,  Controls,
-  cxGridDBTableView, cxClasses, cxControls, cxPC, cxSplitter,
-  cxInplaceContainer, dxStatusBar, cxLookAndFeels,
-
-
-
-  Windows,WinSock, Registry,  ZLib,TypInfo, Messages, SysUtils, Variants,  ComObj,ActiveX,
-  Dialogs, StdCtrls, DB, ADODB,IdMessage, Classes, IniFiles,
-  IdText,IdMessageParts, StrUtils,IdAttachment,IdZLibCompressorBase,
-  DCPcrypt,Blowfish,Base64,IdHash,IdHashMessageDigest;
+uses
+  PerlRegEx, MMSystem, gnugettext, CoolTrayIcon, cxGridDBTableView,  cxPC, Windows,
+  WinSock, Registry,  ZLib,TypInfo, Messages, SysUtils, Variants,  ComObj,ActiveX,
+  Dialogs, StdCtrls, DB, ADODB,IdMessage, Classes,  IdText,IdMessageParts,StrUtils,
+  IdAttachment,IdZLibCompressorBase,DCPcrypt,Blowfish,Base64;
 
 const
   SIO_GET_INTERFACE_LIST = $4004747F;
@@ -29,24 +18,14 @@ const
   HEAP_ZERO_MEMORY = $00000008;
   SID_REVISION     = 1;
 
-  WM_WTSSESSION_CHANGE = $2B1;
-  WTS_CONSOLE_CONNECT = 1;
-  WTS_CONSOLE_DISCONNECT = 2;
-  WTS_REMOTE_CONNECT = 3;
-  WTS_REMOTE_DISCONNECT = 4;
-  WTS_SESSION_LOGON = 5;
-  WTS_SESSION_LOGOFF = 6;
-  WTS_SESSION_LOCK = 7;
-  WTS_SESSION_UNLOCK = 8;
-  WTS_SESSION_REMOTE_CONTROL = 9;
-  NOTIFY_FOR_THIS_SESSION = 0;
-  NOTIFY_FOR_ALL_SESSIONS = 1;
   CriptKey=' &(5428396%:?(__*:?:(_(%fGfhhKJHFGHD12_= ';
   MutexName='{94FA4497-A317-4C45-9B57-A0558F8221D7}';
-  ServerMutex='{B66AEAD2-94BF-453B-9D79-27CC798B6657}';
   WaitTime=5000;      // время между проверками состояний
   WM_BallonMessage = WM_USER + 1;
-  WM_ShowCEditor=WM_USER+2;
+  WM_UpdateAccountStatus=WM_USER+2;
+  WM_UpdateLog=WM_USER+3;
+  WM_UpdateFilters=WM_USER+4;
+  WM_ShowCEditor=WM_USER+5;
   UM_ACTIVATE = WM_APP + 123;
 type
  TClbHookMode=(chEmail,chURL,chEmailURL);
@@ -210,7 +189,6 @@ type
     DCP_BF: TDCP_Blowfish;
     FKey: string;
   protected
-    function Hash(InputString:string): string;
     procedure SetKey(const Value: string);
   public
     constructor Create; virtual;
@@ -571,25 +549,6 @@ begin
       Burn;
     end;
   Result:=OutputString;
-end;
-
-function TBFCoder.Hash(InputString:string): string;
-var
-  Digest: T4x4LongWordRecord;
-  S, S1: string;
-  i: Integer;
-begin
-  SetLength(S, 16);
-  with TIdHashMessageDigest5.Create do
-    begin
-      Digest := HashValue(InputString);
-      Move(Digest, S[1], 16);
-      for i := 1 to Length(InputString) do
-        S1 := S1 + Format('%02x', [Byte(S[i])]);
-      while Pos(' ', S1) > 0 do S1[Pos(' ', S1)] := '0';
-      Result:=s1;
-      Free;
-    end;
 end;
 
 procedure TBFCoder.SetKey(const Value: string);

@@ -148,7 +148,8 @@ begin
   if FEditorMode=emAdd then
    begin
     FAccountManager.AddAccount(FAccountParams);
-    FAdAccounts.Requery;
+  //  FAdAccounts.Active:=True;
+   // FAdAccounts.Requery;
     Close;
    end
   else

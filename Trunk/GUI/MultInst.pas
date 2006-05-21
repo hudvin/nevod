@@ -49,6 +49,7 @@ begin
       ShowWindow(Application.Mainform.Handle, SW_SHOWNORMAL);
     end;
     SetForegroundWindow(Application.MainForm.Handle);
+   // SetActiveWindow(Application.MainForm.Handle);
   end
     { В противном случае посылаем сообщение предыдущему окну }
   else

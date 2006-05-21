@@ -96,7 +96,7 @@ begin
          if SuccessFul=False then
           begin
            Logger.Add(_('Ошибка при получении почты : ') +LogMessage,AccountId,ltPostReceiver);
-
+           SendMessage(main.FMain.Handle, WM_UpdateLog,0,0);
            SendHintMessage(AccountParams.AccountName,
                _(' Ошибка при получении почты для  ')+ '"'+AccountParams.AccountName +'"',
                _(' Ошибка при получении почты  : ')+  ' '+LogMessage,

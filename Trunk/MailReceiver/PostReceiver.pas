@@ -226,6 +226,9 @@ begin
        FSuccessFul:=False;
        FLogMessage:=_('Неправильные  параметры аккаунта');
       end;
+      // обрабатывать исключение при обрыве - таймаут
+      { else             
+       ShowMessage(E.); }
    end;
 end;
 
