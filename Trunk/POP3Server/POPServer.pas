@@ -20,7 +20,6 @@ type
    procedure QUIT(ASender: TIdCommand);
    procedure STAT(ASender: TIdCommand);
    procedure Disconnect(AContext: TIdContext);
-   function GetLocalIP: String;
    function GetServerPort: Integer;
    procedure LIST(ASender: TIdCommand; AMessageNum: Integer);
    procedure SetServerPort(const Value: Integer);
@@ -137,7 +136,8 @@ var
     AContext:TPOP3ServerContext;
 begin
  WaitForSingleObject(Mutex,INFINITE);
-  if AThread.Connection.Socket.Binding.PeerIP<>GetLocalIP // проверка на допустимость адреса клиента
+ // проверять на локальность
+  if AThread.Connection.Socket.Binding.PeerIP<>'127.0.0.1'//GetLocalIP // проверка на допустимость адреса клиента
    then AThread.Connection.Socket.Close;
   Password:=LThread.Password;
   Username:=LThread.Username;
@@ -249,23 +249,6 @@ begin
  end;
 end;
 
-function TPOPServer.GetLocalIP: String;
-const WSVer = $101;
-var
-  wsaData: TWSAData;
-  P: PHostEnt;
-  Buf: array [0..127] of Char;
-begin
-  Result := '';
-  if WSAStartup(WSVer, wsaData) = 0 then begin
-    if GetHostName(@Buf, 128) = 0 then begin
-      P := GetHostByName(@Buf);
-      if P <> nil then Result := iNet_ntoa(PInAddr(p^.h_addr_list^)^);
-    end;
-    WSACleanup;
-  end;
-end;
-
 function TPOPServer.GetServerPort: Integer;
 begin
  Result:=StrToInt(SProvider.GetValue('ServerPort'));
@@ -360,7 +343,6 @@ begin
        if RecordCount=0 then  ASender.Reply.SetReply(ERR, 'No such message')
         else
          begin
-          
           MessStream:=TMemoryStream.Create;
           Mess:=TFMessage.Create;
           TBlobField(FieldByName('Message')).SaveToStream(MessStream);
@@ -370,23 +352,21 @@ begin
             Mess.LoadFromStream(MessStream);
             if StrToBool(Cont.Settings.GetValue('EnableFiltering')) then
              begin
-              if Cont.AllowFilter.AnalyzeMessage(Mess) then
-               Mess.Subject:=Cont.AllowFilter.Reason
-              else
+              if not Cont.AllowFilter.AnalyzeMessage(Mess) then
+              // Mess.Subject:=Cont.AllowFilter.Reason
+
                if Cont.DenyFilter.AnalyzeMessage(Mess) then
                 mess.Subject:=Cont.DenyFilter.Reason;
              end;
             MessStream.Clear;
             Mess.SaveToStream(MessStream);
            end;
-
           messStream.Position:=0;
           ASender.Reply.SetReply(OK,'');
           MessStream.Size:=MessStream.Size-3;
           ASender.Response.LoadFromStream(MessStream);
           MessStream.Free;
           Mess.Free;
-
          end;
       end;
 end;

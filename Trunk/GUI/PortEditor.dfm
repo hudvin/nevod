@@ -13,6 +13,7 @@ object FPortEditor: TFPortEditor
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  Position = poDesktopCenter
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -38,6 +39,7 @@ object FPortEditor: TFPortEditor
     EditLabel.Caption = #1055#1086#1088#1090' '#1089#1077#1088#1074#1077#1088#1072'   '
     LabelPosition = lpBelow
     TabOrder = 0
+    OnKeyPress = leServerPortKeyPress
   end
   object btOK: TButton
     Left = 8

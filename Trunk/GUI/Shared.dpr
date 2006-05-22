@@ -19,11 +19,10 @@ uses
 const
   CriptKey=' &(5428396%:?(__*:?:(_(%fGfhhKJHFGHD12_= ';
 
-
 {$R *.res}
 
 
-function GetTempFile(const Extension: ShortString):PChar;
+function GetTempFile(const Extension:PChar):PChar;
 var
  Buffer: array[0..MAX_PATH] of Char;
  aFile: string;
@@ -36,7 +35,7 @@ begin
 end;
 
 
-function md5(InputString:ShortString): PChar;
+function md5(InputString:PChar): PChar;
 var
   Digest: T4x4LongWordRecord;
   S, S1: string;
@@ -68,29 +67,40 @@ begin
  Key.Free;
 end;
 
-function DBPassword:ShortString;
+function DBPassword:PChar;
 var
- Sum:ShortString;
+ Sum:String;
 begin
   Sum:=md5(CriptKey);
-  Result :=Copy(Sum,0,15);
+  Sum:=Copy(Sum,0,15);
+  Result:=PChar(Sum);
 end;
 
+function GetConnectionString: PChar;
+var
+ DBPath:String;
+begin
+ DBPath:=GetAppDataPath+'\Nevilon Software\Nevod AntiSpam';
+ Result:=PChar('Provider=Microsoft.Jet.OLEDB.4.0;'+'Data Source='+DBPath+'\messages.ndb;'+
+            'Jet OLEDB:Database Password='+DBPassword);
+end;
 
-function DatabaseCompact(const sdbName: WideString;Password:ShortString): boolean;
+function DatabaseCompact: boolean;
 var
  JE : TJetEngine; //Jet Engine
  sdbTemp : WideString; //TEMP database
  sdbTempConn: WideString; //Connection string
+ sdbName:WideString;
 const SProvider = 'Provider=Microsoft.Jet.OLEDB.4.0;Data Source=';
 begin
- sdbTemp :=GetTempFile('mdb');
- sdbTempConn := SProvider + sdbTemp+';Jet OLEDB:Database Password=' + Password;
+ sdbTemp :=GetTempFile('ndb');
+ sdbTempConn := SProvider + sdbTemp+';Jet OLEDB:Database Password=' + DBPassword;
  if FileExists(sdbTemp) then DeleteFile(PChar(sdbTemp));
  JE := TJetEngine.Create(nil);
  try
   try
-   JE.CompactDatabase(SProvider + sdbName+';Jet OLEDB:Database Password=' + Password, sdbTempConn);
+   JE.CompactDatabase(GetConnectionString, sdbTempConn);
+   sdbName:=GetAppDataPath + '\Nevilon Software\Nevod AntiSpam\messages.ndb';
    DeleteFile(PChar(ExtractShortPathName(sdbName)));
    RenameFile(sdbTemp, sdbName);
   except
@@ -121,14 +131,7 @@ begin
  end;
 end;
 
-function GetConnectionString: PChar;
-var
- DBPath:String;
-begin
- DBPath:=GetAppDataPath+'\Nevilon Software\Nevod AntiSpam';
- Result:=PChar('Provider=Microsoft.Jet.OLEDB.4.0;'+'Data Source='+DBPath+'\messages.ndb;'+
-            'Jet OLEDB:Database Password='+DBPassword);
-end;
+
 
 procedure WriteAppPath(AppPath:PChar);
 var

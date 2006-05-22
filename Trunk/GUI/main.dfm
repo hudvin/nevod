@@ -6165,13 +6165,6 @@ object FMain: TFMain
       Category = 0
     end
   end
-  object AccountsUpdater: TTimer
-    Enabled = False
-    Interval = 150000
-    OnTimer = AccountsUpdaterTimer
-    Left = 627
-    Top = 117
-  end
   object pAccounts: TdxBarPopupMenu
     BarManager = dxBar
     ItemLinks = <
@@ -6390,5 +6383,11 @@ object FMain: TFMain
     OnHotKeyRegisterFailed = jvAppRunMailClientHotKeyRegisterFailed
     Left = 673
     Top = 335
+  end
+  object IdIPWatch1: TIdIPWatch
+    Active = True
+    HistoryFilename = 'c:\iphist.dat'
+    Left = 342
+    Top = 71
   end
 end

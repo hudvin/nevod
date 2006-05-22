@@ -15,6 +15,7 @@ type
     procedure btOKClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure btCancelClick(Sender: TObject);
+    procedure leServerPortKeyPress(Sender: TObject; var Key: Char);
   private
     SProvider: TSettings;
     function GetServerPort: string;
@@ -68,6 +69,16 @@ procedure TFPortEditor.btCancelClick(Sender: TObject);
 begin
  CanExit:=true;
  Close;
+end;
+
+procedure TFPortEditor.leServerPortKeyPress(Sender: TObject;
+  var Key: Char);
+begin
+ if Ord(key)>127 then
+  begin
+   Key := #0;
+   Beep;
+  end;
 end;
 
 end.

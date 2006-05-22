@@ -21,7 +21,8 @@ uses Commctrl,tlhelp32, StdCtrls, Dialogs, ImgList, Controls, dxBar,  Math,
   cxButtons, cxDropDownEdit,  ComCtrls, JvHotKey, JvComponent,
   JvAppHotKey, JvHotkeyEx,   RegistrationKey,
   JvDlg, JvComputerInfo, JvHtControls, JvTransLED, JvEditor, JvaScrollText,
-  JvMemo, IdBaseComponent, IdComponent, IdCustomTCPServer, IdEchoServer;
+  JvMemo, IdBaseComponent, IdComponent, IdCustomTCPServer, IdEchoServer,
+  IdIPWatch;
 
 
 type
@@ -105,7 +106,6 @@ type
     alEditAccount: TAction;
     alDeleteAccount: TAction;
     alAppTerminate: TAction;
-    AccountsUpdater: TTimer;
     alStopThread: TAction;
     msStopThread: TdxBarButton;
     alStartThread: TAction;
@@ -294,6 +294,7 @@ type
     cxSplitter1: TcxSplitter;
     alRegister: TAction;
     msRegister: TdxBarButton;
+    IdIPWatch1: TIdIPWatch;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -317,7 +318,6 @@ type
     procedure alEditAccountExecute(Sender: TObject);
     procedure alDeleteAccountExecute(Sender: TObject);
     procedure alAppTerminateExecute(Sender: TObject);
-    procedure AccountsUpdaterTimer(Sender: TObject);
     procedure alStopThreadExecute(Sender: TObject);
     procedure alStartThreadExecute(Sender: TObject);
     procedure alStartAllThreadsExecute(Sender: TObject);
@@ -451,6 +451,7 @@ type
     SProvider:TSettings;
     FManager:TFilterManager;
     procedure ActivateNode(NodeIndex:Integer);
+    procedure UpdateStatusBar();
     function FindElement(Text:String;SType:TClbHookMode): string;
     procedure MoveElements(NewType:TFilterType);
     procedure SetFilterState(FilterType:TFilterType; const FilterStatus: Boolean);
@@ -493,6 +494,11 @@ uses  MultInst, About,SplashScreen;
 {$R ..\Resources\Messages.res}
 
 
+procedure TFMain.UpdateStatusBar;
+begin
+  stBar.Panels.Items[1].Text:=_('Количество сообщений в базе данных : ') + IntToStr(GetTotalMessCount);
+  stBar.Panels.Items[0].Text:=_('Размер базы данных : ')+ FloatToStr(RoundTo((Shared.GetFileSize(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb'))/(1024*1024),-2))+' Мб';
+end;
 
 procedure TFMain.ShowEditor(var AMessage: TMessage);
 begin
@@ -515,6 +521,14 @@ procedure TFMain.UpdateAccountStatus(var Msg: TMessage);
 begin
  if (Application.MainForm <>nil ) and  ( Application.MainForm.Visible) and(cxTab_Accounts.Showing) then
   begin
+   UpdateStatusBar;
+   if FMain.Active then
+    begin
+     if not adAccounts.Active then adAccounts.Active:=True;
+     if not adLog.Active then adLog.Active:=True;
+     adAccounts.Requery;
+     adLog.Requery;
+    end;
    if not adAccounts.Active then adAccounts.Active:=True;
     adAccounts.Requery;
   end;
@@ -763,6 +777,7 @@ begin
    Key.CloseKey;
    Key.Free;
    IsCreated:=True;
+   UpdateStatusBar;
    TranslateComponent(self);
    adAccounts.Active:=True;
    adLog.Active:=True;
@@ -824,7 +839,6 @@ var
  NodeIndex:Integer;
  Res:TSNConvert;
 begin
-
   if not DragState then
   begin
    NodeIndex:=STree.TreeList.FocusedNode.AbsoluteIndex;
@@ -835,7 +849,6 @@ begin
     begin
 
     end;
-
 
    if Res.FilterType<>ftNone then
     begin
@@ -1081,19 +1094,6 @@ begin
   end;
 end;
 
-
-procedure TFMain.AccountsUpdaterTimer(Sender: TObject);
-begin
- { stBar.Panels.Items[1].Text:=_('Количество сообщений в базе данных : ') + IntToStr(GetTotalMessCount);
- stBar.Panels.Items[0].Text:=_('Размер базы данных : ')+ FloatToStr(RoundTo((Shared.GetFileSize(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb'))/(1024*1024),-2))+' Мб';
- if FMain.Active then
-  begin
-   if not adAccounts.Active then adAccounts.Active:=True;
-   if not adLog.Active then adLog.Active:=True;
-   adAccounts.Requery;
-   adLog.Requery;
-  end; }
-end;
 
 procedure TFMain.alStopThreadExecute(Sender: TObject);
 var
@@ -1464,6 +1464,12 @@ end;
 procedure TFMain.lbServerPortExit(Sender: TObject);
 begin
  SProvider.SetValue('ServerPort',lbServerPort.Text);
+ if MessageBox(Handle,'Для того, чтобы изменения вступили в силу, неотходимо перезапустить приложение !\n'+
+  'Произвести перезапуск ?','Предупреждение',MB_OKCANCEL )=IDOK then
+  begin
+  WinExec(PChar(Application.ExeName), SW_SHOW); // Or better use the CreateProcess function
+ // Close;
+  end;
 end;
 
 procedure TFMain.seCheckIntervalPropertiesValidate(Sender: TObject;

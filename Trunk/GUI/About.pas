@@ -19,7 +19,6 @@ type
     leCurrentUser: TLabel;
     btClose: TButton;
     leLicenseUsername: TLabel;
-    leLicanseKey: TLabel;
     procedure leSiteClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure leMailClick(Sender: TObject);
@@ -65,20 +64,14 @@ begin
  GetRegistrationInformation(UserKey,UserName);
  if (UserKey <> nil) AND (StrLen(UserKey) > 0) then
   begin
-
    GetModeInformation( ModeName, ModeStatus, True );
-   leLicenseUsername.Font.Color:=clNavy;
-   leLicanseKey.Font.Color:=clNavy;
    leLicenseUsername.Caption:='Зарегистрирована на: '+StrPas(UserName);
-   leLicanseKey.Caption:='Ключ: '+StrPas(UserKey);
- end
+  end
   else
    begin
      GetTrialDays( TrialDaysTotal, TrialDaysLeft );
     leLicenseUsername.Font.Color:=clRed;
-    leLicanseKey.Font.Color:=clRed;
     leLicenseUsername.Caption:='trial';
-    leLicanseKey.Caption:='Осталось дней: '+IntToStr(TrialDaysLeft);
    end;
 
 end;

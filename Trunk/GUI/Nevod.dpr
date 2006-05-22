@@ -50,7 +50,7 @@ begin
   begin
    Application.Initialize;
    try
-    DatabaseCompact(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb',DBPassword);
+    DatabaseCompact;
    except;
    end;
  aCon:=TADOConnection.Create(nil);
