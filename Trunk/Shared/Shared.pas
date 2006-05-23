@@ -2,7 +2,7 @@ unit Shared;
 
 interface
 
-uses
+uses 
   PerlRegEx, MMSystem, gnugettext, CoolTrayIcon, cxGridDBTableView,  cxPC, Windows,
   WinSock, Registry,  ZLib,TypInfo, Messages, SysUtils, Variants,  ComObj,ActiveX,
   Dialogs, StdCtrls, DB, ADODB,IdMessage, Classes,  IdText,IdMessageParts,StrUtils,
@@ -276,13 +276,11 @@ type
     procedure Execute; override;
   end;
 
-//function md5(InputString:PChar): PChar; external 'Shared.DLL';
-function GetConnectionString: PChar; external 'Shared.DLL';
-function GetAppDataPath: PChar;external 'Shared.DLL';
-//function DBPassword:PChar;external 'Shared.DLL';
-procedure WriteAppHandle(Handle:DWORD);external 'Shared.DLL';
-procedure WriteAppPath(AppPath:PChar);external 'Shared.DLL';
-function DatabaseCompact: boolean;external 'Shared.DLL';
+function GetConnectionString: String;stdcall; external 'Shared.DLL';
+function GetAppDataPath:String;stdcall;external 'Shared.DLL';
+procedure WriteAppHandle(Handle:DWORD);stdcall;external 'Shared.DLL';
+procedure WriteAppPath(AppPath:String);stdcall;external 'Shared.DLL';
+function DatabaseCompact: boolean;stdcall;external 'Shared.DLL';
 
 function BindPort(Port:integer): Boolean;
 function IsConnected():Boolean;

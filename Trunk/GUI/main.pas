@@ -2,7 +2,7 @@ unit main;
 
 interface
 
-uses Commctrl,tlhelp32, StdCtrls, Dialogs, ImgList, Controls, dxBar,  Math,
+uses  Commctrl,tlhelp32, StdCtrls, Dialogs, ImgList, Controls, dxBar,  Math,
   ExtCtrls, dxBarExtItems, Classes, ActnList, CoolTrayIcon, DB, ADODB,
   cxMemo, cxButtonEdit, cxTextEdit, cxMaskEdit, cxSpinEdit, cxCheckBox,
   cxContainer, cxEdit, cxGroupBox, cxGridLevel, cxGridCustomTableView,
@@ -828,7 +828,8 @@ begin
  Exp.Free;
  SProvider.Free;
  adProc.Free;
- CloseHandle(Mutex);  KillProgram(Handle);
+ CloseHandle(Mutex);
+ KillProgram(Handle);
  if POP3Server<>nil then POP3Server.Free;
 end;
 
@@ -1791,16 +1792,51 @@ begin
  adFilters.Requery;
 end;
 
+function OpenCmdLine(const CmdLine: string;
+   WindowState: Word): Boolean;
+ var
+   SUInfo: TStartupInfo;
+   ProcInfo: TProcessInformation;
+ begin
+   { Enclose filename in quotes to take care of 
+    long filenames with spaces. }
+   FillChar(SUInfo, SizeOf(SUInfo), #0);
+   with SUInfo do
+   begin
+     cb := SizeOf(SUInfo);
+     dwFlags := STARTF_USESHOWWINDOW;
+     wShowWindow := WindowState;
+   end;
+   Result := CreateProcess(nil, PChar(CmdLine), nil, nil, False,
+     CREATE_NEW_CONSOLE or
+     NORMAL_PRIORITY_CLASS, nil,
+     nil {PChar(ExtractFilePath(Filename))},
+     SUInfo, ProcInfo);
+ end;
+
+
 procedure TFMain.alRestoreFromBackUpExecute(Sender: TObject);
+var
+  ErrStr: string;
+  PMSI: TStartupInfo;
+  PMPI: TProcessInformation;
 begin
  if MessageBoxW(Handle,PWideChar(_('Приложение будет завершено')),PWideChar(_('Сообщение')),MB_OKCANCEL)=IDOK then
-  WinExec(PChar('NevodBackup.exe -rb'),SW_SHOWNORMAL);
+ // WinExec(PChar('NevodBackup.exe -rb'),SW_SHOWNORMAL);
+   OpenCmdLine('NevodBackup.exe -rb',SW_SHOWNORMAL);
+
+
 end;
 
 procedure TFMain.alSaveToBackUpExecute(Sender: TObject);
+var
+  ErrStr: string;
+  PMSI: TStartupInfo;
+  PMPI: TProcessInformation;
 begin
  if MessageBoxW(Handle,PWideChar(_('Приложение будет завершено')),PWideChar(_('Сообщение')),MB_OKCANCEL)=IDOK then
-  WinExec(PChar('NevodBackup.exe -sb'),SW_SHOWNORMAL);
+  //WinExec(PChar('NevodBackup.exe -sb'),SW_SHOWNORMAL);
+   OpenCmdLine('NevodBackup.exe -sb',SW_SHOWNORMAL);
 end;
 
 procedure TFMain.btShowMainWindowClick(Sender: TObject);

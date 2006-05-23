@@ -1,6 +1,7 @@
 library Shared;
 
 uses
+  FastShareMem in '..\Shared\FastShareMem.pas',
   Dialogs,
   Controls,
   Registry,
@@ -14,7 +15,7 @@ uses
   ComObj,
   Classes,
   JRO_TLB in '..\Shared\JRO_TLB.pas',
-   gnugettext in 'C:\Program Files\dxgettext\gnugettext.pas',
+  gnugettext in '..\..\..\Program Files\dxgettext\gnugettext.pas',
   ADODB_TLB in '..\Shared\ADODB_TLB.pas';
 
 const
@@ -23,7 +24,7 @@ const
 {$R *.res}
 
 
-function GetTempFile(const Extension:PChar):PChar;stdcall;
+function GetTempFile(const Extension:PChar):String;stdcall;
 var
  Buffer: array[0..MAX_PATH] of Char;
  aFile: string;
@@ -36,7 +37,7 @@ begin
 end;
 
 
-function md5(InputString:PChar):String;stdcall;
+function md5(InputString:String):String;stdcall;
 var
   Digest: T4x4LongWordRecord;
   S, S1: string;
@@ -50,20 +51,20 @@ begin
       for i := 1 to Length(InputString) do
         S1 := S1 + Format('%02x', [Byte(S[i])]);
       while Pos(' ', S1) > 0 do S1[Pos(' ', S1)] := '0';
-      Result:=PChar(s1);
+      Result:=s1;
       Free;
     end;
 end;
 
 
-function GetAppDataPath():PChar;stdcall;
+function GetAppDataPath():String;stdcall;
 var
  Key:TRegistry;
 begin
  Key:=TRegistry.Create;
  Key.RootKey:=HKEY_CURRENT_USER;
  Key.OpenKey('\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders',False);
- Result:=PChar(Key.ReadString('AppData'));
+ Result:=Key.ReadString('AppData');
  Key.CloseKey;
  Key.Free;
 end;
@@ -74,19 +75,17 @@ var
 begin
   Sum:=md5(CriptKey);
   Sum:=Copy(Sum,0,15);
-  Result:=PChar(Sum);
-  //ShowMessage(Result);
+  Result:=Sum;
 end;
 
-function GetConnectionString: PChar;stdcall;
+function GetConnectionString:String;stdcall;
 var
  DBPath:String;
  buf:PChar;
 begin
- DBPath:=StrPas(GetAppDataPath)+'\Nevilon Software\Nevod AntiSpam';
- Result:=PChar('Provider=Microsoft.Jet.OLEDB.4.0;'+'Data Source='+DBPath+'\messages.ndb;'+
-            'Jet OLEDB:Database Password='+DBPassword);
- //ShowMessage(Result);
+ DBPath:=GetAppDataPath+'\Nevilon Software\Nevod AntiSpam';
+ Result:='Provider=Microsoft.Jet.OLEDB.4.0;'+'Data Source='+DBPath+'\messages.ndb;'+
+            'Jet OLEDB:Database Password='+DBPassword;
 end;
 
 function DatabaseCompact: boolean;stdcall;
@@ -95,8 +94,6 @@ var
  sdbTemp :WideString;
  sdbTempConn : WideString; //Connection string
  sdbName:WideString;
- buf:PChar;
- ConString:WideString;
 const SProvider = 'Provider=Microsoft.Jet.OLEDB.4.0;Data Source=';
 begin
  sdbTemp :=GetTempFile('ndb');
@@ -105,14 +102,12 @@ begin
  JE := TJetEngine.Create(nil);
  try
   try
-  ConString:='Provider=Microsoft.Jet.OLEDB.4.0;'+'Data Source='+GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb;'+
-            'Jet OLEDB:Database Password='+DBPassword;
-   JE.CompactDatabase(ConString, sdbTempConn);
-   sdbName:=StrPas(GetAppDataPath) + '\Nevilon Software\Nevod AntiSpam\messages.ndb';
+   JE.CompactDatabase(GetConnectionString, sdbTempConn);
+   sdbName:=GetAppDataPath + '\Nevilon Software\Nevod AntiSpam\messages.ndb';
    DeleteFile(PChar(ExtractShortPathName(sdbName)));
    RenameFile(sdbTemp, sdbName);
   except
-   on E: Exception do  ShowMessage(e.Message);//ShowMessage(_('Не могу упаковать базу'));
+  // on E: Exception do  ShowMessage(e.Message);//ShowMessage(_('Не могу упаковать базу'));
   end;
  finally
   JE.FreeOnRelease;
@@ -141,7 +136,7 @@ end;
 
 
 
-procedure WriteAppPath(AppPath:PChar);stdcall;
+procedure WriteAppPath(AppPath:String);stdcall;
 var
  key:TRegistry;
 begin
@@ -153,14 +148,14 @@ begin
  key.Free;
 end;
 
-function GetAppPath():PChar;stdcall;
+function GetAppPath():String;stdcall;
 var
  key:TRegistry;
 begin
  key:=TRegistry.Create;
  key.RootKey:=HKEY_CURRENT_USER;
  key.OpenKey('\Software\Nevilon\Nevod AntiSpam',True);
- Result:=PChar(key.ReadString('AppPath'));
+ Result:=key.ReadString('AppPath');
  key.CloseKey;
  key.Free;
 end;
@@ -189,13 +184,12 @@ begin
  Result:=RegKey;
 end;
 
-function IsNormal(DBPath:PChar): Boolean;stdcall;
+function IsNormal(DBPath:String): Boolean;stdcall;
 var
  adCon:TADOConnection;
- ConStr:PChar;
+ ConStr:String ;
 begin
- ConStr:=PChar('Provider=Microsoft.Jet.OLEDB.4.0;'+'Data Source='+DBPath+';'+
-            'Jet OLEDB:Database Password='+DBPassword);
+ ConStr:=GetConnectionString;
   Coinitialize(nil);
   try
   adCon:=TADOConnection.Create(nil);
@@ -214,7 +208,7 @@ begin
 end;
 
 
-exports md5,GetAppDataPath,DBPassword,DatabaseCompact,GetTempFile,WriteAppHandle,
+exports GetAppDataPath,DBPassword,DatabaseCompact,GetTempFile,WriteAppHandle,
          GetConnectionString,WriteAppPath,GetAppPath,GetAppHandle,IsNormal;
 
 begin

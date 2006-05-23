@@ -2,6 +2,7 @@ program NevodBackup;
 
 
 uses
+  FastShareMem in '..\Shared\FastShareMem.pas',
   SysUtils,
   Windows,
   Messages,
@@ -9,6 +10,8 @@ uses
   ZLib,
   Dialogs,
   gnugettext in '..\..\..\Program Files\dxgettext\gnugettext.pas';
+  
+
 {$R ..\Resources\WinXP.res}
 type
   TCompressor = class
@@ -17,15 +20,14 @@ type
     procedure DecompressStream(InputStream, OutputStream: TStream);
   end;
 
-function md5(InputString:PChar):PChar; external 'Shared.DLL';
-function DBPassword:PChar;external 'Shared.DLL';
-function GetAppDataPath: PChar;external 'Shared.DLL';
-function GetConnectionString: PChar; external 'Shared.DLL';
-function GetTempFile(const Extension: PChar):PChar;external 'Shared.DLL';
-function GetAppHandle():DWORD;external 'Shared.DLL';
-function DatabaseCompact: boolean;external 'Shared.DLL';
-function GetAppPath:PChar;external 'Shared.DLL';
-function IsNormal(DBPath:PChar): Boolean;external 'Shared.DLL';
+//function DBPassword:PChar;external 'Shared.DLL';
+function GetAppDataPath: String;stdcall; external 'Shared.DLL';
+function GetConnectionString: String;stdcall; external 'Shared.DLL';
+function GetTempFile(const Extension: String):String;stdcall;external 'Shared.DLL';
+function GetAppHandle():DWORD;stdcall;external 'Shared.DLL';
+function DatabaseCompact: boolean;stdcall;external 'Shared.DLL';
+function GetAppPath:String;stdcall;external 'Shared.DLL';
+function IsNormal(DBPath:String): Boolean;stdcall;external 'Shared.DLL';
 
 
 procedure CreateBackUp();
@@ -33,7 +35,7 @@ var
  selFile:TSaveDialog;
  DBStream,pDBStream:TFileStream;
  ZCom:TCompressor;
- DBPath:String;
+ DBPath,FileName:String;
  canExit:boolean;
 begin
  canExit:=False;
@@ -64,14 +66,18 @@ begin
   begin
      try
       try
+       FileName:=selFile.FileName;
+       if ExtractFileExt(FileName)<>'' then
+        FileName:=Copy(FileName,0,length(FileName)-pos('.',FileName)+1);
+         
        DBStream:=TFileStream.Create(DBPath,fmShareDenyNone);
-       pDBStream:=TFileStream.Create(selFile.FileName+'.nbk',fmCreate);
+       pDBStream:=TFileStream.Create(FileName+'.nbk',fmCreate);
        ZCom:=TCompressor.Create;
        ZCom.CompressStream(DBStream,pDBStream);
       except
        on e:Exception do
-          ShowMessage(E.Message);
-      // ShowMessage('Ќевозможно создать резервную копию');
+        //  ShowMessage(E.Message);
+       ShowMessage('Ќевозможно создать резервную копию');
       end;
      finally
       if DBStream<>nil then DBStream.Free;
@@ -123,8 +129,6 @@ begin
          DeleteFile(PChar(tmpFileName));
         end;
       except
-      // on e:Exception do
-       //   ShowMessage(E.Message);
       end;
     end;
   selFile.Free;
@@ -174,7 +178,16 @@ begin
   OutputStream.Position:= 0;
 end;
 
-
+procedure WaitForTerminate(AppHandle:HWND);
+var
+  tag:tagWINDOWINFO;
+begin
+ Flag:=True;
+  while  GetWindowInfo(AppHandle,tag) do
+   begin
+    sleep(500);
+   end;
+end;
 
 var
  IsRunning:boolean;
@@ -189,7 +202,8 @@ begin
         IsRunning:=True;
        end;
       RestoreFromBackUp;
-      if IsRunning then WinExec(PChar(GetAppPath),SW_SHOWNORMAL);
+      WaitForTerminate(GetAppHandle);
+      if IsRunning then  WinExec(PChar(GetAppPath),SW_SHOWNORMAL);
      end;
 
    if ParamStr(1)='-sb' then
@@ -198,6 +212,7 @@ begin
        begin
         IsRunning:=True;
        end;
+       WaitForTerminate(GetAppHandle);
        CreateBackUp;
       if IsRunning then WinExec(PChar(GetAppPath),SW_SHOWNORMAL);
     end;

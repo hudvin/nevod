@@ -1,6 +1,7 @@
 program Nevod;
 
 uses
+  FastShareMem in '..\Shared\FastShareMem.pas',
   Forms,
   Messages,
   Windows,
@@ -31,10 +32,11 @@ uses
   About in 'About.pas' {FAbout},
   ADODB_TLB in '..\Shared\ADODB_TLB.pas',
   JRO_TLB in '..\Shared\JRO_TLB.pas',
-  gnugettext in 'C:\Program Files\dxgettext\gnugettext.pas',
+  gnugettext in '..\..\..\Program Files\dxgettext\gnugettext.pas',
   Register in 'Register.pas' {FRegister},
   RegistrationKey in 'RegistrationKey.pas' {FRegistrationKey},
   aspr_api in '..\ASProtect\aspr_api.pas';
+
 
 {$R *.res}
 
@@ -77,8 +79,8 @@ begin
        if RegistrationForm.Result=1 then
         begin
          Application.CreateForm(TFMain, FMain);
-         Application.CreateForm(TFAbout, FAbout);
-         if (ParamCount>0) and (ParamStr(1)='-h') then
+  Application.CreateForm(TFAbout, FAbout);
+  if (ParamCount>0) and (ParamStr(1)='-h') then
           Application.MainForm.WindowState:=wsMinimized;
          Application.Run;
         end;

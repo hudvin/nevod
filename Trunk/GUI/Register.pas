@@ -5,7 +5,7 @@ unit Register;
 interface
 
 uses
-  Windows,RegistrationKey, Messages,ShellAPI, StdCtrls, cxContainer, cxEdit, cxProgressBar,
+  Windows,gnugettext,RegistrationKey, Messages,ShellAPI, StdCtrls, cxContainer, cxEdit, cxProgressBar,
   Classes,aspr_api, Controls, cxControls, cxPC ,SysUtils, Variants,  Graphics,  Forms,
   Dialogs, jpeg, ExtCtrls, JvImage;
 
@@ -73,6 +73,7 @@ procedure TFRegister.FormCreate(Sender: TObject);
 begin
  RegistrationKeyForm:=TFRegistrationKey.Create(nil);
  Result:=1;
+ TranslateComponent(self);
 end;
 
 procedure TFRegister.FormDestroy(Sender: TObject);
@@ -90,13 +91,12 @@ procedure TFRegister.FormShow(Sender: TObject);
 var
   ModeStatus : TModeStatus;
 begin
- Caption := 'Nevod AntiSpam - Ознакомительный период истек';
+ Caption := _('Nevod AntiSpam - Ознакомительный период истек');
  GetRegistrationInformation(UserKey,UserName );
  if (UserKey <> nil) AND (StrLen(UserKey) > 0) then
   begin
    {$I ..\ASProtect\include\aspr_crypt_begin1.inc}
     GetModeInformation( ModeName, ModeStatus, True );
-    ShowMessage('Зарегано');
     {$I ..\ASProtect\include\aspr_crypt_end1.inc}
   end
  else
@@ -104,13 +104,13 @@ begin
    begin
     if TrialDaysLeft = 0 then
      begin
-        Caption := ' Nevod AntiSpam - Ознакомительынй период истек';
+        Caption := _(' Nevod AntiSpam - Ознакомительынй период истек');
      end
     else
      begin
-      Caption:=  'Nevod AntiSpam - Незарегистрированная версия';
+      Caption:=  _('Nevod AntiSpam - Незарегистрированная версия');
       cxProgressBar.Position:=TrialDaysLeft;
-      leNag.Caption:='Осталось дней :'+ IntToStr(TrialDaysLeft);
+      leNag.Caption:=_('Осталось дней :')+ IntToStr(TrialDaysLeft);
       btLater.Caption:= IntToStr(15-TrialDaysLeft);
       Timer.Enabled:=True;
      end;
@@ -122,7 +122,7 @@ begin
  if StrToInt(btLater.Caption)=0 then
   begin
    Timer.Enabled:=False;
-   btLater.Caption:='Позже';
+   btLater.Caption:=_('Позже');
    btLater.Enabled:=True;
   end
  else
