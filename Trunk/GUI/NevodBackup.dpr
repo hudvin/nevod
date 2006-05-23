@@ -1,6 +1,5 @@
 program NevodBackup;
 
-
 uses
   FastShareMem in '..\Shared\FastShareMem.pas',
   SysUtils,
@@ -9,8 +8,7 @@ uses
   Classes,
   ZLib,
   Dialogs,
-  gnugettext in '..\..\..\Program Files\dxgettext\gnugettext.pas';
-  
+  gnugettext in '..\Libs\gnugettext.pas';
 
 {$R ..\Resources\WinXP.res}
 type
@@ -20,7 +18,6 @@ type
     procedure DecompressStream(InputStream, OutputStream: TStream);
   end;
 
-//function DBPassword:PChar;external 'Shared.DLL';
 function GetAppDataPath: String;stdcall; external 'Shared.DLL';
 function GetConnectionString: String;stdcall; external 'Shared.DLL';
 function GetTempFile(const Extension: String):String;stdcall;external 'Shared.DLL';
@@ -95,9 +92,8 @@ var
  pStream,DBStream:TFileStream;
  ZCom:TCompressor;
  DBPath,tmpFileName:String;
- canExit,res:boolean;
+ res:boolean;
 begin
- canExit:=False;
  DBPath:=GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb';
  selFile:=TOpenDialog.Create(nil);
  selFile.Options:=[ofOverwritePrompt];
@@ -116,7 +112,6 @@ begin
        if not IsNormal(PChar(tmpFileName)) then
         begin
          ShowMessage(_('База повреждена'));
-         CanExit:=True;
          DeleteFile(PChar(tmpFileName));
         end;
 
@@ -182,7 +177,6 @@ procedure WaitForTerminate(AppHandle:HWND);
 var
   tag:tagWINDOWINFO;
 begin
- Flag:=True;
   while  GetWindowInfo(AppHandle,tag) do
    begin
     sleep(500);

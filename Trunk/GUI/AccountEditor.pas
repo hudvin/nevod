@@ -26,6 +26,7 @@ type
     procedure leUsernameKeyPress(Sender: TObject; var Key: Char);
     procedure lePasswordKeyPress(Sender: TObject; var Key: Char);
     procedure leHostKeyPress(Sender: TObject; var Key: Char);
+    procedure FormCreate(Sender: TObject);
   private
     FAccountManager: TAccountManager;
     FadAccounts: TADOQuery;
@@ -135,7 +136,6 @@ begin
    Val(leTimeout.Text,Timeout,buf);
    if buf<>0 then Timeout:=-1
     else Timeout:=Timeout*1000;
-     
 
    Id:=FAccountId;
    AccountName:=leAccountName.Text;
@@ -148,8 +148,6 @@ begin
   if FEditorMode=emAdd then
    begin
     FAccountManager.AddAccount(FAccountParams);
-  //  FAdAccounts.Active:=True;
-   // FAdAccounts.Requery;
     Close;
    end
   else
@@ -207,6 +205,11 @@ end;
 procedure TFAccountEditor.leHostKeyPress(Sender: TObject; var Key: Char);
 begin
  FilterKey(Key);
+end;
+
+procedure TFAccountEditor.FormCreate(Sender: TObject);
+begin
+ TranslateComponent(self);
 end;
 
 end.

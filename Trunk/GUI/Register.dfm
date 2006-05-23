@@ -5,7 +5,7 @@ object FRegister: TFRegister
   BorderStyle = bsSingle
   Caption = 'Registration'
   ClientHeight = 120
-  ClientWidth = 372
+  ClientWidth = 366
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -22,7 +22,7 @@ object FRegister: TFRegister
   object jvBack: TJvImage
     Left = 0
     Top = 0
-    Width = 372
+    Width = 366
     Height = 120
     Align = alClient
     Picture.Data = {

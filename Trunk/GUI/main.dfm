@@ -1,11 +1,11 @@
 object FMain: TFMain
-  Left = 148
-  Top = 151
+  Left = 207
+  Top = 112
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Nevod AntiSpam'
-  ClientHeight = 386
-  ClientWidth = 758
+  ClientHeight = 344
+  ClientWidth = 743
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,8 +21,8 @@ object FMain: TFMain
   TextHeight = 13
   object stBar: TdxStatusBar
     Left = 0
-    Top = 366
-    Width = 758
+    Top = 324
+    Width = 743
     Height = 20
     Panels = <
       item
@@ -45,7 +45,7 @@ object FMain: TFMain
     Left = 0
     Top = 19
     Width = 153
-    Height = 347
+    Height = 305
     Align = alLeft
     Bands = <
       item
@@ -56,6 +56,7 @@ object FMain: TFMain
     Font.Height = -11
     Font.Name = 'Lucida Sans Unicode'
     Font.Style = []
+    Images = trImages
     LookAndFeel.Kind = lfOffice11
     LookAndFeel.NativeStyle = False
     OptionsBehavior.DragFocusing = True
@@ -87,16 +88,16 @@ object FMain: TFMain
       73000005000000416C6C6F7700000400000044656E79000005000000576F7264
       730000060000005374616D707300000700000053656E6465727300000B000000
       4174746163686D656E7473000005000000576F72647300000700000053656E64
-      65727300000B0000004174746163686D656E74730000030000004C6F67030000
-      0000000000100000000000000000000000FFFFFFFF0200000010000000000000
-      0000000000FFFFFFFF0100000004000000030000000000000000000000FFFFFF
-      FF0300000004000000040000000000000000000000FFFFFFFF05000000100000
-      000000000000000000FFFFFFFF06000000100000000000000000000000FFFFFF
-      FF07000000100000000000000000000000FFFFFFFF0800000010000000000000
-      0000000000FFFFFFFF0400000004000000030000000000000000000000FFFFFF
-      FF09000000100000000000000000000000FFFFFFFF0A00000010000000000000
-      0000000000FFFFFFFF0B000000100000000000000000000000FFFFFFFF0C0000
-      00100000000000000000000000FFFFFFFF}
+      65727300000B0000004174746163686D656E74730000030000004C6F67040000
+      0000000000100000000100000001000000010000000200000010000000020000
+      0002000000020000000100000004000000020000000500000005000000050000
+      0003000000040000000400000003000000030000000300000005000000100000
+      0006000000060000000600000006000000100000000600000006000000060000
+      0007000000100000000600000006000000060000000800000010000000060000
+      0006000000060000000400000004000000030000000400000004000000040000
+      0009000000100000000600000006000000060000000A00000010000000060000
+      0006000000060000000B000000100000000600000006000000060000000C0000
+      0010000000000000000000000000000000}
     object STree: TcxTreeListColumn
       DataBinding.ValueType = 'String'
       Options.Sorting = False
@@ -108,9 +109,9 @@ object FMain: TFMain
   object stPages: TcxPageControl
     Left = 158
     Top = 19
-    Width = 600
-    Height = 347
-    ActivePage = cxTab_AFSettings
+    Width = 585
+    Height = 305
+    ActivePage = cxTab_Settings
     Align = alClient
     DragMode = dmAutomatic
     HideTabs = True
@@ -119,8 +120,8 @@ object FMain: TFMain
     Options = []
     Style = 8
     TabOrder = 2
-    ClientRectBottom = 347
-    ClientRectRight = 600
+    ClientRectBottom = 305
+    ClientRectRight = 585
     ClientRectTop = 0
     object cxTab_Accounts: TcxTabSheet
       Caption = 'cxTab_Accounts'
@@ -128,8 +129,8 @@ object FMain: TFMain
       object cxAccountsGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 600
-        Height = 347
+        Width = 585
+        Height = 305
         Align = alClient
         BorderWidth = 2
         TabOrder = 0
@@ -209,8 +210,8 @@ object FMain: TFMain
       object cxLogGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 600
-        Height = 347
+        Width = 585
+        Height = 305
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
@@ -271,8 +272,8 @@ object FMain: TFMain
       object cxFiltersGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 600
-        Height = 347
+        Width = 585
+        Height = 305
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
@@ -336,7 +337,7 @@ object FMain: TFMain
       ImageIndex = 3
       object gbSystem: TcxGroupBox
         Left = 8
-        Top = 8
+        Top = 0
         Caption = #1057#1080#1089#1090#1077#1084#1085#1099#1077
         Style.LookAndFeel.Kind = lfOffice11
         Style.LookAndFeel.NativeStyle = True
@@ -348,16 +349,16 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 0
         Height = 185
-        Width = 249
+        Width = 233
         object Label1: TLabel
-          Left = 224
+          Left = 200
           Top = 84
           Width = 20
           Height = 13
           Caption = #1084#1080#1085
         end
         object lbCheckInterval: TLabel
-          Left = 16
+          Left = 8
           Top = 86
           Width = 98
           Height = 13
@@ -366,7 +367,7 @@ object FMain: TFMain
         object lbServerPort: TLabeledEdit
           Left = 96
           Top = 48
-          Width = 121
+          Width = 105
           Height = 21
           EditLabel.Width = 73
           EditLabel.Height = 13
@@ -406,7 +407,7 @@ object FMain: TFMain
           Width = 225
         end
         object seCheckInterval: TcxSpinEdit
-          Left = 120
+          Left = 112
           Top = 80
           Properties.MinValue = 1.000000000000000000
           Properties.OnValidate = seCheckIntervalPropertiesValidate
@@ -421,7 +422,7 @@ object FMain: TFMain
           TabOrder = 3
           Value = 1
           OnExit = seCheckIntervalExit
-          Width = 97
+          Width = 81
         end
         object cbCanCheckAccounts: TcxCheckBox
           Left = 8
@@ -455,8 +456,8 @@ object FMain: TFMain
         end
       end
       object gbNag: TcxGroupBox
-        Left = 264
-        Top = 8
+        Left = 248
+        Top = 0
         Caption = #1059#1074#1077#1076#1086#1084#1083#1077#1085#1080#1103
         Style.LookAndFeel.Kind = lfOffice11
         Style.LookAndFeel.NativeStyle = True
@@ -467,7 +468,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.Kind = lfOffice11
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 1
-        Height = 185
+        Height = 65
         Width = 329
         object cbBallonOnReceive: TcxCheckBox
           Left = 8
@@ -485,46 +486,6 @@ object FMain: TFMain
           TabOrder = 0
           Width = 225
         end
-        object beSoundOnNew: TcxButtonEdit
-          Left = 184
-          Top = 64
-          Properties.Buttons = <
-            item
-              Caption = 'Browse'
-              Default = True
-              Kind = bkText
-            end
-            item
-              Kind = bkText
-            end>
-          Properties.OnButtonClick = cxButtonEdit1PropertiesButtonClick
-          Style.LookAndFeel.Kind = lfOffice11
-          Style.LookAndFeel.NativeStyle = True
-          StyleDisabled.LookAndFeel.Kind = lfOffice11
-          StyleDisabled.LookAndFeel.NativeStyle = True
-          StyleFocused.LookAndFeel.Kind = lfOffice11
-          StyleFocused.LookAndFeel.NativeStyle = True
-          StyleHot.LookAndFeel.Kind = lfOffice11
-          StyleHot.LookAndFeel.NativeStyle = True
-          TabOrder = 1
-          Width = 137
-        end
-        object cbSoundOnReceive: TcxCheckBox
-          Left = 8
-          Top = 64
-          Caption = #1047#1074#1091#1082' '#1087#1088#1080' '#1087#1086#1083#1091#1095#1077#1085#1080#1080' '#1085#1086#1074#1086#1081' '#1087#1086#1095#1090#1099
-          Properties.OnChange = cbSoundOnReceivePropertiesChange
-          Style.LookAndFeel.Kind = lfOffice11
-          Style.LookAndFeel.NativeStyle = True
-          StyleDisabled.LookAndFeel.Kind = lfOffice11
-          StyleDisabled.LookAndFeel.NativeStyle = True
-          StyleFocused.LookAndFeel.Kind = lfOffice11
-          StyleFocused.LookAndFeel.NativeStyle = True
-          StyleHot.LookAndFeel.Kind = lfOffice11
-          StyleHot.LookAndFeel.NativeStyle = True
-          TabOrder = 2
-          Width = 169
-        end
         object cbBaloonOnError: TcxCheckBox
           Left = 8
           Top = 40
@@ -538,93 +499,13 @@ object FMain: TFMain
           StyleFocused.LookAndFeel.NativeStyle = True
           StyleHot.LookAndFeel.Kind = lfOffice11
           StyleHot.LookAndFeel.NativeStyle = True
-          TabOrder = 3
+          TabOrder = 1
           Width = 217
-        end
-        object cbSoundOnError: TcxCheckBox
-          Left = 8
-          Top = 88
-          Caption = #1047#1074#1091#1082' '#1087#1088#1080' '#1086#1096#1080#1073#1082#1077
-          Properties.OnChange = cbSoundOnErrorPropertiesChange
-          Style.LookAndFeel.Kind = lfOffice11
-          Style.LookAndFeel.NativeStyle = True
-          StyleDisabled.LookAndFeel.Kind = lfOffice11
-          StyleDisabled.LookAndFeel.NativeStyle = True
-          StyleFocused.LookAndFeel.Kind = lfOffice11
-          StyleFocused.LookAndFeel.NativeStyle = True
-          StyleHot.LookAndFeel.Kind = lfOffice11
-          StyleHot.LookAndFeel.NativeStyle = True
-          TabOrder = 4
-          Width = 121
-        end
-        object beSoundOnError: TcxButtonEdit
-          Left = 184
-          Top = 88
-          Properties.Buttons = <
-            item
-              Caption = 'Browse'
-              Default = True
-              Kind = bkText
-            end
-            item
-              Kind = bkGlyph
-            end>
-          Properties.OnButtonClick = beSoundOnErrorPropertiesButtonClick
-          Style.LookAndFeel.Kind = lfOffice11
-          Style.LookAndFeel.NativeStyle = True
-          StyleDisabled.LookAndFeel.Kind = lfOffice11
-          StyleDisabled.LookAndFeel.NativeStyle = True
-          StyleFocused.LookAndFeel.Kind = lfOffice11
-          StyleFocused.LookAndFeel.NativeStyle = True
-          StyleHot.LookAndFeel.Kind = lfOffice11
-          StyleHot.LookAndFeel.NativeStyle = True
-          TabOrder = 5
-          Width = 137
-        end
-        object cbSoundOnAdd: TcxCheckBox
-          Left = 8
-          Top = 112
-          Caption = #1047#1074#1091#1082' '#1087#1088#1080' '#1076#1086#1073#1072#1074#1083#1077#1085#1080#1080' '#1072#1076#1088#1077#1089#1072' '
-          Properties.OnChange = cbSoundOnAddPropertiesChange
-          Style.LookAndFeel.Kind = lfOffice11
-          Style.LookAndFeel.NativeStyle = True
-          StyleDisabled.LookAndFeel.Kind = lfOffice11
-          StyleDisabled.LookAndFeel.NativeStyle = True
-          StyleFocused.LookAndFeel.Kind = lfOffice11
-          StyleFocused.LookAndFeel.NativeStyle = True
-          StyleHot.LookAndFeel.Kind = lfOffice11
-          StyleHot.LookAndFeel.NativeStyle = True
-          TabOrder = 6
-          Width = 177
-        end
-        object beSoundOnAdd: TcxButtonEdit
-          Left = 184
-          Top = 112
-          Properties.Buttons = <
-            item
-              Caption = 'Browse'
-              Default = True
-              Kind = bkText
-            end
-            item
-              Kind = bkGlyph
-            end>
-          Properties.OnButtonClick = beSoundOnAddPropertiesButtonClick
-          Style.LookAndFeel.Kind = lfOffice11
-          Style.LookAndFeel.NativeStyle = True
-          StyleDisabled.LookAndFeel.Kind = lfOffice11
-          StyleDisabled.LookAndFeel.NativeStyle = True
-          StyleFocused.LookAndFeel.Kind = lfOffice11
-          StyleFocused.LookAndFeel.NativeStyle = True
-          StyleHot.LookAndFeel.Kind = lfOffice11
-          StyleHot.LookAndFeel.NativeStyle = True
-          TabOrder = 7
-          Width = 137
         end
       end
       object gbSpy: TcxGroupBox
         Left = 8
-        Top = 200
+        Top = 185
         Caption = #1057#1083#1077#1078#1077#1085#1080#1077' '#1079#1072' '#1073#1091#1092#1077#1088#1086#1084' '#1086#1073#1084#1077#1085#1072
         Style.LookAndFeel.Kind = lfOffice11
         Style.LookAndFeel.NativeStyle = False
@@ -635,8 +516,8 @@ object FMain: TFMain
         StyleHot.LookAndFeel.Kind = lfOffice11
         StyleHot.LookAndFeel.NativeStyle = False
         TabOrder = 2
-        Height = 137
-        Width = 249
+        Height = 112
+        Width = 233
         object leSpyFor: TLabel
           Left = 8
           Top = 88
@@ -667,7 +548,7 @@ object FMain: TFMain
           Width = 177
         end
         object cmSpyFor: TcxComboBox
-          Left = 144
+          Left = 128
           Top = 83
           Properties.DropDownListStyle = lsEditFixedList
           Properties.Items.Strings = (
@@ -688,7 +569,7 @@ object FMain: TFMain
           Width = 97
         end
         object cmAddTo: TcxComboBox
-          Left = 144
+          Left = 128
           Top = 56
           Properties.Items.Strings = (
             #1073#1077#1083#1099#1081' '#1089#1087#1080#1089#1086#1082
@@ -719,15 +600,15 @@ object FMain: TFMain
         end
       end
       object gbHotKeys: TcxGroupBox
-        Left = 264
-        Top = 200
+        Left = 248
+        Top = 161
         Caption = #1043#1086#1088#1103#1095#1080#1077' '#1082#1083#1072#1074#1080#1096#1080
         Style.LookAndFeel.Kind = lfOffice11
         StyleDisabled.LookAndFeel.Kind = lfOffice11
         StyleFocused.LookAndFeel.Kind = lfOffice11
         StyleHot.LookAndFeel.Kind = lfOffice11
         TabOrder = 3
-        Height = 137
+        Height = 136
         Width = 329
         object leAddHotKey: TLabel
           Left = 8
@@ -834,13 +715,145 @@ object FMain: TFMain
           OnClick = btRunMailClientClick
         end
       end
+      object gbSounds: TcxGroupBox
+        Left = 248
+        Top = 65
+        Caption = #1047#1074#1091#1082#1080
+        Style.LookAndFeel.Kind = lfOffice11
+        StyleDisabled.LookAndFeel.Kind = lfOffice11
+        StyleFocused.LookAndFeel.Kind = lfOffice11
+        StyleHot.LookAndFeel.Kind = lfOffice11
+        TabOrder = 4
+        Height = 89
+        Width = 329
+        object cbSoundOnReceive: TcxCheckBox
+          Left = 8
+          Top = 12
+          Caption = #1055#1088#1080' '#1087#1086#1083#1091#1095#1077#1085#1080#1080' '#1085#1086#1074#1086#1081' '#1087#1086#1095#1090#1099
+          Properties.OnChange = cbSoundOnReceivePropertiesChange
+          Style.LookAndFeel.Kind = lfOffice11
+          Style.LookAndFeel.NativeStyle = True
+          StyleDisabled.LookAndFeel.Kind = lfOffice11
+          StyleDisabled.LookAndFeel.NativeStyle = True
+          StyleFocused.LookAndFeel.Kind = lfOffice11
+          StyleFocused.LookAndFeel.NativeStyle = True
+          StyleHot.LookAndFeel.Kind = lfOffice11
+          StyleHot.LookAndFeel.NativeStyle = True
+          TabOrder = 0
+          Width = 169
+        end
+        object beSoundOnNew: TcxButtonEdit
+          Left = 176
+          Top = 12
+          Properties.Buttons = <
+            item
+              Caption = 'Browse'
+              Default = True
+              Kind = bkText
+            end
+            item
+              Kind = bkGlyph
+            end>
+          Properties.OnButtonClick = cxButtonEdit1PropertiesButtonClick
+          Style.LookAndFeel.Kind = lfOffice11
+          Style.LookAndFeel.NativeStyle = True
+          StyleDisabled.LookAndFeel.Kind = lfOffice11
+          StyleDisabled.LookAndFeel.NativeStyle = True
+          StyleFocused.LookAndFeel.Kind = lfOffice11
+          StyleFocused.LookAndFeel.NativeStyle = True
+          StyleHot.LookAndFeel.Kind = lfOffice11
+          StyleHot.LookAndFeel.NativeStyle = True
+          TabOrder = 1
+          Width = 137
+        end
+        object beSoundOnError: TcxButtonEdit
+          Left = 176
+          Top = 36
+          Properties.Buttons = <
+            item
+              Caption = 'Browse'
+              Default = True
+              Kind = bkText
+            end
+            item
+              Kind = bkGlyph
+            end>
+          Properties.OnButtonClick = beSoundOnErrorPropertiesButtonClick
+          Style.LookAndFeel.Kind = lfOffice11
+          Style.LookAndFeel.NativeStyle = True
+          StyleDisabled.LookAndFeel.Kind = lfOffice11
+          StyleDisabled.LookAndFeel.NativeStyle = True
+          StyleFocused.LookAndFeel.Kind = lfOffice11
+          StyleFocused.LookAndFeel.NativeStyle = True
+          StyleHot.LookAndFeel.Kind = lfOffice11
+          StyleHot.LookAndFeel.NativeStyle = True
+          TabOrder = 2
+          Width = 137
+        end
+        object cbSoundOnError: TcxCheckBox
+          Left = 8
+          Top = 36
+          Caption = #1055#1088#1080' '#1086#1096#1080#1073#1082#1077
+          Properties.OnChange = cbSoundOnErrorPropertiesChange
+          Style.LookAndFeel.Kind = lfOffice11
+          Style.LookAndFeel.NativeStyle = True
+          StyleDisabled.LookAndFeel.Kind = lfOffice11
+          StyleDisabled.LookAndFeel.NativeStyle = True
+          StyleFocused.LookAndFeel.Kind = lfOffice11
+          StyleFocused.LookAndFeel.NativeStyle = True
+          StyleHot.LookAndFeel.Kind = lfOffice11
+          StyleHot.LookAndFeel.NativeStyle = True
+          TabOrder = 3
+          Width = 89
+        end
+        object cbSoundOnAdd: TcxCheckBox
+          Left = 8
+          Top = 60
+          Caption = #1047#1074#1091#1082' '#1087#1088#1080' '#1076#1086#1073#1072#1074#1083#1077#1085#1080#1080' '#1072#1076#1088#1077#1089#1072' '
+          Properties.OnChange = cbSoundOnAddPropertiesChange
+          Style.LookAndFeel.Kind = lfOffice11
+          Style.LookAndFeel.NativeStyle = True
+          StyleDisabled.LookAndFeel.Kind = lfOffice11
+          StyleDisabled.LookAndFeel.NativeStyle = True
+          StyleFocused.LookAndFeel.Kind = lfOffice11
+          StyleFocused.LookAndFeel.NativeStyle = True
+          StyleHot.LookAndFeel.Kind = lfOffice11
+          StyleHot.LookAndFeel.NativeStyle = True
+          TabOrder = 4
+          Width = 177
+        end
+        object beSoundOnAdd: TcxButtonEdit
+          Left = 176
+          Top = 60
+          Properties.Buttons = <
+            item
+              Caption = 'Browse'
+              Default = True
+              Kind = bkText
+            end
+            item
+              Kind = bkGlyph
+            end>
+          Properties.OnButtonClick = beSoundOnAddPropertiesButtonClick
+          Style.LookAndFeel.Kind = lfOffice11
+          Style.LookAndFeel.NativeStyle = True
+          StyleDisabled.LookAndFeel.Kind = lfOffice11
+          StyleDisabled.LookAndFeel.NativeStyle = True
+          StyleFocused.LookAndFeel.Kind = lfOffice11
+          StyleFocused.LookAndFeel.NativeStyle = True
+          StyleHot.LookAndFeel.Kind = lfOffice11
+          StyleHot.LookAndFeel.NativeStyle = True
+          TabOrder = 5
+          Width = 137
+        end
+      end
     end
     object cxTab_AFSettings: TcxTabSheet
       Caption = 'cxTab_AFSettings'
       ImageIndex = 4
       object cxWhiteWordDescription: TcxMemo
         Left = 8
-        Top = 32
+        Top = 24
         Enabled = False
         Lines.Strings = (
           
@@ -865,12 +878,12 @@ object FMain: TFMain
         StyleHot.LookAndFeel.Kind = lfOffice11
         StyleHot.LookAndFeel.NativeStyle = False
         TabOrder = 0
-        Height = 49
+        Height = 33
         Width = 577
       end
       object cbStamp: TcxCheckBox
         Left = 8
-        Top = 88
+        Top = 72
         Caption = #1064#1090#1072#1084#1087#1099' '#1089#1086#1086#1073#1097#1077#1085#1080#1081
         Properties.OnChange = cbStampPropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
@@ -903,8 +916,8 @@ object FMain: TFMain
         Width = 121
       end
       object cxStampDescription: TcxMemo
-        Left = 16
-        Top = 112
+        Left = 8
+        Top = 88
         Enabled = False
         Lines.Strings = (
           
@@ -935,7 +948,7 @@ object FMain: TFMain
       end
       object cbWhiteSender: TcxCheckBox
         Left = 8
-        Top = 168
+        Top = 144
         Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1077#1083#1100
         Properties.OnChange = cbWhiteSenderPropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
@@ -951,8 +964,8 @@ object FMain: TFMain
         Width = 121
       end
       object cxSenderDescription: TcxMemo
-        Left = 16
-        Top = 192
+        Left = 8
+        Top = 160
         Enabled = False
         Lines.Strings = (
           
@@ -979,7 +992,7 @@ object FMain: TFMain
       end
       object cbWhiteAttach: TcxCheckBox
         Left = 8
-        Top = 248
+        Top = 224
         Caption = #1056#1072#1089#1096#1080#1088#1077#1085#1080#1077' '#1087#1088#1080#1083#1086#1078#1077#1085#1085#1086#1075#1086' '#1092#1072#1081#1083#1072
         Properties.OnChange = cbWhiteAttachPropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
@@ -995,8 +1008,8 @@ object FMain: TFMain
         Width = 209
       end
       object cxWhiteAttachDescription: TcxMemo
-        Left = 16
-        Top = 272
+        Left = 8
+        Top = 240
         Enabled = False
         Lines.Strings = (
           
@@ -1018,7 +1031,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.Kind = lfStandard
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 7
-        Height = 49
+        Height = 33
         Width = 569
       end
     end
@@ -1044,7 +1057,7 @@ object FMain: TFMain
       end
       object cxBlackWordDescription: TcxMemo
         Left = 8
-        Top = 32
+        Top = 24
         Enabled = False
         Lines.Strings = (
           
@@ -1069,7 +1082,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 1
         Height = 33
-        Width = 577
+        Width = 569
       end
       object cbBlackSender: TcxCheckBox
         Left = 8
@@ -1090,7 +1103,7 @@ object FMain: TFMain
       end
       object cxBlackSenderDescription: TcxMemo
         Left = 8
-        Top = 88
+        Top = 80
         Enabled = False
         Lines.Strings = (
           
@@ -1112,12 +1125,12 @@ object FMain: TFMain
         StyleHot.LookAndFeel.Kind = lfStandard
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 3
-        Height = 33
-        Width = 577
+        Height = 25
+        Width = 569
       end
       object cbBlackAttach: TcxCheckBox
         Left = 8
-        Top = 120
+        Top = 112
         Caption = #1056#1072#1089#1096#1080#1088#1077#1085#1080#1077' '#1087#1088#1080#1083#1086#1078#1077#1085#1085#1086#1075#1086' '#1092#1072#1081#1083#1072
         Properties.OnChange = cbBlackAttachPropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
@@ -1134,7 +1147,7 @@ object FMain: TFMain
       end
       object cxBlackAttachDescription: TcxMemo
         Left = 8
-        Top = 152
+        Top = 128
         Enabled = False
         Lines.Strings = (
           
@@ -1158,11 +1171,11 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 5
         Height = 25
-        Width = 577
+        Width = 569
       end
       object cxSpinLinks: TcxSpinEdit
         Left = 296
-        Top = 176
+        Top = 158
         Properties.MaxValue = 1000.000000000000000000
         Properties.MinValue = 1.000000000000000000
         Properties.OnValidate = cxSpinLinksPropertiesValidate
@@ -1181,7 +1194,7 @@ object FMain: TFMain
       end
       object cbMaxLinks: TcxCheckBox
         Left = 8
-        Top = 176
+        Top = 162
         Caption = #1052#1072#1082#1089#1080#1084#1072#1083#1100#1085#1086#1077' '#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1089#1089#1099#1083#1086#1082' '#1074' '#1089#1086#1086#1073#1097#1077#1085#1080#1080
         Properties.OnChange = cbMaxLinksPropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
@@ -1198,7 +1211,7 @@ object FMain: TFMain
       end
       object cxMaxLinksDescription: TcxMemo
         Left = 8
-        Top = 200
+        Top = 178
         Enabled = False
         Lines.Strings = (
           
@@ -1221,11 +1234,11 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 8
         Height = 25
-        Width = 577
+        Width = 569
       end
       object cbMaxImages: TcxCheckBox
         Left = 8
-        Top = 232
+        Top = 208
         Caption = #1052#1072#1082#1089#1080#1084#1072#1083#1100#1085#1086#1077' '#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1080#1079#1086#1073#1088#1072#1078#1077#1085#1080#1081
         Properties.OnChange = cbMaxImagesPropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
@@ -1242,7 +1255,7 @@ object FMain: TFMain
       end
       object cxSpinImages: TcxSpinEdit
         Left = 296
-        Top = 232
+        Top = 206
         Properties.MaxValue = 1000.000000000000000000
         Properties.MinValue = 1.000000000000000000
         Properties.OnValidate = cxSpinImagesPropertiesValidate
@@ -1257,12 +1270,13 @@ object FMain: TFMain
       end
       object cxMaxImagesDescription: TcxMemo
         Left = 8
-        Top = 256
+        Top = 226
         Enabled = False
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090','#1077#1089#1083#1080' '#1074' '#1089#1086#1086#1073#1097#1077#1085#1080#1080' '#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1080#1079#1086#1073#1088#1072#1078#1077#1085#1080 +
-            #1081' '#1087#1088#1077#1074#1099#1096#1072#1077#1090' '#1084#1072#1082#1089#1080#1084#1072#1083#1100#1085#1086#1077' '#1079#1085#1072#1095#1077#1085#1080#1077)
+            #1081' '#1087#1088#1077#1074#1099#1096#1072#1077#1090' '#1084#1072#1082#1089#1080#1084#1072#1083#1100#1085#1086#1077' '
+          #1079#1085#1072#1095#1077#1085#1080#1077)
         Properties.HideSelection = False
         Properties.ReadOnly = True
         Style.BorderStyle = ebsNone
@@ -1280,11 +1294,11 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 11
         Height = 25
-        Width = 577
+        Width = 569
       end
       object cbMaxSize: TcxCheckBox
         Left = 8
-        Top = 288
+        Top = 258
         Caption = #1052#1072#1082#1089#1080#1084#1072#1083#1100#1085#1099#1081' '#1088#1072#1079#1084#1077#1088' '#1089#1086#1086#1073#1096#1077#1085#1080#1103','#1082#1073
         Properties.OnChange = cbMaxSizePropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
@@ -1301,7 +1315,7 @@ object FMain: TFMain
       end
       object cxSpinMaxSize: TcxSpinEdit
         Left = 296
-        Top = 288
+        Top = 255
         Properties.MaxValue = 1000.000000000000000000
         Properties.MinValue = 1.000000000000000000
         Properties.OnValidate = cxSpinMaxSizePropertiesValidate
@@ -1316,7 +1330,7 @@ object FMain: TFMain
       end
       object cxMaxSizeDescription: TcxMemo
         Left = 8
-        Top = 312
+        Top = 275
         Enabled = False
         Lines.Strings = (
           
@@ -1339,7 +1353,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 14
         Height = 25
-        Width = 577
+        Width = 569
       end
     end
   end
@@ -1347,15 +1361,15 @@ object FMain: TFMain
     Left = 153
     Top = 19
     Width = 5
-    Height = 347
+    Height = 305
     AutoSnap = True
     ResizeUpdate = True
     Control = SettingsTree
   end
   object dsAccounts: TDataSource
     DataSet = adAccounts
-    Left = 32
-    Top = 272
+    Left = 64
+    Top = 280
   end
   object adCon: TADOConnection
     ConnectionString = 
@@ -1435,8 +1449,8 @@ object FMain: TFMain
   end
   object dsFilters: TDataSource
     DataSet = adFilters
-    Left = 32
-    Top = 240
+    Left = 24
+    Top = 184
   end
   object adAccounts: TADOQuery
     Connection = adCon
@@ -6220,7 +6234,8 @@ object FMain: TFMain
     Top = 347
   end
   object cxStyleRepository1: TcxStyleRepository
-    Top = 40
+    Left = 144
+    Top = 312
     object cxStyle1: TcxStyle
       AssignedValues = [svColor, svFont]
       Color = clSkyBlue
@@ -6236,16 +6251,16 @@ object FMain: TFMain
     end
   end
   object cxStyleRepository2: TcxStyleRepository
-    Left = 8
-    Top = 48
+    Left = 96
+    Top = 312
     object cxStyle3: TcxStyle
       AssignedValues = [svColor]
       Color = clSkyBlue
     end
   end
   object cxStyleRepository3: TcxStyleRepository
-    Left = 8
-    Top = 56
+    Left = 64
+    Top = 312
     object cxStyle4: TcxStyle
       AssignedValues = [svColor]
       Color = clHotLight
@@ -6305,8 +6320,8 @@ object FMain: TFMain
         Visible = True
       end>
     UseOwnFont = False
-    Left = 377
-    Top = 105
+    Left = 409
+    Top = 337
   end
   object JvAppAddHotKey: TJvApplicationHotKey
     HotKey = 0
@@ -6335,5 +6350,280 @@ object FMain: TFMain
     OnHotKeyRegisterFailed = jvAppRunMailClientHotKeyRegisterFailed
     Left = 681
     Top = 279
+  end
+  object trImages: TImageList
+    DrawingStyle = dsTransparent
+    Left = 128
+    Top = 280
+    Bitmap = {
+      494C010107000900040010001000FFFFFFFFFF00FFFFFFFFFFFFFFFF424D3600
+      0000000000003600000028000000400000002000000001002000000000000020
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000F6F6F602DEDEDE21B8B8B847C5C5C53AF2F2F20D000000000000
+      00000000000000000000000000000000000000000000FEFEFE01EFEFEF10F4F4
+      F40BF5F5F5020000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000007777770077777700777777007777
+      7700777777007777770077777700777777007777770077777700777777007777
+      7700777777007777770055555500000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000000000000000000000378A
+      B9016837195505219EFD0928B8FF0928B9FF0928B9FF0522AAFF12263FD35E64
+      661500000000000000000000000000000000FDFDFD0254392CE1A65C39FFA259
+      36FF804123FC4C2720FF1D1739FF09165FFF071D88FF041E97FF12253DD45E64
+      661600000000000000000000000000000000B2B2B200F1F1F100F1F1F100FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00F1F1F100F1F1F100F1F1F100DDDD
+      DD00DDDDDD00CCCCCC0077777700777777000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000A7A7A706061F
+      77EE0928B9FF0928BAFF0A28BBFF0A28BCFF0A28BCFF0A28BCFF0A28BCFF041F
+      95FF5D989A3C00000000000000000000000055A6D125975739FFCA8E71FFF0DB
+      CEFFD0B2A2FFA97C65FFA16648FFB06A47FFBB704AFFB66C46FFA15B38FF703A
+      23FF483121E36B625DA4CACACA3500000000B2B2B20077777700F1F1F100F1F1
+      F100F1F1F100F1F1F100F1F1F100FFFFFF00FFFFFF00F1F1F100F1F1F100F1F1
+      F100F1F1F100F1F1F100CCCCCC00000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000005CBCF302051C88FC0928
+      B9FF0A28BCFF0A28BDFF061FA2FF031A90FF09219EFF0F29B4FF0A28C0FF0A28
+      BFFF0520A2FF4EA6AA210000000000000000529BC7309D5D3EFFE0B9A5FFFDF0
+      E8FFD3BAACFF9D745FFF784228FFEDD9CDFFFCEADFFFE7D0C1FFE9CEBDFFECC6
+      AFFFE5AB88FFDC9369FFB96E48FFF6F6F609B2B2B20077777700FFFFFF00F1F1
+      F100F1F1F100F1F1F100F1F1F100F1F1F100FFFFFF00FFFFFF00F1F1F100F1F1
+      F100F1F1F100F1F1F100CCCCCC00868686000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000001B457BB60C25A5FF0A28
+      BCFF0A28BEFF0A28C1FF0A28C2FF83A2B4FFDEE0F0FF0F29AEFF1F3AD9FF0D2A
+      C6FF0A28C2FF001959F8FEFEFE01000000004D9CC630A56443FFE1BFAEFFFEF9
+      F5FFB09182FFFAF7F5FFC9B4AAFFFDF4EEFFFDF3EDFFF4E5DDFFD2B8AAFFD9C3
+      B5FFC6A899FFFCEDE3FFD68D63FFDEDDDC23B2B2B20077777700FFFFFF00FFFF
+      FF00F1F1F100F1F1F100F1F1F100F1F1F100F1F1F100FFFFFF00FFFFFF00F1F1
+      F100F1F1F100F1F1F100CCCCCC00777777000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000000F26A2FF0A28BCFF0A28
+      BFFF0A27BEFF0B28C4FF0B28C6FF0B28C6FFEFF0F7FF000000000D329EFF2A46
+      F6FF0B28C6FF0B28C4FF08828641000000004B9DC630AE6C4AFFE3C3B3FFFFFF
+      FEFFAF8F7FFFFEF5F0FFE0D0C9FFFFFCFBFFFEFBF9FFE9DED8FFFFFBFAFFFFFD
+      FCFFF4EAE4FFFEF6F1FFD68E64FFDEDDDC23B2B2B20077777700F1F1F100FFFF
+      FF00FFFFFF00F1F1F100F1F1F100F1F1F100F1F1F100F1F1F100FFFFFF00FFFF
+      FF00F1F1F100F1F1F100CCCCCC00777777000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000007ECFD20F142BAFFF0A28BFFF0A28
+      C2FF0D25A8FF0C28C5FF0B28C9FF0C28CBFF0A25C1FF0000000000000000223D
+      E1FF1B37DAFF0B28C9FF002042E8000000006AA9AA3CB77451FFE4C5B4FFFFFF
+      FFFFAE8C7AFFFCEDE3FFA78371FFFFFFFFFFFFFFFFFFEAE2DEFFFDF3ECFFFEF4
+      EEFFF5F0EEFFFFFEFDFFD38C63FFDEDDDC23B2B2B20077777700F1F1F100F1F1
+      F100FFFFFF00FFFFFF00F1F1F100F1F1F100F1F1F100F1F1F100F1F1F100FFFF
+      FF00FFFFFF00F1F1F100CCCCCC00777777000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000004FBFCA2D172FBBFF0A28C1FF0B28
+      C4FF0A23A3FF1832C8FF0C28CDFF0C28CFFF0C28D0FF142CAFFF00000000146A
+      67FF1A35CCFF0C28CDFF05219CFF00000000449CA455C17E58FFE5C5B5FFFFFF
+      FFFFEAE2DEFFF6F3F1FFFEFEFEFFFFFFFFFFFFFFFFFFEEE7E4FFB3907EFFA47D
+      6AFFFDFDFCFFFFFFFFFFCF8961FF73AEAF23B2B2B20077777700F1F1F100F1F1
+      F100F1F1F100FFFFFF00FFFFFF00F1F1F100F1F1F100F1F1F100F1F1F100F1F1
+      F100FFFFFF00FFFFFF00CCCCCC00777777000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000005ED1DC221A33C6FF0B28C3FF0B28
+      C7FF0E9237FF1933C9FF233FE6FF0C28D2FF0D28D4FF0D28D5FF5564B6FF31C3
+      4EFF1029B2FF0C28D1FF0924BFFF72C2C60250ABB34CCB875FFFE6C6B6FFFFFF
+      FFFFD3C2BAFFE1D5D0FFD8C9C2FFFDFDFCFFFFFFFFFF9F7967FF7A472EFF9268
+      54FFCAB6ACFFFFFFFFFFCA865EFF64A8AB25B2B2B20077777700F1F1F100F1F1
+      F100F1F1F100F1F1F100FFFFFF00FFFFFF00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00CCCCCC00CCCCCC00CCCCCC00777777000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000091EDEF021D37CFFF112DCBFF0B28
+      C9FF06348BFF1FB439FF2440E8FF2642F2FF0D28D8FF0D28D9FF0D28DAFF268C
+      5CFF081F9BFF0D28D5FF0924C1FF91CACD017AC1C232D58F66FFE7C7B7FFFFFF
+      FFFFC5AEA3FFFFFCFAFFD2C0B7FFFFFFFFFFFFFFFFFFDACCC5FFBCA296FFA582
+      71FFFDFBFBFFFFFFFFFFC5835CFF7FAFB124B2B2B20077777700F1F1F100F1F1
+      F100F1F1F100F1F1F10086868600868686008686860086868600868686008686
+      8600868686008686860086868600777777000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000001731C4FF213DE0FF0B28
+      CAFF0C28CDFF27BC3FFF26A357FF2441E8FF1934DFFF0E28DDFF0E28DEFF0D27
+      DBFF041B95FF0D28D9FF062398FF00000000499EC630DE986DFFE7C8B7FFFFFF
+      FFFFC5AA9DFFFDF3ECFFD1BCB1FFFFFFFFFFFFFFFFFFDACCC5FFFEF8F5FFFEF9
+      F6FFFCFAFAFFFFFFFFFFC08059FFDEDDDC23CCCCCC00B2B2B20077777700CCCC
+      CC00CCCCCC00C0C0C000B2B2B200B2B2B200B2B2B200B2B2B200B2B2B200B2B2
+      B200B2B2B200B2B2B200B2B2B200000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000000000000609CBF6A233FE5FF0F2C
+      D0FF0C28D0FF0824C0FF38CD51FF207576FF1B36D0FF102ADBFF0E28E1FF0E28
+      E1FF0E28DFFF0E28DCFF09403ECF0000000049A0C630E7A073FFE2BBA6FFFFFF
+      FFFFA98573FFE7D1C5FFC5AC9FFFFFFFFFFFFFFFFFFFDACCC5FFFDEFE7FFDECA
+      BEFFFCFAFAFFFFFFFFFFBC7C57FFDEDDDC2300000000CCCCCC00B2B2B200B2B2
+      B200B2B2B200B2B2B20042424200000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000142EB7FD2542
+      EDFF0C28D1FF0D28D5FF0C27D2FF288476FF13418EFF1029B1FF0F28E3FF0F28
+      E4FF0E28E2FF0C25D2FF1B5D8D03000000004AA0C630EEA679FFC87D55FFCB99
+      7DFFD0B09DFFDBC9BFFFE4DCD8FFE9E7E6FFE9E9E9FFE5E4E3FFC3B6B0FFB09F
+      97FFD6D6D6FFDFDFDFFFC0805AFFDEDDDC230000000000000000CCCCCC00CCCC
+      CC00CCCCCC007777770000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000CBEDED011A34
+      CEFF2440E8FF0D28D6FF0D28DAFF0E28DEFF0E28E2FF0F28E5FF0F28E7FF0F28
+      E7FF0F28E2FF39859463000000000000000050B1DB1AF5AC7EFFC87D55FFCD82
+      59FFD1875EFFD68C62FFDA9266FFDF966AFFE39B6EFFE7A072FFB0643FFFAB65
+      41FFA65C39FF453EA1FFB27F7EFFDFDEDD220000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000F2B9DF8203BDBFF1833D7FF0E28DEFF0E28E2FF0F28E5FF0F28E8FF0923
+      BDFF815D283200000000000000000000000000000000715F53C1C9855CFFD791
+      67FFDA9469FFD99268FFD78F66FFD79066FFDB9569FFE29B6FFFAB6440FFB56F
+      4AFFCE875EFF484DD3FF86648DFFFBFBFB040000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000695C5B141C3D8DDB0F29A8FE0E26A7FE14328BE24D7B83280000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000001128A5FE14269CFE223175E755635F6BAF92
+      85799C7561ACA4806F9CF9F7F609000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000F7F7F708F8F8F80700000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000FDFDFD02F2F2F20DF4F4F40BFEFEFE01000000000000
+      0000000000000000000000000000000000000000000061C1F50040A2D90040A2
+      D9003DA2D9003BA3D9003AA4D90039A5D90039A5D90039A5D90039A5D900666D
+      6F0000000000000000000000000000000000000000000000000000000000378B
+      BA249D531EFEA15620FF683B18EE29444DA429779D47369BCC0F39A4D8010000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000050BDC10011ADB30000ABB20000ABB20016B0B60067C2C6000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000098501D08255C5B88015511F600840DFF007E0DFF014A15F03667677A656C
+      6E030000000000000000000000000000000061C1F50060BEF500ACACAC00ACAC
+      AC00ACACAC00ACACAC00ACACAC00A9A9A90081A6B70040ACDC0055C2F40039A6
+      D900000000000000000000000000000000000000000000000000ABABAB019E50
+      09FEAE5F27FFCE9E7DFFAE632FFFB06127FFB26329FFAD6127FF84481BF8373A
+      35C3DEDEDE210000000000000000000000000000000000000000000000004EC1
+      C50000B3BA0000B3BA0000B3BA0010B4BA0010B4BA0008B0B70000ABB20000AB
+      B2007AC6C900000000000000000000000000000000000000000000000000327C
+      7D5D005712FC00A30CFF00A30CFF00A30CFF00A30CFF00A30CFF00A30CFF004D
+      15F072B9BC1100000000000000000000000060BEF5005DBDF500FEFEFE00FEFE
+      FE00FEFEFE00FEFEFE00FCFCFC00E8E8E800FCFCFC008FA7B2004BB9E90039A6
+      D900000000000000000000000000000000000000000000000000FDFDFD01B05E
+      13FFAF6128FFF9E5D8FFF9E5D7FFE1BEA6FFDDB79EFFE4C2ACFFBB7B4EFFB264
+      28FF8D4E1DF7000000000000000000000000000000000000000028BCC20000C0
+      C60000C3C90011ADB3000E494A00073B3C00073B3C001A4849003FABAF0008B0
+      B70000ABB20059BFC300000000000000000000000000000000001466647D0075
+      18FF00A30CFF00A30CFF00A30CFF00A30CFFC8EBCAFF01A40EFF02A50EFF02A4
+      0EFF006310FA57BABE0700000000000000005ABFF4005AC0F400FEFEFE00FEFE
+      FE00FEFEFE00422D2600D3DEEA00D8D8D800FEFEFE00F0F0F0003DA8D6003AA6
+      D900000000000000000000000000000000000000000000000000FDFDFD01B768
+      1CFFB26329FFFAE7DBFFFAE7DAFFDBB49AFFF9E6D9FFCC9B7BFFF9E5D8FFE6C6
+      B0FFA85F24FE000000000000000000000000000000005ECED20000CBD10000D0
+      D6000085890001B1B60000CBD10000CBD10001C8CD0000B8BE00008B9000267A
+      7E000BAEB50000ABB20000000000000000000000000055BABD19007218FF00A0
+      0DFF00A30CFF00A30CFF02A50EFFC7EBC9FFFFFFFFFF53AB60FF09AA17FF08AA
+      17FF08A915FF004B2ACF000000000000000058C0F40057C1F400FCFCFC00FCFC
+      FC00FCFCFC00FCFCFC00D0EAF8006399CA00B1B5BA00D2D2D200A6A6A6003AA6
+      D700000000000000000000000000000000000000000000000000FBFBFB01BF72
+      26FFB4662BFFFAEADFFFFAE9DEFFDEBBA3FFDAB39AFFCB9B7BFFFAE7DBFFE7C8
+      B3FFAB6326FE0000000000000000000000000000000000D4D90000DCE1000096
+      9A0000E1E60000E8EC0000E8EC0000E1E60000DCE10000D0D60000C3C90000AB
+      B200227C800008B0B7000BAEB500000000000000000000522CD8057D1EFF00A3
+      0CFF01A40DFF04A711FF4BC155FFFFFFFFFFFFFFFFFFF8FBF8FF12B122FF11B1
+      22FF10B020FF0EAC1DFF0AA2A8120000000056C2F40055C2F400FCFCFC00FCFC
+      FC00FCFCFC00FCFCFC00C1E1F6003197DA002C73A000B0B4B900A5A5A5004598
+      BE00000000000000000000000000000000000000000000000000FBFBFB01C77C
+      31FFB76A2CFFFBEDE3FFFBECE2FFF6E4D8FFFAEADFFFFBEAE0FFFAEADFFFE7CA
+      B6FFAF6728FE00000000000000000000000086DCDE0000E5EA0001B1B60000E5
+      EA0001F5F90001F5F90001F5F90000F1F50000E8EC0000E1E60000D4D90000C3
+      C90000A0A4003A989C0000ABB20000000000000000000C7C21FF0E8F25FF01A4
+      0EFF06A713FF0FAD1EFFFFFFFFFFD0E5D4FF1BB72DFFFFFFFFFF19AD2CFF1CB9
+      2FFF1AB72CFF17B528FF01533CB10000000055C2F40055C2F400FAFAFA00FAFA
+      FA00FAFAFA00FAFAFA00FAFAFA004EB8F2003199DC002C76A400989DA2004598
+      BE00000000000000000000000000000000000000000000000000F9F9F901CF87
+      3DFFBA6D2EFFFCF0E8FFFCEFE7FFDAB9A3FF1716AEFFCC9F81FFFBEDE4FFE8CC
+      BAFFB36B2AFE00000000000000000000000060E7EA0028E7EB001D7C7D0023FB
+      FE0023FBFE0014FAFD000AFAFE0000F8FB0001F5F90000EEF20000E1E60000D4
+      D90000C0C600014A4D002AB8BD0083C8CB0000000000199A2FFF1AA12EFF06A7
+      13FF0BAC1AFFFBFEFBFFFEFEFEFF1AB12EFF23BE37FFFAFDFAFF8EC598FF27C2
+      3DFF25C03AFF21BD35FF108421FD0000000055C2F40055C2F400F8F8F800F8F8
+      F800F8F8F800F8F8F800F8F8F800F8F8F8004EB8F200329BDE002D78A8003495
+      C000000000000000000000000000000000000000000000000000F7F7F701D892
+      48FFBD7030FFFCF3ECFFFBF2EBFF6B5890FF8984BDFFC49981FFFCF0E8FFE8CF
+      BEFFB7702DFE0000000000000000000000006CF0F10049E0E30053EAEC005BFC
+      FE0053EAEC0069E0E2004CFBFD0023FBFE0000F8FB0000F1F50021C5CA0000DC
+      E10000CBD10000A0A40000A9AE0073C4C8000000000026AD3AFF29B53DFF0AAB
+      19FF12B122FF58CA65FF1A992FFF28C23DFF2DC745FF73DB83FFFEFFFEFF33CB
+      4CFF31C948FF2CC543FF21AF35FF0000000055C2F40055C2F400F6F6F600F6F6
+      F600F6F6F600F6F6F600F6F6F600F6F6F600F6F6F6004EB8F200329CDF003284
+      B50054595F000000000000000000000000000000000000000000F5F5F501E09C
+      53FFC07431FFFDF6F1FFFDF5F0FFFDF5EFFFFDF5EFFF2E2ED1FFFDF3EDFFE9D2
+      C2FFB9732EFE00000000000000000000000092EFF10071FCFE007DFCFE0088FC
+      FE00020303005C5C5C007FCACA0060FCFE001CFAFD0001444500343535006E98
+      990000D0D60000C0C60000B3BA0092CBCE000000000029A93BFF38CB4BFF0FAF
+      1FFF18B62AFF21BD35FF2AC440FF32CA4AFF39CF52FF3DD358FFFFFFFFFF34B6
+      4CFF3CD256FF37CE50FF29B53FFF0000000055C2F40055C4F400F4F4F400F4F4
+      F400F4F4F400F4F4F400F4F4F400F4F4F400F4F4F400F4F4F4004BB5EF00329C
+      DF003387B9006365670000000000000000000000000000000000F3F3F301E8A6
+      5DFFC37633FFFEF8F5FFFEF8F4FFDDC0ACFF756BA5FFC79D83FFFDF7F2FFE9D4
+      C6FFBD7831FE000000000000000000000000000000008DFEFF009BFDFF00A5FD
+      FE002A3D3D00020303008FDCDD0083FDFE0043FCFE00019DA100020303000072
+      750000D8DD0000C3C90000B3BA000000000000000000227241D145DE55FF1BB9
+      2CFF1DBA31FF28C23DFF31CA49FF3BD155FF42D75FFF48DB66FFE6FBEAFFBFDD
+      C4FF47DA64FF40D55CFF239A39FE0000000055C4F40056C4F400F2F2F200F2F2
+      F200F2F2F200F2F2F200F2F2F200F2F2F200F2F2F200F2F2F200C8C8C80043B4
+      F000BDCEDC0054799700555E6600000000000000000000000000F1F1F101EFB0
+      67FFC47934FFFEFBF9FFFCF9F7FF1714B1FF4D4DB7FFCDA58BFFFEF9F6FFEAD6
+      C9FFC17C33FE00000000000000000000000000000000A5FDFE00AEFEFF00B3FD
+      FE00BCFDFE00A7E3E40083BEBF0088FCFE0056FCFE0010B4BA0000E8EC0000E8
+      EC0000D8DD0000C3C90023BBC20000000000000000009DF3F20C4DEA5CFF4BE8
+      5BFF22BE36FF2DC644FF38CF51FF42D75EFF4BDE69FF52E372FF66E884FFFFFF
+      FFFF4FE06EFF48DC66FF0F6A4BAC0000000056C4F40056C4F400EFEFEF00EFEF
+      EF00EFEFEF00EFEFEF00EFEFEF00EFEFEF00EFEFEF00EFEFEF00CCCCCC003EB2
+      DB0089CBEF002585C8001B5E8F00000000000000000000000000EEEEEE01F5B7
+      6FFFC67A35FFFFFDFBFFFFFDFBFFFEFCFAFFF6EFEAFF4343C4FFFEFCFAFFEAD8
+      CCFFC47F35FE0000000000000000000000000000000000000000BCFDFE00BCFD
+      FE00BCFDFE00BCFDFE00A5FDFE0088FCFE005BFCFE002AFCFE0001F5F90000E8
+      EC0000D8DD0000C3C9000000000000000000000000000000000031794AC64BE7
+      5BFF37D049FF31C949FF3CD257FF48DB65FF51E371FF59E97BFF5EED81FFFFFF
+      FFFF36B551FF4BD969FF1B5D8E020000000056C4F40056C6F400EAEAEA00EAEA
+      EA0061616100333333003333330055555500EAEAEA00EAEAEA00D0D0D00040B5
+      DB00000000005CBAEC0000000000000000000000000000000000E9E9E901F8BC
+      75FFC97F39FFCC8540FFD0975CFFD7B38CFFE1D0BFFFC9C5D2FFF8F7F6FFEAD9
+      CDFFC68236FE0000000000000000000000000000000000000000CCEEEE00BCFD
+      FE00BCFDFE00B3FDFE00A1FDFE0083FDFE005BFCFE0034FCFE000BF1F50000E5
+      EA0000D4D900000000000000000000000000000000000000000000000000217A
+      32EE3BCF4CFF31C447FF3ED45AFF4ADD68FF54E575FF5DEC80FF64F288FF5EEB
+      81FF5AE97CFF3E92A254000000000000000056C6F40057C8F50057C8F5005EDA
+      F800423E3D00423E3D00423E3D00423E3D005DD6F7005ED9F8005FDCF90061E0
+      F900000000000000000000000000000000000000000000000000000000004D88
+      906DC58B4EFBE3A560FFE8A75DFFE19C51FFDC9546FFDD9644FFE19A45FFE49D
+      47FFA1682FF00000000000000000000000000000000000000000000000000000
+      0000BCFDFE00AEFEFF009BFDFF0083FDFE0060FCFE003DFCFE0014EDF10014DD
+      E100000000000000000000000000000000000000000000000000000000000000
+      00003C7E59B227AF3AFF1DA133FF3ECE5BFF54E474FF5CEB7FFF61F085FF3FB3
+      5CFE8660292B0000000000000000000000000000000058C9F50058CAF50056C6
+      F40072645E0072645E0072645E0072645E005EDAF80060DDF90061E1FA000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000072645E015BD0EC0C57B7CB2F5B91916CEDEC
+      EC13000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000B0F0F10092F5F6007FF2F4008AE9EB00000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000071635D0264A38F6E216E41C9247651B665BBAF445A8F8F040000
+      000000000000000000000000000000000000424D3E000000000000003E000000
+      2800000040000000200000000100010000000000000100000000000000000000
+      000000000000000000000000FFFFFF00F83F87FF00010000E00F000F00000000
+      C007000100010000800300000000000080010000000000008041000000000000
+      0061000000000000002100000000000000000000000000000000000000000000
+      80010000000100008001000081FF0000C0010000C3FF0000C0030000FFFF0000
+      F0078000FFFF0000F81FFE01FFFF0000FFFFF3FFFFFFFC3F800FE01FF81FF00F
+      000FC007E007E007000FC007C003C003000FC00780038003000FC00780018001
+      000FC00700018001000FC00700008001000FC007000080010007C00700008001
+      0003C007800180010001C007800180010001C007C003C001000BC007C007E003
+      000FE007F00FF007801FFE0FFC3FF81F}
   end
 end

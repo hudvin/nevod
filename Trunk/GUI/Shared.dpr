@@ -15,8 +15,8 @@ uses
   ComObj,
   Classes,
   JRO_TLB in '..\Shared\JRO_TLB.pas',
-  gnugettext in '..\..\..\Program Files\dxgettext\gnugettext.pas',
-  ADODB_TLB in '..\Shared\ADODB_TLB.pas';
+  ADODB_TLB in '..\Shared\ADODB_TLB.pas',
+  gnugettext in '..\Libs\gnugettext.pas';
 
 const
   CriptKey=' &(5428396%:?(__*:?:(_(%fGfhhKJHFGHD12_= ';
@@ -27,7 +27,6 @@ const
 function GetTempFile(const Extension:PChar):String;stdcall;
 var
  Buffer: array[0..MAX_PATH] of Char;
- aFile: string;
 begin
  repeat
   GetTempPath(SizeOf(Buffer) - 1, Buffer);
@@ -81,7 +80,6 @@ end;
 function GetConnectionString:String;stdcall;
 var
  DBPath:String;
- buf:PChar;
 begin
  DBPath:=GetAppDataPath+'\Nevilon Software\Nevod AntiSpam';
  Result:='Provider=Microsoft.Jet.OLEDB.4.0;'+'Data Source='+DBPath+'\messages.ndb;'+

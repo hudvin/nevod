@@ -32,11 +32,10 @@ uses
   About in 'About.pas' {FAbout},
   ADODB_TLB in '..\Shared\ADODB_TLB.pas',
   JRO_TLB in '..\Shared\JRO_TLB.pas',
-  gnugettext in '..\..\..\Program Files\dxgettext\gnugettext.pas',
   Register in 'Register.pas' {FRegister},
   RegistrationKey in 'RegistrationKey.pas' {FRegistrationKey},
-  aspr_api in '..\ASProtect\aspr_api.pas';
-
+  aspr_api in '..\ASProtect\aspr_api.pas',
+  gnugettext in '..\Libs\gnugettext.pas';
 
 {$R *.res}
 
@@ -64,7 +63,7 @@ begin
    aCon.Connected:=True;
    Con:=True;
   except
-   if MessageBoxW(Application.Handle,PWideChar(_('Ошибка загрузки')),PWideChar(_('База данных не найдена или повреждена. Заменить ?')),MB_OKCANCEL)=ID_OK then
+   if MessageBoxW(Application.Handle,PWideChar(_('База данных не найдена или повреждена. Заменить ?')),PWideChar(_('Ошибка загрузки')),MB_OKCANCEL)=ID_OK then
      RestoreDB else canExit:=True;
   end;
  if CanExit  then  Application.Terminate

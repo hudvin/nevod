@@ -65,7 +65,7 @@ begin
  if (UserKey <> nil) AND (StrLen(UserKey) > 0) then
   begin
    GetModeInformation( ModeName, ModeStatus, True );
-   leLicenseUsername.Caption:='Зарегистрирована на: '+StrPas(UserName);
+   leLicenseUsername.Caption:=_('Зарегистрирована на: ')+StrPas(UserName);
   end
   else
    begin
@@ -73,7 +73,6 @@ begin
     leLicenseUsername.Font.Color:=clRed;
     leLicenseUsername.Caption:='trial';
    end;
-
 end;
 
 procedure TFAbout.leMailClick(Sender: TObject);

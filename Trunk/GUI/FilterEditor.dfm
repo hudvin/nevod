@@ -15,6 +15,7 @@ object FCustomEditor: TFCustomEditor
   OldCreateOrder = False
   Position = poDesktopCenter
   OnClose = FormClose
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object TabControl: TcxTabControl

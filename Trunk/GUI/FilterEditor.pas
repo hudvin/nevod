@@ -26,6 +26,7 @@ type
     procedure btCancelClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure leValueKeyPress(Sender: TObject; var Key: Char);
+    procedure FormCreate(Sender: TObject);
   private
     FFilterManager:TFilterManager;
     FFiltersTable: TADOQuery;
@@ -153,11 +154,9 @@ var
  Res:TSNConvert;
  Location:TSignalLocation;
 begin
-
  FSNConverter.FindByName(cCBFilter.Properties.Items.Strings[cCBFilter.SelectedItem],Res);
  if Res.FilterType in [ftBlackWord,ftWhiteWord] then
   Location:=FSignList.LocationByDescription(cCBFilter.Properties.Items.Strings[cCBFilter.SelectedItem]);
-
  try
   if FEditorMode=emAdd
    then FFilterManager.AddElement(leValue.Text,Res.FilterType,leDescription.Text,cxCbActive.Checked,Location)
@@ -205,6 +204,11 @@ begin
    Key := #0;
    Beep;
   end;
+end;
+
+procedure TFCustomEditor.FormCreate(Sender: TObject);
+begin
+ TranslateComponent(self);
 end;
 
 end.

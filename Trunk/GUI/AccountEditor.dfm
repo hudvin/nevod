@@ -15,6 +15,7 @@ object FAccountEditor: TFAccountEditor
   OldCreateOrder = False
   Position = poMainFormCenter
   OnClose = FormClose
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object cxTab: TcxTabControl

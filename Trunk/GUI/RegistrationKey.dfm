@@ -5,7 +5,7 @@ object FRegistrationKey: TFRegistrationKey
   BorderStyle = bsSingle
   Caption = #1050#1083#1102#1095' '#1072#1082#1090#1080#1074#1072#1094#1080#1080
   ClientHeight = 125
-  ClientWidth = 255
+  ClientWidth = 275
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,7 +21,7 @@ object FRegistrationKey: TFRegistrationKey
   object cxTab: TcxTabControl
     Left = 0
     Top = 0
-    Width = 255
+    Width = 275
     Height = 125
     Align = alClient
     LookAndFeel.Kind = lfOffice11
@@ -29,12 +29,12 @@ object FRegistrationKey: TFRegistrationKey
     Options = []
     TabOrder = 0
     ClientRectBottom = 125
-    ClientRectRight = 255
+    ClientRectRight = 275
     ClientRectTop = 0
     object leUsername: TLabeledEdit
       Left = 8
       Top = 24
-      Width = 241
+      Width = 257
       Height = 21
       EditLabel.Width = 99
       EditLabel.Height = 13
@@ -44,7 +44,7 @@ object FRegistrationKey: TFRegistrationKey
     object leKey: TLabeledEdit
       Left = 8
       Top = 64
-      Width = 241
+      Width = 257
       Height = 21
       EditLabel.Width = 96
       EditLabel.Height = 13
