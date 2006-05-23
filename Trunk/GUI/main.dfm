@@ -1,11 +1,11 @@
 object FMain: TFMain
-  Left = 170
-  Top = 177
+  Left = 148
+  Top = 151
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Nevod AntiSpam'
-  ClientHeight = 444
-  ClientWidth = 770
+  ClientHeight = 386
+  ClientWidth = 758
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,8 +21,8 @@ object FMain: TFMain
   TextHeight = 13
   object stBar: TdxStatusBar
     Left = 0
-    Top = 424
-    Width = 770
+    Top = 366
+    Width = 758
     Height = 20
     Panels = <
       item
@@ -43,9 +43,9 @@ object FMain: TFMain
   end
   object SettingsTree: TcxTreeList
     Left = 0
-    Top = 23
-    Width = 145
-    Height = 401
+    Top = 19
+    Width = 153
+    Height = 347
     Align = alLeft
     Bands = <
       item
@@ -106,11 +106,11 @@ object FMain: TFMain
     end
   end
   object stPages: TcxPageControl
-    Left = 150
-    Top = 23
-    Width = 620
-    Height = 401
-    ActivePage = cxTab_Settings
+    Left = 158
+    Top = 19
+    Width = 600
+    Height = 347
+    ActivePage = cxTab_AFSettings
     Align = alClient
     DragMode = dmAutomatic
     HideTabs = True
@@ -119,8 +119,8 @@ object FMain: TFMain
     Options = []
     Style = 8
     TabOrder = 2
-    ClientRectBottom = 401
-    ClientRectRight = 620
+    ClientRectBottom = 347
+    ClientRectRight = 600
     ClientRectTop = 0
     object cxTab_Accounts: TcxTabSheet
       Caption = 'cxTab_Accounts'
@@ -128,8 +128,8 @@ object FMain: TFMain
       object cxAccountsGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 620
-        Height = 401
+        Width = 600
+        Height = 347
         Align = alClient
         BorderWidth = 2
         TabOrder = 0
@@ -209,8 +209,8 @@ object FMain: TFMain
       object cxLogGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 620
-        Height = 401
+        Width = 600
+        Height = 347
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
@@ -271,8 +271,8 @@ object FMain: TFMain
       object cxFiltersGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 620
-        Height = 401
+        Width = 600
+        Height = 347
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
@@ -336,7 +336,7 @@ object FMain: TFMain
       ImageIndex = 3
       object gbSystem: TcxGroupBox
         Left = 8
-        Top = 16
+        Top = 8
         Caption = #1057#1080#1089#1090#1077#1084#1085#1099#1077
         Style.LookAndFeel.Kind = lfOffice11
         Style.LookAndFeel.NativeStyle = True
@@ -348,7 +348,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 0
         Height = 185
-        Width = 273
+        Width = 249
         object Label1: TLabel
           Left = 224
           Top = 84
@@ -410,6 +410,14 @@ object FMain: TFMain
           Top = 80
           Properties.MinValue = 1.000000000000000000
           Properties.OnValidate = seCheckIntervalPropertiesValidate
+          Style.LookAndFeel.Kind = lfOffice11
+          Style.LookAndFeel.NativeStyle = False
+          StyleDisabled.LookAndFeel.Kind = lfOffice11
+          StyleDisabled.LookAndFeel.NativeStyle = False
+          StyleFocused.LookAndFeel.Kind = lfOffice11
+          StyleFocused.LookAndFeel.NativeStyle = False
+          StyleHot.LookAndFeel.Kind = lfOffice11
+          StyleHot.LookAndFeel.NativeStyle = False
           TabOrder = 3
           Value = 1
           OnExit = seCheckIntervalExit
@@ -447,8 +455,8 @@ object FMain: TFMain
         end
       end
       object gbNag: TcxGroupBox
-        Left = 288
-        Top = 16
+        Left = 264
+        Top = 8
         Caption = #1059#1074#1077#1076#1086#1084#1083#1077#1085#1080#1103
         Style.LookAndFeel.Kind = lfOffice11
         Style.LookAndFeel.NativeStyle = True
@@ -460,7 +468,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 1
         Height = 185
-        Width = 337
+        Width = 329
         object cbBallonOnReceive: TcxCheckBox
           Left = 8
           Top = 16
@@ -478,15 +486,16 @@ object FMain: TFMain
           Width = 225
         end
         object beSoundOnNew: TcxButtonEdit
-          Left = 201
-          Top = 40
+          Left = 184
+          Top = 64
           Properties.Buttons = <
             item
+              Caption = 'Browse'
               Default = True
-              Kind = bkEllipsis
+              Kind = bkText
             end
             item
-              Kind = bkGlyph
+              Kind = bkText
             end>
           Properties.OnButtonClick = cxButtonEdit1PropertiesButtonClick
           Style.LookAndFeel.Kind = lfOffice11
@@ -498,11 +507,11 @@ object FMain: TFMain
           StyleHot.LookAndFeel.Kind = lfOffice11
           StyleHot.LookAndFeel.NativeStyle = True
           TabOrder = 1
-          Width = 96
+          Width = 137
         end
         object cbSoundOnReceive: TcxCheckBox
           Left = 8
-          Top = 40
+          Top = 64
           Caption = #1047#1074#1091#1082' '#1087#1088#1080' '#1087#1086#1083#1091#1095#1077#1085#1080#1080' '#1085#1086#1074#1086#1081' '#1087#1086#1095#1090#1099
           Properties.OnChange = cbSoundOnReceivePropertiesChange
           Style.LookAndFeel.Kind = lfOffice11
@@ -514,11 +523,11 @@ object FMain: TFMain
           StyleHot.LookAndFeel.Kind = lfOffice11
           StyleHot.LookAndFeel.NativeStyle = True
           TabOrder = 2
-          Width = 193
+          Width = 169
         end
         object cbBaloonOnError: TcxCheckBox
           Left = 8
-          Top = 64
+          Top = 40
           Caption = #1057#1086#1086#1073#1097#1077#1085#1080#1077' '#1087#1088#1080' '#1086#1096#1080#1073#1082#1077
           Properties.OnChange = cbBaloonOnErrorPropertiesChange
           Style.LookAndFeel.Kind = lfOffice11
@@ -570,7 +579,7 @@ object FMain: TFMain
           StyleHot.LookAndFeel.Kind = lfOffice11
           StyleHot.LookAndFeel.NativeStyle = True
           TabOrder = 5
-          Width = 129
+          Width = 137
         end
         object cbSoundOnAdd: TcxCheckBox
           Left = 8
@@ -610,12 +619,12 @@ object FMain: TFMain
           StyleHot.LookAndFeel.Kind = lfOffice11
           StyleHot.LookAndFeel.NativeStyle = True
           TabOrder = 7
-          Width = 129
+          Width = 137
         end
       end
       object gbSpy: TcxGroupBox
         Left = 8
-        Top = 208
+        Top = 200
         Caption = #1057#1083#1077#1078#1077#1085#1080#1077' '#1079#1072' '#1073#1091#1092#1077#1088#1086#1084' '#1086#1073#1084#1077#1085#1072
         Style.LookAndFeel.Kind = lfOffice11
         Style.LookAndFeel.NativeStyle = False
@@ -626,8 +635,8 @@ object FMain: TFMain
         StyleHot.LookAndFeel.Kind = lfOffice11
         StyleHot.LookAndFeel.NativeStyle = False
         TabOrder = 2
-        Height = 185
-        Width = 273
+        Height = 137
+        Width = 249
         object leSpyFor: TLabel
           Left = 8
           Top = 88
@@ -676,7 +685,7 @@ object FMain: TFMain
           StyleHot.LookAndFeel.NativeStyle = False
           TabOrder = 1
           Text = 'EMail '#1080' URL'
-          Width = 121
+          Width = 97
         end
         object cmAddTo: TcxComboBox
           Left = 144
@@ -691,7 +700,7 @@ object FMain: TFMain
           StyleHot.LookAndFeel.Kind = lfOffice11
           TabOrder = 2
           Text = #1073#1077#1083#1099#1081' '#1089#1087#1080#1089#1086#1082
-          Width = 121
+          Width = 97
         end
         object cbShowEditor: TcxCheckBox
           Left = 8
@@ -710,16 +719,16 @@ object FMain: TFMain
         end
       end
       object gbHotKeys: TcxGroupBox
-        Left = 288
-        Top = 208
+        Left = 264
+        Top = 200
         Caption = #1043#1086#1088#1103#1095#1080#1077' '#1082#1083#1072#1074#1080#1096#1080
         Style.LookAndFeel.Kind = lfOffice11
         StyleDisabled.LookAndFeel.Kind = lfOffice11
         StyleFocused.LookAndFeel.Kind = lfOffice11
         StyleHot.LookAndFeel.Kind = lfOffice11
         TabOrder = 3
-        Height = 185
-        Width = 337
+        Height = 137
+        Width = 329
         object leAddHotKey: TLabel
           Left = 8
           Top = 24
@@ -749,7 +758,7 @@ object FMain: TFMain
           Caption = #1047#1072#1087#1091#1089#1090#1080#1090#1100' '#1087#1086#1095#1090#1086#1074#1099#1081' '#1082#1083#1080#1077#1085#1090
         end
         object JvAddHotKey: TJvHotKey
-          Left = 152
+          Left = 144
           Top = 22
           Width = 97
           Height = 19
@@ -759,7 +768,7 @@ object FMain: TFMain
           ParentColor = False
         end
         object btAddHotKey: TButton
-          Left = 256
+          Left = 248
           Top = 20
           Width = 75
           Height = 22
@@ -768,7 +777,7 @@ object FMain: TFMain
           OnClick = btAddHotKeyClick
         end
         object jvShowMainWindow: TJvHotKey
-          Left = 152
+          Left = 144
           Top = 48
           Width = 97
           Height = 19
@@ -778,7 +787,7 @@ object FMain: TFMain
           ParentColor = False
         end
         object JvCheckAllAccounts: TJvHotKey
-          Left = 152
+          Left = 144
           Top = 72
           Width = 97
           Height = 19
@@ -788,7 +797,7 @@ object FMain: TFMain
           ParentColor = False
         end
         object JvRunMailClient: TJvHotKey
-          Left = 152
+          Left = 144
           Top = 96
           Width = 97
           Height = 19
@@ -798,7 +807,7 @@ object FMain: TFMain
           ParentColor = False
         end
         object btShowMainWindow: TButton
-          Left = 256
+          Left = 248
           Top = 47
           Width = 75
           Height = 21
@@ -807,7 +816,7 @@ object FMain: TFMain
           OnClick = btShowMainWindowClick
         end
         object btCheckAllAccounts: TButton
-          Left = 256
+          Left = 248
           Top = 72
           Width = 75
           Height = 22
@@ -816,7 +825,7 @@ object FMain: TFMain
           OnClick = btCheckAllAccountsClick
         end
         object btRunMailClient: TButton
-          Left = 256
+          Left = 248
           Top = 96
           Width = 75
           Height = 22
@@ -857,7 +866,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = False
         TabOrder = 0
         Height = 49
-        Width = 609
+        Width = 577
       end
       object cbStamp: TcxCheckBox
         Left = 8
@@ -894,7 +903,7 @@ object FMain: TFMain
         Width = 121
       end
       object cxStampDescription: TcxMemo
-        Left = 11
+        Left = 16
         Top = 112
         Enabled = False
         Lines.Strings = (
@@ -922,7 +931,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 3
         Height = 49
-        Width = 606
+        Width = 569
       end
       object cbWhiteSender: TcxCheckBox
         Left = 8
@@ -942,7 +951,7 @@ object FMain: TFMain
         Width = 121
       end
       object cxSenderDescription: TcxMemo
-        Left = 11
+        Left = 16
         Top = 192
         Enabled = False
         Lines.Strings = (
@@ -966,7 +975,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 5
         Height = 49
-        Width = 606
+        Width = 569
       end
       object cbWhiteAttach: TcxCheckBox
         Left = 8
@@ -986,7 +995,7 @@ object FMain: TFMain
         Width = 209
       end
       object cxWhiteAttachDescription: TcxMemo
-        Left = 11
+        Left = 16
         Top = 272
         Enabled = False
         Lines.Strings = (
@@ -1010,7 +1019,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 7
         Height = 49
-        Width = 606
+        Width = 569
       end
     end
     object cxTab_DFSettings: TcxTabSheet
@@ -1034,13 +1043,14 @@ object FMain: TFMain
         Width = 121
       end
       object cxBlackWordDescription: TcxMemo
-        Left = 11
+        Left = 8
         Top = 32
         Enabled = False
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090' '#1087#1088#1080' '#1086#1073#1085#1072#1088#1091#1078#1077#1085#1080#1080' '#1074' '#1089#1086#1086#1073#1097#1077#1085#1080#1080' ('#1074' '#1090#1077#1084#1077', '#1074 +
-            ' '#1090#1077#1082#1089#1090#1077','#1083#1080#1073#1086' '#1080' '#1090#1072#1084', '#1080' '#1090#1072#1084') '#1086#1087#1088#1077#1076#1077#1083#1077#1085#1085#1086#1075#1086' '
+            ' '#1090#1077#1082#1089#1090#1077','#1083#1080#1073#1086' '#1080' '#1090#1072#1084', '#1080' '#1090#1072#1084') '
+          #1086#1087#1088#1077#1076#1077#1083#1077#1085#1085#1086#1075#1086' '
           #1089#1083#1086#1074#1072'. '#1042' '#1089#1083#1086#1074#1077' '#1084#1086#1078#1085#1086' '#1080#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1089#1080#1084#1074#1086#1083#1099'-'#1079#1072#1084#1077#1085#1080#1090#1077#1083#1080' * '#1080' ?')
         Properties.HideSelection = False
         Properties.ReadOnly = True
@@ -1059,7 +1069,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 1
         Height = 33
-        Width = 614
+        Width = 577
       end
       object cbBlackSender: TcxCheckBox
         Left = 8
@@ -1079,7 +1089,7 @@ object FMain: TFMain
         Width = 121
       end
       object cxBlackSenderDescription: TcxMemo
-        Left = 11
+        Left = 8
         Top = 88
         Enabled = False
         Lines.Strings = (
@@ -1103,7 +1113,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 3
         Height = 33
-        Width = 614
+        Width = 577
       end
       object cbBlackAttach: TcxCheckBox
         Left = 8
@@ -1123,8 +1133,8 @@ object FMain: TFMain
         Width = 209
       end
       object cxBlackAttachDescription: TcxMemo
-        Left = 11
-        Top = 144
+        Left = 8
+        Top = 152
         Enabled = False
         Lines.Strings = (
           
@@ -1148,7 +1158,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 5
         Height = 25
-        Width = 614
+        Width = 577
       end
       object cxSpinLinks: TcxSpinEdit
         Left = 296
@@ -1187,7 +1197,7 @@ object FMain: TFMain
         Width = 281
       end
       object cxMaxLinksDescription: TcxMemo
-        Left = 11
+        Left = 8
         Top = 200
         Enabled = False
         Lines.Strings = (
@@ -1211,7 +1221,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 8
         Height = 25
-        Width = 614
+        Width = 577
       end
       object cbMaxImages: TcxCheckBox
         Left = 8
@@ -1246,7 +1256,7 @@ object FMain: TFMain
         Width = 121
       end
       object cxMaxImagesDescription: TcxMemo
-        Left = 11
+        Left = 8
         Top = 256
         Enabled = False
         Lines.Strings = (
@@ -1270,70 +1280,11 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 11
         Height = 25
-        Width = 614
-      end
-      object cbMaxSpamWords: TcxCheckBox
-        Left = 8
-        Top = 288
-        Caption = #1052#1072#1082#1089#1080#1084#1072#1083#1100#1085#1086#1077' '#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1089#1087#1072#1084'-'#1089#1083#1086#1074
-        Properties.OnChange = cbMaxSpamWordsPropertiesChange
-        Style.LookAndFeel.Kind = lfOffice11
-        Style.LookAndFeel.NativeStyle = False
-        StyleDisabled.LookAndFeel.Kind = lfOffice11
-        StyleDisabled.LookAndFeel.NativeStyle = False
-        StyleFocused.LookAndFeel.Kind = lfOffice11
-        StyleFocused.LookAndFeel.NativeStyle = False
-        StyleHot.LookAndFeel.Kind = lfOffice11
-        StyleHot.LookAndFeel.NativeStyle = False
-        TabOrder = 12
-        Transparent = True
-        Width = 281
-      end
-      object cxSpinSpamWords: TcxSpinEdit
-        Left = 296
-        Top = 288
-        Properties.MaxValue = 42.000000000000000000
-        Properties.MinValue = 1.000000000000000000
-        Properties.OnValidate = cxSpinSpamWordsPropertiesValidate
-        Style.LookAndFeel.Kind = lfOffice11
-        StyleDisabled.LookAndFeel.Kind = lfOffice11
-        StyleFocused.LookAndFeel.Kind = lfOffice11
-        StyleHot.LookAndFeel.Kind = lfOffice11
-        TabOrder = 13
-        Value = 1
-        OnExit = cxSpinSpamWordsExit
-        Width = 121
-      end
-      object cxMaxSpamWords: TcxMemo
-        Left = 11
-        Top = 312
-        Enabled = False
-        Lines.Strings = (
-          
-            #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090','#1077#1089#1083#1080' '#1074' '#1089#1086#1086#1073#1097#1077#1085#1080#1080' '#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1089#1087#1072#1084'-'#1089#1083#1086#1074' ' +
-            #1087#1088#1077#1074#1099#1096#1072#1077#1090' '#1084#1072#1082#1089#1080#1084#1072#1083#1100#1085#1086#1077' '#1079#1085#1072#1095#1077#1085#1080#1077)
-        Properties.HideSelection = False
-        Properties.ReadOnly = True
-        Style.BorderStyle = ebsNone
-        Style.Color = clInfoBk
-        Style.LookAndFeel.Kind = lfStandard
-        Style.LookAndFeel.NativeStyle = True
-        Style.Shadow = True
-        StyleDisabled.Color = clInfoBk
-        StyleDisabled.LookAndFeel.Kind = lfStandard
-        StyleDisabled.LookAndFeel.NativeStyle = True
-        StyleDisabled.TextColor = clBlack
-        StyleFocused.LookAndFeel.Kind = lfStandard
-        StyleFocused.LookAndFeel.NativeStyle = True
-        StyleHot.LookAndFeel.Kind = lfStandard
-        StyleHot.LookAndFeel.NativeStyle = True
-        TabOrder = 14
-        Height = 25
-        Width = 614
+        Width = 577
       end
       object cbMaxSize: TcxCheckBox
         Left = 8
-        Top = 344
+        Top = 288
         Caption = #1052#1072#1082#1089#1080#1084#1072#1083#1100#1085#1099#1081' '#1088#1072#1079#1084#1077#1088' '#1089#1086#1086#1073#1096#1077#1085#1080#1103','#1082#1073
         Properties.OnChange = cbMaxSizePropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
@@ -1344,13 +1295,13 @@ object FMain: TFMain
         StyleFocused.LookAndFeel.NativeStyle = False
         StyleHot.LookAndFeel.Kind = lfOffice11
         StyleHot.LookAndFeel.NativeStyle = False
-        TabOrder = 15
+        TabOrder = 12
         Transparent = True
         Width = 249
       end
       object cxSpinMaxSize: TcxSpinEdit
         Left = 296
-        Top = 344
+        Top = 288
         Properties.MaxValue = 1000.000000000000000000
         Properties.MinValue = 1.000000000000000000
         Properties.OnValidate = cxSpinMaxSizePropertiesValidate
@@ -1358,14 +1309,14 @@ object FMain: TFMain
         StyleDisabled.LookAndFeel.Kind = lfOffice11
         StyleFocused.LookAndFeel.Kind = lfOffice11
         StyleHot.LookAndFeel.Kind = lfOffice11
-        TabOrder = 16
+        TabOrder = 13
         Value = 1
         OnExit = cxSpinMaxSizeExit
         Width = 121
       end
       object cxMaxSizeDescription: TcxMemo
-        Left = 11
-        Top = 368
+        Left = 8
+        Top = 312
         Enabled = False
         Lines.Strings = (
           
@@ -1386,17 +1337,17 @@ object FMain: TFMain
         StyleFocused.LookAndFeel.NativeStyle = True
         StyleHot.LookAndFeel.Kind = lfStandard
         StyleHot.LookAndFeel.NativeStyle = True
-        TabOrder = 17
+        TabOrder = 14
         Height = 25
-        Width = 614
+        Width = 577
       end
     end
   end
   object cxSplitter1: TcxSplitter
-    Left = 145
-    Top = 23
+    Left = 153
+    Top = 19
     Width = 5
-    Height = 401
+    Height = 347
     AutoSnap = True
     ResizeUpdate = True
     Control = SettingsTree
@@ -5588,6 +5539,7 @@ object FMain: TFMain
       item
         AllowCustomizing = False
         AllowQuickCustomizing = False
+        BorderStyle = bbsNone
         Caption = 'Main Menu'
         DockedDockingStyle = dsTop
         DockedLeft = 0
@@ -5659,12 +5611,12 @@ object FMain: TFMain
     PopupMenuLinks = <>
     Style = bmsOffice11
     UseSystemFont = True
-    Left = 595
-    Top = 86
+    Left = 571
+    Top = 342
     DockControlHeights = (
       0
       0
-      23
+      19
       0)
     object msAccounts: TdxBarSubItem
       Caption = #1059#1095#1077#1090#1085#1099#1077' '#1079#1072#1087#1080#1089#1080
@@ -6239,13 +6191,13 @@ object FMain: TFMain
   end
   object selSound: TOpenDialog
     Filter = 'Sounds|*.wav'
-    Left = 641
-    Top = 83
+    Left = 489
+    Top = 339
   end
   object sdLog: TSaveDialog
     Filter = 'Text files|*.txt'
-    Left = 697
-    Top = 75
+    Left = 449
+    Top = 339
   end
   object pLog: TdxBarPopupMenu
     BarManager = dxBar
@@ -6264,8 +6216,8 @@ object FMain: TFMain
       end>
     UseOwnFont = False
     OnPopup = alOnLogPopUpExecute
-    Left = 625
-    Top = 83
+    Left = 529
+    Top = 347
   end
   object cxStyleRepository1: TcxStyleRepository
     Top = 40
@@ -6367,27 +6319,21 @@ object FMain: TFMain
     HotKey = 0
     OnHotKey = alShowMainWindowExecute
     OnHotKeyRegisterFailed = JvAppShowMainWindowHotKeyRegisterFailed
-    Left = 673
-    Top = 279
+    Left = 665
+    Top = 295
   end
   object JvAppCheckAllAccounts: TJvApplicationHotKey
     HotKey = 0
     OnHotKey = JvAppCheckAllAccountsHotKey
     OnHotKeyRegisterFailed = JvAppCheckAllAccountsHotKeyRegisterFailed
-    Left = 673
-    Top = 303
+    Left = 689
+    Top = 279
   end
   object jvAppRunMailClient: TJvApplicationHotKey
     HotKey = 0
     OnHotKey = jvAppRunMailClientHotKey
     OnHotKeyRegisterFailed = jvAppRunMailClientHotKeyRegisterFailed
-    Left = 673
-    Top = 335
-  end
-  object IdIPWatch1: TIdIPWatch
-    Active = True
-    HistoryFilename = 'c:\iphist.dat'
-    Left = 342
-    Top = 71
+    Left = 681
+    Top = 279
   end
 end

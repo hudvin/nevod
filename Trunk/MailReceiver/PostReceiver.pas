@@ -195,7 +195,7 @@ begin
                   POP3Client.Retrieve(i,RecMessage);
                   MessSize:=POP3Client.RetrieveMsgSize(i);
                   inc(rec);
-                //  POP3Client.Delete(i);
+                  POP3Client.Delete(i);
                   AddToOldMessagesId(RecMessage);
                   SaveMessage(RecMessage,MessSize);
                  end
@@ -225,7 +225,13 @@ begin
       begin
        FSuccessFul:=False;
        FLogMessage:=_('Неправильные  параметры аккаунта');
-      end;
+      end
+      else
+       begin
+        FSuccessFul:=False;
+        FLogMessage:=_('Произошел обрыв соединения ');
+       end;
+
       // обрабатывать исключение при обрыве - таймаут
       { else             
        ShowMessage(E.); }

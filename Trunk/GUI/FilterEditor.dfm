@@ -63,6 +63,7 @@ object FCustomEditor: TFCustomEditor
       Left = 8
       Top = 104
       Caption = #1040#1082#1090#1080#1074#1077#1085' '
+      State = cbsChecked
       Style.LookAndFeel.Kind = lfOffice11
       Style.LookAndFeel.NativeStyle = False
       StyleDisabled.LookAndFeel.Kind = lfOffice11

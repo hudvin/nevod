@@ -148,9 +148,6 @@ type
     cbMaxImages: TcxCheckBox;
     cxSpinImages: TcxSpinEdit;
     cxMaxImagesDescription: TcxMemo;
-    cbMaxSpamWords: TcxCheckBox;
-    cxSpinSpamWords: TcxSpinEdit;
-    cxMaxSpamWords: TcxMemo;
     cbMaxSize: TcxCheckBox;
     cxSpinMaxSize: TcxSpinEdit;
     cxMaxSizeDescription: TcxMemo;
@@ -294,7 +291,6 @@ type
     cxSplitter1: TcxSplitter;
     alRegister: TAction;
     msRegister: TdxBarButton;
-    IdIPWatch1: TIdIPWatch;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -334,11 +330,9 @@ type
     procedure cbBlackAttachPropertiesChange(Sender: TObject);
     procedure cbMaxLinksPropertiesChange(Sender: TObject);
     procedure cbMaxImagesPropertiesChange(Sender: TObject);
-    procedure cbMaxSpamWordsPropertiesChange(Sender: TObject);
     procedure cbMaxSizePropertiesChange(Sender: TObject);
     procedure cxSpinLinksExit(Sender: TObject);
     procedure cxSpinImagesExit(Sender: TObject);
-    procedure cxSpinSpamWordsExit(Sender: TObject);
     procedure cxSpinMaxSizeExit(Sender: TObject);
     procedure cxSpinLinksPropertiesValidate(Sender: TObject;
       var DisplayValue: Variant; var ErrorText: TCaption;
@@ -502,9 +496,7 @@ end;
 
 procedure TFMain.ShowEditor(var AMessage: TMessage);
 begin
-// SetLastError(0);
  FEditor.Show;
-// Showmessage(SysErrorMessage(GetLastError));
 end;
 
 
@@ -660,7 +652,7 @@ begin
    POP3Server:=TPOPServer.Create(adCon,AccountManager);
    TmAppl:=False;
    if not POP3Server.LoadParams then
-     if MessageBox(Handle,PChar(' Стандартный порт фильтра занят. Хотите сменить порт ? '),PChar(_(' Ошибка запуска сервера ')),MB_OKCANCEL)=IDOK then
+     if MessageBoxW(Handle,PWideChar(_(' Стандартный порт фильтра занят. Хотите сменить порт ? ')),PWideChar(_(' Ошибка запуска сервера ')),MB_OKCANCEL)=IDOK then
       begin
        while (not POP3Server.LoadParams) and (not TmAppl) do
         begin
@@ -702,11 +694,9 @@ begin
    cbBlackAttach.Checked:=FilterState[ftBlackAttach];
    cbMaxLinks.Checked:=FilterState[ftLinkFilter];
    cbMaxSize.Checked:=FilterState[ftMessSize];
-   cbMaxSpamWords.Checked:=FilterState[ftSpamWord];
 
    cxSpinLinks.Value:=StrToInt(SProvider.GetValue('MaxLinks'));
    cxSpinImages.Value:=StrToInt(SProvider.GetValue('MaxImg'));
-   cxSpinSpamWords.Value:=StrToInt(SProvider.GetValue('MaxSpamWords'));
    cxSpinMaxSize.Value:=StrToInt(SProvider.GetValue('MaxSize'))/1000;
 
    lbServerPort.Text:=SProvider.GetValue('ServerPort');
@@ -783,7 +773,7 @@ begin
    adLog.Active:=True;
 end;
 
-function KillTask(FileName: string): integer; //0 - пpибить не полyчилось
+procedure KillTask(FileName: string);
 var
   ContinueLoop: BOOL;
   FSnapshotHandle: THandle;
@@ -801,13 +791,25 @@ begin
       ((UpperCase(ExtractFileName(FProcessEntry32.szExeFile)) =
       UpperCase(FileName))
       or (UpperCase(FProcessEntry32.szExeFile) = UpperCase(FileName))) then
-      Result := Integer(TerminateProcess(OpenProcess(PROCESS_TERMINATE, BOOL(0),
-
-        FProcessEntry32.th32ProcessID), 0));
     ContinueLoop := Process32Next(FSnapshotHandle, FProcessEntry32);
   end;
   CloseHandle(FSnapshotHandle);
 end;
+
+
+procedure KillProgram(handle:HWND);
+const
+  PROCESS_TERMINATE = $0001;
+var
+  ProcessHandle : THandle;
+  ProcessID: Integer;
+  TheWindow : HWND;
+begin
+  GetWindowThreadProcessID(Handle, @ProcessID);
+  ProcessHandle := OpenProcess(PROCESS_TERMINATE, FALSE, ProcessId);
+  TerminateProcess(ProcessHandle,4);
+end;
+
 
 procedure TFMain.FormDestroy(Sender: TObject);
 var i:integer;
@@ -826,9 +828,8 @@ begin
  Exp.Free;
  SProvider.Free;
  adProc.Free;
- CloseHandle(Mutex);
+ CloseHandle(Mutex);  KillProgram(Handle);
  if POP3Server<>nil then POP3Server.Free;
- KillTask(Application.ExeName);
 end;
 
 
@@ -1060,7 +1061,7 @@ var
  AccountId:integer;
 begin
  AccountId:= cxAccounts.Controller.SelectedRows[0].Values[cxAccountsid.Index];
- if Application.MessageBox(PChar(_('Вы действительно хотите удалить учетную запись')),PChar(_('Удаление учетной записи')),MB_OKCANCEL)=IDOK then
+ if MessageBoxW(Handle,PWideChar(_('Вы действительно хотите удалить учетную запись')),PWideChar(_('Удаление учетной записи')),MB_OKCANCEL)=IDOK then
   begin
    ThreadManager.StopThread(AccountId);
    AccountManager.DeleteAccount([AccountId]);
@@ -1272,11 +1273,6 @@ begin
  FilterState[ftImageFilter]:=cbMaxImages.Checked;
 end;
 
-procedure TFMain.cbMaxSpamWordsPropertiesChange(Sender: TObject);
-begin
- FilterState[ftSpamWord]:=cbMaxSpamWords.Checked;
-end;
-
 procedure TFMain.cbMaxSizePropertiesChange(Sender: TObject);
 begin
  FilterState[ftMessSize]:=cbMaxSize.Checked;
@@ -1290,11 +1286,6 @@ end;
 procedure TFMain.cxSpinImagesExit(Sender: TObject);
 begin
  SProvider.SetValue('MaxLinks',IntToStr(cxSpinImages.Value));
-end;
-
-procedure TFMain.cxSpinSpamWordsExit(Sender: TObject);
-begin
- SProvider.SetValue('MaxLinks',IntToStr(cxSpinSpamWords.Value));
 end;
 
 procedure TFMain.cxSpinMaxSizeExit(Sender: TObject);
@@ -1340,7 +1331,7 @@ var
  i:integer;
 begin
  SelCount:=cxFilters.Controller.SelectedRowCount;
- if (SelCount>0) and ( Application.MessageBox(PChar(_(' Вы дейтсвительно хотите удалить фильтры ?')),PChar(_('Удаление фильтров')),MB_OKCANCEL)=IDOK) then
+ if (SelCount>0) and ( MessageBoxW(Handle,PWideChar(_(' Вы дейтсвительно хотите удалить фильтры ?')),PWideChar(_('Удаление фильтров')),MB_OKCANCEL)=IDOK) then
   begin
    SetLength(ElementsId,SelCount);
    for I:=0 to SelCount - 1 do
@@ -1463,13 +1454,11 @@ end;
 
 procedure TFMain.lbServerPortExit(Sender: TObject);
 begin
- SProvider.SetValue('ServerPort',lbServerPort.Text);
- if MessageBox(Handle,'Для того, чтобы изменения вступили в силу, неотходимо перезапустить приложение !\n'+
-  'Произвести перезапуск ?','Предупреждение',MB_OKCANCEL )=IDOK then
+ if StrToInt(SProvider.GetValue('ServerPort'))<>StrToInt(lbServerPort.Text) then
   begin
-  WinExec(PChar(Application.ExeName), SW_SHOW); // Or better use the CreateProcess function
- // Close;
-  end;
+  SProvider.SetValue('ServerPort',lbServerPort.Text);
+  ShowMessage('Изменения встпупят в силу при следующем запуске программы');
+ end;
 end;
 
 procedure TFMain.seCheckIntervalPropertiesValidate(Sender: TObject;
@@ -1804,13 +1793,13 @@ end;
 
 procedure TFMain.alRestoreFromBackUpExecute(Sender: TObject);
 begin
- if MessageBox(Handle,PChar(_('Приложение будет завершено')),PChar(_('Сообщение')),MB_OKCANCEL)=IDOK then
+ if MessageBoxW(Handle,PWideChar(_('Приложение будет завершено')),PWideChar(_('Сообщение')),MB_OKCANCEL)=IDOK then
   WinExec(PChar('NevodBackup.exe -rb'),SW_SHOWNORMAL);
 end;
 
 procedure TFMain.alSaveToBackUpExecute(Sender: TObject);
 begin
- if MessageBox(Handle,PChar(_('Приложение будет завершено')),PChar(_('Сообщение')),MB_OKCANCEL)=IDOK then
+ if MessageBoxW(Handle,PWideChar(_('Приложение будет завершено')),PWideChar(_('Сообщение')),MB_OKCANCEL)=IDOK then
   WinExec(PChar('NevodBackup.exe -sb'),SW_SHOWNORMAL);
 end;
 
@@ -1970,12 +1959,11 @@ end;
 
 procedure TFMain.alRegisterExecute(Sender: TObject);
 var
- ModeStatus : TModeStatus;
  RegistrationKey:TFRegistrationKey;
 begin
  GetRegistrationInformation(UserKey,UserName );
  if ((UserKey <> nil) AND (StrLen(UserKey) > 0)) then
-   MessageBox(Handle, 'Программа зарегистрирована', 'Регистрация', MB_ICONINFORMATION)
+   MessageBoxW(Handle, PWideChar(_('Программа зарегистрирована')), PWideChar(_('Регистрация')), MB_ICONINFORMATION)
   else
    begin
      RegistrationKey:=TFRegistrationKey.Create(nil);

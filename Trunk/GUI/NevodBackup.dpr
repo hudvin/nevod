@@ -9,7 +9,7 @@ uses
   ZLib,
   Dialogs,
   gnugettext in '..\..\..\Program Files\dxgettext\gnugettext.pas';
-
+{$R ..\Resources\WinXP.res}
 type
   TCompressor = class
   public
@@ -17,13 +17,13 @@ type
     procedure DecompressStream(InputStream, OutputStream: TStream);
   end;
 
-function md5(InputString:ShortString): ShortString; external 'Shared.DLL';
-function DBPassword:ShortString;external 'Shared.DLL';
+function md5(InputString:PChar):PChar; external 'Shared.DLL';
+function DBPassword:PChar;external 'Shared.DLL';
 function GetAppDataPath: PChar;external 'Shared.DLL';
 function GetConnectionString: PChar; external 'Shared.DLL';
-function GetTempFile(const Extension: ShortString):PChar;external 'Shared.DLL';
+function GetTempFile(const Extension: PChar):PChar;external 'Shared.DLL';
 function GetAppHandle():DWORD;external 'Shared.DLL';
-function DatabaseCompact(const sdbName: WideString;Password:ShortString): boolean;external 'Shared.DLL';
+function DatabaseCompact: boolean;external 'Shared.DLL';
 function GetAppPath:PChar;external 'Shared.DLL';
 function IsNormal(DBPath:PChar): Boolean;external 'Shared.DLL';
 
@@ -51,9 +51,9 @@ begin
 
  if not CanExit then
    try
-    DatabaseCompact(DBPath,DBPassword);
+    DatabaseCompact;
    except
-    if MessageBox(GetStdHandle(STD_INPUT_HANDLE),PChar(_('Невозможно сжать базу')),PChar(_('Ошибка сжатия')),MB_OKCANCEL)=IDCancel
+    if MessageBoxW(GetStdHandle(STD_INPUT_HANDLE),PWideChar(_('Невозможно сжать базу')),PWideChar(_('Ошибка сжатия')),MB_OKCANCEL)=IDCancel
      then Exit;
    end;
 
@@ -115,7 +115,7 @@ begin
         end;
 
        if  FileExists(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb') then
-         if MessageBox(GetStdHandle(STD_INPUT_HANDLE),PChar(_('Текущая база данных будет удалена')),PChar(_('Сообшение')),MB_OKCANCEL)=IDCancel
+         if MessageBoxW(GetStdHandle(STD_INPUT_HANDLE),PWideChar(_('Текущая база данных будет удалена')),PWideChar(_('Сообшение')),MB_OKCANCEL)=IDCancel
           then  DeleteFile(PChar(DBPath));
        if not FileExists(GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb')and (FileExists(PChar(tmpFileName))) then
         begin
@@ -123,10 +123,11 @@ begin
          DeleteFile(PChar(tmpFileName));
         end;
       except
-       on e:Exception do
-          ShowMessage(E.Message);
+      // on e:Exception do
+       //   ShowMessage(E.Message);
       end;
     end;
+  selFile.Free;
 end;
 
 {
@@ -178,28 +179,27 @@ end;
 var
  IsRunning:boolean;
 begin
+ IsRunning:=False;
  if ParamCount>0 then
   begin
-    IsRunning:=False;
-    if ParamStr(1)='-rb' then
+   if ParamStr(1)='-rb' then
      begin
       if PostMessage(GetAppHandle,WM_QUIT, 0, 0) then
        begin
-       sleep(300);
-       IsRunning:=True;
+        IsRunning:=True;
        end;
       RestoreFromBackUp;
       if IsRunning then WinExec(PChar(GetAppPath),SW_SHOWNORMAL);
      end;
-    if ParamStr(1)='-sb' then
-     begin
+
+   if ParamStr(1)='-sb' then
+    begin
       if PostMessage(GetAppHandle,WM_QUIT, 0, 0) then
        begin
-       sleep(300);
-       IsRunning:=True;
+        IsRunning:=True;
        end;
-      CreateBackUp;
+       CreateBackUp;
       if IsRunning then WinExec(PChar(GetAppPath),SW_SHOWNORMAL);
-     end;
+    end;
   end;
 end.

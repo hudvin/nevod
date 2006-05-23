@@ -14,6 +14,7 @@ uses
   ComObj,
   Classes,
   JRO_TLB in '..\Shared\JRO_TLB.pas',
+   gnugettext in 'C:\Program Files\dxgettext\gnugettext.pas',
   ADODB_TLB in '..\Shared\ADODB_TLB.pas';
 
 const
@@ -22,7 +23,7 @@ const
 {$R *.res}
 
 
-function GetTempFile(const Extension:PChar):PChar;
+function GetTempFile(const Extension:PChar):PChar;stdcall;
 var
  Buffer: array[0..MAX_PATH] of Char;
  aFile: string;
@@ -35,7 +36,7 @@ begin
 end;
 
 
-function md5(InputString:PChar): PChar;
+function md5(InputString:PChar):String;stdcall;
 var
   Digest: T4x4LongWordRecord;
   S, S1: string;
@@ -55,7 +56,7 @@ begin
 end;
 
 
-function GetAppDataPath: PChar;
+function GetAppDataPath():PChar;stdcall;
 var
  Key:TRegistry;
 begin
@@ -67,30 +68,35 @@ begin
  Key.Free;
 end;
 
-function DBPassword:PChar;
+function DBPassword:String; stdcall;
 var
  Sum:String;
 begin
   Sum:=md5(CriptKey);
   Sum:=Copy(Sum,0,15);
   Result:=PChar(Sum);
+  //ShowMessage(Result);
 end;
 
-function GetConnectionString: PChar;
+function GetConnectionString: PChar;stdcall;
 var
  DBPath:String;
+ buf:PChar;
 begin
- DBPath:=GetAppDataPath+'\Nevilon Software\Nevod AntiSpam';
+ DBPath:=StrPas(GetAppDataPath)+'\Nevilon Software\Nevod AntiSpam';
  Result:=PChar('Provider=Microsoft.Jet.OLEDB.4.0;'+'Data Source='+DBPath+'\messages.ndb;'+
             'Jet OLEDB:Database Password='+DBPassword);
+ //ShowMessage(Result);
 end;
 
-function DatabaseCompact: boolean;
+function DatabaseCompact: boolean;stdcall;
 var
  JE : TJetEngine; //Jet Engine
- sdbTemp : WideString; //TEMP database
- sdbTempConn: WideString; //Connection string
+ sdbTemp :WideString;
+ sdbTempConn : WideString; //Connection string
  sdbName:WideString;
+ buf:PChar;
+ ConString:WideString;
 const SProvider = 'Provider=Microsoft.Jet.OLEDB.4.0;Data Source=';
 begin
  sdbTemp :=GetTempFile('ndb');
@@ -99,12 +105,14 @@ begin
  JE := TJetEngine.Create(nil);
  try
   try
-   JE.CompactDatabase(GetConnectionString, sdbTempConn);
-   sdbName:=GetAppDataPath + '\Nevilon Software\Nevod AntiSpam\messages.ndb';
+  ConString:='Provider=Microsoft.Jet.OLEDB.4.0;'+'Data Source='+GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb;'+
+            'Jet OLEDB:Database Password='+DBPassword;
+   JE.CompactDatabase(ConString, sdbTempConn);
+   sdbName:=StrPas(GetAppDataPath) + '\Nevilon Software\Nevod AntiSpam\messages.ndb';
    DeleteFile(PChar(ExtractShortPathName(sdbName)));
    RenameFile(sdbTemp, sdbName);
   except
-   on E: Exception do ShowMessage(E.Message);
+   on E: Exception do  ShowMessage(e.Message);//ShowMessage(_('Не могу упаковать базу'));
   end;
  finally
   JE.FreeOnRelease;
@@ -112,7 +120,7 @@ begin
  end;
 end;
 
-procedure WriteAppHandle(Handle:DWORD);
+procedure WriteAppHandle(Handle:DWORD);stdcall;
 var
  Reg: TRegistry;
  Key: string;
@@ -133,7 +141,7 @@ end;
 
 
 
-procedure WriteAppPath(AppPath:PChar);
+procedure WriteAppPath(AppPath:PChar);stdcall;
 var
  key:TRegistry;
 begin
@@ -145,7 +153,7 @@ begin
  key.Free;
 end;
 
-function GetAppPath():PChar;
+function GetAppPath():PChar;stdcall;
 var
  key:TRegistry;
 begin
@@ -157,7 +165,7 @@ begin
  key.Free;
 end;
 
-function GetAppHandle():DWORD;
+function GetAppHandle():DWORD;stdcall;
 var
  Reg: TRegistry;
  RegKey: DWORD;
@@ -181,15 +189,13 @@ begin
  Result:=RegKey;
 end;
 
-function IsNormal(DBPath:PChar): Boolean;
+function IsNormal(DBPath:PChar): Boolean;stdcall;
 var
  adCon:TADOConnection;
  ConStr:PChar;
 begin
  ConStr:=PChar('Provider=Microsoft.Jet.OLEDB.4.0;'+'Data Source='+DBPath+';'+
             'Jet OLEDB:Database Password='+DBPassword);
-
-
   Coinitialize(nil);
   try
   adCon:=TADOConnection.Create(nil);

@@ -276,10 +276,10 @@ type
     procedure Execute; override;
   end;
 
-function md5(InputString:PChar): PChar; external 'Shared.DLL';
+//function md5(InputString:PChar): PChar; external 'Shared.DLL';
 function GetConnectionString: PChar; external 'Shared.DLL';
 function GetAppDataPath: PChar;external 'Shared.DLL';
-function DBPassword:PChar;external 'Shared.DLL';
+//function DBPassword:PChar;external 'Shared.DLL';
 procedure WriteAppHandle(Handle:DWORD);external 'Shared.DLL';
 procedure WriteAppPath(AppPath:PChar);external 'Shared.DLL';
 function DatabaseCompact: boolean;external 'Shared.DLL';

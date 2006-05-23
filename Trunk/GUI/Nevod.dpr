@@ -31,7 +31,7 @@ uses
   About in 'About.pas' {FAbout},
   ADODB_TLB in '..\Shared\ADODB_TLB.pas',
   JRO_TLB in '..\Shared\JRO_TLB.pas',
-  gnugettext in '..\..\..\Program Files\dxgettext\gnugettext.pas',
+  gnugettext in 'C:\Program Files\dxgettext\gnugettext.pas',
   Register in 'Register.pas' {FRegister},
   RegistrationKey in 'RegistrationKey.pas' {FRegistrationKey},
   aspr_api in '..\ASProtect\aspr_api.pas';
@@ -42,10 +42,9 @@ var
  Con,CanExit:boolean;
  aCon:TADOConnection;
  RegistrationForm:TFRegister;
- ModeStatus : TModeStatus;
 begin
 // AddDomainForResourceString ('ru-en');
-// UseLanguage ('en');
+ //UseLanguage ('ru');
  if InitInstance then
   begin
    Application.Initialize;
@@ -63,8 +62,8 @@ begin
    aCon.Connected:=True;
    Con:=True;
   except
-   if MessageBox(Application.Handle,PChar(_('Ошибка загрузки')),PChar(_('База данных не найдена или повреждена. Заменить ?')),MB_OKCANCEL)=ID_OK then
-    RestoreDB else canExit:=True;
+   if MessageBoxW(Application.Handle,PWideChar(_('Ошибка загрузки')),PWideChar(_('База данных не найдена или повреждена. Заменить ?')),MB_OKCANCEL)=ID_OK then
+     RestoreDB else canExit:=True;
   end;
  if CanExit  then  Application.Terminate
   else
@@ -72,6 +71,7 @@ begin
      GetRegistrationInformation(UserKey,UserName );
      if not((UserKey <> nil) AND (StrLen(UserKey) > 0)) then
       begin
+       ShowMessage('dcdd');
        RegistrationForm:=TFRegister.Create(nil);
        RegistrationForm.ShowModal;
        if RegistrationForm.Result=1 then
@@ -94,5 +94,4 @@ begin
         end;
    end;
   end;
-  // else ShowMessage('!');
 end.

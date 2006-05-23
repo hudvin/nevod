@@ -168,7 +168,7 @@ begin
   Close;
  except
   on e: Exception do  // leMessage.Caption:=E.Message;
-    MessageBox(Handle,PChar(e.Message),PChar(_('Ошибка')),MB_OK);
+    MessageBoxW(Handle,PWideChar(e.Message),PWideChar(_('Ошибка')),MB_OK);
  end;
 end;
 
