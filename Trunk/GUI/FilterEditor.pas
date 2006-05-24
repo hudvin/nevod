@@ -162,12 +162,10 @@ begin
    then FFilterManager.AddElement(leValue.Text,Res.FilterType,leDescription.Text,cxCbActive.Checked,Location)
     else FFilterManager.ModifyElement(FElementId,leValue.Text,Res.FilterType,leDescription.Text,cxCbActive.Checked,Location);
   PostMessage(main.FMain.Handle,WM_UpdateFilters,0,0);
-  { FFIltersTable.Active:=True;
-  FFiltersTable.Requery; }
   Close;
  except
-  on e: Exception do  // leMessage.Caption:=E.Message;
-    MessageBoxW(Handle,PWideChar(e.Message),PWideChar(_('Ошибка')),MB_OK);
+  on e: Exception do 
+   ShowMessage(e.Message);
  end;
 end;
 

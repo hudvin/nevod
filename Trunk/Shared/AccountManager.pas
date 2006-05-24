@@ -4,7 +4,7 @@ interface
 
 uses
   TypInfo, SysUtils, cxGridCustomTableView, cxGridTableView, Messages,Windows,
-   ADODB,DB,Exceptions,Shared;
+   ADODB,DB,Exceptions,Shared,gnugettext;
 
 type
   TAccountManager = class(TBFCoder)
@@ -127,9 +127,9 @@ function TAccountManager.CheckParams(Account:TAccountParams;
 begin
   Result:=False;
   if Trim(Account.AccountName)='' then
-    Raise EInvalidAccountParams.Create('Incorrect AccountName');
+    Raise EInvalidAccountParams.Create(_('Incorrect AccountName'));
   if Account.Timeout<1 then
-    Raise EInvalidAccountParams.Create('Значение таймаута должно быть больше 1');  
+    Raise EInvalidAccountParams.Create(_('Значение таймаута должно быть больше 1'));
   with adProc  do
    begin
     if NewAccount then   // если новая учетная запись
@@ -141,7 +141,7 @@ begin
       if Fields[0].AsInteger>0 then
        begin
         Close;
-        raise EInvalidAccountParams.Create('Account Exists');
+        raise EInvalidAccountParams.Create(_('Account Exists'));
        end;
      end
     else  // если  модифицируется старая запись
@@ -155,19 +155,19 @@ begin
       if Fields[0].AsInteger>1 then
        begin
         Close;
-        raise EInvalidAccountParams.Create('Account with this name Already Exists');
+        raise EInvalidAccountParams.Create(_('Account with this name Already Exists'));
        end;
      end;
    end;
 
   if Trim(Account.Username)='' then
-    Raise EInvalidAccountParams.Create('Incorrect Username ');
+    Raise EInvalidAccountParams.Create(_(' Неправильное имя пользователя '));
   if Trim(Account.Host)='' then
-    Raise EInvalidAccountParams.Create('Incorrect Host');
+    Raise EInvalidAccountParams.Create(_('Incorrect Host'));
   if (Account.Port<1) or (Account.Port>65536) then
-    Raise EInvalidAccountParams.Create('Incorrect Port');
+    Raise EInvalidAccountParams.Create(_('Incorrect Port'));
   if (Account.Timeout<-1) then
-    Raise EInvalidAccountParams.Create(' Incorrect Timeout ');
+    Raise EInvalidAccountParams.Create((' Incorrect Timeout '));
 
   Result:=True;
 end;
@@ -195,7 +195,7 @@ var
 begin
  for i:=Low(AccountsId) to High(AccountsId) do
    if not AccountIdExists(AccountsId[i]) then
-    Raise EInvalidAccount.Create(' Аккаунт не существует ');
+    Raise EInvalidAccount.Create(_(' Аккаунт не существует '));
 
  RowSQL:='';
  for i:=Low(AccountsId) to High(AccountsId) do
@@ -225,7 +225,7 @@ begin
       if  RecordCount=0 then
        begin
         Close;
-        raise EInvalidAccount.Create('No Such Account !');
+        raise EInvalidAccount.Create(_('No Such Account !'));
        end
       else
        try
@@ -241,7 +241,7 @@ begin
         on e: Exception do
          begin
           Close;
-          Raise ECorreptedAccount.Create('Account Corrupted');
+          Raise ECorreptedAccount.Create(_('Account Corrupted'));
          end;
        end;
    end;
@@ -259,7 +259,7 @@ begin
     if (Index>RecordCount) or (Index<1) then
      begin
       Close;
-      Raise EInvalidAccount.Create(' No Such Account ');
+      Raise EInvalidAccount.Create(_(' No Such Account '));
      end;
     try
      RecNo:=Index;
@@ -275,7 +275,7 @@ begin
      on e: Exception do
       begin
        Close;
-       Raise ECorreptedAccount.Create('Account Corrupted');
+       Raise ECorreptedAccount.Create(_('Account Corrupted'));
       end;
     end;
   end;

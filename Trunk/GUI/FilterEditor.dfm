@@ -87,7 +87,6 @@ object FCustomEditor: TFCustomEditor
       EditLabel.Caption = #1047#1085#1072#1095#1077#1085#1080#1077'  '
       LabelPosition = lpLeft
       TabOrder = 2
-      Text = '  '
       OnKeyPress = leValueKeyPress
     end
     object leDescription: TLabeledEdit

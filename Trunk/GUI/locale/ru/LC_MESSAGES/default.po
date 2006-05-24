@@ -1,0 +1,1049 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Nevod AntiSPam 1.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-05-23 22:58+0300\n"
+"PO-Revision-Date: 2006-05-24 11:07+0200\n"
+"Last-Translator: neiroman <neiroman@gmail.com>\n"
+"Language-Team: Nevilon <neiroman@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Russian\n"
+
+#. FAbout..Caption
+#. FMain..AList..alShowAbout..Caption
+#: GUI/About.dfm:6
+msgid "О программе"
+msgstr "О программе"
+
+#. FAbout..leSite..Caption
+#. FAbout..leSite....Text.Strings
+#: GUI/About.dfm:1351
+msgid "Web : http://www.nevilon.com"
+msgstr "Web : http://www.nevilon.com"
+
+#. FAbout..btClose..Caption
+#: GUI/About.dfm:1467
+msgid "Закрыть"
+msgstr "Закрыть"
+
+#. FAccountEditor..cxTab..leAccountName..EditLabel.Caption
+#: GUI/AccountEditor.dfm:42
+msgid "Имя учетной записи"
+msgstr "Имя учетной записи"
+
+#. FAccountEditor..cxTab..leUsername..EditLabel.Caption
+#. FRegistrationKey..cxTab..leUsername..EditLabel.Caption
+#: GUI/AccountEditor.dfm:54
+msgid "Имя пользователя "
+msgstr "Имя пользователя "
+
+#. FAccountEditor..cxTab..lePassword..EditLabel.Caption
+#. FMain..stPages..cxTab_Accounts..cxAccountsGrid..cxAccounts..cxAccountspass..Caption
+#: GUI/AccountEditor.dfm:66
+msgid "Пароль"
+msgstr "Пароль"
+
+#. FAccountEditor..cxTab..leHost..EditLabel.Caption
+#. FMain..stPages..cxTab_Accounts..cxAccountsGrid..cxAccounts..cxAccountshost..Caption
+#: GUI/AccountEditor.dfm:79
+msgid "Сервер"
+msgstr "Почтовый сервер"
+
+#. FAccountEditor..cxTab..lePort..EditLabel.Caption
+#: GUI/AccountEditor.dfm:91
+msgid "Порт "
+msgstr "Порт "
+
+#. FAccountEditor..cxTab..leTimeout..EditLabel.Caption
+#: GUI/AccountEditor.dfm:104
+msgid "Таймаут  (сек) "
+msgstr "Таймаут  (сек.) "
+
+#. FAccountEditor..cxTab..btOK..Caption
+#: GUI/AccountEditor.dfm:115
+msgid "Add"
+msgstr "Добавить"
+
+#. FAccountEditor..cxTab..btCancel..Caption
+#. FCustomEditor..TabControl..btCancel..Caption
+#. FPortEditor..btCancel..Caption
+#. FRegistrationKey..cxTab..btCancel..Caption
+#: GUI/AccountEditor.dfm:124
+#: GUI/RegistrationKey.dfm:68
+msgid "Отмена"
+msgstr "Отмена"
+
+#. FCustomEditor..Caption
+#: GUI/FilterEditor.dfm:6
+msgid "Добавление нового фильтра"
+msgstr "Добавление нового правила"
+
+#. FCustomEditor..TabControl..leFilter..Caption
+#: GUI/FilterEditor.dfm:38
+msgid "Фильтр "
+msgstr "Фильтр "
+
+#. FCustomEditor..TabControl..leLocation..Caption
+#: GUI/FilterEditor.dfm:45
+msgid "Location"
+msgstr "Расположение"
+
+#. FCustomEditor..TabControl..cxCbActive..Caption
+#: GUI/FilterEditor.dfm:66
+msgid "Активен "
+msgstr "Включен"
+
+#. FCustomEditor..TabControl..leValue..EditLabel.Caption
+#: GUI/FilterEditor.dfm:87
+msgid "Значение  "
+msgstr "Правило"
+
+#. FCustomEditor..TabControl..leDescription..EditLabel.Caption
+#: GUI/FilterEditor.dfm:99
+msgid "Описание "
+msgstr "Описание "
+
+#. FCustomEditor..TabControl..btOK..Caption
+#: GUI/FilterEditor.dfm:108
+msgid "OK"
+msgstr "ОК"
+
+#. FMain..Caption
+#: GUI/main.dfm:6
+msgid "Nevod AntiSpam"
+msgstr "Nevod AntiSpam"
+
+#. FMain..stPages..cxTab_Accounts..cxAccountsGrid..cxAccounts..cxAccountsAccountName..Caption
+#. FMain..stPages..cxTab_Log..cxLogGrid..cxLog..cxLogAccountName..Caption
+#: GUI/main.dfm:164
+msgid "Учетная запись"
+msgstr "Учетная запись"
+
+#. FMain..stPages..cxTab_Accounts..cxAccountsGrid..cxAccounts..cxAccountsusername..Caption
+#: GUI/main.dfm:169
+msgid "Пользователь"
+msgstr "Пользователь"
+
+#. FMain..stPages..cxTab_Accounts..cxAccountsGrid..cxAccounts..cxAccountsport..Caption
+#: GUI/main.dfm:187
+msgid "Порт"
+msgstr "Порт"
+
+#. FMain..stPages..cxTab_Accounts..cxAccountsGrid..cxAccounts..cxAccountsTimeout..Caption
+#: GUI/main.dfm:192
+msgid "Время ожидания"
+msgstr "Таймаут"
+
+#. FMain..stPages..cxTab_Accounts..cxAccountsGrid..cxAccounts..cxAccountsstatus..Caption
+#: GUI/main.dfm:197
+msgid "Состояние"
+msgstr "Состояние"
+
+#. FMain..stPages..cxTab_Log..cxLogGrid..cxLog..cxLogMessage..Caption
+#: GUI/main.dfm:249
+msgid "Сообщение"
+msgstr "Сообщение"
+
+#. FMain..stPages..cxTab_Log..cxLogGrid..cxLog..cxLogErrorTime..Caption
+#: GUI/main.dfm:254
+msgid "Время"
+msgstr "Дата"
+
+#. FMain..stPages..cxTab_Filters..cxFiltersGrid..cxFilters..cxFiltersFValue..Caption
+#: GUI/main.dfm:310
+msgid "Значение"
+msgstr "Правило"
+
+#. FMain..stPages..cxTab_Filters..cxFiltersGrid..cxFilters..cxFiltersDescription..Caption
+#: GUI/main.dfm:315
+msgid "Описание"
+msgstr "Описание"
+
+#. FMain..stPages..cxTab_Filters..cxFiltersGrid..cxFilters..cxFiltersParams..Caption
+#: GUI/main.dfm:320
+msgid "Параметры"
+msgstr "Параметры"
+
+#. FMain..stPages..cxTab_Filters..cxFiltersGrid..cxFilters..cxFiltersActive..Caption
+#: GUI/main.dfm:325
+msgid "Активен"
+msgstr "Включен"
+
+#. FMain..stPages..cxTab_Settings..gbSystem..Caption
+#: GUI/main.dfm:341
+msgid "Системные"
+msgstr "Системные"
+
+#. FMain..stPages..cxTab_Settings..gbSystem..Label1..Caption
+#: GUI/main.dfm:358
+msgid "мин"
+msgstr "мин."
+
+#. FMain..stPages..cxTab_Settings..gbSystem..lbCheckInterval..Caption
+#: GUI/main.dfm:365
+msgid "Проверять каждые"
+msgstr "Проверять каждые"
+
+#. FMain..stPages..cxTab_Settings..gbSystem..lbServerPort..EditLabel.Caption
+#: GUI/main.dfm:374
+msgid "Порт сервера "
+msgstr "Порт сервера "
+
+#. FMain..stPages..cxTab_Settings..gbSystem..cbCheckIfNotConnected..Caption
+#: GUI/main.dfm:396
+msgid "Проверять почту если нет подключения"
+msgstr "Проверять, если нет подключения"
+
+#. FMain..stPages..cxTab_Settings..gbNag..Caption
+#: GUI/main.dfm:461
+msgid "Уведомления"
+msgstr "Уведомления"
+
+#. FMain..stPages..cxTab_Settings..gbNag..cbBallonOnReceive..Caption
+#: GUI/main.dfm:476
+msgid "Сообщение при получении новой почты"
+msgstr "При получении новой почты"
+
+#. FMain..stPages..cxTab_Settings..gbNag..cbBaloonOnError..Caption
+#: GUI/main.dfm:492
+msgid "Сообщение при ошибке"
+msgstr "При ошибке"
+
+#. FMain..stPages..cxTab_Settings..gbSpy..Caption
+#: GUI/main.dfm:509
+msgid "Слежение за буфером обмена"
+msgstr "Слежение за буфером обмена"
+
+#. FMain..stPages..cxTab_Settings..gbSpy..leSpyFor..Caption
+#: GUI/main.dfm:526
+msgid "Отслеживать появления"
+msgstr "Отслеживать появления"
+
+#. FMain..stPages..cxTab_Settings..gbSpy..lbAddTo..Caption
+#: GUI/main.dfm:533
+msgid "Добавлять в "
+msgstr "Добавлять в "
+
+#. FMain..stPages..cxTab_Settings..gbSpy..cmSpyFor....Properties.Items.Strings
+#: GUI/main.dfm:555
+msgid "Email"
+msgstr "Email"
+
+#. FMain..stPages..cxTab_Settings..gbSpy..cmSpyFor....Properties.Items.Strings
+#: GUI/main.dfm:556
+msgid "URL"
+msgstr "URL"
+
+#. FMain..stPages..cxTab_Settings..gbSpy..cmSpyFor....Properties.Items.Strings
+#. FMain..stPages..cxTab_Settings..gbSpy..cmSpyFor..Text
+#: GUI/main.dfm:557
+msgid "EMail и URL"
+msgstr "EMail и URL"
+
+#. FMain..stPages..cxTab_Settings..gbSpy..cmAddTo....Properties.Items.Strings
+#. FMain..stPages..cxTab_Settings..gbSpy..cmAddTo..Text
+#: GUI/main.dfm:575
+msgid "белый список"
+msgstr "белый список"
+
+#. FMain..stPages..cxTab_Settings..gbSpy..cmAddTo....Properties.Items.Strings
+#: GUI/main.dfm:576
+msgid "черный список"
+msgstr "черный список"
+
+#. FMain..stPages..cxTab_Settings..gbHotKeys..Caption
+#: GUI/main.dfm:605
+msgid "Горячие клавиши"
+msgstr "Горячие клавиши"
+
+#. FMain..stPages..cxTab_Settings..gbHotKeys..leAddHotKey..Caption
+#: GUI/main.dfm:618
+msgid "Добавление фильтра"
+msgstr "Добавление правила"
+
+#. FMain..stPages..cxTab_Settings..gbHotKeys..leShowMainWindow..Caption
+#: GUI/main.dfm:625
+msgid "Отобразить главное окно"
+msgstr "Открыть Nevod AntiSpam"
+
+#. FMain..stPages..cxTab_Settings..gbHotKeys..leCheckAllAccounts..Caption
+#. FMain..AList..alStartAllThreads..Caption
+#: GUI/main.dfm:632
+msgid "Проверить все аккаунты"
+msgstr "Проверить всё"
+
+#. FMain..stPages..cxTab_Settings..gbHotKeys..leRunMailClient..Caption
+#. FMain..AList..alRunMailClient..Caption
+#: GUI/main.dfm:639
+msgid "Запустить почтовый клиент"
+msgstr "Запустить почтовый клиент"
+
+#. FMain..stPages..cxTab_Settings..gbHotKeys..btAddHotKey..Caption
+#. FMain..stPages..cxTab_Settings..gbHotKeys..btShowMainWindow..Caption
+#. FMain..stPages..cxTab_Settings..gbHotKeys..btCheckAllAccounts..Caption
+#. FMain..stPages..cxTab_Settings..gbHotKeys..btRunMailClient..Caption
+#: GUI/main.dfm:656
+msgid "Назначить"
+msgstr "Назначить"
+
+#. FMain..stPages..cxTab_Settings..gbSounds..Caption
+#: GUI/main.dfm:721
+msgid "Звуки"
+msgstr "Звуки"
+
+#. FMain..stPages..cxTab_Settings..gbSounds..cbSoundOnReceive..Caption
+#: GUI/main.dfm:732
+msgid "При получении новой почты"
+msgstr "При получении новой почты"
+
+#. FMain..stPages..cxTab_Settings..gbSounds..beSoundOnNew......Caption
+#. FMain..stPages..cxTab_Settings..gbSounds..beSoundOnError......Caption
+#. FMain..stPages..cxTab_Settings..gbSounds..beSoundOnAdd......Caption
+#: GUI/main.dfm:750
+msgid "Browse"
+msgstr "Выбрать"
+
+#. FMain..stPages..cxTab_Settings..gbSounds..cbSoundOnError..Caption
+#: GUI/main.dfm:796
+msgid "При ошибке"
+msgstr "При ошибке"
+
+#. FMain..stPages..cxTab_Settings..gbSounds..cbSoundOnAdd..Caption
+#: GUI/main.dfm:812
+msgid "Звук при добавлении адреса "
+msgstr "При добавлении адреса "
+
+#. FMain..stPages..cxTab_AFSettings..cxWhiteWordDescription......Lines.Strings
+#: GUI/main.dfm:861
+msgid "Данный фильтр срабатывает при обнаружении в сообщении (в теме, в тексте,"
+msgstr "Данный фильтр срабатывает при обнаружении в сообщении (в теме, в тексте,"
+
+#. FMain..stPages..cxTab_AFSettings..cxWhiteWordDescription......Lines.Strings
+#: GUI/main.dfm:864
+msgid "либо и там, и там) определенного слова. В слове можно использовать символы-заменители * и ?"
+msgstr "либо и там, и там) определенного слова. В слове можно использовать символы-заменители * и ?"
+
+#. FMain..stPages..cxTab_AFSettings..cbStamp..Caption
+#: GUI/main.dfm:887
+msgid "Штампы сообщений"
+msgstr "Штампы сообщений"
+
+#. FMain..stPages..cxTab_AFSettings..cbWhiteWord..Caption
+#. FMain..stPages..cxTab_DFSettings..cbBlackWord..Caption
+#: GUI/main.dfm:904
+msgid "Словарный фильтр"
+msgstr "Словарный фильтр"
+
+#. FMain..stPages..cxTab_AFSettings..cxStampDescription......Lines.Strings
+#: GUI/main.dfm:925
+msgid "Данный фильтр срабатывает при обнаружении в сообщении в тексте сообщения. Формат штапма: <Nevod "
+msgstr "Данный фильтр срабатывает при обнаружении в сообщении в тексте сообщения. Формат штапма: <Nevod "
+
+#. FMain..stPages..cxTab_AFSettings..cxStampDescription....Lines.Strings
+#: GUI/main.dfm:926
+msgid "Stamp:'keyword '>"
+msgstr "Stamp:'keyword '>"
+
+#. FMain..stPages..cxTab_AFSettings..cxStampDescription......Lines.Strings
+#: GUI/main.dfm:929
+msgid "либо <Nevod AntiSpam: \"keyword\">, где keyword - произвольное слово."
+msgstr "либо <Nevod AntiSpam: \"keyword\">, где keyword - произвольное слово."
+
+#. FMain..stPages..cxTab_AFSettings..cbWhiteSender..Caption
+#. FMain..stPages..cxTab_DFSettings..cbBlackSender..Caption
+#: GUI/main.dfm:952
+msgid "Отправитель"
+msgstr "Отправитель"
+
+#. FMain..stPages..cxTab_AFSettings..cxSenderDescription......Lines.Strings
+#: GUI/main.dfm:973
+msgid "Данный фильтр срабатывает,если адрес отправителя находится в белом списке"
+msgstr "Данный фильтр срабатывает,если адрес отправителя находится в белом списке"
+
+#. FMain..stPages..cxTab_AFSettings..cbWhiteAttach..Caption
+#. FMain..stPages..cxTab_DFSettings..cbBlackAttach..Caption
+#: GUI/main.dfm:996
+msgid "Расширение приложенного файла"
+msgstr "Расширение приложенного файла"
+
+#. FMain..stPages..cxTab_AFSettings..cxWhiteAttachDescription......Lines.Strings
+#: GUI/main.dfm:1017
+msgid "Данный фильтр срабатывает,если расширение приложенного файла находится в белом списке"
+msgstr "Данный фильтр срабатывает,если расширение приложенного файла находится в белом списке"
+
+#. FMain..stPages..cxTab_DFSettings..cxBlackWordDescription......Lines.Strings
+#: GUI/main.dfm:1065
+msgid "Данный фильтр срабатывает при обнаружении в сообщении (в теме, в тексте,либо и там, и там) "
+msgstr "Данный фильтр срабатывает при обнаружении в сообщении (в теме, в тексте,либо и там, и там) "
+
+#. FMain..stPages..cxTab_DFSettings..cxBlackWordDescription....Lines.Strings
+#: GUI/main.dfm:1066
+msgid "определенного "
+msgstr "определенного "
+
+#. FMain..stPages..cxTab_DFSettings..cxBlackWordDescription....Lines.Strings
+#: GUI/main.dfm:1067
+msgid "слова. В слове можно использовать символы-заменители * и ?"
+msgstr "слова. В слове можно использовать символы-заменители * и ?"
+
+#. FMain..stPages..cxTab_DFSettings..cxBlackSenderDescription......Lines.Strings
+#: GUI/main.dfm:1111
+msgid "Данный фильтр срабатывает, если адрес отправителя находится в черном списке"
+msgstr "Данный фильтр срабатывает, если адрес отправителя находится в черном списке"
+
+#. FMain..stPages..cxTab_DFSettings..cxBlackAttachDescription......Lines.Strings
+#: GUI/main.dfm:1155
+msgid "Данный фильтр срабатывает,если расширение приложенного файла находится в черном списке списке"
+msgstr "Данный фильтр срабатывает,если расширение приложенного файла находится в черном списке списке"
+
+#. FMain..stPages..cxTab_DFSettings..cbMaxLinks..Caption
+#: GUI/main.dfm:1198
+msgid "Максимальное количество ссылок в сообщении"
+msgstr "Максимальное количество ссылок в сообщении"
+
+#. FMain..stPages..cxTab_DFSettings..cxMaxLinksDescription......Lines.Strings
+#: GUI/main.dfm:1219
+msgid "Данный фильтр срабатывает,если в сообщении   количество ссылок превышает максимальное значение"
+msgstr "Данный фильтр срабатывает,если в сообщении   количество ссылок превышает заданное значение"
+
+#. FMain..stPages..cxTab_DFSettings..cbMaxImages..Caption
+#: GUI/main.dfm:1242
+msgid "Максимальное количество изображений"
+msgstr "Максимальное количество изображений"
+
+#. FMain..stPages..cxTab_DFSettings..cxMaxImagesDescription......Lines.Strings
+#: GUI/main.dfm:1278
+msgid "Данный фильтр срабатывает,если в сообщении количество изображений превышает максимальное "
+msgstr "Данный фильтр срабатывает,если в сообщении количество изображений превышает заданное значение"
+
+#. FMain..stPages..cxTab_DFSettings..cxMaxImagesDescription....Lines.Strings
+#: GUI/main.dfm:1279
+msgid "значение"
+msgstr "значение"
+
+#. FMain..stPages..cxTab_DFSettings..cbMaxSize..Caption
+#: GUI/main.dfm:1302
+msgid "Максимальный размер сообшения,кб"
+msgstr "Максимальный размер сообшения, Кб"
+
+#. FMain..stPages..cxTab_DFSettings..cxMaxSizeDescription......Lines.Strings
+#: GUI/main.dfm:1338
+msgid "Данный фильтр срабатывает,если размер сообщения превышает максимальное значение"
+msgstr "Данный фильтр срабатывает,если размер сообщения превышает заданное значение"
+
+#. FMain..AList..alAddAccount..Caption
+#. FMain..dxBar..msAddAccount..Hint
+#: GUI/main.dfm:5381
+msgid "Добавить"
+msgstr "Добавить"
+
+#. FMain..AList..alEditAccount..Caption
+#: GUI/main.dfm:5387
+msgid "Редактировать"
+msgstr "Редактировать"
+
+#. FMain..AList..alDeleteAccount..Caption
+#: GUI/main.dfm:5393
+msgid "Удалить"
+msgstr "Удалить"
+
+#. FMain..AList..alAppTerminate..Caption
+#. FRegister..btExit..Caption
+#: GUI/main.dfm:5399
+msgid "Выход"
+msgstr "Выход"
+
+#. FMain..AList..alStopThread..Caption
+#: GUI/main.dfm:5403
+msgid "Остановить получение"
+msgstr "Остановить"
+
+#. FMain..AList..alStartThread..Caption
+#: GUI/main.dfm:5408
+msgid "Запустить поток"
+msgstr "Проверить"
+
+#. FMain..AList..alStopAllThreads..Caption
+#. FMain..dxBar..pmStopAllThreads..Hint
+#: GUI/main.dfm:5417
+msgid "Остановить проверку всех аккаунтов"
+msgstr "Остановить всё"
+
+#. FMain..AList..alCanCheckAccounts..Caption
+#: GUI/main.dfm:5421
+msgid "Регулярно проверять аккаунты"
+msgstr "Проверять регулярно"
+
+#. FMain..AList..alAddFilterElement..Caption
+#: GUI/main.dfm:5430
+msgid "Добавить фильтр"
+msgstr "Добавить правило"
+
+#. FMain..AList..alRemoveFilterElement..Caption
+#: GUI/main.dfm:5434
+msgid "Удалить фильтр"
+msgstr "Удалить правило"
+
+#. FMain..AList..alEditFilterElement..Caption
+#. FMain..dxBar..msEditFilterElement..Hint
+#: GUI/main.dfm:5444
+msgid "Редактировать фильтр"
+msgstr "Редактировать правило"
+
+#. FMain..AList..alClearLog..Caption
+#: GUI/main.dfm:5450
+msgid "Очистить"
+msgstr "Очистить"
+
+#. FMain..AList..alDeleteSelectedLog..Caption
+#: GUI/main.dfm:5454
+msgid "Удалить выделенные записи"
+msgstr "Удалить выделенные сообщения"
+
+#. FMain..AList..alSaveLog..Caption
+#: GUI/main.dfm:5458
+msgid "Сохранить"
+msgstr "Сохранить  в... "
+
+#. FMain..AList..alHideToTray..Caption
+#: GUI/main.dfm:5466
+msgid "Свернуть в трей"
+msgstr "Свернуть в трей"
+
+#. FMain..AList..alSetToActive..Caption
+#: GUI/main.dfm:5471
+msgid "Сделать активным"
+msgstr "Включить"
+
+#. FMain..AList..alSetSelectedFiltersToActive..Caption
+#: GUI/main.dfm:5475
+msgid "Активировать"
+msgstr "Включить"
+
+#. FMain..AList..alSetSelectedFiltersToNonActive..Caption
+#: GUI/main.dfm:5480
+msgid "Деактивировать"
+msgstr "Выключить"
+
+#. FMain..AList..alMoveSelectedFiltersElements..Caption
+#. FMain..dxBar..pmMoveSelectedFiltersElements..Hint
+#. FMain..dxBar..msMoveSelectedFiltersEsements..Hint
+#: GUI/main.dfm:5489
+msgid "Перенести в черный список"
+msgstr "Перенести в черный список"
+
+#. FMain..AList..alRestoreFromBackUp..Caption
+#: GUI/main.dfm:5494
+msgid "Восстановить из резевной копии"
+msgstr "Восстановить из резевной копии"
+
+#. FMain..AList..alSaveToBackUp..Caption
+#: GUI/main.dfm:5498
+msgid "Создать резервную копию"
+msgstr "Создать резервную копию"
+
+#. FMain..AList..alEnableFiltering..Caption
+#. FMain..dxBar..msEnableFiltering..Hint
+#: GUI/main.dfm:5502
+msgid "Фильтровать сообщения"
+msgstr "Фильтровать сообщения"
+
+#. FMain..AList..alCheckForUpdates..Caption
+#: GUI/main.dfm:5511
+msgid "Проверить обновления"
+msgstr "Проверить обновления"
+
+#. FMain..AList..alGotoNevilon..Caption
+#. FMain..dxBar..msGotoNevilon..Hint
+#: GUI/main.dfm:5515
+msgid "Nevilon Software"
+msgstr "Nevilon Software"
+
+#. FMain..AList..alBuyNow..Caption
+#. FRegister..btBuy..Caption
+#: GUI/main.dfm:5519
+msgid "Купить"
+msgstr "Купить"
+
+#. FMain..AList..alRunAtStartUp..Caption
+#: GUI/main.dfm:5523
+msgid "Запускать при загрузке"
+msgstr "Запускать при загрузке Windows"
+
+#. FMain..AList..alEnableClbSpy..Caption
+#: GUI/main.dfm:5528
+msgid "Следить за буфером обмена"
+msgstr "Следить за буфером обмена"
+
+#. FMain..AList..alShowEditorForm..Caption
+#: GUI/main.dfm:5533
+msgid "Показывать форму при добавлении"
+msgstr "Показывать Редактор при добавлении"
+
+#. FMain..AList..alShowMainWindow..Caption
+#: GUI/main.dfm:5538
+msgid "Открыть"
+msgstr "Открыть Nevod AntiSpam"
+
+#. FMain..AList..alRegister..Caption
+#: GUI/main.dfm:5542
+msgid "Зарегистрировать"
+msgstr "Зарегистрировать"
+
+#. FMain..dxBar......Caption
+#: GUI/main.dfm:5557
+msgid "Main Menu"
+msgstr "Main Menu"
+
+#. FMain..dxBar..msAccounts..Caption
+#: GUI/main.dfm:5636
+msgid "Учетные записи"
+msgstr "Учетные записи"
+
+#. FMain..dxBar..msStopThread..Caption
+#. FMain..dxBar..msStopThread..Hint
+#: GUI/main.dfm:5714
+msgid "Остановить"
+msgstr "Остановить"
+
+#. FMain..dxBar..msStartThread..Caption
+#. FMain..dxBar..msStartThread..Hint
+#: GUI/main.dfm:5721
+msgid "Проверить"
+msgstr "Получить сообщения"
+
+#. FMain..dxBar..msStopAllThreads..Caption
+#. FMain..dxBar..msStopAllThreads..Hint
+#: GUI/main.dfm:5732
+msgid "Остановить все"
+msgstr "Прекратить получение"
+
+#. FMain..dxBar..msFilters..Caption
+#: GUI/main.dfm:5776
+msgid "Фильтры"
+msgstr "Фильтры"
+
+#. FMain..dxBar..msLogs..Caption
+#: GUI/main.dfm:5880
+msgid "Лог"
+msgstr "Журнал"
+
+#. FMain..dxBar..msTools..Caption
+#: GUI/main.dfm:5979
+msgid "Утилиты"
+msgstr "Инструменты"
+
+#. FMain..dxBar..msHelp..Caption
+#: GUI/main.dfm:6001
+msgid "Справка"
+msgstr "Справка"
+
+#. FMain..selSound..Filter
+#: GUI/main.dfm:6207
+msgid "Sounds|*.wav"
+msgstr "Sounds|*.wav"
+
+#. FMain..sdLog..Filter
+#: GUI/main.dfm:6212
+msgid "Text files|*.txt"
+msgstr "Text files|*.txt"
+
+#. FPortEditor..Caption
+#: GUI/PortEditor.dfm:6
+msgid "Новый порт сервера"
+msgstr "Новый порт сервера"
+
+#. FPortEditor..leServerPort..EditLabel.Caption
+#: GUI/PortEditor.dfm:39
+msgid "Порт сервера   "
+msgstr "Порт сервера   "
+
+#. FPortEditor..btOK..Caption
+#. FRegistrationKey..cxTab..btOk..Caption
+#: GUI/PortEditor.dfm:49
+msgid "ОК"
+msgstr "ОК"
+
+#. FRegister..Caption
+#: GUI/Register.dfm:6
+msgid "Registration"
+msgstr "Регистрация"
+
+#. FRegister..leNag..Caption
+#: GUI/Register.dfm:765
+msgid "Демо версия, осталось дней :"
+msgstr "Ознакомительная версия, осталось дней :"
+
+#. FRegister..btEnterCode..Caption
+#: GUI/Register.dfm:781
+msgid "Ввести код"
+msgstr "Ввести ключ"
+
+#. FRegister..btLater..Caption
+#: GUI/Register.dfm:823
+msgid "Позже"
+msgstr "Позже"
+
+#. FRegistrationKey..Caption
+#: GUI/RegistrationKey.dfm:6
+msgid "Ключ активации"
+msgstr "Регистрационный ключ"
+
+#. FRegistrationKey..cxTab..leKey..EditLabel.Caption
+#: GUI/RegistrationKey.dfm:51
+msgid "Ключ регистрации "
+msgstr "Регистрационный ключ"
+
+#. UseLanguage ('ru');
+#: GUI/Nevod.dpr:66
+msgid "База данных не найдена или повреждена. Заменить ?"
+msgstr "База данных не найдена или повреждена.Восстановить ?"
+
+#: GUI/Nevod.dpr:66
+msgid "Ошибка загрузки"
+msgstr "Ошибка загрузки"
+
+#: GUI/NevodBackup.dpr:42
+msgid "Пользовательская база данных не обнаружена !"
+msgstr "База данных не обнаружена !"
+
+#: GUI/NevodBackup.dpr:48
+msgid "Невозможно подключиться к базе данных"
+msgstr "Невозможно подключиться к базе данных"
+
+#: GUI/NevodBackup.dpr:55
+msgid "Невозможно сжать базу"
+msgstr "Невозможно сжать базу"
+
+#: GUI/NevodBackup.dpr:55
+msgid "Ошибка сжатия"
+msgstr "Ошибка сжатия"
+
+#. '|*.nbk';
+#: GUI/NevodBackup.dpr:61
+msgid "Резервный копии(*.nbk)|*.nbk"
+msgstr "Резервный копии(*.nbk)|*.nbk"
+
+#. selFile.FileName+'.nbk'
+#: GUI/NevodBackup.dpr:114
+msgid "База повреждена"
+msgstr "База повреждена"
+
+#: GUI/NevodBackup.dpr:119
+msgid "Текущая база данных будет удалена"
+msgstr "Текущая база данных будет удалена !"
+
+#: GUI/NevodBackup.dpr:119
+msgid "Сообшение"
+msgstr "Сообшение"
+
+#: GUI/About.pas:59
+msgid "Операционная система : "
+msgstr "Операционная система : "
+
+#: GUI/About.pas:60
+msgid "Имя компьютера : "
+msgstr "Имя компьютера : "
+
+#: GUI/About.pas:61
+msgid "Имя текущего пользователя : "
+msgstr "Имя текущего пользователя : "
+
+#: GUI/About.pas:62
+msgid "Время работы : "
+msgstr "Время работы : "
+
+#: GUI/About.pas:68
+msgid "Зарегистрирована на: "
+msgstr "Лицензия выдана : "
+
+#: GUI/AccountEditor.pas:110
+msgid "Изменение параметров аккаунта"
+msgstr "Изменение параметров аккаунта"
+
+#: GUI/AccountEditor.pas:111
+msgid "Изменить"
+msgstr "Изменить"
+
+#: GUI/AccountEditor.pas:115
+msgid "Добавление нового аккаунта"
+msgstr "Добавление новой учетной записи"
+
+#: GUI/FilterEditor.pas:117
+msgid "Редактирование фильтра"
+msgstr "Редактирование правила"
+
+#: GUI/main.pas:497
+msgid "Количество сообщений в базе данных : "
+msgstr "Количество сообщений в базе данных : "
+
+#: GUI/main.pas:498
+msgid "Размер базы данных : "
+msgstr "Размер базы данных : "
+
+#: GUI/main.pas:498
+msgid " Мб"
+msgstr " Мб"
+
+#: GUI/main.pas:619
+msgid " в теле и в теме сообщения "
+msgstr " в тексте и в теме сообщения "
+
+#: GUI/main.pas:620
+msgid " в теме сообщения "
+msgstr " в теме сообщения "
+
+#: GUI/main.pas:621
+msgid " в теле сообщения "
+msgstr " в тексте сообщения "
+
+#. адрес в белый список
+#: GUI/main.pas:628
+msgid "Добавить адрес/домен в белый список"
+msgstr "Добавить адрес/домен в белый список"
+
+#. адрес в черный список
+#: GUI/main.pas:629
+msgid "Добавить адрес/домен в черный список"
+msgstr "Добавить адрес/домен в черный список"
+
+#: GUI/main.pas:631
+msgid "Расширение файла"
+msgstr "Расширение файла"
+
+#. расширение в белый список
+#: GUI/main.pas:632
+msgid "Добавить расширений приложенного файла в белый список"
+msgstr "Добавить расширение приложенного файла в белый список"
+
+#. расширение в черный список
+#: GUI/main.pas:633
+msgid "Добавить расширений приложенного файла в черный список"
+msgstr "Добавить расширение приложенного файла в черный список"
+
+#: GUI/main.pas:635
+msgid "Расположение"
+msgstr "Расположение"
+
+#: GUI/main.pas:636
+msgid "Слово"
+msgstr "Слово"
+
+#. слово в белый список
+#: GUI/main.pas:637
+msgid "Добавить слово в белый список"
+msgstr "Добавить слово в белый список"
+
+#. слово в черный список
+#: GUI/main.pas:638
+msgid "Добавить слово в черный список"
+msgstr "Добавить слово в черный список"
+
+#: GUI/main.pas:640
+msgid "Nevod Stamp"
+msgstr "Штапы"
+
+#. штамп
+#: GUI/main.pas:641
+msgid "Добавить штамп"
+msgstr "Добавить штамп"
+
+#: GUI/main.pas:654
+msgid " Стандартный порт фильтра занят. Хотите сменить порт ? "
+msgstr " Стандартный порт локального сервера занят ! Хотите сменить порт ? "
+
+#: GUI/main.pas:654
+msgid " Ошибка запуска сервера "
+msgstr " Ошибка запуска локального  сервера "
+
+#: GUI/main.pas:976
+msgid "свободен"
+msgstr "свободен"
+
+#: GUI/main.pas:977
+msgid "загружается почта "
+msgstr "загружаются новые сообщения"
+
+#: GUI/main.pas:978
+msgid "подключен локальный клиент"
+msgstr "подключен локальный клиент"
+
+#: GUI/main.pas:1014
+msgid "Вы действительно хотите удалить учетную запись"
+msgstr "Вы действительно хотите удалить учетную запись ?"
+
+#: GUI/main.pas:1014
+msgid "Удаление учетной записи"
+msgstr "Удаление учетной записи"
+
+#: GUI/main.pas:1279
+msgid " Вы дейтсвительно хотите удалить фильтры ?"
+msgstr " Вы дейтсвительно хотите удалить выделенный правила ?"
+
+#: GUI/main.pas:1279
+msgid "Удаление фильтров"
+msgstr "Удаление правил"
+
+#: GUI/main.pas:1304
+msgid "Перенести в белый список"
+msgstr "Перенести в белый список"
+
+#: GUI/main.pas:1306
+msgid "Перенести в черный  список"
+msgstr "Перенести в черный  список"
+
+#: GUI/main.pas:1391
+msgid "Изменения встпупят в силу при следующем запуске программы"
+msgstr "Изменения встпупят в силу при следующем запуске программы"
+
+#: GUI/main.pas:1741
+msgid "Приложение будет завершено"
+msgstr "Приложение будет завершено"
+
+#: GUI/main.pas:1912
+msgid "Программа зарегистрирована"
+msgstr "Программа зарегистрирована"
+
+#: GUI/main.pas:1912
+msgid "Регистрация"
+msgstr "Регистрация"
+
+#: GUI/Register.pas:94
+msgid "Nevod AntiSpam - Ознакомительный период истек"
+msgstr "Nevod AntiSpam - Ознакомительный период истек"
+
+#: GUI/Register.pas:107
+msgid " Nevod AntiSpam - Ознакомительынй период истек"
+msgstr " Nevod AntiSpam - Ознакомительынй период истек"
+
+#: GUI/Register.pas:111
+msgid "Nevod AntiSpam - Незарегистрированная версия"
+msgstr "Nevod AntiSpam - Незарегистрированная версия"
+
+#: GUI/Register.pas:113
+msgid "Осталось дней :"
+msgstr "Дней осталось:"
+
+#: GUI/RegistrationKey.pas:51
+msgid "Спасибо за регистрацию!"
+msgstr "Спасибо за регистрацию !"
+
+#: GUI/RegistrationKey.pas:56
+msgid "Неправильный ключ"
+msgstr "Неправильный регистрационный ключ"
+
+#. CoUninitialize;
+#: MailReceiver/PostReceiver.pas:222
+msgid "Невозможно подключиться к серверу"
+msgstr "Невозможно подключиться к почтовому серверу"
+
+#: MailReceiver/PostReceiver.pas:227
+msgid "Неправильные  параметры аккаунта"
+msgstr "Некорректный параметры учетной записи"
+
+#: MailReceiver/PostReceiver.pas:232
+msgid "Произошел обрыв соединения "
+msgstr "Произошел обрыв соединения с сервером"
+
+#: MailReceiver/ThreadManager.pas:98
+msgid "Ошибка при получении почты : "
+msgstr "Ошибка при получении новых сообщений : "
+
+#: MailReceiver/ThreadManager.pas:101
+msgid " Ошибка при получении почты для  "
+msgstr "Ошибка при получении новых сообщений для : "
+
+#: MailReceiver/ThreadManager.pas:102
+msgid " Ошибка при получении почты  : "
+msgstr "Ошибка при получении новых сообщений для : "
+
+#: MailReceiver/ThreadManager.pas:109
+msgid " Получена новая почта  для  "
+msgstr "Получены новые сообщения для "
+
+#: MailReceiver/ThreadManager.pas:110
+msgid " Загружено "
+msgstr "Получено"
+
+#: MailReceiver/ThreadManager.pas:110
+msgid " новых писем"
+msgstr "новых сообщений"
+
+#: Shared/AccountManager.pas:130
+msgid "Incorrect AccountName"
+msgstr "Некорректное имя учетной записи"
+
+#: Shared/AccountManager.pas:132
+msgid "Значение таймаута должно быть больше 1"
+msgstr "Значение таймаута должно быть больше 1 !"
+
+#. искать аккаунт с данным именем - в виде подзапроса
+#: Shared/AccountManager.pas:144
+msgid "Account Exists"
+msgstr "Существует еще одна учетная запись с таким именем ! "
+
+#. проверить есть ли записи с таким именем но другим id
+#: Shared/AccountManager.pas:158
+msgid "Account with this name Already Exists"
+msgstr "Существует еще одна учетная запись с таким именем ! "
+
+#: Shared/AccountManager.pas:164
+msgid " Неправильное имя пользователя "
+msgstr "Некорректное имя пользователя"
+
+#: Shared/AccountManager.pas:166
+msgid "Incorrect Host"
+msgstr "Некорректный адрес почтового сервера"
+
+#: Shared/AccountManager.pas:168
+msgid "Incorrect Port"
+msgstr "Некорректный номер порта"
+
+#: Shared/AccountManager.pas:198
+msgid " Аккаунт не существует "
+msgstr "Данный  аккаунт не существует"
+
+#: Shared/AccountManager.pas:228
+msgid "No Such Account !"
+msgstr "Данная учетная запись  не существует"
+
+#: Shared/AccountManager.pas:244
+msgid "Account Corrupted"
+msgstr " Данная учетная запись повреждена"
+
+#: Shared/AccountManager.pas:262
+msgid " No Such Account "
+msgstr "Данная учетная запись повреждена"
+
+#: Shared/FilterManager.PAS:114
+msgid "Фильтр не может быть пустым"
+msgstr "Правило не может быть пустым"
+
+#: Shared/FilterManager.PAS:117
+msgid "Неправильный тип фильтра"
+msgstr "Неправильный тип фильтра"
+
+#: Shared/FilterManager.PAS:132
+msgid "Адрес отправителя некорректен"
+msgstr "Адрес отправителя некорректен"
+
+#. разобраться с преобразованиями
+#: Shared/FilterManager.PAS:138
+msgid "Неправильное расположение спам-слова"
+msgstr "Неправильное расположение cлова !"
+
+#: Shared/FilterManager.PAS:140
+msgid "Фильтр уже есть в данной группе"
+msgstr "Фильтр уже есть в данной группе"
+
+#: Shared/FilterManager.PAS:144
+msgid " Фильтр уже есть в противоположной группе "
+msgstr " Фильтр уже есть в противоположной группе "
+
+#: Shared/Shared.pas:504
+msgid "Невозможно добавить сообщение в лог :"
+msgstr "Невозможно добавить сообщение в Журнал :"
+

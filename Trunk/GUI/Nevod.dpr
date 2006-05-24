@@ -44,8 +44,8 @@ var
  aCon:TADOConnection;
  RegistrationForm:TFRegister;
 begin
-// AddDomainForResourceString ('ru-en');
- //UseLanguage ('ru');
+ AddDomainForResourceString ('en');
+ UseLanguage ('en');
  if InitInstance then
   begin
    Application.Initialize;
@@ -72,7 +72,6 @@ begin
      GetRegistrationInformation(UserKey,UserName );
      if not((UserKey <> nil) AND (StrLen(UserKey) > 0)) then
       begin
-       ShowMessage('dcdd');
        RegistrationForm:=TFRegister.Create(nil);
        RegistrationForm.ShowModal;
        if RegistrationForm.Result=1 then
