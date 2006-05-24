@@ -1,10 +1,10 @@
 object FMain: TFMain
-  Left = 93
-  Top = 165
+  Left = 245
+  Top = 82
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Nevod AntiSpam'
-  ClientHeight = 318
+  ClientHeight = 346
   ClientWidth = 743
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -21,7 +21,7 @@ object FMain: TFMain
   TextHeight = 13
   object stBar: TdxStatusBar
     Left = 0
-    Top = 296
+    Top = 324
     Width = 743
     Height = 22
     Panels = <
@@ -43,9 +43,9 @@ object FMain: TFMain
   end
   object SettingsTree: TcxTreeList
     Left = 0
-    Top = 19
+    Top = 45
     Width = 153
-    Height = 277
+    Height = 279
     Align = alLeft
     Bands = <
       item
@@ -54,7 +54,7 @@ object FMain: TFMain
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
-    Font.Name = 'Lucida Sans Unicode'
+    Font.Name = 'MS Sans Serif'
     Font.Style = []
     Images = trImages
     LookAndFeel.Kind = lfOffice11
@@ -82,22 +82,23 @@ object FMain: TFMain
     OnDragOver = SettingsTreeDragOver
     OnSelectionChanged = SettingsTreeSelectionChanged
     Data = {
-      02000400F20100000F00000044617461436F6E74726F6C6C6572310100000012
-      000000546378537472696E6756616C7565547970650D00000000000800000053
+      02000400160200000F00000044617461436F6E74726F6C6C6572310100000012
+      000000546378537472696E6756616C7565547970650E00000000000800000053
       657474696E677300000700000046696C746572730000080000004163636F756E
       7473000005000000416C6C6F7700000400000044656E79000005000000576F72
       64730000060000005374616D707300000700000053656E6465727300000B0000
       004174746163686D656E7473000005000000576F72647300000700000053656E
-      6465727300000B0000004174746163686D656E74730000030000004C6F670400
-      0000000000001000000001000000010000000100000002000000100000000200
-      0000020000000200000001000000040000000200000005000000050000000500
-      0000030000000400000004000000030000000300000003000000050000001000
-      0000060000000600000006000000060000001000000006000000060000000600
-      0000070000001000000006000000060000000600000008000000100000000600
-      0000060000000600000004000000040000000300000004000000040000000400
-      000009000000100000000600000006000000060000000A000000100000000600
-      000006000000060000000B000000100000000600000006000000060000000C00
-      000010000000000000000000000000000000}
+      6465727300000B0000004174746163686D656E74730000030000004C6F670000
+      0A000000E0E0FBE2E0FBF4E0F4FB050000000000000010000000010000000100
+      0000010000000200000010000000020000000200000002000000010000000400
+      0000020000000500000005000000050000000300000004000000040000000300
+      0000030000000300000005000000100000000600000006000000060000000600
+      0000100000000600000006000000060000000700000010000000060000000600
+      0000060000000800000010000000060000000600000006000000040000000400
+      0000030000000400000004000000040000000900000010000000060000000600
+      0000060000000A000000100000000600000006000000060000000B0000001000
+      00000600000006000000060000000C0000001000000000000000000000000000
+      00000D000000100000000000000000000000FFFFFFFF}
     object STree: TcxTreeListColumn
       DataBinding.ValueType = 'String'
       Options.Sorting = False
@@ -108,9 +109,9 @@ object FMain: TFMain
   end
   object stPages: TcxPageControl
     Left = 158
-    Top = 19
+    Top = 45
     Width = 585
-    Height = 277
+    Height = 279
     ActivePage = cxTab_Settings
     Align = alClient
     DragMode = dmAutomatic
@@ -120,7 +121,7 @@ object FMain: TFMain
     Options = []
     Style = 8
     TabOrder = 2
-    ClientRectBottom = 277
+    ClientRectBottom = 279
     ClientRectRight = 585
     ClientRectTop = 0
     object cxTab_Accounts: TcxTabSheet
@@ -130,7 +131,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 585
-        Height = 277
+        Height = 279
         Align = alClient
         BorderWidth = 2
         TabOrder = 0
@@ -211,7 +212,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 585
-        Height = 277
+        Height = 279
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
@@ -273,7 +274,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 585
-        Height = 277
+        Height = 279
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
@@ -1359,9 +1360,9 @@ object FMain: TFMain
   end
   object cxSplitter1: TcxSplitter
     Left = 153
-    Top = 19
+    Top = 45
     Width = 5
-    Height = 277
+    Height = 279
     AutoSnap = True
     ResizeUpdate = True
     Control = SettingsTree
@@ -5610,6 +5611,36 @@ object FMain: TFMain
         UseOwnFont = False
         Visible = False
         WholeRow = False
+      end
+      item
+        Caption = 'Custom 3'
+        DockedDockingStyle = dsTop
+        DockedLeft = 0
+        DockedTop = 19
+        DockingStyle = dsTop
+        FloatLeft = 195
+        FloatTop = 82
+        FloatClientWidth = 0
+        FloatClientHeight = 0
+        ItemLinks = <
+          item
+            Item = dxBarButton9
+            Visible = True
+          end
+          item
+            Item = dxBarButton11
+            Visible = True
+          end
+          item
+            Item = dxBarButton10
+            Visible = True
+          end>
+        Name = 'Custom 3'
+        OneOnRow = True
+        Row = 1
+        UseOwnFont = False
+        Visible = True
+        WholeRow = False
       end>
     CanCustomize = False
     Categories.Strings = (
@@ -5625,12 +5656,12 @@ object FMain: TFMain
     PopupMenuLinks = <>
     Style = bmsOffice11
     UseSystemFont = True
-    Left = 259
-    Top = 374
+    Left = 195
+    Top = 230
     DockControlHeights = (
       0
       0
-      19
+      45
       0)
     object msAccounts: TdxBarSubItem
       Caption = #1059#1095#1077#1090#1085#1099#1077' '#1079#1072#1087#1080#1089#1080
@@ -6129,6 +6160,24 @@ object FMain: TFMain
     object msRegister: TdxBarButton
       Action = alRegister
       Category = 0
+    end
+    object dxBarButton9: TdxBarButton
+      Caption = 'New Item'
+      Category = 0
+      Hint = 'New Item'
+      Visible = ivAlways
+    end
+    object dxBarButton10: TdxBarButton
+      Caption = 'New Item'
+      Category = 0
+      Hint = 'New Item'
+      Visible = ivAlways
+    end
+    object dxBarButton11: TdxBarButton
+      Caption = 'New Item'
+      Category = 0
+      Hint = 'New Item'
+      Visible = ivAlways
     end
   end
   object pAccounts: TdxBarPopupMenu

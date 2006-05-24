@@ -293,6 +293,9 @@ type
     msRegister: TdxBarButton;
     gbSounds: TcxGroupBox;
     trImages: TImageList;
+    dxBarButton9: TdxBarButton;
+    dxBarButton10: TdxBarButton;
+    dxBarButton11: TdxBarButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);

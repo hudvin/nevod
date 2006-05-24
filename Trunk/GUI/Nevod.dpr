@@ -44,8 +44,8 @@ var
  aCon:TADOConnection;
  RegistrationForm:TFRegister;
 begin
- AddDomainForResourceString ('en');
- UseLanguage ('en');
+ AddDomainForResourceString ('ru');
+ UseLanguage ('ru');
  if InitInstance then
   begin
    Application.Initialize;
