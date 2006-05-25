@@ -42,7 +42,7 @@ type
 
 type
   TFilterType=(ftBlackSender,ftWhiteSender,ftStamp,ftBlackWord,ftWhiteWord,ftImageFilter,ftLinkFilter,
-               ftBlackAttach,ftWhiteAttach,ftMessSize,ftSpamWord,ftNone);
+               ftBlackAttach,ftWhiteAttach,ftMessSize,ftNone);
 
 type
   TBodyType=(btText,btHtml);  // тип тела сообщения

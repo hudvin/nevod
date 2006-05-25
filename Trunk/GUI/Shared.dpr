@@ -3,12 +3,11 @@ library Shared;
 uses
   FastShareMem in '..\Shared\FastShareMem.pas',
   Dialogs,
+  //oleauto,
   Controls,
   Registry,
   ActiveX,
   SysUtils,
-  IdHashMessageDigest,
-  IdHash,
   ADODB,
   DB,
   Windows,
@@ -16,7 +15,8 @@ uses
   Classes,
   JRO_TLB in '..\Shared\JRO_TLB.pas',
   ADODB_TLB in '..\Shared\ADODB_TLB.pas',
-  gnugettext in '..\Libs\gnugettext.pas';
+  gnugettext in '..\Libs\gnugettext.pas',
+  md5 in '..\Shared\md5.pas';
 
 const
   CriptKey=' &(5428396%:?(__*:?:(_(%fGfhhKJHFGHD12_= ';
@@ -37,22 +37,8 @@ end;
 
 
 function md5(InputString:String):String;stdcall;
-var
-  Digest: T4x4LongWordRecord;
-  S, S1: string;
-  i: Integer;
 begin
- SetLength(S, 16);
-  with TIdHashMessageDigest5.Create do
-    begin
-      Digest := HashValue(InputString);
-      Move(Digest, S[1], 16);
-      for i := 1 to Length(InputString) do
-        S1 := S1 + Format('%02x', [Byte(S[i])]);
-      while Pos(' ', S1) > 0 do S1[Pos(' ', S1)] := '0';
-      Result:=s1;
-      Free;
-    end;
+ Result:=MD5DigestToStr(MD5String(InputString));
 end;
 
 
@@ -61,11 +47,14 @@ var
  Key:TRegistry;
 begin
  Key:=TRegistry.Create;
- Key.RootKey:=HKEY_CURRENT_USER;
- Key.OpenKey('\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders',False);
- Result:=Key.ReadString('AppData');
- Key.CloseKey;
- Key.Free;
+ try
+  Key.RootKey:=HKEY_CURRENT_USER;
+  Key.OpenKey('\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders',False);
+  Result:=Key.ReadString('AppData');
+  Key.CloseKey;
+ finally
+  Key.Free;
+ end;
 end;
 
 function DBPassword:String; stdcall;
@@ -139,11 +128,14 @@ var
  key:TRegistry;
 begin
  key:=TRegistry.Create;
- key.RootKey:=HKEY_CURRENT_USER;
- key.OpenKey('\Software\Nevilon\Nevod AntiSpam',True);
- key.WriteString('AppPath',AppPath);
- key.CloseKey;
- key.Free;
+ try
+   key.RootKey:=HKEY_CURRENT_USER;
+   key.OpenKey('\Software\Nevilon\Nevod AntiSpam',True);
+   key.WriteString('AppPath',AppPath);
+   key.CloseKey;
+ finally
+  key.Free;
+ end;
 end;
 
 function GetAppPath():String;stdcall;
@@ -151,11 +143,14 @@ var
  key:TRegistry;
 begin
  key:=TRegistry.Create;
- key.RootKey:=HKEY_CURRENT_USER;
- key.OpenKey('\Software\Nevilon\Nevod AntiSpam',True);
- Result:=key.ReadString('AppPath');
- key.CloseKey;
- key.Free;
+ try
+  key.RootKey:=HKEY_CURRENT_USER;
+  key.OpenKey('\Software\Nevilon\Nevod AntiSpam',True);
+  Result:=key.ReadString('AppPath');
+  key.CloseKey;
+ finally
+   key.Free;
+ end;
 end;
 
 function GetAppHandle():DWORD;stdcall;
@@ -188,10 +183,10 @@ var
  ConStr:String ;
 begin
  ConStr:=GetConnectionString;
-  Coinitialize(nil);
-  try
-  adCon:=TADOConnection.Create(nil);
-   adCon.ConnectionString:=ConStr;
+ Coinitialize(nil);
+ adCon:=TADOConnection.Create(nil);
+ try
+  adCon.ConnectionString:=ConStr;
    try
     adCon.Connected:=True;
     adCon.Connected:=False;
@@ -199,8 +194,8 @@ begin
    except
     Result:=False;
    end;
-  finally
-   adCon.Free;
+ finally
+  adCon.Free;
  end;
   CoUninitialize;
 end;

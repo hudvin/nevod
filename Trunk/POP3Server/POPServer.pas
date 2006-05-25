@@ -241,6 +241,7 @@ begin
    begin
     Cont:=TPOP3ServerContext(AContext.Connection.Tag);
       WaitForSingleObject(Mutex,INFINITE);
+
        FAccountManager.SetStatus(Cont.AccountId,asFree);
       ReleaseMutex(Mutex);
     TPOP3ServerContext(AContext.Connection.Tag).Destroy;
@@ -356,7 +357,7 @@ begin
               // Mess.Subject:=Cont.AllowFilter.Reason
 
                if Cont.DenyFilter.AnalyzeMessage(Mess) then
-                mess.Subject:=Cont.DenyFilter.Reason;
+                mess.Subject:='It'+''''+'s' +'Spam: '+Cont.DenyFilter.Reason;
              end;
             MessStream.Clear;
             Mess.SaveToStream(MessStream);

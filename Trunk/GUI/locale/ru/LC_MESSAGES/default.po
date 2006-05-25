@@ -1,10 +1,9 @@
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: Nevod AntiSPam 1.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-05-23 22:58+0300\n"
-"PO-Revision-Date: 2006-05-24 11:07+0200\n"
+"PO-Revision-Date: 2006-05-25 16:33+0200\n"
 "Last-Translator: neiroman <neiroman@gmail.com>\n"
 "Language-Team: Nevilon <neiroman@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -84,7 +83,7 @@ msgstr "Добавление нового правила"
 #. FCustomEditor..TabControl..leFilter..Caption
 #: GUI/FilterEditor.dfm:38
 msgid "Фильтр "
-msgstr "Фильтр "
+msgstr "Фильтр"
 
 #. FCustomEditor..TabControl..leLocation..Caption
 #: GUI/FilterEditor.dfm:45
@@ -104,7 +103,7 @@ msgstr "Правило"
 #. FCustomEditor..TabControl..leDescription..EditLabel.Caption
 #: GUI/FilterEditor.dfm:99
 msgid "Описание "
-msgstr "Описание "
+msgstr "Описание"
 
 #. FCustomEditor..TabControl..btOK..Caption
 #: GUI/FilterEditor.dfm:108
@@ -613,7 +612,7 @@ msgstr "Остановить"
 #. FMain..dxBar..msStartThread..Hint
 #: GUI/main.dfm:5721
 msgid "Проверить"
-msgstr "Получить сообщения"
+msgstr "Проверить"
 
 #. FMain..dxBar..msStopAllThreads..Caption
 #. FMain..dxBar..msStopAllThreads..Hint
@@ -1046,4 +1045,11 @@ msgstr " Фильтр уже есть в противоположной груп
 #: Shared/Shared.pas:504
 msgid "Невозможно добавить сообщение в лог :"
 msgstr "Невозможно добавить сообщение в Журнал :"
+
+#. FMain..dxBar..dxCheckAllAccounts..Caption
+#. FMain..dxBar..dxCheckAllAccounts..Hint
+#: GUI/main.dfm:6153
+#: GUI/main.dfm:6155
+msgid "Проверить все"
+msgstr "Проверить всё"
 

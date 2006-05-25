@@ -231,10 +231,6 @@ begin
         FSuccessFul:=False;
         FLogMessage:=_('Произошел обрыв соединения ');
        end;
-
-      // обрабатывать исключение при обрыве - таймаут
-      { else             
-       ShowMessage(E.); }
    end;
 end;
 

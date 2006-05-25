@@ -73,7 +73,7 @@ begin
   for i:=0 to FSNConverter.Count - 1 do
     begin
       if FSNConverter.Item[i].FilterType in [ftBlackSender,ftWhiteSender,ftStamp,ftBlackWord,ftWhiteWord,
-               ftBlackAttach,ftWhiteAttach,ftSpamWord] then
+               ftBlackAttach,ftWhiteAttach] then
          cCBFilter.Properties.Items.Add(FSNConverter.Item[i].Name);
     end;
   TranslateComponent(Self);

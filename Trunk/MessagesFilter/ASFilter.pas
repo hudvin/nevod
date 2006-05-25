@@ -101,16 +101,6 @@ type
     constructor Create(ADOCon:TADOConnection);
   end;
 
-  TComplexFilter = class(TBaseFilter)
-  private
-    MaxSignals: Integer;
-    Signals: TStringList;
-  public
-    constructor Create(Exp:TRegExp;Proc:TADOQuery;FilterType:TFilterType); override;
-    destructor Destroy; override;
-    function AnalyzeMessage(Mess:TFMessage): Boolean; override;
-  end;
-
 
 implementation
 uses main, IdEMailAddress;
@@ -412,25 +402,44 @@ var
  i:integer;
  Flag:boolean;
 begin
-
+  Flag:=True;
+  i:=0;
   if Mess.MessageText<>'' then
    begin
-   i:=0;
-   Flag:=True;
    if Mess.BodyType=btText then
-    FExp.RegEx:='(http://www.|http://|www.)([_a-z\d\-]+(\.[_a-z\d\-]+)+)((/[ _a-z\d\-\\\.]+)+)*'
-     else  FExp.RegEx:='<\s*a\s*href';  // проверить, насколько правильно
-   FExp.Subject:=Mess.MessageText;
-   if FExp.Match then
-    repeat
-     inc(i);
-     if (i>MaxLinks)
-       then Flag:=False;
-    until (not FExp.MatchAgain)or (not Flag);
+    begin
+     FExp.Subject:=Mess.MessageText;
+     FExp.RegEx:='(http://www.|http://|www.|https://www.)([_a-z\d\-]+(\.[_a-z\d\-]+)+)((/[ _a-z\d\-\\\.]+)+)*';
+     if FExp.Match then
+      repeat
+       inc(i);
+       if (i>MaxLinks) then Flag:=False;
+      until (not FExp.MatchAgain)or (not Flag);
+    end
+     else
+      begin
+       FExp.Subject:=Mess.MessageText;
+       FExp.RegEx:='(http://www.|http://|www.|https://www.)([_a-z\d\-]+(\.[_a-z\d\-]+)+)((/[ _a-z\d\-\\\.]+)+)*';
+       i:=0;
+       if FExp.Match then
+        repeat
+         inc(i);
+         if (i>MaxLinks) then Flag:=False;
+        until (not FExp.MatchAgain)or (not Flag);
+
+       FExp.Subject:=Mess.MessageText;
+       FExp.RegEx:='<\s*a\s*href';
+      
+       if FExp.Match then
+        repeat
+         inc(i);
+         if (i>MaxLinks) then Flag:=False;
+        until (not FExp.MatchAgain)or (not Flag);
+      end;
    if not Flag then    // количество  превышено
     begin
      Result:=True;
-     FReason:=GetReason(FFilterType);
+    FReason:=GetReason(FFilterType);//+IntToStr(i);
     end
    else  // количество не превышено
     begin
@@ -571,7 +580,7 @@ begin
     ftBlackAttach:FilterList.Add(TAttachmentExtFilter.Create(Exp,Proc,ftBlackAttach));
     ftWhiteAttach:FilterList.Add(TAttachmentExtFilter.Create(Exp,Proc,ftWhiteAttach));
     ftMessSize:FilterList.Add(TMessageSizeFilter.Create(Exp,Proc,ftMessSize));
-    ftSpamWord:FIlterList.Add(TCOmplexFilter.Create(Exp,Proc,ftSpamWord));
+   // ftSpamWord:FIlterList.Add(TCOmplexFilter.Create(Exp,Proc,ftSpamWord));
   end;
 end;
 
@@ -641,68 +650,8 @@ end;
 
 constructor TDenyFilterGroup.Create(ADOCon:TADOConnection);
 begin
-  Filters4Loading:=[ftBlackSender,ftBlackWord,ftImageFilter,ftLinkFilter,ftBlackAttach,ftMessSize,ftSpamWord];
+  Filters4Loading:=[ftBlackSender,ftBlackWord,ftImageFilter,ftLinkFilter,ftBlackAttach,ftMessSize];
   inherited Create(ADOCon);
-end;
-
-constructor TComplexFilter.Create(Exp:TRegExp;Proc:TADOQuery;
-    FilterType:TFilterType);
-begin
-  inherited Create(Exp,Proc,FilterType);
-  Signals:=TStringList.Create;
-  Signals.Delimiter:=' ';
-
-  with Proc do
-  begin
-   Active:=False;
-   SQL.Text:='SELECT Var FROM Settings WHERE Name='+'''' +'SpamWords'+'''';
-   Active:=True;
-   Signals.DelimitedText:=Fields[0].AsString;
-   Active:=False;
-
-   SQL.Text:='SELECT Var FROM Settings WHERE Name='+'''' +'MaxSpamWords'+'''';
-   Active:=True;
-   MaxSignals:=StrToInt(Fields[0].AsString);
-   Close;
-  end;
-end;
-
-destructor TComplexFilter.Destroy;
-begin
-  Signals.Free;
-  inherited;
-end;
-
-function TComplexFilter.AnalyzeMessage(Mess:TFMessage): Boolean;
-var
- Counter:integer;
- Flag:boolean;
- i:integer;
-begin
- {
- искать слова, пока их количество не превысит MaxSignals
- просматривать весь массив слов
-
- }
- Flag:=False;
- Counter:=0;
- i:=0;
- while (not Flag) and (i<Signals.Count)do
-   begin
-    FExp.Subject:=Mess.MessageText+' ' + Mess.Subject;
-    Fexp.RegEx:=Signals[i];
-    if FExp.Match
-     then inc(Counter);
-    if Counter>=MaxSignals   // превышено максимальное количество спам-слов
-     then  Flag:=True;
-    inc(i);
-   end;
-
- if Flag then FReason:='Too many dark words'
-  else FReason:='';
-     
- Result:=Flag;
-
 end;
 
 

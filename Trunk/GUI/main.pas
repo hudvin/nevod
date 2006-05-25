@@ -45,10 +45,6 @@ type
     dsLog: TDataSource;
     adLog: TADOQuery;
     cxTab_Log: TcxTabSheet;
-    adLogAccountName: TWideStringField;
-    adLogErrorType: TWideStringField;
-    adLogMessage: TWideStringField;
-    adLogErrorTime: TDateTimeField;
     cxLog: TcxGridDBTableView;
     cxLogGridLevel1: TcxGridLevel;
     cxLogGrid: TcxGrid;
@@ -56,7 +52,6 @@ type
     cxLogErrorType: TcxGridDBColumn;
     cxLogMessage: TcxGridDBColumn;
     cxLogErrorTime: TcxGridDBColumn;
-    adLogId: TAutoIncField;
     cxLogId: TcxGridDBColumn;
     cxTab_Filters: TcxTabSheet;
     cxFilters: TcxGridDBTableView;
@@ -293,9 +288,14 @@ type
     msRegister: TdxBarButton;
     gbSounds: TcxGroupBox;
     trImages: TImageList;
-    dxBarButton9: TdxBarButton;
-    dxBarButton10: TdxBarButton;
-    dxBarButton11: TdxBarButton;
+    dxCheckAllAccounts: TdxBarButton;
+    dxRunMailClient: TdxBarButton;
+    dxAddRule: TdxBarButton;
+    adLogId: TAutoIncField;
+    adLogAccountName: TWideStringField;
+    adLogErrorType: TWideStringField;
+    adLogMessage: TMemoField;
+    adLogErrorTime: TDateTimeField;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -517,17 +517,21 @@ begin
 end;
 
 procedure TFMain.UpdateAccountStatus(var Msg: TMessage);
+var
+ SelRow:integer;
 begin
  if (Application.MainForm <>nil ) and  ( Application.MainForm.Visible) and(cxTab_Accounts.Showing) then
   begin
-   UpdateStatusBar;
-   if FMain.Active then
-    begin
+      SelRow:=-1;
+     if (cxAccounts.DataController.RecordCount>0)and(cxAccounts.Controller.SelectedRowCount>0) then
+       SelRow:= cxAccounts.Controller.SelectedRows[0].RecordIndex;
+      UpdateStatusBar;
      if not adAccounts.Active then adAccounts.Active:=True;
      if not adLog.Active then adLog.Active:=True;
      adAccounts.Requery;
      adLog.Requery;
-    end;
+     if SelRow<>-1 then
+      cxAccounts.DataController.SelectRows(SelRow,SelRow);
    if not adAccounts.Active then adAccounts.Active:=True;
     adAccounts.Requery;
   end;
@@ -558,6 +562,7 @@ var
   buf:String;
   Sounder:TSounder;
 begin
+
   SendMessage(PrevHWnd, WM_DRAWCLIPBOARD, 0, 0);
   if Clipboard.HasFormat(CF_TEXT) then
   begin
@@ -569,7 +574,11 @@ begin
       begin
        ClbHookMode:=TClbHookMode(GetEnumValue(TypeInfo(TCLbHookMode),SProvider.GetValue('ClbHookMode')));
        buf:=FindElement(P,CLbHookMode);
-       if  (IsCreated) and(buf<>'')and (LastHooked<>buf) and (not FManager.ElementExists(buf,AddClb)) and (not FManager.ElementExists(buf,FManager.TwinFilter(AddClb))) then
+       if  (IsCreated)
+       and(buf<>'')and
+       //(LastHooked<>buf) and
+        (not FManager.ElementExists(buf,AddClb)) and
+         (not FManager.ElementExists(buf,FManager.TwinFilter(AddClb))) then
         begin
          LastHooked:=buf;
          if StrToBool(SProvider.GetValue('SoundOnAdd'))=True then
@@ -584,8 +593,8 @@ begin
           begin
            FManager.AddElement(buf,AddClb,'',True,'');
           end;
-         adFilters.Active:=True;
-         adFilters.Requery;
+      //   adFilters.Active:=True;
+      //   adFilters.Requery;
         end;
       end
     else LastHooked:='';
@@ -941,7 +950,7 @@ begin
    chURL:
     begin
      Exp.Subject:=Text;
-     Exp.RegEx:='(?i)(http://www.|http://|www.)([_a-z\d\-]+(\.[_a-z\d\-]+)+)((/[ _a-z\d\-\\\.]+)+)*';
+     Exp.RegEx:='(?i)(http://www.|http://|www.|https://www.)([_a-z\d\-]+(\.[_a-z\d\-]+)+)((/[ _a-z\d\-\\\.]+)+)*';
      if  (Exp.Match) then
        Result:='*@' +Exp.SubExpressions[2];
     end;
@@ -992,7 +1001,7 @@ var
  buf:TSNConvert;
 begin
  SNConverter.FindByName('Accounts',buf);
- ActivateNode(buf.NodeIndex);
+// ActivateNode(buf.NodeIndex);
  FAccountEditor.ShowModal;
 end;
 
@@ -1037,6 +1046,10 @@ begin
    if ( (mess.BallonType=bitInfo) and (StrToBool(SProvider.GetValue('BaloonOnNew'))) )
     or ((mess.BallonType=bitError) and (StrToBool(SProvider.GetValue('BaloonOnError'))))
     then
+     begin
+     sleep(1000);
+     tray.HideBalloonHint;
+     end;
    tray.ShowBalloonHint(mess.Caption,mess.LogMessage,mess.BallonType,10);
    if StrToBool(SProvider.GetValue('SoundOnError')) and (mess.BallonType=bitError) then
     Sounder:=TSounder.Create(SProvider.GetValue('ErrorSound'));  /////
@@ -1119,14 +1132,14 @@ var
   oFt: Set of TFilterType;
   FilterString:String;
 begin
- oFt:=[ftSpamWord,ftMessSize,ftImageFilter,ftLinkFilter];
+ oFt:=[ftMessSize,ftImageFilter,ftLinkFilter];
  with adProc do
    begin
     Active:=False;
     if (FilterType in  oFt ) then
      begin
       case FilterType of
-       ftSpamWord: FilterString:='SpamWords';
+      // ftSpamWord: FilterString:='SpamWords';
        ftMessSize:FilterString:='MaxSize';
        ftImageFilter:FilterString:='MaxImg';
        ftLinkFilter:FilterString:='MaxLinks' ;
@@ -1175,14 +1188,14 @@ var
   oFt: Set of TFilterType;
   FilterString:String;
 begin
- oFt:=[ftSpamWord,ftMessSize,ftImageFilter,ftLinkFilter];
+ oFt:=[ftMessSize,ftImageFilter,ftLinkFilter];
  with adProc do
    begin
     Active:=False;
     if (FilterType in  oFt ) then
      begin
       case FilterType of
-       ftSpamWord: FilterString:='SpamWords';
+      // ftSpamWord: FilterString:='SpamWords';
        ftMessSize:FilterString:='MaxSize';
        ftImageFilter:FilterString:='MaxImg';
        ftLinkFilter:FilterString:='MaxLinks' ;
@@ -1267,9 +1280,14 @@ end;
 
 procedure TFMain.alAddFilterElementExecute(Sender: TObject);
 begin
+
+  if not Application.MainForm.Showing then
+   Application.MainForm.Hide;
+    
+  FEditor.Show(STree.TreeList.FocusedNode.AbsoluteIndex);
   with FEditor do
    SetWindowPos(Handle, HWND_TOPMOST, Left,Top,Width,Height,SWP_NOACTIVATE or SWP_NOMOVE or SWP_NOSIZE);
- FEditor.Show(STree.TreeList.FocusedNode.AbsoluteIndex);
+ 
 end;
 
 procedure TFMain.alRemoveFilterElementExecute(Sender: TObject);
@@ -1612,7 +1630,7 @@ procedure TFMain.trayMouseDown(Sender: TObject; Button: TMouseButton;
 begin
  if Button=mbRight then
   begin
-   SetForegroundWindow(Handle);
+  SetForegroundWindow(Handle);
    pTray.PopupFromCursorPos;
   end;
 end;

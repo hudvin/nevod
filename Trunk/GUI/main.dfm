@@ -1,11 +1,11 @@
 object FMain: TFMain
-  Left = 245
-  Top = 82
+  Left = 244
+  Top = 173
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Nevod AntiSpam'
-  ClientHeight = 421
-  ClientWidth = 686
+  ClientHeight = 430
+  ClientWidth = 718
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,8 +21,8 @@ object FMain: TFMain
   TextHeight = 13
   object stBar: TdxStatusBar
     Left = 0
-    Top = 403
-    Width = 686
+    Top = 412
+    Width = 718
     Height = 18
     Panels = <
       item
@@ -45,7 +45,7 @@ object FMain: TFMain
     Left = 0
     Top = 45
     Width = 201
-    Height = 358
+    Height = 367
     Align = alLeft
     Bands = <
       item
@@ -110,9 +110,9 @@ object FMain: TFMain
   object stPages: TcxPageControl
     Left = 206
     Top = 45
-    Width = 480
-    Height = 358
-    ActivePage = cxTab_Log
+    Width = 512
+    Height = 367
+    ActivePage = cxTab_Accounts
     Align = alClient
     DragMode = dmAutomatic
     HideTabs = True
@@ -121,8 +121,8 @@ object FMain: TFMain
     Options = []
     Style = 8
     TabOrder = 2
-    ClientRectBottom = 358
-    ClientRectRight = 480
+    ClientRectBottom = 367
+    ClientRectRight = 512
     ClientRectTop = 0
     object cxTab_Accounts: TcxTabSheet
       Caption = 'cxTab_Accounts'
@@ -130,8 +130,8 @@ object FMain: TFMain
       object cxAccountsGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 480
-        Height = 358
+        Width = 512
+        Height = 367
         Align = alClient
         BorderWidth = 2
         TabOrder = 0
@@ -211,8 +211,8 @@ object FMain: TFMain
       object cxLogGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 480
-        Height = 358
+        Width = 512
+        Height = 367
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
@@ -249,6 +249,8 @@ object FMain: TFMain
           object cxLogMessage: TcxGridDBColumn
             Caption = #1057#1086#1086#1073#1097#1077#1085#1080#1077
             DataBinding.FieldName = 'Message'
+            PropertiesClassName = 'TcxBlobEditProperties'
+            Properties.BlobPaintStyle = bpsText
             Width = 326
           end
           object cxLogErrorTime: TcxGridDBColumn
@@ -273,8 +275,8 @@ object FMain: TFMain
       object cxFiltersGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 480
-        Height = 358
+        Width = 512
+        Height = 367
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
@@ -470,7 +472,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 1
         Height = 65
-        Width = 265
+        Width = 249
         object cbBallonOnReceive: TcxCheckBox
           Left = 8
           Top = 16
@@ -518,7 +520,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = False
         TabOrder = 2
         Height = 121
-        Width = 265
+        Width = 249
         object leSpyFor: TLabel
           Left = 8
           Top = 88
@@ -597,7 +599,7 @@ object FMain: TFMain
           StyleHot.LookAndFeel.Kind = lfOffice11
           StyleHot.LookAndFeel.NativeStyle = True
           TabOrder = 3
-          Width = 121
+          Width = 241
         end
       end
       object gbHotKeys: TcxGroupBox
@@ -726,7 +728,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.Kind = lfOffice11
         TabOrder = 4
         Height = 160
-        Width = 265
+        Width = 249
         object cbSoundOnReceive: TcxCheckBox
           Left = 8
           Top = 12
@@ -1362,7 +1364,7 @@ object FMain: TFMain
     Left = 201
     Top = 45
     Width = 5
-    Height = 358
+    Height = 367
     AutoSnap = True
     ResizeUpdate = True
     Control = SettingsTree
@@ -1377,7 +1379,7 @@ object FMain: TFMain
       'Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Documents and Se' +
       'ttings\neiroman\Application Data\Nevilon Software\Nevod AntiSpam' +
       '\messages.ndb;Persist Security Info=False;Jet OLEDB:Database Pas' +
-      'sword=C452030CAC51C8F'
+      'sword=DB5810BEC42789F'
     LoginPrompt = False
     Mode = cmShareDenyNone
     Provider = 'Microsoft.Jet.OLEDB.4.0'
@@ -1411,9 +1413,9 @@ object FMain: TFMain
       FieldName = 'ErrorType'
       Size = 50
     end
-    object adLogMessage: TWideStringField
+    object adLogMessage: TMemoField
       FieldName = 'Message'
-      Size = 255
+      BlobType = ftMemo
     end
     object adLogErrorTime: TDateTimeField
       FieldName = 'ErrorTime'
@@ -5372,15 +5374,15 @@ object FMain: TFMain
     MinimizeToTray = True
     OnClick = trayClick
     OnMouseDown = trayMouseDown
-    Left = 3
-    Top = 400
+    Left = 11
+    Top = 384
   end
   object AList: TActionList
     Left = 43
     Top = 352
     object alAddAccount: TAction
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
-      ImageIndex = 9
+      ImageIndex = 2
       ShortCut = 16449
       OnExecute = alAddAccountExecute
     end
@@ -5595,24 +5597,9 @@ object FMain: TFMain
         WholeRow = True
       end
       item
-        Caption = 'Custom 2'
-        DockedDockingStyle = dsTop
-        DockedLeft = 0
-        DockedTop = 23
-        DockingStyle = dsTop
-        FloatLeft = 46
-        FloatTop = 62
-        FloatClientWidth = 0
-        FloatClientHeight = 0
-        ItemLinks = <>
-        Name = 'Custom 2'
-        OneOnRow = True
-        Row = 1
-        UseOwnFont = False
-        Visible = False
-        WholeRow = False
-      end
-      item
+        AllowClose = False
+        AllowCustomizing = False
+        AllowQuickCustomizing = False
         Caption = 'Custom 3'
         DockedDockingStyle = dsTop
         DockedLeft = 0
@@ -5620,19 +5607,19 @@ object FMain: TFMain
         DockingStyle = dsTop
         FloatLeft = 195
         FloatTop = 82
-        FloatClientWidth = 0
-        FloatClientHeight = 0
+        FloatClientWidth = 83
+        FloatClientHeight = 66
         ItemLinks = <
           item
-            Item = dxBarButton9
+            Item = dxCheckAllAccounts
             Visible = True
           end
           item
-            Item = dxBarButton11
+            Item = dxAddRule
             Visible = True
           end
           item
-            Item = dxBarButton10
+            Item = dxRunMailClient
             Visible = True
           end>
         Name = 'Custom 3'
@@ -5656,8 +5643,8 @@ object FMain: TFMain
     PopupMenuLinks = <>
     Style = bmsOffice11
     UseSystemFont = True
-    Left = 99
-    Top = 350
+    Left = 139
+    Top = 222
     DockControlHeights = (
       0
       0
@@ -5682,11 +5669,11 @@ object FMain: TFMain
         end
         item
           BeginGroup = True
-          Item = msStopThread
+          Item = msStartThread
           Visible = True
         end
         item
-          Item = msStartThread
+          Item = msStopThread
           Visible = True
         end
         item
@@ -5725,7 +5712,7 @@ object FMain: TFMain
       Action = alAddAccount
       Category = 0
       Hint = #1044#1086#1073#1072#1074#1080#1090#1100
-      ImageIndex = 0
+      ImageIndex = 1
     end
     object msEditAccount: TdxBarButton
       Action = alEditAccount
@@ -5916,11 +5903,11 @@ object FMain: TFMain
           Visible = True
         end
         item
-          Item = msSaveLog
+          Item = msDeleteSelectedLog
           Visible = True
         end
         item
-          Item = msDeleteSelectedLog
+          Item = msSaveLog
           Visible = True
         end>
     end
@@ -6161,23 +6148,18 @@ object FMain: TFMain
       Action = alRegister
       Category = 0
     end
-    object dxBarButton9: TdxBarButton
-      Caption = 'New Item'
+    object dxCheckAllAccounts: TdxBarButton
+      Action = alStartAllThreads
       Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
+      PaintStyle = psCaption
     end
-    object dxBarButton10: TdxBarButton
-      Caption = 'New Item'
+    object dxRunMailClient: TdxBarButton
+      Action = alRunMailClient
       Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
     end
-    object dxBarButton11: TdxBarButton
-      Caption = 'New Item'
+    object dxAddRule: TdxBarButton
+      Action = alAddFilterElement
       Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
     end
   end
   object pAccounts: TdxBarPopupMenu
@@ -6185,10 +6167,6 @@ object FMain: TFMain
     ItemLinks = <
       item
         Item = pmAddAccount
-        Visible = True
-      end
-      item
-        Item = pmStopThread
         Visible = True
       end
       item
@@ -6201,6 +6179,10 @@ object FMain: TFMain
       end
       item
         Item = pmStartThread
+        Visible = True
+      end
+      item
+        Item = pmStopThread
         Visible = True
       end
       item
@@ -6279,8 +6261,8 @@ object FMain: TFMain
       end>
     UseOwnFont = False
     OnPopup = alOnLogPopUpExecute
-    Left = 89
-    Top = 387
+    Left = 121
+    Top = 347
   end
   object cxStyleRepository1: TcxStyleRepository
     Left = 144
@@ -6376,29 +6358,29 @@ object FMain: TFMain
     HotKey = 0
     OnHotKey = JvAppAddHotKeyHotKey
     OnHotKeyRegisterFailed = JvAppAddHotKeyHotKeyRegisterFailed
-    Left = 80
-    Top = 400
+    Left = 88
+    Top = 360
   end
   object JvAppShowMainWindow: TJvApplicationHotKey
     HotKey = 0
     OnHotKey = alShowMainWindowExecute
     OnHotKeyRegisterFailed = JvAppShowMainWindowHotKeyRegisterFailed
-    Left = 49
-    Top = 351
+    Left = 121
+    Top = 327
   end
   object JvAppCheckAllAccounts: TJvApplicationHotKey
     HotKey = 0
     OnHotKey = JvAppCheckAllAccountsHotKey
     OnHotKeyRegisterFailed = JvAppCheckAllAccountsHotKeyRegisterFailed
-    Left = 49
-    Top = 391
+    Left = 113
+    Top = 375
   end
   object jvAppRunMailClient: TJvApplicationHotKey
     HotKey = 0
     OnHotKey = jvAppRunMailClientHotKey
     OnHotKeyRegisterFailed = jvAppRunMailClientHotKeyRegisterFailed
-    Left = 57
-    Top = 367
+    Left = 113
+    Top = 335
   end
   object trImages: TImageList
     DrawingStyle = dsTransparent

@@ -86,6 +86,7 @@ begin
       end
        else
         begin
+         SetCurrentDir(ExtractFilePath(Application.ExeName));
          Application.CreateForm(TFMain, FMain);
          Application.CreateForm(TFAbout, FAbout);
          if (ParamCount>0) and (ParamStr(1)='-h') then

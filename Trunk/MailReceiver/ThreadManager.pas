@@ -92,11 +92,11 @@ begin
      if TBaseReceiver(PostReceivers[i]).Terminated then
       with TBaseReceiver(PostReceivers[i]) do
         begin
-
+       //     SendMessage(main.FMain.Handle, WM_UpdateLog,0,0);
          if SuccessFul=False then
           begin
            Logger.Add(_('Ошибка при получении почты : ') +LogMessage,AccountId,ltPostReceiver);
-           SendMessage(main.FMain.Handle, WM_UpdateLog,0,0);
+          
            SendHintMessage(AccountParams.AccountName,
                _(' Ошибка при получении почты для  ')+ '"'+AccountParams.AccountName +'"',
                _(' Ошибка при получении почты  : ')+  ' '+LogMessage,
@@ -106,6 +106,7 @@ begin
            else
             if MessagesCount>0 then
             begin
+
              Mess.Caption:=_(' Получена новая почта  для  ')+ '"'+AccountParams.AccountName +'"';
              Mess.LogMessage:=_(' Загружено ')+  ' '+IntToStr(MessagesCount)+ _(' новых писем');
              Mess.MessagesCount:=MessagesCount;

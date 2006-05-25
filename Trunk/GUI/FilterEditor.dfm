@@ -1,11 +1,11 @@
 object FCustomEditor: TFCustomEditor
-  Left = 380
-  Top = 291
+  Left = 510
+  Top = 278
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1044#1086#1073#1072#1074#1083#1077#1085#1080#1077' '#1085#1086#1074#1086#1075#1086' '#1092#1080#1083#1100#1090#1088#1072
   ClientHeight = 158
-  ClientWidth = 249
+  ClientWidth = 262
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,31 +21,31 @@ object FCustomEditor: TFCustomEditor
   object TabControl: TcxTabControl
     Left = 0
     Top = 0
-    Width = 249
+    Width = 262
     Height = 158
     Align = alClient
     LookAndFeel.Kind = lfOffice11
     LookAndFeel.NativeStyle = False
     TabOrder = 0
     ClientRectBottom = 158
-    ClientRectRight = 249
+    ClientRectRight = 262
     ClientRectTop = 0
     object leFilter: TLabel
-      Left = 16
+      Left = 44
       Top = 60
       Width = 43
       Height = 13
       Caption = #1060#1080#1083#1100#1090#1088' '
     end
     object leLocation: TLabel
-      Left = 16
+      Left = 8
       Top = 84
       Width = 41
       Height = 13
       Caption = 'Location'
     end
     object cCBFilter: TcxComboBox
-      Left = 72
+      Left = 88
       Top = 56
       Properties.DropDownListStyle = lsFixedList
       Properties.OnChange = cCBFilterPropertiesChange
@@ -78,7 +78,7 @@ object FCustomEditor: TFCustomEditor
       Width = 121
     end
     object leValue: TLabeledEdit
-      Left = 72
+      Left = 88
       Top = 8
       Width = 161
       Height = 21
@@ -90,7 +90,7 @@ object FCustomEditor: TFCustomEditor
       OnKeyPress = leValueKeyPress
     end
     object leDescription: TLabeledEdit
-      Left = 72
+      Left = 88
       Top = 32
       Width = 161
       Height = 21
@@ -119,7 +119,7 @@ object FCustomEditor: TFCustomEditor
       OnClick = btCancelClick
     end
     object cCBLocation: TcxComboBox
-      Left = 72
+      Left = 88
       Top = 80
       Properties.DropDownListStyle = lsFixedList
       Style.LookAndFeel.Kind = lfOffice11
