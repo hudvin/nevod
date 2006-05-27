@@ -150,9 +150,14 @@ begin
 end;
 
 procedure TFCustomEditor.btOKClick(Sender: TObject);
-var
+ const
+  NAME_SIZE = 250;
+  LINE_LEN = 250;
+  var
  Res:TSNConvert;
  Location:TSignalLocation;
+ mError,mCaption:String;
+ mErrorString,mCaptionString:array[0..LINE_LEN+NAME_SIZE+sizeof(WideChar)*2] of WideChar;
 begin
  FSNConverter.FindByName(cCBFilter.Properties.Items.Strings[cCBFilter.SelectedItem],Res);
  if Res.FilterType in [ftBlackWord,ftWhiteWord] then
@@ -164,8 +169,17 @@ begin
   PostMessage(main.FMain.Handle,WM_UpdateFilters,0,0);
   Close;
  except
-  on e: Exception do 
-   ShowMessage(e.Message);
+  on e: Exception do
+   begin
+    // mError, mCaption - возврат сообщений и заголовков
+    mError:=String(_(e.Message));
+    mCaption:=String(_('Ошибка'));
+
+    StringToWideChar(mError,mErrorString, SizeOf(mErrorString));
+ //   StringToWideChar(mCaption,mCaptionString, SizeOf(mCaptionString));
+    ShowMessage(mErrorString);
+   // MessageBoxW(main.FMain.Handle,mErrorString,mCaptionString,MB_SYSTEMMODAL or MB_ICONWARNING);
+   end;
  end;
 end;
 

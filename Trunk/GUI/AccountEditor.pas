@@ -49,7 +49,7 @@ var
   FAccountEditor: TFAccountEditor;
   
 implementation
-
+uses main;
 {$R *.dfm}
 
 constructor TFAccountEditor.Create(adAccounts:TADOQuery;
@@ -124,7 +124,14 @@ begin
 end;
 
 procedure TFAccountEditor.btOKClick(Sender: TObject);
-var
+ const
+  NAME_SIZE = 250;
+  LINE_LEN = 250;
+ var
+ Res:TSNConvert;
+ Location:TSignalLocation;
+ mError,mCaption:String;
+ mErrorString,mCaptionString:array[0..LINE_LEN+NAME_SIZE+sizeof(WideChar)*2] of WideChar;
  buf:integer;
 begin
  with FAccountParams do
@@ -159,7 +166,15 @@ begin
 
  except
   on e: Exception do
-    Showmessage(E.Message);
+   begin
+    mError:=String(_(e.Message));
+    mCaption:=String(_('Ошибка'));
+
+    StringToWideChar(mError,mErrorString, SizeOf(mErrorString));
+  //  StringToWideChar(mCaption,mCaptionString, SizeOf(mCaptionString));
+    ShowMessage(mErrorString);
+
+   end;
  end;
 
 end;

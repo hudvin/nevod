@@ -520,8 +520,7 @@ procedure TFMain.UpdateAccountStatus(var Msg: TMessage);
 var
  SelRow:integer;
 begin
- if (Application.MainForm <>nil ) and  ( Application.MainForm.Visible) and(cxTab_Accounts.Showing) then
-  begin
+
       SelRow:=-1;
      if (cxAccounts.DataController.RecordCount>0)and(cxAccounts.Controller.SelectedRowCount>0) then
        SelRow:= cxAccounts.Controller.SelectedRows[0].RecordIndex;
@@ -534,7 +533,6 @@ begin
       cxAccounts.DataController.SelectRows(SelRow,SelRow);
    if not adAccounts.Active then adAccounts.Active:=True;
     adAccounts.Requery;
-  end;
 end;
 
 procedure TFMain.UpdateFilters(var Msg: TMessage);
@@ -560,7 +558,6 @@ var
   H: THandle;
   Len:integer;
   buf:String;
-  Sounder:TSounder;
 begin
 
   SendMessage(PrevHWnd, WM_DRAWCLIPBOARD, 0, 0);
@@ -582,7 +579,7 @@ begin
         begin
          LastHooked:=buf;
          if StrToBool(SProvider.GetValue('SoundOnAdd'))=True then
-          Sounder:=TSounder.Create(SProvider.GetValue('AddSound'));
+          TSounder.Create(SProvider.GetValue('AddSound'));
          if StrToBool(SProvider.GetValue('ShowspyEditor')) then
           begin
            FEditor.Show(buf,TFIlterType(GetEnumValue(TypeInfo(TFilterType),SProvider.GetValue('AddClb'))));
@@ -779,7 +776,6 @@ begin
 end;
 
 procedure TFMain.FormDestroy(Sender: TObject);
-var i:integer;
 begin
  tray.Enabled:=False;
  tray.Free;
@@ -943,8 +939,6 @@ begin
 end;
 
 function TFMain.FindElement(Text:String;SType:TClbHookMode): string;
-var
- RegStr:String;
 begin
  case SType of
    chURL:
@@ -1038,7 +1032,6 @@ end;
 procedure TFMain.WMCopyData(var Msg: TWMCopyData);
 var
  mess:TWMMessanger;
- Sounder:TSounder;
 begin
  with Msg.CopyDataStruct^ do
   begin
@@ -1052,9 +1045,9 @@ begin
      end;
    tray.ShowBalloonHint(mess.Caption,mess.LogMessage,mess.BallonType,10);
    if StrToBool(SProvider.GetValue('SoundOnError')) and (mess.BallonType=bitError) then
-    Sounder:=TSounder.Create(SProvider.GetValue('ErrorSound'));  /////
+    TSounder.Create(SProvider.GetValue('ErrorSound'));  /////
    if StrToBool(SProvider.GetValue('SoundOnNew')) and (mess.BallonType=bitInfo) then
-    Sounder:=TSounder.Create(SProvider.GetValue('NewSound'));
+    TSounder.Create(SProvider.GetValue('NewSound'));
   end;
 end;
 
@@ -1447,8 +1440,6 @@ end;
 
 procedure TFMain.cxButtonEdit1PropertiesButtonClick(Sender: TObject;
   AButtonIndex: Integer);
-var
- sn:TSounder;
 begin
  if AButtonIndex=0 then
   begin
@@ -1459,13 +1450,11 @@ begin
     end;
   end
  else
- sn:=TSounder.Create(beSoundOnNew.Text);
+ TSounder.Create(beSoundOnNew.Text);
 end;
 
 procedure TFMain.beSoundOnErrorPropertiesButtonClick(Sender: TObject;
   AButtonIndex: Integer);
-var
- sn:TSounder;
 begin
  if AButtonIndex=0 then
   begin
@@ -1476,7 +1465,7 @@ begin
     end;
   end
  else
-  sn:=TSounder.Create(beSoundOnError.Text);
+  TSounder.Create(beSoundOnError.Text);
 end;
 
 procedure TFMain.cbSoundOnReceivePropertiesChange(Sender: TObject);
@@ -1604,8 +1593,6 @@ end;
 
 procedure TFMain.beSoundOnAddPropertiesButtonClick(Sender: TObject;
   AButtonIndex: Integer);
-var
- sn:TSounder;
 begin
  if AButtonIndex=0 then
   begin
@@ -1616,7 +1603,7 @@ begin
     end;
   end
  else
-  sn:=TSounder.Create(beSoundOnAdd.Text);
+  TSounder.Create(beSoundOnAdd.Text);
 end;
 
 procedure TFMain.cxAccountsDblClick(Sender: TObject);
@@ -1706,10 +1693,8 @@ end;
 
 
 procedure TFMain.alRunMailClientExecute(Sender: TObject);
-var
- MRunner:TMailClientRunner;
 begin
- MRunner:=TMailClientRunner.Create;
+ TMailClientRunner.Create;
 end;
 
 procedure TFMain.btAddHotKeyClick(Sender: TObject);
@@ -1945,7 +1930,6 @@ const
 var
   ProcessHandle : THandle;
   ProcessID: Integer;
-  TheWindow : HWND;
 begin
   GetWindowThreadProcessID(Handle, @ProcessID);
   ProcessHandle := OpenProcess(PROCESS_TERMINATE, FALSE, ProcessId);
