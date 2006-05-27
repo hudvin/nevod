@@ -71,7 +71,7 @@ begin
    begin
      GetTrialDays( TrialDaysTotal, TrialDaysLeft );
     leLicenseUsername.Font.Color:=clRed;
-    leLicenseUsername.Caption:='trial';
+    leLicenseUsername.Caption:=_('Незарегистрированная версия');
    end;
 end;
 

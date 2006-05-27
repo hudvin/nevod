@@ -26,6 +26,7 @@ const
   WM_UpdateLog=WM_USER+3;
   WM_UpdateFilters=WM_USER+4;
   WM_ShowCEditor=WM_USER+5;
+  WM_ShowRegistrationForm=WM_USER+6;
   UM_ACTIVATE = WM_APP + 123;
 type
  TClbHookMode=(chEmail,chURL,chEmailURL);

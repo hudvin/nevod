@@ -42,10 +42,10 @@ uses
 var
  Con,CanExit:boolean;
  aCon:TADOConnection;
- RegistrationForm:TFRegister;
 begin
  AddDomainForResourceString ('ru');
  UseLanguage ('ru');
+ SetCurrentDir(ExtractFilePath(Application.ExeName));
  if InitInstance then
   begin
    Application.Initialize;
@@ -69,30 +69,11 @@ begin
  if CanExit  then  Application.Terminate
   else
    begin
-     GetRegistrationInformation(UserKey,UserName );
-     if not((UserKey <> nil) AND (StrLen(UserKey) > 0)) then
-      begin
-       RegistrationForm:=TFRegister.Create(nil);
-       RegistrationForm.ShowModal;
-       if RegistrationForm.Result=1 then
-        begin
-         Application.CreateForm(TFMain, FMain);
-  Application.CreateForm(TFAbout, FAbout);
+    Application.CreateForm(TFMain, FMain);
   if (ParamCount>0) and (ParamStr(1)='-h') then
-          Application.MainForm.WindowState:=wsMinimized;
-         Application.Run;
-        end;
-       RegistrationForm.Free;
-      end
-       else
-        begin
-         SetCurrentDir(ExtractFilePath(Application.ExeName));
-         Application.CreateForm(TFMain, FMain);
-         Application.CreateForm(TFAbout, FAbout);
-         if (ParamCount>0) and (ParamStr(1)='-h') then
-         Application.MainForm.WindowState:=wsMinimized;
-         Application.Run;
-        end;
+     Application.MainForm.WindowState:=wsMinimized;
+     Application.Run;
    end;
-  end;
+   end;
 end.
+

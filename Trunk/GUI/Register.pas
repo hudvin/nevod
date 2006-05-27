@@ -6,7 +6,7 @@ interface
 
 uses
   Windows,gnugettext,RegistrationKey, Messages,ShellAPI, StdCtrls, cxContainer, cxEdit, cxProgressBar,
-  Classes,aspr_api, Controls, cxControls, cxPC ,SysUtils, Variants,  Graphics,  Forms,
+  Classes,aspr_api, Controls, cxControls, cxPC ,SysUtils, Variants,  Graphics,  Forms,  Shared,
   Dialogs, jpeg, ExtCtrls, JvImage;
 
 type
@@ -35,6 +35,13 @@ type
     { Public declarations }
   end;
 
+  TThreadRegistrationForm = class(TThread)
+  private
+  public
+    constructor Create;
+    procedure Execute; override;
+  end;
+
 var
   FRegister: TFRegister;
   RegistrationKeyForm:TFRegistrationKey;
@@ -50,7 +57,7 @@ const
   TrialDaysLeft  : DWORD  = DWORD(-1);
 
 implementation
-
+uses main;
 {$R *.dfm}
 procedure TFRegister.btBuyClick(Sender: TObject);
 begin
@@ -66,13 +73,12 @@ begin
    Result:=1;
    Close;
   end;
-   
 end;
 
 procedure TFRegister.FormCreate(Sender: TObject);
 begin
  RegistrationKeyForm:=TFRegistrationKey.Create(nil);
- Result:=1;
+ Result:=0;
  TranslateComponent(self);
 end;
 
@@ -119,7 +125,7 @@ end;
 
 procedure TFRegister.TimerTimer(Sender: TObject);
 begin
- if StrToInt(btLater.Caption)=0 then
+ if StrToInt(btLater.Caption)=1 then
   begin
    Timer.Enabled:=False;
    btLater.Caption:=_('Позже');
@@ -133,6 +139,17 @@ procedure TFRegister.btLaterClick(Sender: TObject);
 begin
  Result:=1;
  Close;
+end;
+
+constructor TThreadRegistrationForm.Create;
+begin
+  inherited Create(False);
+end;
+
+procedure TThreadRegistrationForm.Execute;
+begin
+ SendMessage(main.FMain.Handle,WM_ShowRegistrationForm,0,0);
+ Terminate;
 end;
 
 end.

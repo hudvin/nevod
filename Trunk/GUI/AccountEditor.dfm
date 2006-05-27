@@ -1,6 +1,6 @@
 object FAccountEditor: TFAccountEditor
-  Left = 335
-  Top = 404
+  Left = 359
+  Top = 217
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'FAccountEditor'
@@ -64,8 +64,20 @@ object FAccountEditor: TFAccountEditor
       EditLabel.Width = 38
       EditLabel.Height = 13
       EditLabel.Caption = #1055#1072#1088#1086#1083#1100
+      EditLabel.Font.Charset = RUSSIAN_CHARSET
+      EditLabel.Font.Color = clWindowText
+      EditLabel.Font.Height = -11
+      EditLabel.Font.Name = 'MS Sans Serif'
+      EditLabel.Font.Style = []
+      EditLabel.ParentFont = False
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -9
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
       LabelPosition = lpLeft
-      PasswordChar = '*'
+      ParentFont = False
+      PasswordChar = '1'
       TabOrder = 2
       OnKeyPress = lePasswordKeyPress
     end

@@ -225,6 +225,8 @@ end;
 procedure TFAccountEditor.FormCreate(Sender: TObject);
 begin
  TranslateComponent(self);
+ lePassword.Font.Name := 'Wingdings';
+ lePassword.PasswordChar := 'l';
 end;
 
 end.

@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 244
-  Top = 173
+  Left = 279
+  Top = 214
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Nevod AntiSpam'
@@ -112,7 +112,7 @@ object FMain: TFMain
     Top = 45
     Width = 512
     Height = 367
-    ActivePage = cxTab_Settings
+    ActivePage = cxTab_Accounts
     Align = alClient
     DragMode = dmAutomatic
     HideTabs = True
@@ -156,7 +156,7 @@ object FMain: TFMain
           OptionsSelection.InvertSelect = False
           OptionsView.ColumnAutoWidth = True
           OptionsView.GroupByBox = False
-          Styles.Background = cxStyle1
+          Styles.Background = cxGrid
           object cxAccountsid: TcxGridDBColumn
             DataBinding.FieldName = 'id'
             Visible = False
@@ -235,7 +235,8 @@ object FMain: TFMain
           OptionsView.DataRowHeight = 19
           OptionsView.FooterAutoHeight = True
           OptionsView.GroupByBox = False
-          Styles.Background = cxStyle1
+          Styles.Background = cxGrid
+          Styles.Selection = cxStyle1
           object cxLogAccountName: TcxGridDBColumn
             Caption = #1059#1095#1077#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
             DataBinding.FieldName = 'AccountName'
@@ -303,7 +304,7 @@ object FMain: TFMain
           OptionsSelection.MultiSelect = True
           OptionsView.ColumnAutoWidth = True
           OptionsView.GroupByBox = False
-          Styles.Background = cxStyle1
+          Styles.Background = cxGrid
           object cxFiltersid: TcxGridDBColumn
             DataBinding.FieldName = 'id'
             Visible = False
@@ -647,8 +648,10 @@ object FMain: TFMain
           Width = 97
           Height = 19
           HotKey = 32833
+          InvalidKeys = [hcNone]
           TabOrder = 0
           OnEnter = JvAddHotKeyEnter
+          OnExit = JvAddHotKeyExit
           ParentColor = False
         end
         object btAddHotKey: TButton
@@ -666,8 +669,10 @@ object FMain: TFMain
           Width = 97
           Height = 19
           HotKey = 32833
+          InvalidKeys = [hcNone]
           TabOrder = 2
           OnEnter = jvShowMainWindowEnter
+          OnExit = jvShowMainWindowExit
           ParentColor = False
         end
         object JvCheckAllAccounts: TJvHotKey
@@ -676,8 +681,10 @@ object FMain: TFMain
           Width = 97
           Height = 19
           HotKey = 32833
+          InvalidKeys = [hcNone]
           TabOrder = 3
           OnEnter = JvCheckAllAccountsEnter
+          OnExit = JvCheckAllAccountsExit
           ParentColor = False
         end
         object JvRunMailClient: TJvHotKey
@@ -686,8 +693,10 @@ object FMain: TFMain
           Width = 97
           Height = 19
           HotKey = 32833
+          InvalidKeys = [hcNone]
           TabOrder = 4
           OnEnter = JvRunMailClientEnter
+          OnExit = JvRunMailClientExit
           ParentColor = False
         end
         object btShowMainWindow: TButton
@@ -1371,8 +1380,8 @@ object FMain: TFMain
   end
   object dsAccounts: TDataSource
     DataSet = adAccounts
-    Left = 64
-    Top = 280
+    Left = 32
+    Top = 256
   end
   object adCon: TADOConnection
     ConnectionString = 
@@ -1383,12 +1392,12 @@ object FMain: TFMain
     LoginPrompt = False
     Mode = cmShareDenyNone
     Provider = 'Microsoft.Jet.OLEDB.4.0'
-    Top = 368
+    Top = 192
   end
   object dsLog: TDataSource
     DataSet = adLog
     Left = 32
-    Top = 304
+    Top = 288
   end
   object adLog: TADOQuery
     AutoCalcFields = False
@@ -1400,7 +1409,7 @@ object FMain: TFMain
         'SELECT Log.Id,Accounts.AccountName,ErrorType,Log.Message,ErrorTi' +
         'me  FROM Log,Accounts'
       'WHERE  Accounts.Id=log.mid')
-    Top = 304
+    Top = 288
     object adLogId: TAutoIncField
       FieldName = 'Id'
       ReadOnly = True
@@ -1428,7 +1437,7 @@ object FMain: TFMain
     SQL.Strings = (
       'SELECT id,FValue,Description,Active,Params'
       'FROM FiltersParams')
-    Top = 240
+    Top = 224
     object adFiltersid: TAutoIncField
       FieldName = 'id'
       ReadOnly = True
@@ -1452,8 +1461,8 @@ object FMain: TFMain
   end
   object dsFilters: TDataSource
     DataSet = adFilters
-    Left = 24
-    Top = 184
+    Left = 32
+    Top = 224
   end
   object adAccounts: TADOQuery
     Connection = adCon
@@ -1461,7 +1470,7 @@ object FMain: TFMain
     Parameters = <>
     SQL.Strings = (
       'SELECT * FROM Accounts')
-    Top = 272
+    Top = 256
     object adAccountsid: TAutoIncField
       FieldName = 'id'
       ReadOnly = True
@@ -5374,12 +5383,12 @@ object FMain: TFMain
     MinimizeToTray = True
     OnClick = trayClick
     OnMouseDown = trayMouseDown
-    Left = 11
-    Top = 384
+    Left = 139
+    Top = 376
   end
   object AList: TActionList
-    Left = 43
-    Top = 352
+    Left = 547
+    Top = 24
     object alAddAccount: TAction
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
       ImageIndex = 2
@@ -5643,8 +5652,8 @@ object FMain: TFMain
     PopupMenuLinks = <>
     Style = bmsOffice11
     UseSystemFont = True
-    Left = 139
-    Top = 222
+    Left = 395
+    Top = 22
     DockControlHeights = (
       0
       0
@@ -5859,24 +5868,6 @@ object FMain: TFMain
       Action = alRemoveFilterElement
       Category = 0
     end
-    object dxBarButton1: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-    end
-    object dxBarButton2: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-    end
-    object dxBarStatic1: TdxBarStatic
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-    end
     object btAddAccount: TdxBarLargeButton
       Action = alAddAccount
       Category = 0
@@ -5922,30 +5913,6 @@ object FMain: TFMain
     object msDeleteSelectedLog: TdxBarButton
       Action = alDeleteSelectedLog
       Category = 0
-    end
-    object dxBarButton3: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-    end
-    object dxBarButton4: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-    end
-    object dxBarButton5: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-    end
-    object dxBarStatic2: TdxBarStatic
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
     end
     object ptStartAllThreads: TdxBarButton
       Action = alStartAllThreads
@@ -6041,24 +6008,6 @@ object FMain: TFMain
           Visible = True
         end>
     end
-    object dxBarSubItem1: TdxBarSubItem
-      Caption = 'New Item'
-      Category = 0
-      Visible = ivAlways
-      ItemLinks = <>
-    end
-    object dxBarButton6: TdxBarButton
-      Action = alAddAccount
-      Category = 0
-      Lowered = True
-      PaintStyle = psCaptionGlyph
-    end
-    object dxBarButton7: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
-    end
     object msEnableFiltering: TdxBarButton
       Action = alEnableFiltering
       Category = 0
@@ -6108,12 +6057,6 @@ object FMain: TFMain
       Action = alRunAtStartUp
       Category = 0
       ButtonStyle = bsChecked
-    end
-    object dxBarButton8: TdxBarButton
-      Caption = 'New Item'
-      Category = 0
-      Hint = 'New Item'
-      Visible = ivAlways
     end
     object pCanCheckAccounts: TdxBarButton
       Action = alCanCheckAccounts
@@ -6231,18 +6174,18 @@ object FMain: TFMain
       end>
     UseOwnFont = False
     OnPopup = alOnFiltersPopUpExecute
-    Left = 25
-    Top = 343
+    Left = 497
+    Top = 21
   end
   object selSound: TOpenDialog
     Filter = 'Sounds|*.wav'
-    Left = 73
-    Top = 379
+    Left = 65
+    Top = 371
   end
   object sdLog: TSaveDialog
     Filter = 'Text files|*.txt'
-    Left = 73
-    Top = 379
+    Left = 25
+    Top = 371
   end
   object pLog: TdxBarPopupMenu
     BarManager = dxBar
@@ -6261,41 +6204,8 @@ object FMain: TFMain
       end>
     UseOwnFont = False
     OnPopup = alOnLogPopUpExecute
-    Left = 121
-    Top = 347
-  end
-  object cxStyleRepository1: TcxStyleRepository
-    Left = 144
-    Top = 312
-    object cxStyle1: TcxStyle
-      AssignedValues = [svColor, svFont]
-      Color = clSkyBlue
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clGradientInactiveCaption
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = []
-    end
-    object cxStyle2: TcxStyle
-      AssignedValues = [svColor]
-      Color = clWhite
-    end
-  end
-  object cxStyleRepository2: TcxStyleRepository
-    Left = 96
-    Top = 312
-    object cxStyle3: TcxStyle
-      AssignedValues = [svColor]
-      Color = clSkyBlue
-    end
-  end
-  object cxStyleRepository3: TcxStyleRepository
-    Left = 64
-    Top = 312
-    object cxStyle4: TcxStyle
-      AssignedValues = [svColor]
-      Color = clHotLight
-    end
+    Left = 433
+    Top = 21
   end
   object pTray: TdxBarPopupMenu
     BarManager = dxBar
@@ -6351,41 +6261,41 @@ object FMain: TFMain
         Visible = True
       end>
     UseOwnFont = False
-    Left = 129
-    Top = 377
+    Left = 465
+    Top = 21
   end
   object JvAppAddHotKey: TJvApplicationHotKey
     HotKey = 0
     OnHotKey = JvAppAddHotKeyHotKey
     OnHotKeyRegisterFailed = JvAppAddHotKeyHotKeyRegisterFailed
-    Left = 88
-    Top = 360
+    Left = 384
+    Top = 240
   end
   object JvAppShowMainWindow: TJvApplicationHotKey
     HotKey = 0
     OnHotKey = alShowMainWindowExecute
     OnHotKeyRegisterFailed = JvAppShowMainWindowHotKeyRegisterFailed
-    Left = 121
-    Top = 327
+    Left = 385
+    Top = 287
   end
   object JvAppCheckAllAccounts: TJvApplicationHotKey
     HotKey = 0
     OnHotKey = JvAppCheckAllAccountsHotKey
     OnHotKeyRegisterFailed = JvAppCheckAllAccountsHotKeyRegisterFailed
-    Left = 113
-    Top = 375
+    Left = 385
+    Top = 319
   end
   object jvAppRunMailClient: TJvApplicationHotKey
     HotKey = 0
     OnHotKey = jvAppRunMailClientHotKey
     OnHotKeyRegisterFailed = jvAppRunMailClientHotKeyRegisterFailed
-    Left = 113
-    Top = 335
+    Left = 385
+    Top = 359
   end
   object trImages: TImageList
     DrawingStyle = dsTransparent
-    Left = 128
-    Top = 280
+    Left = 104
+    Top = 368
     Bitmap = {
       494C010107000900040010001000FFFFFFFFFF00FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000002000000001002000000000000020
@@ -6656,5 +6566,20 @@ object FMain: TFMain
       000FC00700018001000FC00700008001000FC007000080010007C00700008001
       0003C007800180010001C007800180010001C007C003C001000BC007C007E003
       000FE007F00FF007801FFE0FFC3FF81F}
+  end
+  object cxStyles: TcxStyleRepository
+    object cxGrid: TcxStyle
+      AssignedValues = [svColor]
+      Color = clSkyBlue
+    end
+    object cxStyle1: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clMoneyGreen
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+    end
   end
 end

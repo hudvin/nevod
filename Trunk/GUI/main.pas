@@ -19,7 +19,7 @@ uses  Commctrl,tlhelp32, StdCtrls, Dialogs, ImgList, Controls, dxBar,  Math,
    ToolWin, ActnCtrls, ActnColorMaps,
   ActnPopupCtrl,  cxRichEdit,  gnugettext,
   cxButtons, cxDropDownEdit,  ComCtrls, JvHotKey, JvComponent,
-  JvAppHotKey, JvHotkeyEx,   RegistrationKey,
+  JvAppHotKey, JvHotkeyEx,   RegistrationKey, About,
   JvDlg, JvComputerInfo, JvHtControls, JvTransLED, JvEditor, JvaScrollText,
   JvMemo, IdBaseComponent, IdComponent, IdCustomTCPServer, IdEchoServer,
   IdIPWatch;
@@ -158,9 +158,6 @@ type
     pmEditFilterElement: TdxBarButton;
     pmAddFilterElement: TdxBarButton;
     pmRemoveFilterElement: TdxBarButton;
-    dxBarButton1: TdxBarButton;
-    dxBarButton2: TdxBarButton;
-    dxBarStatic1: TdxBarStatic;
     btAddAccount: TdxBarLargeButton;
     gbSystem: TcxGroupBox;
     lbServerPort: TLabeledEdit;
@@ -201,17 +198,6 @@ type
     cbShowEditor: TcxCheckBox;
     cbSoundOnAdd: TcxCheckBox;
     beSoundOnAdd: TcxButtonEdit;
-    cxStyleRepository1: TcxStyleRepository;
-    cxStyle1: TcxStyle;
-    cxStyle2: TcxStyle;
-    cxStyleRepository2: TcxStyleRepository;
-    cxStyle3: TcxStyle;
-    cxStyleRepository3: TcxStyleRepository;
-    cxStyle4: TcxStyle;
-    dxBarButton3: TdxBarButton;
-    dxBarButton4: TdxBarButton;
-    dxBarButton5: TdxBarButton;
-    dxBarStatic2: TdxBarStatic;
     pTray: TdxBarPopupMenu;
     ptStartAllThreads: TdxBarButton;
     ptAppTerminate: TdxBarButton;
@@ -241,9 +227,6 @@ type
     alRestoreFromBackUp: TAction;
     alSaveToBackUp: TAction;
     msHelp: TdxBarSubItem;
-    dxBarSubItem1: TdxBarSubItem;
-    dxBarButton6: TdxBarButton;
-    dxBarButton7: TdxBarButton;
     leShowMainWindow: TLabel;
     jvShowMainWindow: TJvHotKey;
     JvCheckAllAccounts: TJvHotKey;
@@ -273,7 +256,6 @@ type
     alRunAtStartUp: TAction;
     msRunAtStartUp: TdxBarButton;
     pRunAtStartUp: TdxBarButton;
-    dxBarButton8: TdxBarButton;
     pCanCheckAccounts: TdxBarButton;
     alEnableClbSpy: TAction;
     msEnableClbSpy: TdxBarButton;
@@ -296,6 +278,9 @@ type
     adLogErrorType: TWideStringField;
     adLogMessage: TMemoField;
     adLogErrorTime: TDateTimeField;
+    cxStyles: TcxStyleRepository;
+    cxGrid: TcxStyle;
+    cxStyle1: TcxStyle;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -426,6 +411,10 @@ type
     procedure alShowEditorFormExecute(Sender: TObject);
     procedure alShowMainWindowExecute(Sender: TObject);
     procedure alRegisterExecute(Sender: TObject);
+    procedure JvAddHotKeyExit(Sender: TObject);
+    procedure jvShowMainWindowExit(Sender: TObject);
+    procedure JvCheckAllAccountsExit(Sender: TObject);
+    procedure JvRunMailClientExit(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -438,6 +427,7 @@ type
     procedure WMDrawClipboard(var Msg: TWMDrawClipboard);
     message WM_DRAWCLIPBOARD;
     procedure WMCopyData(var Msg: TWMCopyData); message WM_COPYDATA;
+    procedure WMShowRegistrationForm(var Msg: TMessage); message WM_ShowRegistrationForm;
     procedure UMActivate( var msg: TMessage ); message UM_ACTIVATE;
     procedure UpdateLog(var Msg: TMessage); message WM_UpdateLog;
     procedure UpdateAccountStatus(var Msg: TMessage); message WM_UpdateAccountStatus;
@@ -479,6 +469,7 @@ var
   FEditor:TFCustomEditor;
   FPortEditor:TFPortEditor;
   FAccountEditor:TFAccountEditor;
+  FAboutForm:TFAbout;
   Coder:TBFCoder;
   AccountManager:TAccountManager;
   ThreadManager:TThreadManager;
@@ -486,14 +477,32 @@ var
   Mutex:THandle;
   pp:integer;
   IsCreated:boolean;
+
 implementation
 
-uses  MultInst, About,SplashScreen;
+uses  MultInst,SplashScreen;
 
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
 {$R ..\Resources\Messages.res}
 
+
+procedure TFMain.WMShowRegistrationForm(var Msg: TMessage);
+var
+ RegForm:TFRegister;
+begin
+ GetRegistrationInformation(UserKey,UserName );
+ if not((UserKey <> nil) AND (StrLen(UserKey) > 0)) then
+  begin
+   SetActiveWindow(Handle);
+   RegForm:=TFRegister.Create(nil);
+   RegForm.ShowModal;
+   if  RegForm.Result=0 then
+     begin
+      Application.Terminate;
+     end;
+  end;
+end;
 
 procedure TFMain.UpdateStatusBar;
 begin
@@ -520,7 +529,6 @@ procedure TFMain.UpdateAccountStatus(var Msg: TMessage);
 var
  SelRow:integer;
 begin
-
       SelRow:=-1;
      if (cxAccounts.DataController.RecordCount>0)and(cxAccounts.Controller.SelectedRowCount>0) then
        SelRow:= cxAccounts.Controller.SelectedRows[0].RecordIndex;
@@ -773,11 +781,17 @@ begin
    TranslateComponent(self);
    adAccounts.Active:=True;
    adLog.Active:=True;
+   TThreadRegistrationForm.Create;
+  // SendMessage(Handle,WM_ShowRegistrationForm,0,0);
+
+
 end;
 
 procedure TFMain.FormDestroy(Sender: TObject);
 begin
+ FAboutForm.Free;
  tray.Enabled:=False;
+ tray.HideTaskbarIcon;
  tray.Free;
  ThreadManager.Free;
  FManager.Free;
@@ -1273,10 +1287,9 @@ end;
 
 procedure TFMain.alAddFilterElementExecute(Sender: TObject);
 begin
-
   if not Application.MainForm.Showing then
    Application.MainForm.Hide;
-    
+
   FEditor.Show(STree.TreeList.FocusedNode.AbsoluteIndex);
   with FEditor do
    SetWindowPos(Handle, HWND_TOPMOST, Left,Top,Width,Height,SWP_NOACTIVATE or SWP_NOMOVE or SWP_NOSIZE);
@@ -1629,7 +1642,9 @@ end;
 
 procedure TFMain.JvAddHotKeyEnter(Sender: TObject);
 begin
+ jvAppAddHotKey.Active:=False;
  btAddHotKey.Tag:=JvAddHotKey.HotKey;
+ alAddFilterElement.ShortCut:=0;
 end;
 
 procedure TFMain.JvAppAddHotKeyHotKeyRegisterFailed(Sender: TObject;
@@ -1800,8 +1815,9 @@ procedure TFMain.JvAppShowMainWindowHotKeyRegisterFailed(Sender: TObject;
   var HotKey: TShortCut);
 begin
  jvShowMainWindow.HotKey:=btShowMainWindow.Tag;
- jvShowMainWindow.HotKey:=btShowMainWindow.Tag;
+ jvAppShowMainWindow.HotKey:=btShowMainWindow.Tag;
  SProvider.SetValue('ShowMainWindowHotKey',IntToStr(btShowMainWindow.Tag));
+ alShowMainWindow.ShortCut:=jvShowMainWindow.HotKey;
 end;
 
 procedure TFMain.JvAppCheckAllAccountsHotKeyRegisterFailed(Sender: TObject;
@@ -1817,7 +1833,7 @@ procedure TFMain.jvAppRunMailClientHotKeyRegisterFailed(Sender: TObject;
   var HotKey: TShortCut);
 begin
  JvRunMailClient.HotKey:=btRunMailClient.Tag;
- JvRunMailClient.HotKey:=btRunMailClient.Tag;
+ JvAppRunMailClient.HotKey:=btRunMailClient.Tag;
  SProvider.SetValue('RunMailClientHotKey',IntToStr(btRunMailClient.Tag));
  alRunMailClient.ShortCut:=jvAppRunMailClient.HotKey;
 end;
@@ -1825,16 +1841,24 @@ end;
 procedure TFMain.jvShowMainWindowEnter(Sender: TObject);
 begin
   btShowMainWindow.Tag:=jvShowMainWindow.HotKey;
+  jvAppShowMainWindow.Active:=False;
+  alShowMainWindow.ShortCut:=0
 end;
 
 procedure TFMain.JvCheckAllAccountsEnter(Sender: TObject);
 begin
  btCheckAllAccounts.Tag:=JvCheckAllAccounts.HotKey;
+ JvAppCheckAllAccounts.Active:=False;
+ alStartAllThreads.ShortCut:=0;
 end;
 
 procedure TFMain.JvRunMailClientEnter(Sender: TObject);
 begin
   btRunMailClient.Tag:=JvRunMailClient.HotKey;
+
+ JvAppRunMailClient.Active:=False;
+ alRunMailClient.ShortCut:=0;
+
 end;
 
 procedure TFMain.alEnableFilteringExecute(Sender: TObject);
@@ -1857,7 +1881,9 @@ end;
 
 procedure TFMain.alShowAboutExecute(Sender: TObject);
 begin
- FAbout.ShowModal;
+ FAboutForm:=TFAbout.Create(nil);
+ FAboutForm.ShowModal;
+ FreeAndNil(FAboutForm);
 end;
 
 procedure TFMain.alCheckForUpdatesExecute(Sender: TObject);
@@ -1934,6 +1960,30 @@ begin
   GetWindowThreadProcessID(Handle, @ProcessID);
   ProcessHandle := OpenProcess(PROCESS_TERMINATE, FALSE, ProcessId);
   TerminateProcess(ProcessHandle,4);
+end;
+
+procedure TFMain.JvAddHotKeyExit(Sender: TObject);
+begin
+ jvAppAddHotKey.Active:=True;
+ alAddFilterElement.ShortCut:=jvAppAddHotKey.HotKey;
+end;
+
+procedure TFMain.jvShowMainWindowExit(Sender: TObject);
+begin
+ jvAppShowMainWindow.Active:=True;
+ alShowMainWindow.ShortCut:=JvAppShowMainWindow.HotKey;
+end;
+
+procedure TFMain.JvCheckAllAccountsExit(Sender: TObject);
+begin
+ JvAppCheckAllAccounts.Active:=True;
+ alStartAllThreads.ShortCut:=JvAppCheckAllAccounts.HotKey;
+end;
+
+procedure TFMain.JvRunMailClientExit(Sender: TObject);
+begin
+ JvAppRunMailClient.Active:=True;
+ alRunMailClient.ShortCut:=jvAppRunMailClient.HotKey;
 end;
 
 end.
