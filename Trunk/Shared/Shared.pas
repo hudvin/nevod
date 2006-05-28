@@ -3,10 +3,10 @@ unit Shared;
 interface
 
 uses 
-  PerlRegEx, MMSystem, gnugettext, CoolTrayIcon, cxGridDBTableView,  cxPC, Windows,
-  WinSock, Registry,  ZLib,TypInfo, Messages, SysUtils, Variants,  ComObj,ActiveX,
-  Dialogs, StdCtrls, DB, ADODB,IdMessage, Classes,  IdText,IdMessageParts,StrUtils,
-  IdAttachment,IdZLibCompressorBase,DCPcrypt,Blowfish,Base64;
+  PerlRegEx, MMSystem, gnugettext, CoolTrayIcon, cxGridDBTableView,  cxPC, Windows, IdException,
+  WinSock, Registry,  ZLib,TypInfo, Messages, SysUtils, Variants,  ComObj,ActiveX, idStack,IdreplyPOP3,
+  Dialogs, StdCtrls, DB, ADODB,IdMessage, Classes,  IdText,IdMessageParts,StrUtils,IdPOP3,
+  IdAttachment,IdZLibCompressorBase,DCPcrypt,Blowfish,Base64, IdThread;
 
 const
   SIO_GET_INTERFACE_LIST = $4004747F;
@@ -275,6 +275,25 @@ type
   public
     constructor Create;
     procedure Execute; override;
+  end;
+
+  TPOP3Tester = class(TIdThread)
+  private
+    FAccountsParams: TAccountParams;
+    FbtTest: TButton;
+    FErrorString: WideString;
+    FSuccessFul: Boolean;
+    pop: TIdPOP3;
+  public
+    constructor Create(TestButton:TButton;AParams:TAccountParams); virtual;
+    destructor Destroy; override;
+    procedure PushButton;
+    procedure Run; override;
+    procedure UnPushButton;
+    property AccountsParams: TAccountParams read FAccountsParams write
+        FAccountsParams;
+    property ErrorString: WideString read FErrorString write FErrorString;
+    property SuccessFul: Boolean read FSuccessFul write FSuccessFul;
   end;
 
 function GetConnectionString: String;stdcall; external 'Shared.DLL';
@@ -1149,6 +1168,75 @@ begin
  finally
     reg.Free;
  end;
+end;
+
+constructor TPOP3Tester.Create(TestButton:TButton;AParams:TAccountParams);
+begin
+ inherited Create (False);
+ FreeOnTerminate:=True;
+ FbtTest:=TestButton;
+ 
+ AccountsParams:=AParams;
+ pop:=TIdPOP3.Create;
+end;
+
+destructor TPOP3Tester.Destroy;
+begin
+ if pop.Connected then pop.Disconnect;
+ pop.Free;
+end;
+
+procedure TPOP3Tester.PushButton;
+begin
+ FbtTest.Enabled:=False;
+ FbtTest.Caption:=_('Проверка');
+end;
+
+procedure TPOP3Tester.Run;
+var
+ Capt:String;
+begin
+ Synchronize(PushButton);
+ FSuccessFul:=True;
+ ErrorString:='';
+
+ pop.Username:=AccountsParams.Username;
+ pop.Password:=AccountsParams.Password;
+ pop.Host:=AccountsParams.Host;
+ pop.Port:=AccountsParams.Port;
+ pop.ConnectTimeout:=AccountsParams.Timeout;
+ try
+  pop.Connect;
+  ErrorString:=_('Соединение успешно установлено');
+ except
+  on EIdSocketError do
+   begin
+    FSuccessFul:=False;
+    FErrorString:=_('Невозможно подключиться к серверу');
+   end;
+  on  EIdReplyPOP3Error  do
+   begin
+    FSuccessFul:=False;
+    FErrorString:=_('Неправильные  параметры аккаунта');
+   end ;
+ on EIdConnClosedGracefully do
+  begin
+   FSuccessFul:=False;
+   FErrorString:=_('Невозможно подключиться к серверу');
+  end;
+ end;
+
+ if SuccessFul then
+  MessageBoxW(Handle, PWideChar(FErrorString),PWideChar(_('Сообщение')), MB_ICONINFORMATION)
+   else MessageBoxW(Handle, PWideChar(FErrorString),PWideChar(_('Ошибка')), MB_ICONWARNING);
+ Synchronize(UnPushButton); 
+ Terminate;
+end;
+
+procedure TPOP3Tester.UnPushButton;
+begin
+ FbtTest.Enabled:=True;
+ FbtTest.Caption:=_('Проверить');
 end;
 
 end.

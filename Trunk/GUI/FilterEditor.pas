@@ -2,7 +2,7 @@ unit FilterEditor;
 
 interface
 
-uses  Shared,   FilterManager, TypInfo,  gnugettext,
+uses  Shared,   FilterManager, TypInfo,  gnugettext, 
   Windows, Messages, SysUtils,ADODB,DB, Classes, Controls, cxControls, cxPC ,Variants, Graphics,  Forms,
   Dialogs,   StdCtrls, cxContainer, cxEdit, cxTextEdit, cxMaskEdit,
   cxDropDownEdit, ExtCtrls, cxCheckBox, cxButtons;

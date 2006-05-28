@@ -5,7 +5,7 @@ object FAccountEditor: TFAccountEditor
   BorderStyle = bsSingle
   Caption = 'FAccountEditor'
   ClientHeight = 192
-  ClientWidth = 240
+  ClientWidth = 311
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,7 +21,7 @@ object FAccountEditor: TFAccountEditor
   object cxTab: TcxTabControl
     Left = 0
     Top = 0
-    Width = 240
+    Width = 311
     Height = 192
     Align = alClient
     LookAndFeel.Kind = lfOffice11
@@ -30,7 +30,7 @@ object FAccountEditor: TFAccountEditor
     Style = 8
     TabOrder = 0
     ClientRectBottom = 192
-    ClientRectRight = 240
+    ClientRectRight = 311
     ClientRectTop = 0
     object leAccountName: TLabeledEdit
       Left = 112
@@ -129,13 +129,22 @@ object FAccountEditor: TFAccountEditor
       OnClick = btOKClick
     end
     object btCancel: TButton
-      Left = 136
+      Left = 120
       Top = 160
       Width = 81
       Height = 25
       Caption = #1054#1090#1084#1077#1085#1072
       TabOrder = 7
       OnClick = btCancelClick
+    end
+    object btTest: TButton
+      Left = 216
+      Top = 160
+      Width = 75
+      Height = 25
+      Caption = 'btTest'
+      TabOrder = 8
+      OnClick = btTestClick
     end
   end
 end

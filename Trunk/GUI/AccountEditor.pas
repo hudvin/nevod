@@ -17,6 +17,7 @@ type
     leTimeout: TLabeledEdit;
     btOK: TButton;
     btCancel: TButton;
+    btTest: TButton;
     procedure btCancelClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btOKClick(Sender: TObject);
@@ -27,6 +28,7 @@ type
     procedure lePasswordKeyPress(Sender: TObject; var Key: Char);
     procedure leHostKeyPress(Sender: TObject; var Key: Char);
     procedure FormCreate(Sender: TObject);
+    procedure btTestClick(Sender: TObject);
   private
     FAccountManager: TAccountManager;
     FadAccounts: TADOQuery;
@@ -37,6 +39,7 @@ type
   public
     constructor Create(adAccounts:TADOQuery;AccountManager:TAccountManager);
         reintroduce; overload;
+    function BuildParams: TAccountParams;
     procedure CleanFields;
     procedure FilterKey(var Key:Char);
     procedure SetCaptions;
@@ -132,25 +135,9 @@ procedure TFAccountEditor.btOKClick(Sender: TObject);
  Location:TSignalLocation;
  mError,mCaption:String;
  mErrorString,mCaptionString:array[0..LINE_LEN+NAME_SIZE+sizeof(WideChar)*2] of WideChar;
- buf:integer;
+
 begin
- with FAccountParams do
-  begin
-   buf:=-1;
-   Val(lePort.Text,Port,buf);
-   if buf<>0 then Port:=-1;
-   buf:=-1;
-   Val(leTimeout.Text,Timeout,buf);
-   if buf<>0 then Timeout:=-1
-    else Timeout:=Timeout*1000;
-
-   Id:=FAccountId;
-   AccountName:=leAccountName.Text;
-   Username:=leUsername.Text;
-   Password:=lePassword.Text;
-   Host:=leHost.Text;
-  end;
-
+ BuildParams;
  try
   if FEditorMode=emAdd then
    begin
@@ -227,6 +214,33 @@ begin
  TranslateComponent(self);
  lePassword.Font.Name := 'Wingdings';
  lePassword.PasswordChar := 'l';
+end;
+
+procedure TFAccountEditor.btTestClick(Sender: TObject);
+begin
+ TPOP3Tester.Create(btTest,BuildParams);
+end;
+
+function TFAccountEditor.BuildParams: TAccountParams;
+var
+  buf:integer;
+begin
+ with FAccountParams do
+  begin
+   buf:=-1;
+   Val(lePort.Text,Port,buf);
+   if buf<>0 then Port:=-1;
+   buf:=-1;
+   Val(leTimeout.Text,Timeout,buf);
+   if buf<>0 then Timeout:=-1
+    else Timeout:=Timeout*1000;
+
+   Id:=FAccountId;
+   AccountName:=leAccountName.Text;
+   Username:=leUsername.Text;
+   Password:=lePassword.Text;
+   Host:=leHost.Text;
+  end;
 end;
 
 end.
