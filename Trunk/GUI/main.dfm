@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 211
-  Top = 335
+  Left = 168
+  Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Nevod AntiSpam'
@@ -112,7 +112,7 @@ object FMain: TFMain
     Top = 45
     Width = 512
     Height = 367
-    ActivePage = cxTab_Accounts
+    ActivePage = cxTab_Settings
     Align = alClient
     DragMode = dmAutomatic
     HideTabs = True
@@ -757,6 +757,7 @@ object FMain: TFMain
         object beSoundOnNew: TcxButtonEdit
           Left = 32
           Top = 36
+          ParentFont = False
           Properties.Buttons = <
             item
               Caption = 'Browse'
@@ -764,9 +765,15 @@ object FMain: TFMain
               Kind = bkText
             end
             item
-              Kind = bkGlyph
+              Caption = 'Play'
+              Kind = bkText
             end>
           Properties.OnButtonClick = cxButtonEdit1PropertiesButtonClick
+          Style.Font.Charset = DEFAULT_CHARSET
+          Style.Font.Color = clWindowText
+          Style.Font.Height = -11
+          Style.Font.Name = 'MS Sans Serif'
+          Style.Font.Style = []
           Style.LookAndFeel.Kind = lfOffice11
           Style.LookAndFeel.NativeStyle = True
           StyleDisabled.LookAndFeel.Kind = lfOffice11
@@ -788,7 +795,8 @@ object FMain: TFMain
               Kind = bkText
             end
             item
-              Kind = bkGlyph
+              Caption = 'Play'
+              Kind = bkText
             end>
           Properties.OnButtonClick = beSoundOnErrorPropertiesButtonClick
           Style.LookAndFeel.Kind = lfOffice11
@@ -844,7 +852,8 @@ object FMain: TFMain
               Kind = bkText
             end
             item
-              Kind = bkGlyph
+              Caption = 'Play'
+              Kind = bkText
             end>
           Properties.OnButtonClick = beSoundOnAddPropertiesButtonClick
           Style.LookAndFeel.Kind = lfOffice11
@@ -6104,6 +6113,10 @@ object FMain: TFMain
       Action = alAddFilterElement
       Category = 0
     end
+    object ptStopAllThreads: TdxBarButton
+      Action = alStopAllThreads
+      Category = 0
+    end
   end
   object pAccounts: TdxBarPopupMenu
     BarManager = dxBar
@@ -6220,6 +6233,10 @@ object FMain: TFMain
       end
       item
         Item = ptStartAllThreads
+        Visible = True
+      end
+      item
+        Item = ptStopAllThreads
         Visible = True
       end
       item

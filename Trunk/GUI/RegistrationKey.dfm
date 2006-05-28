@@ -1,6 +1,6 @@
 object FRegistrationKey: TFRegistrationKey
-  Left = 366
-  Top = 253
+  Left = 367
+  Top = 255
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1050#1083#1102#1095' '#1072#1082#1090#1080#1074#1072#1094#1080#1080

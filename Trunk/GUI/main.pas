@@ -281,6 +281,7 @@ type
     cxStyles: TcxStyleRepository;
     cxGrid: TcxStyle;
     cxStyle1: TcxStyle;
+    ptStopAllThreads: TdxBarButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);

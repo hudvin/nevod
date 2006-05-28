@@ -4,20 +4,25 @@ interface
 
 uses  ADOdb,DB,  Shared,gnugettext,
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, cxControls, cxPC, AccountManager;
+  Dialogs, StdCtrls, ExtCtrls, cxControls, cxPC, AccountManager,
+  cxContainer, cxEdit, cxGroupBox, JvComponent, JvBalloonHint;
 
 type
   TFAccountEditor = class(TForm)
     cxTab: TcxTabControl;
+    cxGroupBox1: TcxGroupBox;
     leAccountName: TLabeledEdit;
     leUsername: TLabeledEdit;
     lePassword: TLabeledEdit;
     leHost: TLabeledEdit;
     lePort: TLabeledEdit;
     leTimeout: TLabeledEdit;
+    cxGroupBox2: TcxGroupBox;
     btOK: TButton;
     btCancel: TButton;
     btTest: TButton;
+    btHelp: TButton;
+    JVHelp: TJvBalloonHint;
     procedure btCancelClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btOKClick(Sender: TObject);
@@ -41,7 +46,7 @@ type
         reintroduce; overload;
     function BuildParams: TAccountParams;
     procedure CleanFields;
-    procedure FilterKey(var Key:Char);
+    procedure FilterKey(var Key:Char;Control:TWinControl);
     procedure SetCaptions;
     procedure ShowModal; reintroduce; overload; virtual;
     procedure ShowModal(AccountId:integer); reintroduce; overload; virtual;
@@ -124,6 +129,7 @@ procedure TFAccountEditor.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
  CleanFields;
+ JVHelp.CancelHint;
 end;
 
 procedure TFAccountEditor.btOKClick(Sender: TObject);
@@ -166,47 +172,52 @@ begin
 
 end;
 
-procedure TFAccountEditor.FilterKey(var Key:Char);
+procedure TFAccountEditor.FilterKey(var Key:Char;Control:TWinControl);
 begin
  if Ord(key)>127 then
   begin
    Key := #0;
+   if (Control=lePort) or (Control=leTimeout) then
+    jvHelp.ActivateHint(Control,_('В данное поле можно вводить'+ chr(13) +  'только английские цифры'),_('Внимание !'))
+   else
+     jvHelp.ActivateHint(Control,_('В данное поле можно вводить только английские символы и цифры'),_('Внимание !'));
    Beep;
   end;
+
 end;
 
 procedure TFAccountEditor.lePortKeyPress(Sender: TObject; var Key: Char);
 begin
- FilterKey(Key);
+ FilterKey(Key,lePort);
 end;
 
 procedure TFAccountEditor.leTimeoutKeyPress(Sender: TObject;
   var Key: Char);
 begin
- FilterKey(Key);
+ FilterKey(Key,leTimeout);
 end;
 
 procedure TFAccountEditor.leAccountNameKeyPress(Sender: TObject;
   var Key: Char);
 begin
- FilterKey(Key);
+ FilterKey(Key,leaccountName);
 end;
 
 procedure TFAccountEditor.leUsernameKeyPress(Sender: TObject;
   var Key: Char);
 begin
- FilterKey(Key);
+ FilterKey(Key,leUsername);
 end;
 
 procedure TFAccountEditor.lePasswordKeyPress(Sender: TObject;
   var Key: Char);
 begin
- FilterKey(Key);
+ FilterKey(Key,lePassword);
 end;
 
 procedure TFAccountEditor.leHostKeyPress(Sender: TObject; var Key: Char);
 begin
- FilterKey(Key);
+ FilterKey(Key,leHost);
 end;
 
 procedure TFAccountEditor.FormCreate(Sender: TObject);
@@ -242,5 +253,6 @@ begin
    Host:=leHost.Text;
   end;
 end;
+
 
 end.

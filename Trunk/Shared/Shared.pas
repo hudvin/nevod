@@ -3,7 +3,7 @@ unit Shared;
 interface
 
 uses 
-  PerlRegEx, MMSystem, gnugettext, CoolTrayIcon, cxGridDBTableView,  cxPC, Windows, IdException,
+  PerlRegEx, MMSystem, gnugettext,Commctrl, CoolTrayIcon, cxGridDBTableView,  cxPC, Windows, IdException,
   WinSock, Registry,  ZLib,TypInfo, Messages, SysUtils, Variants,  ComObj,ActiveX, idStack,IdreplyPOP3,
   Dialogs, StdCtrls, DB, ADODB,IdMessage, Classes,  IdText,IdMessageParts,StrUtils,IdPOP3,
   IdAttachment,IdZLibCompressorBase,DCPcrypt,Blowfish,Base64, IdThread;
@@ -28,6 +28,7 @@ const
   WM_ShowCEditor=WM_USER+5;
   WM_ShowRegistrationForm=WM_USER+6;
   UM_ACTIVATE = WM_APP + 123;
+
 type
  TClbHookMode=(chEmail,chURL,chEmailURL);
 
@@ -327,9 +328,7 @@ procedure RestoreDB;
 
 
 function GetFileSize(FileName: String): Integer;
-
 implementation
-
 
 {
 ********************************* TCompressor **********************************
