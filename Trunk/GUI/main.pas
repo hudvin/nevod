@@ -466,6 +466,7 @@ type
 var
   FMain: TFMain;
   DragState:boolean=False;
+  CanShowTray:boolean=True;
   FEditor:TFCustomEditor;
   FPortEditor:TFPortEditor;
   FAccountEditor:TFAccountEditor;
@@ -1001,16 +1002,15 @@ end;
 
 procedure TFMain.trayClick(Sender: TObject);
 begin
- tray.ShowMainForm;
+ if not CanShowTray then beep()
+  else tray.ShowMainForm;
 end;
 
 procedure TFMain.alAddAccountExecute(Sender: TObject);
-var
- buf:TSNConvert;
 begin
- SNConverter.FindByName('Accounts',buf);
-// ActivateNode(buf.NodeIndex);
+ CanShowTray:=False;
  FAccountEditor.ShowModal;
+ CanShowTray:=True;
 end;
 
 procedure TFMain.msAccountsPopup(Sender: TObject);
@@ -1022,8 +1022,10 @@ procedure TFMain.alEditAccountExecute(Sender: TObject);
 var
  AccountId:integer;
 begin
+ CanShowTray:=False;
  AccountId:= cxAccounts.Controller.SelectedRows[0].Values[cxAccountsid.Index];
  FAccountEditor.ShowModal(AccountId);
+ CanShowTray:=True;
 end;
 
 procedure TFMain.alDeleteAccountExecute(Sender: TObject);
@@ -1628,11 +1630,14 @@ end;
 procedure TFMain.trayMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
- if Button=mbRight then
-  begin
-  SetForegroundWindow(Handle);
-   pTray.PopupFromCursorPos;
-  end;
+ if (not CanShowTray)and (Button=mbRight) then beep()
+  else
+   if (Button=mbRight) then
+    begin
+     SetForegroundWindow(Handle);
+     pTray.PopupFromCursorPos;
+     PostMessage(Handle, WM_NULL, 0, 0);
+    end;
 end;
 
 procedure TFMain.JvAppAddHotKeyHotKey(Sender: TObject);

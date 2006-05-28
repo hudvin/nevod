@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 279
-  Top = 214
+  Left = 273
+  Top = 180
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Nevod AntiSpam'
