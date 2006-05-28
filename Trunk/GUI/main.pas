@@ -162,7 +162,7 @@ type
     gbSystem: TcxGroupBox;
     lbServerPort: TLabeledEdit;
     cbRunAtStartUp: TcxCheckBox;
-    Label1: TLabel;
+    leInterval: TLabel;
     gbNag: TcxGroupBox;
     cbBallonOnReceive: TcxCheckBox;
     beSoundOnNew: TcxButtonEdit;
@@ -1535,13 +1535,20 @@ procedure TFMain.alSaveLogExecute(Sender: TObject);
 var
  FileName,iFile:String;
  ExpLog:TADOQuery;
+ selFile:TSaveDialog;
 begin
- if sdLog.Execute then
+ selFile:=TSaveDialog.Create(nil);
+ selFile.Options:=[ofOverwritePrompt];
+ selFile.Filter:=_('Текстовые файлы(*.txt)|*.txt');
+ if selFile.Execute then
    with ExpLog do
      begin
       ExpLog:=TADOQuery.Create(nil);
       ExpLog.Connection:=adCon;
-      FileName:=sdLog.FileName;
+      FileName:=selFile.FileName;
+      if ExtractFileExt(FileName)<>'' then
+        FileName:=Copy(FileName,0,length(FileName)-pos('.',FileName)+1);
+      FileName:=FileName+'.txt';
       if FileExists(FileName) then DeleteFile(FileName);
       SQL.Clear;
       SQL.Add('SELECT Accounts.AccountName,Log.Message,ErrorTime');
@@ -1553,6 +1560,7 @@ begin
       iFile:=ExtractFilePath(FileName)+'schema.ini';
       if FileExists(iFile) then DeleteFile(iFile);
      end;
+ selFile.Free;
 end;
 
 procedure TFMain.alOnLogPopUpExecute(Sender: TObject);
@@ -1887,9 +1895,14 @@ end;
 
 procedure TFMain.alShowAboutExecute(Sender: TObject);
 begin
- FAboutForm:=TFAbout.Create(nil);
- FAboutForm.ShowModal;
- FreeAndNil(FAboutForm);
+ if FAboutForm=nil then
+  begin
+   CanShowTray:=False;
+   FAboutForm:=TFAbout.Create(nil);
+   FAboutForm.ShowModal;
+   FreeAndNil(FAboutForm);
+   CanShowTray:=True;
+  end;
 end;
 
 procedure TFMain.alCheckForUpdatesExecute(Sender: TObject);

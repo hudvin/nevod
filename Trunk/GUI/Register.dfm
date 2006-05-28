@@ -4,7 +4,7 @@ object FRegister: TFRegister
   BorderIcons = []
   BorderStyle = bsSingle
   Caption = 'Registration'
-  ClientHeight = 119
+  ClientHeight = 124
   ClientWidth = 366
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -23,7 +23,7 @@ object FRegister: TFRegister
     Left = 0
     Top = 0
     Width = 366
-    Height = 119
+    Height = 124
     Align = alClient
     Picture.Data = {
       0A544A504547496D616765005B0000FFD8FFE000104A46494600010201004800

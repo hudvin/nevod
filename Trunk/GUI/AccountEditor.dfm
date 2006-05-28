@@ -1,10 +1,10 @@
 object FAccountEditor: TFAccountEditor
-  Left = 380
-  Top = 201
+  Left = 437
+  Top = 392
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'FAccountEditor'
-  ClientHeight = 168
+  ClientHeight = 165
   ClientWidth = 349
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -22,12 +22,12 @@ object FAccountEditor: TFAccountEditor
     Left = 0
     Top = 0
     Width = 349
-    Height = 168
+    Height = 165
     Align = alClient
     LookAndFeel.Kind = lfOffice11
     Options = [pcoGradientClientArea]
     TabOrder = 0
-    ClientRectBottom = 168
+    ClientRectBottom = 165
     ClientRectRight = 349
     ClientRectTop = 0
     object cxGroupBox1: TcxGroupBox

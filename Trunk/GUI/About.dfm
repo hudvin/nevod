@@ -1,6 +1,6 @@
 object FAbout: TFAbout
-  Left = 362
-  Top = 157
+  Left = 322
+  Top = 352
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077
@@ -1475,7 +1475,7 @@ object FAbout: TFAbout
     ProductID = '55683-OEM-0013514-73984'
     ProductName = 'Microsoft Windows XP'
     DVDRegion = -1
-    TimeRunning = 0.363995763888888900
+    TimeRunning = 0.103535891203703700
     DayRunning = 0
     Top = 8
   end

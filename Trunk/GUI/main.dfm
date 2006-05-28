@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 168
-  Top = 0
+  Left = 262
+  Top = 276
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Nevod AntiSpam'
@@ -236,7 +236,6 @@ object FMain: TFMain
           OptionsView.FooterAutoHeight = True
           OptionsView.GroupByBox = False
           Styles.Background = cxGrid
-          Styles.Selection = cxStyle1
           object cxLogAccountName: TcxGridDBColumn
             Caption = #1059#1095#1077#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
             DataBinding.FieldName = 'AccountName'
@@ -281,7 +280,6 @@ object FMain: TFMain
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
-        LookAndFeel.NativeStyle = False
         object cxFilters: TcxGridDBTableView
           DragMode = dmAutomatic
           PopupMenu = pFilters
@@ -341,7 +339,7 @@ object FMain: TFMain
       ImageIndex = 3
       object gbSystem: TcxGroupBox
         Left = 8
-        Top = 0
+        Top = 4
         Caption = #1057#1080#1089#1090#1077#1084#1085#1099#1077
         Style.LookAndFeel.Kind = lfOffice11
         Style.LookAndFeel.NativeStyle = True
@@ -354,7 +352,7 @@ object FMain: TFMain
         TabOrder = 0
         Height = 161
         Width = 233
-        object Label1: TLabel
+        object leInterval: TLabel
           Left = 200
           Top = 68
           Width = 20
@@ -408,6 +406,7 @@ object FMain: TFMain
           StyleHot.LookAndFeel.Kind = lfOffice11
           StyleHot.LookAndFeel.NativeStyle = True
           TabOrder = 2
+          Transparent = True
           Width = 225
         end
         object seCheckInterval: TcxSpinEdit
@@ -441,6 +440,7 @@ object FMain: TFMain
           StyleHot.LookAndFeel.Kind = lfOffice11
           StyleHot.LookAndFeel.NativeStyle = True
           TabOrder = 4
+          Transparent = True
           Width = 193
         end
         object cbEnableFiltering: TcxCheckBox
@@ -456,12 +456,13 @@ object FMain: TFMain
           StyleHot.LookAndFeel.Kind = lfOffice11
           StyleHot.LookAndFeel.NativeStyle = True
           TabOrder = 5
+          Transparent = True
           Width = 169
         end
       end
       object gbNag: TcxGroupBox
         Left = 248
-        Top = 0
+        Top = 4
         Caption = #1059#1074#1077#1076#1086#1084#1083#1077#1085#1080#1103
         Style.LookAndFeel.Kind = lfOffice11
         Style.LookAndFeel.NativeStyle = True
@@ -472,7 +473,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.Kind = lfOffice11
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 1
-        Height = 65
+        Height = 64
         Width = 249
         object cbBallonOnReceive: TcxCheckBox
           Left = 8
@@ -488,6 +489,7 @@ object FMain: TFMain
           StyleHot.LookAndFeel.Kind = lfOffice11
           StyleHot.LookAndFeel.NativeStyle = True
           TabOrder = 0
+          Transparent = True
           Width = 225
         end
         object cbBaloonOnError: TcxCheckBox
@@ -504,6 +506,7 @@ object FMain: TFMain
           StyleHot.LookAndFeel.Kind = lfOffice11
           StyleHot.LookAndFeel.NativeStyle = True
           TabOrder = 1
+          Transparent = True
           Width = 217
         end
       end
@@ -549,6 +552,7 @@ object FMain: TFMain
           StyleHot.LookAndFeel.Kind = lfOffice11
           StyleHot.LookAndFeel.NativeStyle = True
           TabOrder = 0
+          Transparent = True
           Width = 177
         end
         object cmSpyFor: TcxComboBox
@@ -600,12 +604,13 @@ object FMain: TFMain
           StyleHot.LookAndFeel.Kind = lfOffice11
           StyleHot.LookAndFeel.NativeStyle = True
           TabOrder = 3
+          Transparent = True
           Width = 241
         end
       end
       object gbHotKeys: TcxGroupBox
         Left = 8
-        Top = 161
+        Top = 165
         Caption = #1043#1086#1088#1103#1095#1080#1077' '#1082#1083#1072#1074#1080#1096#1080
         Style.LookAndFeel.Kind = lfOffice11
         StyleDisabled.LookAndFeel.Kind = lfOffice11
@@ -729,7 +734,7 @@ object FMain: TFMain
       end
       object gbSounds: TcxGroupBox
         Left = 248
-        Top = 65
+        Top = 69
         Caption = #1047#1074#1091#1082#1080
         Style.LookAndFeel.Kind = lfOffice11
         StyleDisabled.LookAndFeel.Kind = lfOffice11
@@ -752,6 +757,7 @@ object FMain: TFMain
           StyleHot.LookAndFeel.Kind = lfOffice11
           StyleHot.LookAndFeel.NativeStyle = True
           TabOrder = 0
+          Transparent = True
           Width = 169
         end
         object beSoundOnNew: TcxButtonEdit
@@ -824,6 +830,7 @@ object FMain: TFMain
           StyleHot.LookAndFeel.Kind = lfOffice11
           StyleHot.LookAndFeel.NativeStyle = True
           TabOrder = 3
+          Transparent = True
           Width = 89
         end
         object cbSoundOnAdd: TcxCheckBox
@@ -840,6 +847,7 @@ object FMain: TFMain
           StyleHot.LookAndFeel.Kind = lfOffice11
           StyleHot.LookAndFeel.NativeStyle = True
           TabOrder = 4
+          Transparent = True
           Width = 177
         end
         object beSoundOnAdd: TcxButtonEdit
@@ -908,13 +916,13 @@ object FMain: TFMain
         Caption = #1064#1090#1072#1084#1087#1099' '#1089#1086#1086#1073#1097#1077#1085#1080#1081
         Properties.OnChange = cbStampPropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
-        Style.LookAndFeel.NativeStyle = False
+        Style.LookAndFeel.NativeStyle = True
         StyleDisabled.LookAndFeel.Kind = lfOffice11
-        StyleDisabled.LookAndFeel.NativeStyle = False
+        StyleDisabled.LookAndFeel.NativeStyle = True
         StyleFocused.LookAndFeel.Kind = lfOffice11
-        StyleFocused.LookAndFeel.NativeStyle = False
+        StyleFocused.LookAndFeel.NativeStyle = True
         StyleHot.LookAndFeel.Kind = lfOffice11
-        StyleHot.LookAndFeel.NativeStyle = False
+        StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 1
         Transparent = True
         Width = 121
@@ -925,13 +933,13 @@ object FMain: TFMain
         Caption = #1057#1083#1086#1074#1072#1088#1085#1099#1081' '#1092#1080#1083#1100#1090#1088
         Properties.OnChange = cbWhiteWordPropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
-        Style.LookAndFeel.NativeStyle = False
+        Style.LookAndFeel.NativeStyle = True
         StyleDisabled.LookAndFeel.Kind = lfOffice11
-        StyleDisabled.LookAndFeel.NativeStyle = False
+        StyleDisabled.LookAndFeel.NativeStyle = True
         StyleFocused.LookAndFeel.Kind = lfOffice11
-        StyleFocused.LookAndFeel.NativeStyle = False
+        StyleFocused.LookAndFeel.NativeStyle = True
         StyleHot.LookAndFeel.Kind = lfOffice11
-        StyleHot.LookAndFeel.NativeStyle = False
+        StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 2
         Transparent = True
         Width = 121
@@ -973,13 +981,13 @@ object FMain: TFMain
         Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1077#1083#1100
         Properties.OnChange = cbWhiteSenderPropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
-        Style.LookAndFeel.NativeStyle = False
+        Style.LookAndFeel.NativeStyle = True
         StyleDisabled.LookAndFeel.Kind = lfOffice11
-        StyleDisabled.LookAndFeel.NativeStyle = False
+        StyleDisabled.LookAndFeel.NativeStyle = True
         StyleFocused.LookAndFeel.Kind = lfOffice11
-        StyleFocused.LookAndFeel.NativeStyle = False
+        StyleFocused.LookAndFeel.NativeStyle = True
         StyleHot.LookAndFeel.Kind = lfOffice11
-        StyleHot.LookAndFeel.NativeStyle = False
+        StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 4
         Transparent = True
         Width = 121
@@ -1017,13 +1025,13 @@ object FMain: TFMain
         Caption = #1056#1072#1089#1096#1080#1088#1077#1085#1080#1077' '#1087#1088#1080#1083#1086#1078#1077#1085#1085#1086#1075#1086' '#1092#1072#1081#1083#1072
         Properties.OnChange = cbWhiteAttachPropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
-        Style.LookAndFeel.NativeStyle = False
+        Style.LookAndFeel.NativeStyle = True
         StyleDisabled.LookAndFeel.Kind = lfOffice11
-        StyleDisabled.LookAndFeel.NativeStyle = False
+        StyleDisabled.LookAndFeel.NativeStyle = True
         StyleFocused.LookAndFeel.Kind = lfOffice11
-        StyleFocused.LookAndFeel.NativeStyle = False
+        StyleFocused.LookAndFeel.NativeStyle = True
         StyleHot.LookAndFeel.Kind = lfOffice11
-        StyleHot.LookAndFeel.NativeStyle = False
+        StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 6
         Transparent = True
         Width = 209
@@ -1065,13 +1073,13 @@ object FMain: TFMain
         Caption = #1057#1083#1086#1074#1072#1088#1085#1099#1081' '#1092#1080#1083#1100#1090#1088
         Properties.OnChange = cbBlackWordPropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
-        Style.LookAndFeel.NativeStyle = False
+        Style.LookAndFeel.NativeStyle = True
         StyleDisabled.LookAndFeel.Kind = lfOffice11
-        StyleDisabled.LookAndFeel.NativeStyle = False
+        StyleDisabled.LookAndFeel.NativeStyle = True
         StyleFocused.LookAndFeel.Kind = lfOffice11
-        StyleFocused.LookAndFeel.NativeStyle = False
+        StyleFocused.LookAndFeel.NativeStyle = True
         StyleHot.LookAndFeel.Kind = lfOffice11
-        StyleHot.LookAndFeel.NativeStyle = False
+        StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 0
         Transparent = True
         Width = 121
@@ -1111,13 +1119,13 @@ object FMain: TFMain
         Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1077#1083#1100
         Properties.OnChange = cbBlackSenderPropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
-        Style.LookAndFeel.NativeStyle = False
+        Style.LookAndFeel.NativeStyle = True
         StyleDisabled.LookAndFeel.Kind = lfOffice11
-        StyleDisabled.LookAndFeel.NativeStyle = False
+        StyleDisabled.LookAndFeel.NativeStyle = True
         StyleFocused.LookAndFeel.Kind = lfOffice11
-        StyleFocused.LookAndFeel.NativeStyle = False
+        StyleFocused.LookAndFeel.NativeStyle = True
         StyleHot.LookAndFeel.Kind = lfOffice11
-        StyleHot.LookAndFeel.NativeStyle = False
+        StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 2
         Transparent = True
         Width = 121
@@ -1155,13 +1163,13 @@ object FMain: TFMain
         Caption = #1056#1072#1089#1096#1080#1088#1077#1085#1080#1077' '#1087#1088#1080#1083#1086#1078#1077#1085#1085#1086#1075#1086' '#1092#1072#1081#1083#1072
         Properties.OnChange = cbBlackAttachPropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
-        Style.LookAndFeel.NativeStyle = False
+        Style.LookAndFeel.NativeStyle = True
         StyleDisabled.LookAndFeel.Kind = lfOffice11
-        StyleDisabled.LookAndFeel.NativeStyle = False
+        StyleDisabled.LookAndFeel.NativeStyle = True
         StyleFocused.LookAndFeel.Kind = lfOffice11
-        StyleFocused.LookAndFeel.NativeStyle = False
+        StyleFocused.LookAndFeel.NativeStyle = True
         StyleHot.LookAndFeel.Kind = lfOffice11
-        StyleHot.LookAndFeel.NativeStyle = False
+        StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 4
         Transparent = True
         Width = 209
@@ -1219,13 +1227,13 @@ object FMain: TFMain
         Caption = #1052#1072#1082#1089#1080#1084#1072#1083#1100#1085#1086#1077' '#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1089#1089#1099#1083#1086#1082' '#1074' '#1089#1086#1086#1073#1097#1077#1085#1080#1080
         Properties.OnChange = cbMaxLinksPropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
-        Style.LookAndFeel.NativeStyle = False
+        Style.LookAndFeel.NativeStyle = True
         StyleDisabled.LookAndFeel.Kind = lfOffice11
-        StyleDisabled.LookAndFeel.NativeStyle = False
+        StyleDisabled.LookAndFeel.NativeStyle = True
         StyleFocused.LookAndFeel.Kind = lfOffice11
-        StyleFocused.LookAndFeel.NativeStyle = False
+        StyleFocused.LookAndFeel.NativeStyle = True
         StyleHot.LookAndFeel.Kind = lfOffice11
-        StyleHot.LookAndFeel.NativeStyle = False
+        StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 7
         Transparent = True
         Width = 281
@@ -1263,13 +1271,13 @@ object FMain: TFMain
         Caption = #1052#1072#1082#1089#1080#1084#1072#1083#1100#1085#1086#1077' '#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1080#1079#1086#1073#1088#1072#1078#1077#1085#1080#1081
         Properties.OnChange = cbMaxImagesPropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
-        Style.LookAndFeel.NativeStyle = False
+        Style.LookAndFeel.NativeStyle = True
         StyleDisabled.LookAndFeel.Kind = lfOffice11
-        StyleDisabled.LookAndFeel.NativeStyle = False
+        StyleDisabled.LookAndFeel.NativeStyle = True
         StyleFocused.LookAndFeel.Kind = lfOffice11
-        StyleFocused.LookAndFeel.NativeStyle = False
+        StyleFocused.LookAndFeel.NativeStyle = True
         StyleHot.LookAndFeel.Kind = lfOffice11
-        StyleHot.LookAndFeel.NativeStyle = False
+        StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 9
         Transparent = True
         Width = 281
@@ -1323,13 +1331,13 @@ object FMain: TFMain
         Caption = #1052#1072#1082#1089#1080#1084#1072#1083#1100#1085#1099#1081' '#1088#1072#1079#1084#1077#1088' '#1089#1086#1086#1073#1096#1077#1085#1080#1103','#1082#1073
         Properties.OnChange = cbMaxSizePropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
-        Style.LookAndFeel.NativeStyle = False
+        Style.LookAndFeel.NativeStyle = True
         StyleDisabled.LookAndFeel.Kind = lfOffice11
-        StyleDisabled.LookAndFeel.NativeStyle = False
+        StyleDisabled.LookAndFeel.NativeStyle = True
         StyleFocused.LookAndFeel.Kind = lfOffice11
-        StyleFocused.LookAndFeel.NativeStyle = False
+        StyleFocused.LookAndFeel.NativeStyle = True
         StyleHot.LookAndFeel.Kind = lfOffice11
-        StyleHot.LookAndFeel.NativeStyle = False
+        StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 12
         Transparent = True
         Width = 249

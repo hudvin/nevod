@@ -1,6 +1,6 @@
 object FCustomEditor: TFCustomEditor
-  Left = 510
-  Top = 278
+  Left = 506
+  Top = 363
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1044#1086#1073#1072#1074#1083#1077#1085#1080#1077' '#1085#1086#1074#1086#1075#1086' '#1092#1080#1083#1100#1090#1088#1072
@@ -66,13 +66,13 @@ object FCustomEditor: TFCustomEditor
       Caption = #1040#1082#1090#1080#1074#1077#1085' '
       State = cbsChecked
       Style.LookAndFeel.Kind = lfOffice11
-      Style.LookAndFeel.NativeStyle = False
+      Style.LookAndFeel.NativeStyle = True
       StyleDisabled.LookAndFeel.Kind = lfOffice11
-      StyleDisabled.LookAndFeel.NativeStyle = False
+      StyleDisabled.LookAndFeel.NativeStyle = True
       StyleFocused.LookAndFeel.Kind = lfOffice11
-      StyleFocused.LookAndFeel.NativeStyle = False
+      StyleFocused.LookAndFeel.NativeStyle = True
       StyleHot.LookAndFeel.Kind = lfOffice11
-      StyleHot.LookAndFeel.NativeStyle = False
+      StyleHot.LookAndFeel.NativeStyle = True
       TabOrder = 1
       Transparent = True
       Width = 121
