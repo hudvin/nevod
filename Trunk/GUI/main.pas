@@ -346,7 +346,6 @@ type
     procedure cxFiltersKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure lbServerPortKeyPress(Sender: TObject; var Key: Char);
-    procedure lbServerPortExit(Sender: TObject);
     procedure seCheckIntervalPropertiesValidate(Sender: TObject;
       var DisplayValue: Variant; var ErrorText: TCaption;
       var Error: Boolean);
@@ -420,6 +419,8 @@ type
     procedure beSoundOnNewPropertiesChange(Sender: TObject);
     procedure beSoundOnErrorPropertiesChange(Sender: TObject);
     procedure beSoundOnAddPropertiesChange(Sender: TObject);
+    procedure cxLogKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -499,7 +500,6 @@ procedure TFMain.DestroyRulesEditor(var Msg:TMessage);
 begin
  if FEditor<>nil then
   begin
-  
    while FEditor.Showing do
     sleep(100);
     FreeAndNil(FEditor);
@@ -509,7 +509,7 @@ end;
 
 procedure TFMain.DestroyAccountEditor(var Msg:TMessage);
 begin
- if FEditor<>nil then
+ if FAccountEditor<>nil then
   begin
    while FAccountEditor.Showing do
     sleep(100);
@@ -545,10 +545,9 @@ begin
  FEditor.Show;
 end;
 
-
 procedure TFMain.UpdateLog(var Msg: TMessage);
 begin
- if (Application.MainForm <>nil ) and ( Application.MainForm.Visible) and(cxTab_Log.Showing) then
+ if (Application.MainForm <>nil ) then
   begin
    if not adLog.Active then adLog.Active:=True;
    adLog.Requery;
@@ -559,23 +558,22 @@ procedure TFMain.UpdateAccountStatus(var Msg: TMessage);
 var
  SelRow:integer;
 begin
-      SelRow:=-1;
-     if (cxAccounts.DataController.RecordCount>0)and(cxAccounts.Controller.SelectedRowCount>0) then
-       SelRow:= cxAccounts.Controller.SelectedRows[0].RecordIndex;
-      UpdateStatusBar;
-     if not adAccounts.Active then adAccounts.Active:=True;
-     if not adLog.Active then adLog.Active:=True;
-     adAccounts.Requery;
-     adLog.Requery;
-     if SelRow<>-1 then
-      cxAccounts.DataController.SelectRows(SelRow,SelRow);
-   if not adAccounts.Active then adAccounts.Active:=True;
-    adAccounts.Requery;
+ SelRow:=-1;
+ if (cxAccounts.DataController.RecordCount>0)and(cxAccounts.Controller.SelectedRowCount>0) then
+  SelRow:= cxAccounts.Controller.SelectedRows[0].RecordIndex;
+ UpdateStatusBar;
+ if not adAccounts.Active then adAccounts.Active:=True;
+ if not adLog.Active then adLog.Active:=True;
+ adAccounts.Requery;
+ adLog.Requery;
+ if SelRow<>-1 then cxAccounts.DataController.SelectRows(SelRow,SelRow);
+ if not adAccounts.Active then adAccounts.Active:=True;
+ adAccounts.Requery;
 end;
 
 procedure TFMain.UpdateFilters(var Msg: TMessage);
 begin
- if  (Application.MainForm <>nil ) and ( Application.MainForm.Visible) and (cxTab_Filters.Showing) then
+ if  (Application.MainForm <>nil )  then
   begin
    if not adFilters.Active then adFilters.Active:=True;
     adFilters.Requery;
@@ -1075,7 +1073,7 @@ var
  AccountId:integer;
 begin
  AccountId:= cxAccounts.Controller.SelectedRows[0].Values[cxAccountsid.Index];
- if MessageBoxW(Handle,PWideChar(_('Вы действительно хотите удалить учетную запись')),PWideChar(_('Удаление учетной записи')),MB_OKCANCEL)=IDOK then
+ if ShowMessageBox(Application.Handle,_('Вы действительно хотите удалить учетную запись'),_('Удаление учетной записи'),MB_OKCANCEL or MB_ICONWARNING)=IDOK then
   begin
    ThreadManager.StopThread(AccountId);
    AccountManager.DeleteAccount([AccountId]);
@@ -1090,6 +1088,7 @@ end;
 procedure TFMain.WMCopyData(var Msg: TWMCopyData);
 var
  mess:TWMMessanger;
+ i:integer;
 begin
  with Msg.CopyDataStruct^ do
   begin
@@ -1098,7 +1097,12 @@ begin
     or ((mess.BallonType=bitError) and (StrToBool(SProvider.GetValue('BaloonOnError'))))
     then
      begin
-     sleep(1000);
+     for i:=1 to 100 do
+       begin
+        sleep(10);
+        Application.ProcessMessages;
+       end;
+     
      tray.HideBalloonHint;
      end;
    tray.ShowBalloonHint(mess.Caption,mess.LogMessage,mess.BallonType,10);
@@ -1349,7 +1353,7 @@ var
  i:integer;
 begin
  SelCount:=cxFilters.Controller.SelectedRowCount;
- if (SelCount>0) and ( MessageBoxW(Handle,PWideChar(_(' Вы дейтсвительно хотите удалить фильтры ?')),PWideChar(_('Удаление фильтров')),MB_OKCANCEL)=IDOK) then
+ if (SelCount>0) and ( ShowMessageBox(Application.Handle,(' Вы дейтсвительно хотите удалить фильтры ?'),_('Удаление фильтров'),MB_OKCANCEL or MB_ICONWARNING)=IDOK) then
   begin
    SetLength(ElementsId,SelCount);
    for I:=0 to SelCount - 1 do
@@ -1459,18 +1463,6 @@ if not (Key  in ['0'..'9',#8]) then
    Key := #0;
    Beep;
   end;
-end;
-
-procedure TFMain.lbServerPortExit(Sender: TObject);
-//var
-// buf,code:integer;
-begin
- { Val(lbServerPort.Text,buf,code);
- if code=0 then
-  if StrToInt(SProvider.GetValue('ServerPort'))<>StrToInt(lbServerPort.Text) then
-   begin
-   SProvider.SetValue('ServerPort',lbServerPort.Text);
-  end; }
 end;
 
 procedure TFMain.seCheckIntervalPropertiesValidate(Sender: TObject;
@@ -1715,6 +1707,7 @@ end;
 procedure TFMain.JvAppAddHotKeyHotKeyRegisterFailed(Sender: TObject;
   var HotKey: TShortCut);
 begin
+// ShowMessageBox(Application.Handle,_('Ошибка при назначении'),'Данная комбинация используется другим приложением !',MB_ICONWARNING);
  JvAddHotKey.HotKey:=btAddHotKey.Tag;
  JvAppAddHotKey.HotKey:=btAddHotKey.Tag;
  SProvider.SetValue('AddHotKey',IntToStr(btAddHotKey.Tag));
@@ -1824,14 +1817,14 @@ end;
 
 procedure TFMain.alRestoreFromBackUpExecute(Sender: TObject);
 begin
- if MessageBoxW(Handle,PWideChar(_('Приложение будет завершено')),PWideChar(_('Сообщение')),MB_OKCANCEL)=IDOK
+ if ShowMessageBox(Application.Handle,_('Приложение будет завершено'),_('Сообщение'),MB_OKCANCEL or MB_ICONWARNING)=IDOK
   then
    RunBkp('NevodBackup.exe -rb',SW_SHOWNORMAL);
 end;
 
 procedure TFMain.alSaveToBackUpExecute(Sender: TObject);
 begin
- if MessageBoxW(Handle,PWideChar(_('Приложение будет завершено')),PWideChar(_('Сообщение')),MB_OKCANCEL)=IDOK
+ if ShowMessageBox(Application.Handle,_('Приложение будет завершено'),_('Сообщение'),MB_OKCANCEL or MB_ICONWARNING)=IDOK
   then
    RunBkp('NevodBackup.exe -sb',SW_SHOWNORMAL);
 end;
@@ -2011,7 +2004,7 @@ var
 begin
  GetRegistrationInformation(UserKey,UserName );
  if ((UserKey <> nil) AND (StrLen(UserKey) > 0)) then
-   MessageBoxW(Handle, PWideChar(_('Программа зарегистрирована')), PWideChar(_('Регистрация')), MB_ICONINFORMATION)
+   ShowMessageBox(Application.Handle, _('Программа зарегистрирована'), _('Регистрация'), MB_ICONINFORMATION or MB_ICONINFORMATION)
   else
    begin
      RegistrationKey:=TFRegistrationKey.Create(nil);
@@ -2062,11 +2055,7 @@ var
 begin
  Val(lbServerPort.Text,buf,code);
  if code=0 then
-  if StrToInt(SProvider.GetValue('ServerPort'))<>StrToInt(lbServerPort.Text) then
-   begin
-   SProvider.SetValue('ServerPort',lbServerPort.Text);
-  end;
-
+   SProvider.SetValue('ServerPort',IntToStr(buf));
 end;
 
 procedure TFMain.beSoundOnNewPropertiesChange(Sender: TObject);
@@ -2082,6 +2071,18 @@ end;
 procedure TFMain.beSoundOnAddPropertiesChange(Sender: TObject);
 begin
  SProvider.SetValue('AddSound',beSoundOnAdd.Text);
+end;
+
+procedure TFMain.cxLogKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  alOnLogPopUp.Execute;
+ if (Key=46) or (Key=110) then
+  begin
+   alDeleteSelectedLog.Execute;
+  end;
+ if Key=13 then
+   alDeleteSelectedLog.Execute;
 end;
 
 end.

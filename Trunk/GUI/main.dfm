@@ -5,7 +5,7 @@ object FMain: TFMain
   BorderStyle = bsSingle
   Caption = 'Nevod AntiSpam'
   ClientHeight = 430
-  ClientWidth = 718
+  ClientWidth = 711
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -22,7 +22,7 @@ object FMain: TFMain
   object stBar: TdxStatusBar
     Left = 0
     Top = 412
-    Width = 718
+    Width = 711
     Height = 18
     Panels = <
       item
@@ -110,9 +110,9 @@ object FMain: TFMain
   object stPages: TcxPageControl
     Left = 206
     Top = 45
-    Width = 512
+    Width = 505
     Height = 367
-    ActivePage = cxTab_Settings
+    ActivePage = cxTab_Log
     Align = alClient
     DragMode = dmAutomatic
     HideTabs = True
@@ -122,7 +122,7 @@ object FMain: TFMain
     Style = 8
     TabOrder = 2
     ClientRectBottom = 367
-    ClientRectRight = 512
+    ClientRectRight = 505
     ClientRectTop = 0
     object cxTab_Accounts: TcxTabSheet
       Caption = 'cxTab_Accounts'
@@ -130,7 +130,7 @@ object FMain: TFMain
       object cxAccountsGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 512
+        Width = 505
         Height = 367
         Align = alClient
         BorderWidth = 2
@@ -211,7 +211,7 @@ object FMain: TFMain
       object cxLogGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 512
+        Width = 505
         Height = 367
         Align = alClient
         TabOrder = 0
@@ -219,6 +219,7 @@ object FMain: TFMain
         LookAndFeel.NativeStyle = False
         object cxLog: TcxGridDBTableView
           PopupMenu = pLog
+          OnKeyDown = cxLogKeyDown
           NavigatorButtons.ConfirmDelete = False
           DataController.DataSource = dsLog
           DataController.Summary.DefaultGroupSummaryItems = <>
@@ -275,7 +276,7 @@ object FMain: TFMain
       object cxFiltersGrid: TcxGrid
         Left = 0
         Top = 0
-        Width = 512
+        Width = 505
         Height = 367
         Align = alClient
         TabOrder = 0
@@ -377,7 +378,6 @@ object FMain: TFMain
           LabelPosition = lpLeft
           TabOrder = 0
           OnChange = lbServerPortChange
-          OnExit = lbServerPortExit
           OnKeyPress = lbServerPortKeyPress
         end
         object cbRunAtStartUp: TcxCheckBox
@@ -894,7 +894,8 @@ object FMain: TFMain
             ' '#1090#1077#1082#1089#1090#1077','
           
             #1083#1080#1073#1086' '#1080' '#1090#1072#1084', '#1080' '#1090#1072#1084') '#1086#1087#1088#1077#1076#1077#1083#1077#1085#1085#1086#1075#1086' '#1089#1083#1086#1074#1072'. '#1042' '#1089#1083#1086#1074#1077' '#1084#1086#1078#1085#1086' '#1080#1089#1087#1086#1083#1100#1079#1086#1074#1072 +
-            #1090#1100' '#1089#1080#1084#1074#1086#1083#1099'-'#1079#1072#1084#1077#1085#1080#1090#1077#1083#1080' * '#1080' ?')
+            #1090#1100' '#1089#1080#1084#1074#1086#1083#1099'-'#1079#1072#1084#1077#1085#1080#1090#1077#1083#1080' * '
+          #1080' ?')
         Properties.HideSelection = False
         Properties.ReadOnly = True
         Style.BorderStyle = ebsNone
@@ -912,7 +913,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = False
         TabOrder = 0
         Height = 33
-        Width = 577
+        Width = 489
       end
       object cbStamp: TcxCheckBox
         Left = 8
@@ -955,7 +956,8 @@ object FMain: TFMain
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090' '#1087#1088#1080' '#1086#1073#1085#1072#1088#1091#1078#1077#1085#1080#1080' '#1074' '#1089#1086#1086#1073#1097#1077#1085#1080#1080' '#1074' '#1090#1077#1082#1089#1090#1077' '#1089 +
-            #1086#1086#1073#1097#1077#1085#1080#1103'. '#1060#1086#1088#1084#1072#1090' '#1096#1090#1072#1087#1084#1072': <Nevod '
+            #1086#1086#1073#1097#1077#1085#1080#1103'. '#1060#1086#1088#1084#1072#1090' '
+          #1096#1090#1072#1087#1084#1072': <Nevod '
           'Stamp:'#39'keyword '#39'>'
           
             #1083#1080#1073#1086' <Nevod AntiSpam: "keyword">, '#1075#1076#1077' keyword - '#1087#1088#1086#1080#1079#1074#1086#1083#1100#1085#1086#1077' '#1089#1083#1086 +
@@ -977,7 +979,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 3
         Height = 49
-        Width = 569
+        Width = 489
       end
       object cbWhiteSender: TcxCheckBox
         Left = 8
@@ -1021,7 +1023,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 5
         Height = 49
-        Width = 569
+        Width = 489
       end
       object cbWhiteAttach: TcxCheckBox
         Left = 8
@@ -1047,7 +1049,8 @@ object FMain: TFMain
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090','#1077#1089#1083#1080' '#1088#1072#1089#1096#1080#1088#1077#1085#1080#1077' '#1087#1088#1080#1083#1086#1078#1077#1085#1085#1086#1075#1086' '#1092#1072#1081#1083#1072' '#1085#1072#1093 +
-            #1086#1076#1080#1090#1089#1103' '#1074' '#1073#1077#1083#1086#1084' '#1089#1087#1080#1089#1082#1077)
+            #1086#1076#1080#1090#1089#1103' '#1074' '#1073#1077#1083#1086#1084' '
+          #1089#1087#1080#1089#1082#1077)
         Properties.HideSelection = False
         Properties.ReadOnly = True
         Style.BorderStyle = ebsNone
@@ -1065,7 +1068,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 7
         Height = 33
-        Width = 569
+        Width = 489
       end
     end
     object cxTab_DFSettings: TcxTabSheet
@@ -1095,7 +1098,8 @@ object FMain: TFMain
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090' '#1087#1088#1080' '#1086#1073#1085#1072#1088#1091#1078#1077#1085#1080#1080' '#1074' '#1089#1086#1086#1073#1097#1077#1085#1080#1080' ('#1074' '#1090#1077#1084#1077', '#1074 +
-            ' '#1090#1077#1082#1089#1090#1077','#1083#1080#1073#1086' '#1080' '#1090#1072#1084', '#1080' '#1090#1072#1084') '
+            ' '#1090#1077#1082#1089#1090#1077','#1083#1080#1073#1086' '#1080' '#1090#1072#1084', '#1080' '
+          #1090#1072#1084') '
           #1086#1087#1088#1077#1076#1077#1083#1077#1085#1085#1086#1075#1086' '
           #1089#1083#1086#1074#1072'. '#1042' '#1089#1083#1086#1074#1077' '#1084#1086#1078#1085#1086' '#1080#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1089#1080#1084#1074#1086#1083#1099'-'#1079#1072#1084#1077#1085#1080#1090#1077#1083#1080' * '#1080' ?')
         Properties.HideSelection = False
@@ -1115,7 +1119,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 1
         Height = 33
-        Width = 569
+        Width = 489
       end
       object cbBlackSender: TcxCheckBox
         Left = 8
@@ -1159,7 +1163,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 3
         Height = 25
-        Width = 569
+        Width = 489
       end
       object cbBlackAttach: TcxCheckBox
         Left = 8
@@ -1185,7 +1189,8 @@ object FMain: TFMain
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090','#1077#1089#1083#1080' '#1088#1072#1089#1096#1080#1088#1077#1085#1080#1077' '#1087#1088#1080#1083#1086#1078#1077#1085#1085#1086#1075#1086' '#1092#1072#1081#1083#1072' '#1085#1072#1093 +
-            #1086#1076#1080#1090#1089#1103' '#1074' '#1095#1077#1088#1085#1086#1084' '#1089#1087#1080#1089#1082#1077' '#1089#1087#1080#1089#1082#1077)
+            #1086#1076#1080#1090#1089#1103' '#1074' '#1095#1077#1088#1085#1086#1084' '
+          #1089#1087#1080#1089#1082#1077' '#1089#1087#1080#1089#1082#1077)
         Properties.HideSelection = False
         Properties.ReadOnly = True
         Style.BorderStyle = ebsNone
@@ -1204,7 +1209,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 5
         Height = 25
-        Width = 569
+        Width = 489
       end
       object cxSpinLinks: TcxSpinEdit
         Left = 296
@@ -1249,7 +1254,8 @@ object FMain: TFMain
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090','#1077#1089#1083#1080' '#1074' '#1089#1086#1086#1073#1097#1077#1085#1080#1080'   '#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1089#1089#1099#1083#1086#1082' '#1087 +
-            #1088#1077#1074#1099#1096#1072#1077#1090' '#1084#1072#1082#1089#1080#1084#1072#1083#1100#1085#1086#1077' '#1079#1085#1072#1095#1077#1085#1080#1077)
+            #1088#1077#1074#1099#1096#1072#1077#1090' '
+          #1084#1072#1082#1089#1080#1084#1072#1083#1100#1085#1086#1077' '#1079#1085#1072#1095#1077#1085#1080#1077)
         Properties.HideSelection = False
         Properties.ReadOnly = True
         Style.BorderStyle = ebsNone
@@ -1267,7 +1273,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 8
         Height = 25
-        Width = 569
+        Width = 489
       end
       object cbMaxImages: TcxCheckBox
         Left = 8
@@ -1308,7 +1314,8 @@ object FMain: TFMain
         Lines.Strings = (
           
             #1044#1072#1085#1085#1099#1081' '#1092#1080#1083#1100#1090#1088' '#1089#1088#1072#1073#1072#1090#1099#1074#1072#1077#1090','#1077#1089#1083#1080' '#1074' '#1089#1086#1086#1073#1097#1077#1085#1080#1080' '#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1080#1079#1086#1073#1088#1072#1078#1077#1085#1080 +
-            #1081' '#1087#1088#1077#1074#1099#1096#1072#1077#1090' '#1084#1072#1082#1089#1080#1084#1072#1083#1100#1085#1086#1077' '
+            #1081' '#1087#1088#1077#1074#1099#1096#1072#1077#1090' '
+          #1084#1072#1082#1089#1080#1084#1072#1083#1100#1085#1086#1077' '
           #1079#1085#1072#1095#1077#1085#1080#1077)
         Properties.HideSelection = False
         Properties.ReadOnly = True
@@ -1327,7 +1334,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 11
         Height = 25
-        Width = 569
+        Width = 489
       end
       object cbMaxSize: TcxCheckBox
         Left = 8
@@ -1386,7 +1393,7 @@ object FMain: TFMain
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 14
         Height = 25
-        Width = 569
+        Width = 489
       end
     end
   end

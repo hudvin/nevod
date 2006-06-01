@@ -96,11 +96,11 @@ begin
     //     SendMessage(main.FMain.Handle,WM_UpdateAccountStatus,0,0);
          if SuccessFul=False then
           begin
-           Logger.Add(_('Ошибка при получении почты : ') +LogMessage,AccountId,ltPostReceiver);
+           Logger.Add(LogMessage,AccountId,ltPostReceiver);
           
            SendHintMessage(AccountParams.AccountName,
                _(' Ошибка при получении почты для  ')+ '"'+AccountParams.AccountName +'"',
-               _(' Ошибка при получении почты  : ')+  ' '+LogMessage,
+               LogMessage,
                bitError,
                MessagesCount);
           end
@@ -134,6 +134,7 @@ procedure TThreadManager.Execute;
 var
   Counter: Integer;
 begin
+  sleep(WaitTime);
   Counter:=CheckInterval;
   while not Terminated do
    begin
