@@ -35,8 +35,7 @@ uses main;
 {$R *.dfm}
 
 constructor TFPortEditor.Create(adCon:TADOConnection);
-begin
- 
+begin 
   SProvider:=TSettings.Create(adCon);
   inherited Create(nil);
   TranslateComponent(self);

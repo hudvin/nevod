@@ -27,6 +27,12 @@ const
   WM_UpdateFilters=WM_USER+4;
   WM_ShowCEditor=WM_USER+5;
   WM_ShowRegistrationForm=WM_USER+6;
+
+
+  WM_DestroyRulesEditor=WM_USER+7;
+  WM_DestroyAccountEditor=WM_USER+8;
+
+
   UM_ACTIVATE = WM_APP + 123;
 
 type
@@ -280,13 +286,16 @@ type
 
   TPOP3Tester = class(TIdThread)
   private
+    FAccountEditorHandle: HWND;
     FAccountsParams: TAccountParams;
     FbtTest: TButton;
     FErrorString: WideString;
+    FHandle: HWND;
     FSuccessFul: Boolean;
     pop: TIdPOP3;
   public
-    constructor Create(TestButton:TButton;AParams:TAccountParams); virtual;
+    constructor Create(TestButton:TButton;AParams:TAccountParams;WHandle:HWND;
+        AccountEditorHandle:HWND); virtual;
     destructor Destroy; override;
     procedure PushButton;
     procedure Run; override;
@@ -328,6 +337,10 @@ procedure RestoreDB;
 
 
 function GetFileSize(FileName: String): Integer;
+
+function ShowMessageBox(Handle:HWND;MessageText:String;Caption:String;
+    uType:Cardinal): Integer;
+
 implementation
 
 {
@@ -874,6 +887,12 @@ begin
  end;
 end;
 
+function ShowMessageBox(Handle:HWND;MessageText:String;Caption:String;
+    uType:Cardinal): Integer;
+begin
+  Result:=MessageBox(Handle,PChar(MessageText),PChar(Caption),uType);
+end;
+
 
 
 
@@ -1131,7 +1150,8 @@ end;
 
 procedure TSounder.Execute;
 begin
-  MMSystem.PlaySound(PChar(FFilePath),0,SND_FILENAME);
+  if FileExists(FFilePath) then
+   MMSystem.PlaySound(PChar(FFilePath),0,SND_FILENAME);
   Terminate;
 end;
 
@@ -1169,19 +1189,24 @@ begin
  end;
 end;
 
-constructor TPOP3Tester.Create(TestButton:TButton;AParams:TAccountParams);
+constructor TPOP3Tester.Create(TestButton:TButton;AParams:TAccountParams;
+    WHandle:HWND; AccountEditorHandle:HWND);
 begin
  inherited Create (False);
  FreeOnTerminate:=True;
+ FAccountEditorHandle:=AccountEditorHandle;
  FbtTest:=TestButton;
- 
+ FHandle:=WHandle;
  AccountsParams:=AParams;
  pop:=TIdPOP3.Create;
 end;
 
 destructor TPOP3Tester.Destroy;
 begin
+ try
  if pop.Connected then pop.Disconnect;
+ except
+ end;
  pop.Free;
 end;
 
@@ -1192,10 +1217,8 @@ begin
 end;
 
 procedure TPOP3Tester.Run;
-var
- Capt:String;
 begin
- Synchronize(PushButton);
+ if IsWindow(FAccountEditorHandle) then Synchronize(PushButton);
  FSuccessFul:=True;
  ErrorString:='';
 
@@ -1225,10 +1248,10 @@ begin
   end;
  end;
 
- if SuccessFul then
-  MessageBoxW(Handle, PWideChar(FErrorString),PWideChar(_('Сообщение')), MB_ICONINFORMATION)
-   else MessageBoxW(Handle, PWideChar(FErrorString),PWideChar(_('Ошибка')), MB_ICONWARNING);
- Synchronize(UnPushButton); 
+ if IsWindow(FAccountEditorHandle) then
+  if SuccessFul then ShowMessageBox(FHandle,FErrorString,(_('Сообщение')),MB_ICONINFORMATION )
+   else ShowMessageBox(FHandle,FErrorString,(_('Ошибка')),MB_ICONWARNING);
+ if IsWindow(FAccountEditorHandle) then Synchronize(UnPushButton);
  Terminate;
 end;
 

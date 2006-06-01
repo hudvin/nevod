@@ -12,6 +12,7 @@ type
     AccountTable: TADOTable;
     adProc: TADOQuery;
     FadAccounts: TADOQuery;
+    function CheckSymbols(Text:String): Boolean;
     function GetAccountById(AccountId:integer): TAccountParams;
     function GetItems(Index: Integer): TAccountParams;
     function GetCount: Integer;
@@ -128,6 +129,12 @@ begin
   Result:=False;
   if Trim(Account.AccountName)='' then
     Raise EInvalidAccountParams.Create(_('Incorrect AccountName'));
+
+  if (not CheckSymbols(Account.AccountName)) or (not(CheckSymbols(Account.Username)))
+     or (not CheckSymbols(Account.Host)) or (not CheckSymbols(Account.Password))
+   then  Raise EInvalidAccountParams.Create(_('Некорректные символы в одном из полей'));
+  
+
   if Account.Timeout<1 then
     Raise EInvalidAccountParams.Create(_('Значение таймаута должно быть больше 1'));
   with adProc  do
@@ -186,6 +193,20 @@ begin
      else Result:=False;
     Close;
   end;
+end;
+
+function TAccountManager.CheckSymbols(Text:String): Boolean;
+var
+ i:integer;
+ Flag:boolean;
+begin
+ i:=0;
+ Flag:=True;
+ while (Flag) and (i<Length(Text))  do
+   if ord(Text[i])>127 then
+    Flag:=False
+     else inc(i);
+ Result:=Flag;    
 end;
 
 procedure TAccountManager.DeleteAccount(AccountsId:array of Integer);

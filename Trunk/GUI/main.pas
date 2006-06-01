@@ -416,6 +416,10 @@ type
     procedure jvShowMainWindowExit(Sender: TObject);
     procedure JvCheckAllAccountsExit(Sender: TObject);
     procedure JvRunMailClientExit(Sender: TObject);
+    procedure lbServerPortChange(Sender: TObject);
+    procedure beSoundOnNewPropertiesChange(Sender: TObject);
+    procedure beSoundOnErrorPropertiesChange(Sender: TObject);
+    procedure beSoundOnAddPropertiesChange(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -433,6 +437,9 @@ type
     procedure UpdateLog(var Msg: TMessage); message WM_UpdateLog;
     procedure UpdateAccountStatus(var Msg: TMessage); message WM_UpdateAccountStatus;
     procedure UpdateFilters(var Msg: TMessage); message WM_UpdateFilters;
+
+    procedure DestroyRulesEditor(var Msg:TMessage);message WM_DestroyRulesEditor;
+    procedure DestroyAccountEditor(var Msg:TMessage);message WM_DestroyAccountEditor;
     { Private declarations }
   public
     SignList:TSignalDescriptorsList;
@@ -488,6 +495,27 @@ uses  MultInst,SplashScreen;
 {$R ..\Resources\WinXP.res}
 {$R ..\Resources\Messages.res}
 
+procedure TFMain.DestroyRulesEditor(var Msg:TMessage);
+begin
+ if FEditor<>nil then
+  begin
+  
+   while FEditor.Showing do
+    sleep(100);
+    FreeAndNil(FEditor);
+  end;
+end;
+
+
+procedure TFMain.DestroyAccountEditor(var Msg:TMessage);
+begin
+ if FEditor<>nil then
+  begin
+   while FAccountEditor.Showing do
+    sleep(100);
+   FreeAndNil(FAccountEditor);
+  end
+end;
 
 procedure TFMain.WMShowRegistrationForm(var Msg: TMessage);
 var
@@ -569,7 +597,6 @@ var
   Len:integer;
   buf:String;
 begin
-
   SendMessage(PrevHWnd, WM_DRAWCLIPBOARD, 0, 0);
   if Clipboard.HasFormat(CF_TEXT) then
   begin
@@ -592,6 +619,8 @@ begin
           TSounder.Create(SProvider.GetValue('AddSound'));
          if StrToBool(SProvider.GetValue('ShowspyEditor')) then
           begin
+           if FEditor<>nil  then FEditor.Free;
+             FEditor:=TFCustomEditor.Create(SNConverter,FManager,adFilters,SignList);
            FEditor.Show(buf,TFIlterType(GetEnumValue(TypeInfo(TFilterType),SProvider.GetValue('AddClb'))));
            with FEditor do
             SetWindowPos(Handle, HWND_TOPMOST,Left,Top,Width,Height,SWP_NOACTIVATE or SWP_NOMOVE or SWP_NOSIZE);
@@ -628,7 +657,31 @@ begin
    WriteAppPath(PChar(Application.ExeName));
    WriteAppHandle(Handle);
 
-   FPortEditor:=TFPortEditor.Create(adCon);
+   POP3Server:=TPOPServer.Create(adCon,AccountManager);
+
+   TmAppl:=False;
+   if not POP3Server.LoadParams then
+     if  ShowMessageBox(Application.Handle,String(_(' Стандартный порт фильтра занят. Хотите сменить порт ? ')),String(_(' Ошибка запуска сервера ')),MB_OKCANCEL or MB_ICONWARNING)=IDOK then
+      begin
+       FPortEditor:=TFPortEditor.Create(adCon);
+       while (not POP3Server.LoadParams) and (not TmAppl) do
+        begin
+         FPortEditor.ShowModal;
+         if FPortEditor.CanExit=True then TmAppl:=True;
+        end;
+       FreeAndNil(FPortEditor);
+       if TmAppl then
+        begin
+         Hide;
+         Application.Terminate;
+        end;
+      end
+     else
+      begin
+       Hide;
+       Application.Terminate;
+      end;
+
    Mutex:=CreateMutex(nil, False,MutexName);
    AccountManager:=TAccountManager.Create(adAccounts);
    SProvider:=TSettings.Create(adCon);
@@ -667,23 +720,6 @@ begin
      Add(12,ftNone,'',cxTab_Log);
      end;
 
-   POP3Server:=TPOPServer.Create(adCon,AccountManager);
-   TmAppl:=False;
-   if not POP3Server.LoadParams then
-     if MessageBoxW(Handle,PWideChar(_(' Стандартный порт фильтра занят. Хотите сменить порт ? ')),PWideChar(_(' Ошибка запуска сервера ')),MB_OKCANCEL)=IDOK then
-      begin
-       while (not POP3Server.LoadParams) and (not TmAppl) do
-        begin
-         FPortEditor.ShowModal;
-         if FPortEditor.CanExit=True then
-          TmAppl:=True;
-        end;
-       if TmAppl then
-        Application.Terminate;
-      end
-     else
-     Application.Terminate;
-
    FManager:=TFilterManager.Create(adCon);
    Exp:=TPerlRegEx.Create(nil);
 
@@ -695,9 +731,8 @@ begin
    PrevHwnd := SetClipboardViewer(Handle);
    Coder:=TBFCoder.Create;
    Coder.Key:=CriptKey;
-
-   FEditor:=TFCustomEditor.Create(SNConverter,FManager,adFilters,SignList);
-   FAccountEditor:=TFAccountEditor.Create(adAccounts,AccountManager);
+   
+   
 
    ThreadManager:=TThreadManager.Create(adCon,AccountManager);
 
@@ -784,25 +819,25 @@ begin
    adAccounts.Active:=True;
    adLog.Active:=True;
    TThreadRegistrationForm.Create;
-  // SendMessage(Handle,WM_ShowRegistrationForm,0,0);
 
 
 end;
 
 procedure TFMain.FormDestroy(Sender: TObject);
 begin
- FAboutForm.Free;
+ if FAboutForm<>nil then FAboutForm.Free;
+ if FEditor<>nil then FEditor.Free;
+ if FAccountEditor<>nil then FAccountEditor.Free;
+ if FPortEditor<>nil then  FPortEditor.Free;
+   
  tray.Enabled:=False;
  tray.HideTaskbarIcon;
  tray.Free;
  ThreadManager.Free;
  FManager.Free;
  SNConverter.Free;
- FEditor.Free;
  SignList.Free;
  AccountManager.Free;
- FAccountEditor.Free;
- FPortEditor.Free;
  Coder.Free;
  Exp.Free;
  SProvider.Free;
@@ -1009,9 +1044,12 @@ end;
 
 procedure TFMain.alAddAccountExecute(Sender: TObject);
 begin
+ if FAccountEditor<>nil then FAccountEditor.Free;
+ FAccountEditor:=TFAccountEditor.Create(adAccounts,AccountManager);
  CanShowTray:=False;
  FAccountEditor.ShowModal;
  CanShowTray:=True;
+ FreeAndNil(FAccountEditor);
 end;
 
 procedure TFMain.msAccountsPopup(Sender: TObject);
@@ -1023,10 +1061,13 @@ procedure TFMain.alEditAccountExecute(Sender: TObject);
 var
  AccountId:integer;
 begin
+ if FAccountEditor<>nil then FAccountEditor.Free;
+ FAccountEditor:=TFAccountEditor.Create(adAccounts,AccountManager);
  CanShowTray:=False;
  AccountId:= cxAccounts.Controller.SelectedRows[0].Values[cxAccountsid.Index];
  FAccountEditor.ShowModal(AccountId);
  CanShowTray:=True;
+ FreeAndNil(FAccountEditor);
 end;
 
 procedure TFMain.alDeleteAccountExecute(Sender: TObject);
@@ -1293,10 +1334,12 @@ begin
   if not Application.MainForm.Showing then
    Application.MainForm.Hide;
 
+  if FEditor<>nil  then FEditor.Free;
+  FEditor:=TFCustomEditor.Create(SNConverter,FManager,adFilters,SignList);
   FEditor.Show(STree.TreeList.FocusedNode.AbsoluteIndex);
+
   with FEditor do
    SetWindowPos(Handle, HWND_TOPMOST, Left,Top,Width,Height,SWP_NOACTIVATE or SWP_NOMOVE or SWP_NOSIZE);
- 
 end;
 
 procedure TFMain.alRemoveFilterElementExecute(Sender: TObject);
@@ -1374,7 +1417,12 @@ begin
    Params:=SelectedRows[0].Values[cxFiltersParams.Index];
    Active:=SelectedRows[0].Values[cxFiltersActive.Index];
   end;
+
+ if FEditor<>nil  then FEditor.Free;
+ FEditor:=TFCustomEditor.Create(SNConverter,FManager,adFilters,SignList);
  FEditor.Show(id,Value,Description,Params,Active,STree.TreeList.FocusedNode.AbsoluteIndex);
+ with FEditor do
+   SetWindowPos(Handle, HWND_TOPMOST, Left,Top,Width,Height,SWP_NOACTIVATE or SWP_NOMOVE or SWP_NOSIZE);
 end;
 
 
@@ -1414,12 +1462,15 @@ if not (Key  in ['0'..'9',#8]) then
 end;
 
 procedure TFMain.lbServerPortExit(Sender: TObject);
+//var
+// buf,code:integer;
 begin
- if StrToInt(SProvider.GetValue('ServerPort'))<>StrToInt(lbServerPort.Text) then
-  begin
-  SProvider.SetValue('ServerPort',lbServerPort.Text);
-  ShowMessage(_('Изменения встпупят в силу при следующем запуске программы'));
- end;
+ { Val(lbServerPort.Text,buf,code);
+ if code=0 then
+  if StrToInt(SProvider.GetValue('ServerPort'))<>StrToInt(lbServerPort.Text) then
+   begin
+   SProvider.SetValue('ServerPort',lbServerPort.Text);
+  end; }
 end;
 
 procedure TFMain.seCheckIntervalPropertiesValidate(Sender: TObject;
@@ -2003,6 +2054,34 @@ procedure TFMain.JvRunMailClientExit(Sender: TObject);
 begin
  JvAppRunMailClient.Active:=True;
  alRunMailClient.ShortCut:=jvAppRunMailClient.HotKey;
+end;
+
+procedure TFMain.lbServerPortChange(Sender: TObject);
+var
+ buf,code:integer;
+begin
+ Val(lbServerPort.Text,buf,code);
+ if code=0 then
+  if StrToInt(SProvider.GetValue('ServerPort'))<>StrToInt(lbServerPort.Text) then
+   begin
+   SProvider.SetValue('ServerPort',lbServerPort.Text);
+  end;
+
+end;
+
+procedure TFMain.beSoundOnNewPropertiesChange(Sender: TObject);
+begin
+ SProvider.SetValue('NewSound',beSoundOnNew.Text);
+end;
+
+procedure TFMain.beSoundOnErrorPropertiesChange(Sender: TObject);
+begin
+ SProvider.SetValue('ErrorSound',beSoundOnError.Text);
+end;
+
+procedure TFMain.beSoundOnAddPropertiesChange(Sender: TObject);
+begin
+ SProvider.SetValue('AddSound',beSoundOnAdd.Text);
 end;
 
 end.

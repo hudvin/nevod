@@ -52,19 +52,19 @@ object FRegistrationKey: TFRegistrationKey
       TabOrder = 1
     end
     object btOk: TButton
-      Left = 16
-      Top = 96
-      Width = 75
-      Height = 25
+      Left = 9
+      Top = 92
+      Width = 83
+      Height = 28
       Caption = #1054#1050
       TabOrder = 2
       OnClick = btOkClick
     end
     object btCancel: TButton
-      Left = 168
-      Top = 96
-      Width = 75
-      Height = 25
+      Left = 176
+      Top = 92
+      Width = 83
+      Height = 28
       Caption = #1054#1090#1084#1077#1085#1072
       TabOrder = 3
       OnClick = btCancelClick

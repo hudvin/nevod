@@ -1,6 +1,6 @@
 object FAccountEditor: TFAccountEditor
-  Left = 437
-  Top = 392
+  Left = 269
+  Top = 350
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'FAccountEditor'
@@ -181,8 +181,7 @@ object FAccountEditor: TFAccountEditor
     end
   end
   object JVHelp: TJvBalloonHint
-    DefaultBalloonPosition = bpLeftDown
-    Options = [boShowCloseBtn, boPlaySound]
+    Options = [boUseDefaultIcon, boShowCloseBtn]
     Left = 12
     Top = 136
   end

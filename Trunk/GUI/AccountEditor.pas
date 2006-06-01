@@ -40,11 +40,12 @@ type
     FEditorMode:TEditorMode;
     FAccountParams:TAccountParams;
     FAccountId:integer;
+    FPOPTester: TPOP3Tester;
     { Private declarations }
   public
     constructor Create(adAccounts:TADOQuery;AccountManager:TAccountManager);
         reintroduce; overload;
-    function BuildParams: TAccountParams;
+    procedure BuildParams;
     procedure CleanFields;
     procedure FilterKey(var Key:Char;Control:TWinControl);
     procedure SetCaptions;
@@ -129,19 +130,12 @@ procedure TFAccountEditor.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
  CleanFields;
+ btTest.Enabled:=True;
  JVHelp.CancelHint;
+ PostMessage(main.FMain.Handle,WM_DestroyAccountEditor,0,0);
 end;
 
 procedure TFAccountEditor.btOKClick(Sender: TObject);
- const
-  NAME_SIZE = 250;
-  LINE_LEN = 250;
- var
- Res:TSNConvert;
- Location:TSignalLocation;
- mError,mCaption:String;
- mErrorString,mCaptionString:array[0..LINE_LEN+NAME_SIZE+sizeof(WideChar)*2] of WideChar;
-
 begin
  BuildParams;
  try
@@ -157,18 +151,10 @@ begin
     Close;
    end;
 
- except
+ except                                       //  or MB_SETFOREGROUND
   on e: Exception do
-   begin
-    mError:=String(_(e.Message));
-    mCaption:=String(_('Ошибка'));
-
-    StringToWideChar(mError,mErrorString, SizeOf(mErrorString));
-  //  StringToWideChar(mCaption,mCaptionString, SizeOf(mCaptionString));
-    ShowMessage(mErrorString);
-
-   end;
- end;
+    ShowMessageBox(Application.Handle,e.Message,String(_('Ошибка')),MB_ICONWARNING );
+  end;
 
 end;
 
@@ -178,9 +164,9 @@ begin
   begin
    Key := #0;
    if (Control=lePort) or (Control=leTimeout) then
-    jvHelp.ActivateHint(Control,_('В данное поле можно вводить'+ chr(13) +  'только английские цифры'),_('Внимание !'))
+    jvHelp.ActivateHint(Control,_('В данное поле можно вводить'+ chr(13) +  'только  цифры'),_('Внимание !'),1500)
    else
-     jvHelp.ActivateHint(Control,_('В данное поле можно вводить только английские символы и цифры'),_('Внимание !'));
+     jvHelp.ActivateHint(Control,_('В данное поле можно вводить только английские символы и цифры'),_('Внимание !'),1500);
    Beep;
   end;
 
@@ -229,10 +215,11 @@ end;
 
 procedure TFAccountEditor.btTestClick(Sender: TObject);
 begin
- TPOP3Tester.Create(btTest,BuildParams);
+ BuildParams;
+ TPOP3Tester.Create(btTest,FAccountParams,Application.Handle,Handle);
 end;
 
-function TFAccountEditor.BuildParams: TAccountParams;
+procedure TFAccountEditor.BuildParams;
 var
   buf:integer;
 begin

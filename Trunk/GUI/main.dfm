@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 262
-  Top = 276
+  Left = 216
+  Top = 177
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Nevod AntiSpam'
@@ -376,6 +376,7 @@ object FMain: TFMain
           EditLabel.Caption = #1055#1086#1088#1090' '#1089#1077#1088#1074#1077#1088#1072' '
           LabelPosition = lpLeft
           TabOrder = 0
+          OnChange = lbServerPortChange
           OnExit = lbServerPortExit
           OnKeyPress = lbServerPortKeyPress
         end
@@ -775,6 +776,7 @@ object FMain: TFMain
               Kind = bkText
             end>
           Properties.OnButtonClick = cxButtonEdit1PropertiesButtonClick
+          Properties.OnChange = beSoundOnNewPropertiesChange
           Style.Font.Charset = DEFAULT_CHARSET
           Style.Font.Color = clWindowText
           Style.Font.Height = -11
@@ -805,6 +807,7 @@ object FMain: TFMain
               Kind = bkText
             end>
           Properties.OnButtonClick = beSoundOnErrorPropertiesButtonClick
+          Properties.OnChange = beSoundOnErrorPropertiesChange
           Style.LookAndFeel.Kind = lfOffice11
           Style.LookAndFeel.NativeStyle = True
           StyleDisabled.LookAndFeel.Kind = lfOffice11
@@ -864,6 +867,7 @@ object FMain: TFMain
               Kind = bkText
             end>
           Properties.OnButtonClick = beSoundOnAddPropertiesButtonClick
+          Properties.OnChange = beSoundOnAddPropertiesChange
           Style.LookAndFeel.Kind = lfOffice11
           Style.LookAndFeel.NativeStyle = True
           StyleDisabled.LookAndFeel.Kind = lfOffice11

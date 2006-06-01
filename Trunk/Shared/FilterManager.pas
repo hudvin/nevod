@@ -10,6 +10,7 @@ type
   private
     adProc: TADOQuery;
     Exp: TPerlRegEx;
+    function CheckSymbols(Text:String): Boolean;
     procedure Modify(ElementId:Integer;ElementValue:String;FilterType:TFilterType;
         Description:String; Status:Boolean;Params:Variant);
   protected
@@ -107,11 +108,14 @@ var
  tFilter:TFilterType;
  Flag:boolean;
 begin
-// if Params=slAnywhere then ShowMessage('');
 
  ElementValue:=Trim(ElementValue);
  if ElementValue='' then
   Raise EInvalidFilterParams.Create(_('Фильтр не может быть пустым'));
+
+  if (not CheckSymbols(ElementValue))
+   then  Raise EInvalidFilterParams.Create(_('Некорректные символы в правиле !'));
+
  if not (FilterType in [ftBlackSender,ftWhiteSender,ftStamp,ftBlackWord,ftWhiteWord,
                ftBlackAttach,ftWhiteAttach]) then
    Raise EInvalidFilterParams.Create(_('Неправильный тип фильтра'));
@@ -164,6 +168,20 @@ begin
     SQL.Text:='UPDATE FiltersParams SET mid='+IntToStr(MidByFilterType(FilterType)) +' WHERE ' +RowSQl;
     ExecSQL;
   end;
+end;
+
+function TFilterManager.CheckSymbols(Text:String): Boolean;
+var
+ i:integer;
+ Flag:boolean;
+begin
+ i:=0;
+ Flag:=True;
+ while (Flag) and (i<Length(Text))  do
+   if ord(Text[i])>127 then
+    Flag:=False
+     else inc(i);
+ Result:=Flag;
 end;
 
 procedure TFilterManager.DeleteElement(ElementValue:String;
@@ -302,6 +320,10 @@ begin
  ElementValue:=Trim(ElementValue);
  if ElementValue='' then
   Raise EInvalidFilterParams.Create(_('Фильтр не может быть пустым'));
+
+ if (not CheckSymbols(ElementValue))
+   then  Raise EInvalidFilterParams.Create(_('Некорректные символы в правиле !')); 
+
  if not (FilterType in [ftBlackSender,ftWhiteSender,ftStamp,ftBlackWord,ftWhiteWord,
                ftBlackAttach,ftWhiteAttach]) then
    Raise EInvalidFilterParams.Create(_('Неправильный тип фильтра'));

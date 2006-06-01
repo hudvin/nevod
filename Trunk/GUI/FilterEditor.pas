@@ -5,13 +5,13 @@ interface
 uses  Shared,   FilterManager, TypInfo,  gnugettext, 
   Windows, Messages, SysUtils,ADODB,DB, Classes, Controls, cxControls, cxPC ,Variants, Graphics,  Forms,
   Dialogs,   StdCtrls, cxContainer, cxEdit, cxTextEdit, cxMaskEdit,
-  cxDropDownEdit, ExtCtrls, cxCheckBox, cxButtons;
+  cxDropDownEdit, ExtCtrls, cxCheckBox, cxButtons, JvComponent,
+  JvBalloonHint, cxGroupBox;
 
 
 
 type
   TFCustomEditor = class(TForm)
-    TabControl: TcxTabControl;
     cCBFilter: TcxComboBox;
     cxCbActive: TcxCheckBox;
     leValue: TLabeledEdit;
@@ -21,6 +21,9 @@ type
     btCancel: TButton;
     leLocation: TLabel;
     cCBLocation: TcxComboBox;
+    JvBal: TJvBalloonHint;
+    cxTab: TcxTabControl;
+    cxGroupBox1: TcxGroupBox;
     procedure cCBFilterPropertiesChange(Sender: TObject);
     procedure btOKClick(Sender: TObject);
     procedure btCancelClick(Sender: TObject);
@@ -150,18 +153,14 @@ begin
 end;
 
 procedure TFCustomEditor.btOKClick(Sender: TObject);
- const
-  NAME_SIZE = 250;
-  LINE_LEN = 250;
-  var
+var
  Res:TSNConvert;
  Location:TSignalLocation;
  mError,mCaption:String;
- mErrorString,mCaptionString:array[0..LINE_LEN+NAME_SIZE+sizeof(WideChar)*2] of WideChar;
 begin
- FSNConverter.FindByName(cCBFilter.Properties.Items.Strings[cCBFilter.SelectedItem],Res);
+ FSNConverter.FindByName(cCBFilter.Properties.Items.Strings[cCBFilter.SelectedItem],Res);// тип фильтра
  if Res.FilterType in [ftBlackWord,ftWhiteWord] then
-  Location:=FSignList.LocationByDescription(cCBFilter.Properties.Items.Strings[cCBFilter.SelectedItem]);
+  Location:=FSignList.LocationByDescription(cCBLocation.Properties.Items.Strings[cCBLocation.SelectedItem]);
  try
   if FEditorMode=emAdd
    then FFilterManager.AddElement(leValue.Text,Res.FilterType,leDescription.Text,cxCbActive.Checked,Location)
@@ -170,16 +169,7 @@ begin
   Close;
  except
   on e: Exception do
-   begin
-    // mError, mCaption - возврат сообщений и заголовков
-    mError:=String(_(e.Message));
-    mCaption:=String(_('Ошибка'));
-
-    StringToWideChar(mError,mErrorString, SizeOf(mErrorString));
- //   StringToWideChar(mCaption,mCaptionString, SizeOf(mCaptionString));
-    ShowMessage(mErrorString);
-   // MessageBoxW(main.FMain.Handle,mErrorString,mCaptionString,MB_SYSTEMMODAL or MB_ICONWARNING);
-   end;
+    ShowMessageBox(Handle,e.Message,String(_('Ошибка')),MB_ICONWARNING or MB_SETFOREGROUND);
  end;
 end;
 
@@ -194,6 +184,9 @@ begin
  cxCbActive.Checked:=True;
  leValue.Text:='';
  leDescription.Text:='';
+ JvBal.CancelHint;
+ PostMessage(main.FMain.Handle,WM_DestroyRulesEditor,0,0 );
+
 end;
 
 procedure TFCustomEditor.Show(ElementValue:String; FilterType:TFilterType);
@@ -214,6 +207,7 @@ begin
  if Ord(key)>127 then
   begin
    Key := #0;
+   JvBal.ActivateHint(leValue,_('В данное поле можно вводить только английские символы и цифры'),_('Внимание !'),1500);
    Beep;
   end;
 end;
