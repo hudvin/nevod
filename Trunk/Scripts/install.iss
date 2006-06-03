@@ -11,7 +11,7 @@ AppUpdatesURL=http://www.nevilon.com
 DefaultDirName={pf}\Nevilon Software/Nevod AntiSpam
 DefaultGroupName=Nevod AntiSpam
 AllowNoIcons=yes
-LicenseFile=C:\Program Files\Download Master\license.txt
+LicenseFile=C:\Projects\Nevod\Resources\license.txt
 OutputDir=C:\Projects\Nevod\release
 OutputBaseFilename=NevodAntiSpam1.4
 Compression=lzma
@@ -25,6 +25,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "C:\Projects\Nevod\release\Nevod.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Projects\Nevod\release\Res.rar"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Projects\Nevod\release\Sounds\*"; DestDir: "{app}\Sounds"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "C:\Projects\Nevod\release\NevodBackup.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Projects\Nevod\release\Shared.dll"; DestDir: "{app}"; Flags: ignoreversion

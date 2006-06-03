@@ -1344,7 +1344,7 @@ object FAbout: TFAbout
   end
   object leSite: TJvLinkLabel
     Left = 16
-    Top = 96
+    Top = 104
     Width = 177
     Height = 13
     Cursor = crHandPoint
@@ -1370,7 +1370,7 @@ object FAbout: TFAbout
   end
   object leMail: TJvLinkLabel
     Left = 16
-    Top = 112
+    Top = 120
     Width = 177
     Height = 13
     Cursor = crHandPoint
@@ -1459,6 +1459,31 @@ object FAbout: TFAbout
     Font.Style = []
     ParentFont = False
   end
+  object leVersion: TJvLinkLabel
+    Left = 15
+    Top = 91
+    Width = 177
+    Height = 13
+    Cursor = crHandPoint
+    Caption = 'Version: '
+    Text.Strings = (
+      'Version: ')
+    Transparent = True
+    LinkColor = clBlue
+    LinkColorClicked = clRed
+    LinkColorHot = clPurple
+    LinkStyle = [fsBold, fsItalic, fsUnderline]
+    HotLinks = True
+    AutoHeight = True
+    MarginWidth = 0
+    MarginHeight = 0
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clNavy
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
+    ParentFont = False
+  end
   object btClose: TButton
     Left = 96
     Top = 232
@@ -1475,7 +1500,7 @@ object FAbout: TFAbout
     ProductID = '55683-OEM-0013514-73984'
     ProductName = 'Microsoft Windows XP'
     DVDRegion = -1
-    TimeRunning = 0.103535891203703700
+    TimeRunning = 0.467758206018518500
     DayRunning = 0
     Top = 8
   end

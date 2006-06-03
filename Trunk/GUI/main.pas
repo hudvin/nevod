@@ -22,7 +22,7 @@ uses  Commctrl,tlhelp32, StdCtrls, Dialogs, ImgList, Controls, dxBar,  Math,
   JvAppHotKey, JvHotkeyEx,   RegistrationKey, About,
   JvDlg, JvComputerInfo, JvHtControls, JvTransLED, JvEditor, JvaScrollText,
   JvMemo, IdBaseComponent, IdComponent, IdCustomTCPServer, IdEchoServer,
-  IdIPWatch;
+  IdIPWatch, JvFileInfo;
 
 
 type
@@ -495,6 +495,7 @@ uses  MultInst,SplashScreen;
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
 {$R ..\Resources\Messages.res}
+{$R ..\Resources\Version.res}
 
 procedure TFMain.DestroyRulesEditor(var Msg:TMessage);
 begin
@@ -1107,7 +1108,7 @@ begin
      end;
    tray.ShowBalloonHint(mess.Caption,mess.LogMessage,mess.BallonType,10);
    if StrToBool(SProvider.GetValue('SoundOnError')) and (mess.BallonType=bitError) then
-    TSounder.Create(SProvider.GetValue('ErrorSound'));  /////
+    TSounder.Create(SProvider.GetValue('ErrorSound'));
    if StrToBool(SProvider.GetValue('SoundOnNew')) and (mess.BallonType=bitInfo) then
     TSounder.Create(SProvider.GetValue('NewSound'));
   end;
@@ -2084,5 +2085,6 @@ begin
  if Key=13 then
    alDeleteSelectedLog.Execute;
 end;
+
 
 end.

@@ -63,7 +63,7 @@ begin
    aCon.Connected:=True;
    Con:=True;
   except
-   if MessageBoxW(Application.Handle,PWideChar(_('База данных не найдена или повреждена. Заменить ?')),PWideChar(_('Ошибка загрузки')),MB_OKCANCEL)=ID_OK then
+   if ShowMessageBox(Application.Handle,_('База данных не найдена или повреждена. Заменить ?'),_('Ошибка загрузки'),MB_OKCANCEL or MB_ICONWARNING)=ID_OK then
      RestoreDB else canExit:=True;
   end;
  if CanExit  then  Application.Terminate

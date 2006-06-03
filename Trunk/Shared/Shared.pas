@@ -1261,6 +1261,8 @@ begin
  FbtTest.Caption:=_('Проверить');
 end;
 
+
+
 end.
 
 

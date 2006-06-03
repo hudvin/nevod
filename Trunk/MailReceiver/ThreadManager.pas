@@ -93,7 +93,7 @@ begin
       with TBaseReceiver(PostReceivers[i]) do
         begin
          SendMessage(main.FMain.Handle, WM_UpdateLog,0,0);
-    //     SendMessage(main.FMain.Handle,WM_UpdateAccountStatus,0,0);
+        // статус обновляестя через AccountManager
          if SuccessFul=False then
           begin
            Logger.Add(LogMessage,AccountId,ltPostReceiver);
