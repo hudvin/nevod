@@ -5420,19 +5420,16 @@ object FMain: TFMain
     object alAddAccount: TAction
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
       ImageIndex = 2
-      ShortCut = 16449
       OnExecute = alAddAccountExecute
     end
     object alEditAccount: TAction
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
       Enabled = False
-      ShortCut = 16453
       OnExecute = alEditAccountExecute
     end
     object alDeleteAccount: TAction
       Caption = #1059#1076#1072#1083#1080#1090#1100
       Enabled = False
-      ShortCut = 16452
       OnExecute = alDeleteAccountExecute
     end
     object alAppTerminate: TAction
@@ -5447,6 +5444,7 @@ object FMain: TFMain
     object alStartThread: TAction
       Caption = #1047#1072#1087#1091#1089#1090#1080#1090#1100' '#1087#1086#1090#1086#1082
       Enabled = False
+      ShortCut = 49228
       OnExecute = alStartThreadExecute
     end
     object alStartAllThreads: TAction
@@ -5473,7 +5471,6 @@ object FMain: TFMain
     object alRemoveFilterElement: TAction
       Caption = #1059#1076#1072#1083#1080#1090#1100' '#1092#1080#1083#1100#1090#1088
       Enabled = False
-      ShortCut = 16452
       OnExecute = alRemoveFilterElementExecute
     end
     object alOnFiltersPopUp: TAction
@@ -5483,7 +5480,6 @@ object FMain: TFMain
     object alEditFilterElement: TAction
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100' '#1092#1080#1083#1100#1090#1088
       Enabled = False
-      ShortCut = 16463
       OnExecute = alEditFilterElementExecute
     end
     object alClearLog: TAction
@@ -5504,7 +5500,6 @@ object FMain: TFMain
     end
     object alHideToTray: TAction
       Caption = #1057#1074#1077#1088#1085#1091#1090#1100' '#1074' '#1090#1088#1077#1081
-      ShortCut = 16456
       OnExecute = alHideToTrayExecute
     end
     object alSetToActive: TAction
@@ -5581,6 +5576,11 @@ object FMain: TFMain
     object alRegister: TAction
       Caption = #1047#1072#1088#1077#1075#1080#1089#1090#1088#1080#1088#1086#1074#1072#1090#1100
       OnExecute = alRegisterExecute
+    end
+    object alShowHelp: TAction
+      Caption = #1057#1087#1088#1072#1074#1082#1072
+      ShortCut = 112
+      OnExecute = alShowHelpExecute
     end
   end
   object dxBar: TdxBarManager
@@ -5769,14 +5769,12 @@ object FMain: TFMain
       Caption = #1054#1089#1090#1072#1085#1086#1074#1080#1090#1100
       Category = 0
       Hint = #1054#1089#1090#1072#1085#1086#1074#1080#1090#1100
-      ShortCut = 16467
     end
     object msStartThread: TdxBarButton
       Action = alStartThread
       Caption = #1055#1088#1086#1074#1077#1088#1080#1090#1100
       Category = 0
       Hint = #1055#1088#1086#1074#1077#1088#1080#1090#1100
-      ShortCut = 16451
     end
     object msStartAllThreads: TdxBarButton
       Action = alStartAllThreads
@@ -6016,6 +6014,10 @@ object FMain: TFMain
       Visible = ivAlways
       ItemLinks = <
         item
+          Item = msShowHelp
+          Visible = True
+        end
+        item
           Item = msCheckForUpdates
           Visible = True
         end
@@ -6135,6 +6137,11 @@ object FMain: TFMain
     object ptStopAllThreads: TdxBarButton
       Action = alStopAllThreads
       Category = 0
+    end
+    object msShowHelp: TdxBarButton
+      Action = alShowHelp
+      Category = 0
+      Hint = #1057#1087#1088#1072#1074#1082#1072
     end
   end
   object pAccounts: TdxBarPopupMenu

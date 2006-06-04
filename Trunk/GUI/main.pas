@@ -282,6 +282,8 @@ type
     cxGrid: TcxStyle;
     cxStyle1: TcxStyle;
     ptStopAllThreads: TdxBarButton;
+    msShowHelp: TdxBarButton;
+    alShowHelp: TAction;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SettingsTreeSelectionChanged(Sender: TObject);
@@ -421,6 +423,7 @@ type
     procedure beSoundOnAddPropertiesChange(Sender: TObject);
     procedure cxLogKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure alShowHelpExecute(Sender: TObject);
   private
     adProc: TADOQuery;
     LastHooked:String;  // содержит последний захваченный из буфера элемент
@@ -2086,5 +2089,10 @@ begin
    alDeleteSelectedLog.Execute;
 end;
 
+
+procedure TFMain.alShowHelpExecute(Sender: TObject);
+begin
+ ShellExecute(Handle, nil, PChar(ExtractFilePath(Application.ExeName)+'help.chm'), nil, nil, SW_MAXIMIZE);
+end;
 
 end.

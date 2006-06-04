@@ -69,7 +69,8 @@ begin
  if CanExit  then  Application.Terminate
   else
    begin
-    Application.CreateForm(TFMain, FMain);
+    Application.HelpFile := 'C:\Projects\Nevod\GUI\help.chm';
+  Application.CreateForm(TFMain, FMain);
   if (ParamCount>0) and (ParamStr(1)='-h') then
      Application.MainForm.WindowState:=wsMinimized;
      Application.Run;

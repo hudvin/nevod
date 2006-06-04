@@ -25,6 +25,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "C:\Projects\Nevod\release\Nevod.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Projects\Nevod\release\help.chm"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Projects\Nevod\release\Res.rar"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Projects\Nevod\release\Sounds\*"; DestDir: "{app}\Sounds"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "C:\Projects\Nevod\release\NevodBackup.exe"; DestDir: "{app}"; Flags: ignoreversion
