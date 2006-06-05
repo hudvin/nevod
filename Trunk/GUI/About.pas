@@ -5,11 +5,11 @@ interface
 uses
   Windows,aspr_api, Messages, ShellAPI,SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, jpeg, ExtCtrls, JvImage, JvFormWallpaper, JvComponent, gnugettext,
-  JvImageWindow, JvLinkLabel, JvComputerInfo, JvStarfield, StdCtrls;
+  JvImageWindow, JvLinkLabel, JvComputerInfoEx, JvStarfield, StdCtrls,
+  JvExControls, JvExExtCtrls, JvComponentBase;
 
 type                                
   TFAbout = class(TForm)
-    cInfo: TJvComputerInfo;
     leSite: TJvLinkLabel;
     bkImage: TJvImage;
     leMail: TJvLinkLabel;
@@ -20,6 +20,7 @@ type
     btClose: TButton;
     leLicenseUsername: TLabel;
     leVersion: TJvLinkLabel;
+    cInfo: TJvComputerInfoEx;
     procedure leSiteClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure leMailClick(Sender: TObject);
@@ -58,10 +59,10 @@ procedure TFAbout.FormShow(Sender: TObject);
 Var
   ModeStatus     : TModeStatus;
 begin
- leOS.Caption:=_('Операционная система : ')+cInfo.ProductName;
- leCompName.Caption:=_('Имя компьютера : ')+cInfo.ComputerName;
- leCurrentUser.Caption:=_('Имя текущего пользователя : ')+cInfo.Username;
- leTimeRunning.Caption:= _('Время работы : ')+TimeToStr(cInfo.TimeRunning);
+ leOS.Caption:=_('Операционная система : ')+cInfo.OS.ProductName;
+ leCompName.Caption:=_('Имя компьютера : ')+cInfo.Identification.LocalComputerName;
+ leCurrentUser.Caption:=_('Имя текущего пользователя : ')+cInfo.Identification.LocalUserName;
+ leTimeRunning.Caption:= _('Время работы : ')+TimeToStr(cInfo.Misc.TimeRunning);
  leVersion.Caption:=_('Версия: ')+FileVersion(Application.ExeName);
  GetRegistrationInformation(UserKey,UserName);
  if (UserKey <> nil) AND (StrLen(UserKey) > 0) then

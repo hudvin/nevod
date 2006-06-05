@@ -1352,14 +1352,8 @@ object FAbout: TFAbout
     Text.Strings = (
       'Web : http://www.nevilon.com')
     Transparent = True
-    LinkColor = clBlue
-    LinkColorClicked = clRed
-    LinkColorHot = clPurple
     LinkStyle = [fsBold, fsItalic, fsUnderline]
     HotLinks = True
-    AutoHeight = True
-    MarginWidth = 0
-    MarginHeight = 0
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clNavy
     Font.Height = -11
@@ -1378,14 +1372,8 @@ object FAbout: TFAbout
     Text.Strings = (
       'Email : support@nevilon.com')
     Transparent = True
-    LinkColor = clBlue
-    LinkColorClicked = clRed
-    LinkColorHot = clPurple
     LinkStyle = [fsBold, fsItalic, fsUnderline]
     HotLinks = True
-    AutoHeight = True
-    MarginWidth = 0
-    MarginHeight = 0
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clNavy
     Font.Height = -11
@@ -1469,14 +1457,8 @@ object FAbout: TFAbout
     Text.Strings = (
       'Version: ')
     Transparent = True
-    LinkColor = clBlue
-    LinkColorClicked = clRed
-    LinkColorHot = clPurple
     LinkStyle = [fsBold, fsItalic, fsUnderline]
     HotLinks = True
-    AutoHeight = True
-    MarginWidth = 0
-    MarginHeight = 0
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clNavy
     Font.Height = -11
@@ -1493,15 +1475,8 @@ object FAbout: TFAbout
     TabOrder = 0
     OnClick = btCloseClick
   end
-  object cInfo: TJvComputerInfo
-    ComputerName = 'NEVOD'
-    Username = 'neiroman'
-    Company = 'Nevod'
-    ProductID = '55683-OEM-0013514-73984'
-    ProductName = 'Microsoft Windows XP'
-    DVDRegion = -1
-    TimeRunning = 0.467758206018518500
-    DayRunning = 0
+  object cInfo: TJvComputerInfoEx
+    Left = 8
     Top = 8
   end
 end

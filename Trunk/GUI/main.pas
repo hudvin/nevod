@@ -19,10 +19,9 @@ uses  Commctrl,tlhelp32, StdCtrls, Dialogs, ImgList, Controls, dxBar,  Math,
    ToolWin, ActnCtrls, ActnColorMaps,
   ActnPopupCtrl,  cxRichEdit,  gnugettext,
   cxButtons, cxDropDownEdit,  ComCtrls, JvHotKey, JvComponent,
-  JvAppHotKey, JvHotkeyEx,   RegistrationKey, About,
-  JvDlg, JvComputerInfo, JvHtControls, JvTransLED, JvEditor, JvaScrollText,
-  JvMemo, IdBaseComponent, IdComponent, IdCustomTCPServer, IdEchoServer,
-  IdIPWatch, JvFileInfo;
+  JvAppHotKey,    RegistrationKey, About,
+    IdBaseComponent, IdComponent, IdCustomTCPServer, IdEchoServer,
+  IdIPWatch, JvComponentBase, JvExComCtrls;
 
 
 type
