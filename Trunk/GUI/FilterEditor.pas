@@ -6,7 +6,7 @@ uses  Shared,   FilterManager, TypInfo,  gnugettext,
   Windows, Messages, SysUtils,ADODB,DB, Classes, Controls, cxControls, cxPC ,Variants, Graphics,  Forms,
   Dialogs,   StdCtrls, cxContainer, cxEdit, cxTextEdit, cxMaskEdit,
   cxDropDownEdit, ExtCtrls, cxCheckBox, cxButtons, JvComponent,
-  JvBalloonHint, cxGroupBox;
+  JvBalloonHint, cxGroupBox, JvComponentBase;
 
 
 

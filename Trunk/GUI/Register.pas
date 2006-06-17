@@ -7,7 +7,7 @@ interface
 uses
   Windows,gnugettext,RegistrationKey, Messages,ShellAPI, StdCtrls, cxContainer, cxEdit, cxProgressBar,
   Classes,aspr_api, Controls, cxControls, cxPC ,SysUtils, Variants,  Graphics,  Forms,  Shared,
-  Dialogs, jpeg, ExtCtrls, JvImage;
+  Dialogs, jpeg, ExtCtrls, JvImage, JvExExtCtrls;
 
 type
   TFRegister = class(TForm)
@@ -45,7 +45,7 @@ type
 var
   FRegister: TFRegister;
   RegistrationKeyForm:TFRegistrationKey;
-  
+  Days:integer;
 
 const
   UserKey        : PChar  = nil;
@@ -117,7 +117,8 @@ begin
       Caption:=  _('Nevod AntiSpam - Незарегистрированная версия');
       cxProgressBar.Position:=TrialDaysLeft;
       leNag.Caption:=_('Осталось дней :')+ IntToStr(TrialDaysLeft);
-      btLater.Caption:= IntToStr(15-TrialDaysLeft);
+      Days:=15-TrialDaysLeft+1;
+      btLater.Caption:= IntToStr(TrialDaysLeft);
       Timer.Enabled:=True;
      end;
     end;
@@ -125,14 +126,17 @@ end;
 
 procedure TFRegister.TimerTimer(Sender: TObject);
 begin
- if StrToInt(btLater.Caption)=1 then
+ if Days=1 then
   begin
    Timer.Enabled:=False;
    btLater.Caption:=_('Позже');
    btLater.Enabled:=True;
   end
  else
-  btLater.Caption:= IntToStr(StrToInt(btLater.Caption)-1);   
+  begin
+  dec(Days);
+  btLater.Caption:= IntToStr(Days);
+  end;
 end;
 
 procedure TFRegister.btLaterClick(Sender: TObject);

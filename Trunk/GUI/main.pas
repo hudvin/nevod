@@ -497,7 +497,7 @@ uses  MultInst,SplashScreen;
 {$R *.dfm}
 {$R ..\Resources\WinXP.res}
 {$R ..\Resources\Messages.res}
-{$R ..\Resources\Version.res}
+//{$R ..\Resources\Version.res}
 
 procedure TFMain.DestroyRulesEditor(var Msg:TMessage);
 begin
@@ -652,8 +652,26 @@ var
  TmAppl,buf:boolean;
  Key:TRegistry;
  Sel:Integer;
+ RegForm:TFRegister;
 begin
  IsCreated:=False;
+
+  GetRegistrationInformation(UserKey,UserName );
+ if not((UserKey <> nil) AND (StrLen(UserKey) > 0)) then
+  begin
+   SetActiveWindow(Application.Handle);
+   RegForm:=TFRegister.Create(nil);
+   RegForm.ShowModal;
+   if  RegForm.Result=0 then
+     begin
+      FreeAndNil(RegForm);
+     // Application.Terminate;
+      KillProgram(Handle);
+     end;
+      FreeAndNil(RegForm);
+  end;
+
+
    adCon.ConnectionString:=GetConnectionString;
    WriteAppPath(PChar(Application.ExeName));
    WriteAppHandle(Handle);
@@ -819,7 +837,7 @@ begin
    TranslateComponent(self);
    adAccounts.Active:=True;
    adLog.Active:=True;
-   TThreadRegistrationForm.Create;
+  // TThreadRegistrationForm.Create;
 
 
 end;

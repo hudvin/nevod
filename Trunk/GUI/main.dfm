@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 216
-  Top = 177
+  Left = 250
+  Top = 71
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Nevod AntiSpam'
@@ -112,7 +112,7 @@ object FMain: TFMain
     Top = 45
     Width = 505
     Height = 367
-    ActivePage = cxTab_Log
+    ActivePage = cxTab_Filters
     Align = alClient
     DragMode = dmAutomatic
     HideTabs = True
@@ -983,7 +983,7 @@ object FMain: TFMain
       end
       object cbWhiteSender: TcxCheckBox
         Left = 8
-        Top = 144
+        Top = 152
         Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1077#1083#1100
         Properties.OnChange = cbWhiteSenderPropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
@@ -1000,7 +1000,7 @@ object FMain: TFMain
       end
       object cxSenderDescription: TcxMemo
         Left = 8
-        Top = 160
+        Top = 168
         Enabled = False
         Lines.Strings = (
           
@@ -1022,12 +1022,12 @@ object FMain: TFMain
         StyleHot.LookAndFeel.Kind = lfStandard
         StyleHot.LookAndFeel.NativeStyle = True
         TabOrder = 5
-        Height = 49
+        Height = 33
         Width = 489
       end
       object cbWhiteAttach: TcxCheckBox
         Left = 8
-        Top = 224
+        Top = 216
         Caption = #1056#1072#1089#1096#1080#1088#1077#1085#1080#1077' '#1087#1088#1080#1083#1086#1078#1077#1085#1085#1086#1075#1086' '#1092#1072#1081#1083#1072
         Properties.OnChange = cbWhiteAttachPropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
@@ -1044,7 +1044,7 @@ object FMain: TFMain
       end
       object cxWhiteAttachDescription: TcxMemo
         Left = 8
-        Top = 240
+        Top = 232
         Enabled = False
         Lines.Strings = (
           
@@ -1123,7 +1123,7 @@ object FMain: TFMain
       end
       object cbBlackSender: TcxCheckBox
         Left = 8
-        Top = 64
+        Top = 72
         Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1077#1083#1100
         Properties.OnChange = cbBlackSenderPropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
@@ -1140,7 +1140,7 @@ object FMain: TFMain
       end
       object cxBlackSenderDescription: TcxMemo
         Left = 8
-        Top = 80
+        Top = 88
         Enabled = False
         Lines.Strings = (
           
@@ -1167,7 +1167,7 @@ object FMain: TFMain
       end
       object cbBlackAttach: TcxCheckBox
         Left = 8
-        Top = 112
+        Top = 128
         Caption = #1056#1072#1089#1096#1080#1088#1077#1085#1080#1077' '#1087#1088#1080#1083#1086#1078#1077#1085#1085#1086#1075#1086' '#1092#1072#1081#1083#1072
         Properties.OnChange = cbBlackAttachPropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
@@ -1184,7 +1184,7 @@ object FMain: TFMain
       end
       object cxBlackAttachDescription: TcxMemo
         Left = 8
-        Top = 128
+        Top = 144
         Enabled = False
         Lines.Strings = (
           
@@ -1213,7 +1213,7 @@ object FMain: TFMain
       end
       object cxSpinLinks: TcxSpinEdit
         Left = 296
-        Top = 158
+        Top = 183
         Properties.MaxValue = 1000.000000000000000000
         Properties.MinValue = 1.000000000000000000
         Properties.OnValidate = cxSpinLinksPropertiesValidate
@@ -1232,7 +1232,7 @@ object FMain: TFMain
       end
       object cbMaxLinks: TcxCheckBox
         Left = 8
-        Top = 162
+        Top = 186
         Caption = #1052#1072#1082#1089#1080#1084#1072#1083#1100#1085#1086#1077' '#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1089#1089#1099#1083#1086#1082' '#1074' '#1089#1086#1086#1073#1097#1077#1085#1080#1080
         Properties.OnChange = cbMaxLinksPropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
@@ -1249,7 +1249,7 @@ object FMain: TFMain
       end
       object cxMaxLinksDescription: TcxMemo
         Left = 8
-        Top = 178
+        Top = 203
         Enabled = False
         Lines.Strings = (
           
@@ -1277,7 +1277,7 @@ object FMain: TFMain
       end
       object cbMaxImages: TcxCheckBox
         Left = 8
-        Top = 208
+        Top = 249
         Caption = #1052#1072#1082#1089#1080#1084#1072#1083#1100#1085#1086#1077' '#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1080#1079#1086#1073#1088#1072#1078#1077#1085#1080#1081
         Properties.OnChange = cbMaxImagesPropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
@@ -1294,7 +1294,7 @@ object FMain: TFMain
       end
       object cxSpinImages: TcxSpinEdit
         Left = 296
-        Top = 206
+        Top = 246
         Properties.MaxValue = 1000.000000000000000000
         Properties.MinValue = 1.000000000000000000
         Properties.OnValidate = cxSpinImagesPropertiesValidate
@@ -1309,7 +1309,7 @@ object FMain: TFMain
       end
       object cxMaxImagesDescription: TcxMemo
         Left = 8
-        Top = 226
+        Top = 267
         Enabled = False
         Lines.Strings = (
           
@@ -1338,7 +1338,7 @@ object FMain: TFMain
       end
       object cbMaxSize: TcxCheckBox
         Left = 8
-        Top = 258
+        Top = 309
         Caption = #1052#1072#1082#1089#1080#1084#1072#1083#1100#1085#1099#1081' '#1088#1072#1079#1084#1077#1088' '#1089#1086#1086#1073#1096#1077#1085#1080#1103','#1082#1073
         Properties.OnChange = cbMaxSizePropertiesChange
         Style.LookAndFeel.Kind = lfOffice11
@@ -1355,7 +1355,7 @@ object FMain: TFMain
       end
       object cxSpinMaxSize: TcxSpinEdit
         Left = 296
-        Top = 255
+        Top = 306
         Properties.MaxValue = 1000.000000000000000000
         Properties.MinValue = 1.000000000000000000
         Properties.OnValidate = cxSpinMaxSizePropertiesValidate
@@ -1370,7 +1370,7 @@ object FMain: TFMain
       end
       object cxMaxSizeDescription: TcxMemo
         Left = 8
-        Top = 275
+        Top = 326
         Enabled = False
         Lines.Strings = (
           
