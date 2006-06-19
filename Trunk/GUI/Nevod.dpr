@@ -47,6 +47,7 @@ var
  RegForm:TFRegister;
  tag:tagWINDOWINFO;
  reg:TRegistry;
+ dbTest:TDBTesting;
 begin
  AddDomainForResourceString ('ru');
  UseLanguage ('ru');
@@ -85,48 +86,15 @@ begin
    end;
 //  end;
 
- CoInitialize(nil);
- aCon:=TADOConnection.Create(nil);
- aCon.LoginPrompt:=False;
- aCon.ConnectionString:=GetConnectionString;
- Con:=False;
- CanExit:=False;
-
-
- {
-
- проверть в цикле
-
- }
-
-
-
- while (not Con) and (not canExit) do
-  try
-   aCon.Connected:=True;
-   Con:=True;
-  except
-   try
-    reg:=TRegistry.Create;
-    reg.RootKey:=HKEY_CURRENT_USER;
-    reg.OpenKey('\Software\Nevilon Software\Nevod AntiSpam',False);
-  //  if reg.ValueExists('First') then
-    // if not FileExists then
-       
-      
-   finally
-    reg.Free;
-   end;
-   {
-   если есть ключ в реестре
-    если файла не существует - восстановить его
-   }
-
-   if ShowMessageBox(Application.Handle,_('База данных не найдена или повреждена. Заменить ?'),_('Ошибка загрузки'),MB_OKCANCEL or MB_ICONWARNING)=ID_OK then
-     RestoreDB else canExit:=True;
+ dbTest:=TestDBConnnection;
+ if not (dbTest=dtOK) then
+  begin
+   if IsFirst(True) then RestoreDB
+    else
+     if ShowMessageBox(Application.Handle,_('База данных не найдена или повреждена. Заменить ?'),_('Ошибка загрузки'),MB_OKCANCEL or MB_ICONWARNING)=ID_OK then
+       RestoreDB else canExit:=True;
   end;
- CoUninitialize;
-
+   
  if CanExit  then  Application.Terminate
   else
    begin

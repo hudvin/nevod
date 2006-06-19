@@ -69,6 +69,7 @@ Filename: "{app}\Nevod.url"; Section: "InternetShortcut"; Key: "URL"; String: "h
 Name: "{group}\Nevod AntiSpam"; Filename: "{app}\Nevod.exe"
 Name: "{group}\{cm:ProgramOnTheWeb,Nevod AntiSpam}"; Filename: "{app}\Nevod.url"
 Name: "{userdesktop}\Nevod AntiSpam"; Filename: "{app}\Nevod.exe"; Tasks: desktopicon
+Name: "{group}\{cm:UninstallProgram,My Program}"; Filename: "{uninstallexe}"
 
 [Run]
 Filename: "{app}\Nevod.exe"; Description: "{cm:LaunchProgram,Nevod AntiSpam}"; Flags: nowait postinstall skipifsilent

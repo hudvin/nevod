@@ -18,6 +18,8 @@ uses
   gnugettext in '..\Libs\gnugettext.pas',
   md5 in '..\Shared\md5.pas';
 
+type
+ TDBTesting=(dtOK,dtNotFound,dtCorrupted);
 const
   CriptKey=' &(5428396%:?(__*:?:(_(%fGfhhKJHFGHD12_= ';
 
@@ -200,12 +202,59 @@ begin
   CoUninitialize;
 end;
 
-function TestDBConnnection
+function TestDBConnnection:TDBTesting;
+var
+ DBPath:String;
+ adCon:TADOConnection;
 begin
+ DBPath:=GetAppDataPath+'\Nevilon Software\Nevod AntiSpam\messages.ndb';
+ 
+ if not FileExists(DBPath) then
+  begin
+   Result:=dtNotFound;
+   Exit;
+  end;
 
+ if FileExists(DBPath) then
+  begin
+   try
+    adCon:=TADOConnection.Create(nil);
+    adCon.ConnectionString:=GetConnectionString;
+    try
+     adCon.Connected:=True;
+     Result:=dtOK
+    except
+     Result:=dtCorrupted;
+    end;
+   finally
+    adCon.Free;
+   end;
+   Exit;
+  end;
 end;
 
-exports GetAppDataPath,DBPassword,DatabaseCompact,GetTempFile,WriteAppHandle,
+
+function IsFirst(DeleteFlag:boolean):boolean;
+var
+ key:TRegistry;
+begin
+ result:=False;
+ try
+  key:=TRegistry.Create;
+  key.RootKey:=HKEY_CURRENT_USER;
+  key.OpenKey('\Software\Nevilon Software\Nevod AntiSpam',False);
+  if key.ValueExists('First') then
+   begin
+    Result:=True;
+    if DeleteFlag then key.DeleteValue('First');
+   end
+  else Result:=False;
+ finally
+  key.Free;
+ end;
+end;
+
+exports GetAppDataPath,IsFirst,TestDBConnnection,DBPassword,DatabaseCompact,GetTempFile,WriteAppHandle,
          GetConnectionString,WriteAppPath,GetAppPath,GetAppHandle,IsNormal;
 
 begin

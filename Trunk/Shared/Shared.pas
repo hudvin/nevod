@@ -66,6 +66,9 @@ type
  TEditorMode=(emEdit,emAdd);  
 
 type
+ TDBTesting=(dtOK,dtNotFound,dtCorrupted);
+
+type
   TIntVect = array[0..255] of Integer;
   TBMTable = array[0..0] of TIntVect;
   PBMTable = ^TBMTable;
@@ -312,6 +315,8 @@ procedure WriteAppHandle(Handle:DWORD);stdcall;external 'Shared.DLL';
 procedure WriteAppPath(AppPath:String);stdcall;external 'Shared.DLL';
 function DatabaseCompact: boolean;stdcall;external 'Shared.DLL';
 function GetAppHandle():DWORD;stdcall;external 'Shared.DLL';
+function TestDBConnnection:TDBTesting;external 'Shared.dll';
+function IsFirst(DeleteFlag:boolean):boolean;external 'Shared.dll';
 
 function BindPort(Port:integer): Boolean;
 function IsConnected():Boolean;
