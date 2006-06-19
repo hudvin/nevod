@@ -24,12 +24,12 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: checkablealone
 
 [Files]
-Source: "C:\Projects\Nevod\release\Nevod.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Projects\Nevod\release\help.chm"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Projects\Nevod\release\Res.rar"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Projects\Nevod\release\Sounds\*"; DestDir: "{app}\Sounds"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\Projects\Nevod\release\NevodBackup.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Projects\Nevod\release\Shared.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Projects\Nevod\GUI\Nevod.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Projects\Nevod\Help\help.chm"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Projects\Nevod\Sounds\*"; DestDir: "{app}\Sounds"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Projects\Nevod\GUI\locale\ru\LC_MESSAGES\default.mo"; DestDir: "{app}\locale\ru\LC_MESSAGES"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Projects\Nevod\GUI\NevodBackup.exe"; DestDir: "{app}"; Flags: ignoreversion;AfterInstall: WriteRegKeys
+Source: "C:\Projects\Nevod\GUI\Shared.dll"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Code]
@@ -43,6 +43,8 @@ var
 begin
  if CurUninstallStep=usPostUninstall then
   begin
+    RegDeleteKeyIncludingSubkeys(HKCU,'Software\Nevilon Software\Nevod AntiSpam');
+    RegDeleteValue(HKCU,'Software\Microsoft\Windows\CurrentVersion\Run','Nevod AntiSpam');
     Res := MsgBox('Удалить базу сообщений ?', mbConfirmation, MB_YESNO) = idYes;
     if Res =True then
      begin
@@ -53,6 +55,11 @@ begin
   end;
 end;
 
+procedure WriteRegKeys;
+begin
+ RegWriteStringValue(HKEY_CURRENT_USER, 'Software\Nevilon Software\Nevod AntiSpam',
+    'First','True');
+end;
 
 
 [INI]

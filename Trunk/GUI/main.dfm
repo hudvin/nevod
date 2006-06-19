@@ -1,6 +1,6 @@
 object FMain: TFMain
-  Left = 250
-  Top = 71
+  Left = 208
+  Top = 179
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Nevod AntiSpam'
@@ -21,9 +21,9 @@ object FMain: TFMain
   TextHeight = 13
   object stBar: TdxStatusBar
     Left = 0
-    Top = 412
+    Top = 411
     Width = 711
-    Height = 18
+    Height = 19
     Panels = <
       item
         PanelStyleClassName = 'TdxStatusBarTextPanelStyle'
@@ -45,7 +45,7 @@ object FMain: TFMain
     Left = 0
     Top = 45
     Width = 201
-    Height = 367
+    Height = 366
     Align = alLeft
     Bands = <
       item
@@ -111,8 +111,8 @@ object FMain: TFMain
     Left = 206
     Top = 45
     Width = 505
-    Height = 367
-    ActivePage = cxTab_Filters
+    Height = 366
+    ActivePage = cxTab_Accounts
     Align = alClient
     DragMode = dmAutomatic
     HideTabs = True
@@ -121,7 +121,7 @@ object FMain: TFMain
     Options = []
     Style = 8
     TabOrder = 2
-    ClientRectBottom = 367
+    ClientRectBottom = 366
     ClientRectRight = 505
     ClientRectTop = 0
     object cxTab_Accounts: TcxTabSheet
@@ -131,7 +131,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 505
-        Height = 367
+        Height = 366
         Align = alClient
         BorderWidth = 2
         TabOrder = 0
@@ -164,12 +164,12 @@ object FMain: TFMain
           object cxAccountsAccountName: TcxGridDBColumn
             Caption = #1059#1095#1077#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
             DataBinding.FieldName = 'AccountName'
-            Width = 134
+            Width = 102
           end
           object cxAccountsusername: TcxGridDBColumn
             Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1100
             DataBinding.FieldName = 'username'
-            Width = 92
+            Width = 75
           end
           object cxAccountspass: TcxGridDBColumn
             Caption = #1055#1072#1088#1086#1083#1100
@@ -177,27 +177,27 @@ object FMain: TFMain
             PropertiesClassName = 'TcxTextEditProperties'
             Properties.EchoMode = eemPassword
             Properties.PasswordChar = '*'
-            Width = 85
+            Width = 54
           end
           object cxAccountshost: TcxGridDBColumn
             Caption = #1057#1077#1088#1074#1077#1088
             DataBinding.FieldName = 'host'
-            Width = 77
+            Width = 55
           end
           object cxAccountsport: TcxGridDBColumn
             Caption = #1055#1086#1088#1090
             DataBinding.FieldName = 'port'
-            Width = 65
+            Width = 48
           end
           object cxAccountsTimeout: TcxGridDBColumn
             Caption = #1042#1088#1077#1084#1103' '#1086#1078#1080#1076#1072#1085#1080#1103
             DataBinding.FieldName = 'Timeout'
-            Width = 102
+            Width = 100
           end
           object cxAccountsstatus: TcxGridDBColumn
             Caption = #1057#1086#1089#1090#1086#1103#1085#1080#1077
             DataBinding.FieldName = 'status'
-            Width = 66
+            Width = 65
           end
         end
         object cxAccountsGridLevel1: TcxGridLevel
@@ -212,7 +212,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 505
-        Height = 367
+        Height = 366
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
@@ -277,7 +277,7 @@ object FMain: TFMain
         Left = 0
         Top = 0
         Width = 505
-        Height = 367
+        Height = 366
         Align = alClient
         TabOrder = 0
         LookAndFeel.Kind = lfOffice11
@@ -1401,7 +1401,7 @@ object FMain: TFMain
     Left = 201
     Top = 45
     Width = 5
-    Height = 367
+    Height = 366
     AutoSnap = True
     ResizeUpdate = True
     Control = SettingsTree

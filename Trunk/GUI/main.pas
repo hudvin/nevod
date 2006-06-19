@@ -429,7 +429,6 @@ type
     PrevHwnd: Hwnd;
     Exp:TPerlRegEx;
     function GetFilterState(FilterType:TFilterType): Boolean;
-    procedure KillProgram(handle:HWND);
     procedure WMChangeCBChain(var Msg: TWMChangeCBChain);
      message WM_CHANGECBCHAIN;
     procedure WMDrawClipboard(var Msg: TWMDrawClipboard);
@@ -440,7 +439,7 @@ type
     procedure UpdateLog(var Msg: TMessage); message WM_UpdateLog;
     procedure UpdateAccountStatus(var Msg: TMessage); message WM_UpdateAccountStatus;
     procedure UpdateFilters(var Msg: TMessage); message WM_UpdateFilters;
-
+    procedure ActivateWindow(var Msg:TMessage);message WM_ActivateWindow;
     procedure DestroyRulesEditor(var Msg:TMessage);message WM_DestroyRulesEditor;
     procedure DestroyAccountEditor(var Msg:TMessage);message WM_DestroyAccountEditor;
     { Private declarations }
@@ -498,6 +497,14 @@ uses  MultInst,SplashScreen;
 {$R ..\Resources\WinXP.res}
 {$R ..\Resources\Messages.res}
 //{$R ..\Resources\Version.res}
+
+procedure TFMain.ActivateWindow(var Msg:TMessage);
+begin
+ tray.ShowMainForm;
+ SetForegroundWindow(Handle);
+ SetActiveWindow(Handle);
+ 
+end;
 
 procedure TFMain.DestroyRulesEditor(var Msg:TMessage);
 begin
@@ -654,27 +661,27 @@ var
  Sel:Integer;
  RegForm:TFRegister;
 begin
- IsCreated:=False;
+ ShowWindow(Application.Handle, sw_Hide);
 
-  GetRegistrationInformation(UserKey,UserName );
+ IsCreated:=False;
+ CanShowTray:=false;
+ GetRegistrationInformation(UserKey,UserName );
  if not((UserKey <> nil) AND (StrLen(UserKey) > 0)) then
   begin
    SetActiveWindow(Application.Handle);
    RegForm:=TFRegister.Create(nil);
    RegForm.ShowModal;
    if  RegForm.Result=0 then
-     begin
-      FreeAndNil(RegForm);
-     // Application.Terminate;
-      KillProgram(Handle);
-     end;
-      FreeAndNil(RegForm);
-  end;
-
-
+    begin
+     FreeAndNil(RegForm);
+     Application.Terminate;
+   end;
+   FreeAndNil(RegForm);
+ end;
+   CanShowTray:=True;
    adCon.ConnectionString:=GetConnectionString;
    WriteAppPath(PChar(Application.ExeName));
-   WriteAppHandle(Handle);
+   //WriteAppHandle(Handle);
 
    POP3Server:=TPOPServer.Create(adCon,AccountManager);
 
@@ -701,7 +708,7 @@ begin
        Application.Terminate;
       end;
 
-   Mutex:=CreateMutex(nil, False,MutexName);
+
    AccountManager:=TAccountManager.Create(adAccounts);
    SProvider:=TSettings.Create(adCon);
 
@@ -837,7 +844,6 @@ begin
    TranslateComponent(self);
    adAccounts.Active:=True;
    adLog.Active:=True;
-  // TThreadRegistrationForm.Create;
 
 
 end;
@@ -1200,6 +1206,7 @@ begin
  tray.HideTaskbarIcon;
  tray.Enabled:=False;
  Hide;
+ Action:=caFree;
 end;
 
 procedure TFMain.SetFilterState(FilterType:TFilterType; const FilterStatus:
@@ -2032,18 +2039,6 @@ begin
      RegistrationKey.ShowModal;
      RegistrationKey.Free;
    end;
-end;
-
-procedure TFMain.KillProgram(handle:HWND);
-const
-  PROCESS_TERMINATE = $0001;
-var
-  ProcessHandle : THandle;
-  ProcessID: Integer;
-begin
-  GetWindowThreadProcessID(Handle, @ProcessID);
-  ProcessHandle := OpenProcess(PROCESS_TERMINATE, FALSE, ProcessId);
-  TerminateProcess(ProcessHandle,4);
 end;
 
 procedure TFMain.JvAddHotKeyExit(Sender: TObject);

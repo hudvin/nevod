@@ -1408,22 +1408,9 @@ object FAbout: TFAbout
     Font.Style = []
     ParentFont = False
   end
-  object leTimeRunning: TLabel
-    Left = 16
-    Top = 168
-    Width = 23
-    Height = 13
-    Caption = 'leOS'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clNavy
-    Font.Height = -11
-    Font.Name = 'MS Sans Serif'
-    Font.Style = []
-    ParentFont = False
-  end
   object leCurrentUser: TLabel
     Left = 16
-    Top = 184
+    Top = 168
     Width = 23
     Height = 13
     Caption = 'leOS'

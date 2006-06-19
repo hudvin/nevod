@@ -3,6 +3,8 @@ program Nevod;
 uses
   FastShareMem in '..\Shared\FastShareMem.pas',
   Forms,
+  ComObj,
+  ActiveX,
   Messages,
   Windows,
   Dialogs,
@@ -10,6 +12,7 @@ uses
   DB,
   SysUtils,
   WinSock,
+  Registry,
   main in 'main.pas' {FMain},
   Shared in '..\Shared\Shared.pas',
   Base64 in '..\Crypt\Base64.pas',
@@ -28,7 +31,6 @@ uses
   POPServer in '..\POP3Server\POPServer.pas',
   PortEditor in 'PortEditor.pas' {FPortEditor},
   ASFilter in '..\MessagesFilter\ASFilter.pas',
-  MultInst in 'MultInst.pas',
   About in 'About.pas' {FAbout},
   ADODB_TLB in '..\Shared\ADODB_TLB.pas',
   JRO_TLB in '..\Shared\JRO_TLB.pas',
@@ -42,39 +44,97 @@ uses
 var
  Con,CanExit:boolean;
  aCon:TADOConnection;
+ RegForm:TFRegister;
+ tag:tagWINDOWINFO;
+ reg:TRegistry;
 begin
  AddDomainForResourceString ('ru');
  UseLanguage ('ru');
- SetCurrentDir(ExtractFilePath(Application.ExeName));
- if InitInstance then
+ SetLastError(0);
+ Mutex:=0;
+ Mutex:=CreateMutex(nil, False,MutexName);
+ if GetLastError = ERROR_ALREADY_EXISTS then // уже есть запущенная копия
   begin
+   PostMessage(GetAppHandle,WM_ActivateWindow,0,0);
+   SetForegroundWindow(GetAppHandle);
+   SetActiveWindow(GetAppHandle);
+   SetFocus(GetAppHandle);
+
+   KillProgram(Application.Handle) ;
+  end;
+
+   
    Application.Initialize;
+   GetRegistrationInformation(UserKey,UserName );
+   if not((UserKey <> nil) AND (StrLen(UserKey) > 0)) then
+    begin
+     SetActiveWindow(Application.Handle);
+     RegForm:=TFRegister.Create(nil);
+     WriteAppHandle(RegForm.Handle);
+     RegForm.ShowModal;
+     if  RegForm.Result=0 then
+      begin
+       FreeAndNil(RegForm);
+       KillProgram(Application.Handle);
+      end;
+     FreeAndNil(RegForm);
+    end;
    try
     DatabaseCompact;
    except;
    end;
+//  end;
+
+ CoInitialize(nil);
  aCon:=TADOConnection.Create(nil);
  aCon.LoginPrompt:=False;
  aCon.ConnectionString:=GetConnectionString;
  Con:=False;
  CanExit:=False;
+
+
+ {
+
+ проверть в цикле
+
+ }
+
+
+
  while (not Con) and (not canExit) do
   try
    aCon.Connected:=True;
    Con:=True;
   except
+   try
+    reg:=TRegistry.Create;
+    reg.RootKey:=HKEY_CURRENT_USER;
+    reg.OpenKey('\Software\Nevilon Software\Nevod AntiSpam',False);
+  //  if reg.ValueExists('First') then
+    // if not FileExists then
+       
+      
+   finally
+    reg.Free;
+   end;
+   {
+   если есть ключ в реестре
+    если файла не существует - восстановить его
+   }
+
    if ShowMessageBox(Application.Handle,_('База данных не найдена или повреждена. Заменить ?'),_('Ошибка загрузки'),MB_OKCANCEL or MB_ICONWARNING)=ID_OK then
      RestoreDB else canExit:=True;
   end;
+ CoUninitialize;
+
  if CanExit  then  Application.Terminate
   else
    begin
-    Application.HelpFile := 'C:\Projects\Nevod\GUI\help.chm';
-  Application.CreateForm(TFMain, FMain);
-  if (ParamCount>0) and (ParamStr(1)='-h') then
-     Application.MainForm.WindowState:=wsMinimized;
-     Application.Run;
-   end;
+    Application.HelpFile := 'help.chm';
+    Application.CreateForm(TFMain, FMain);
+    WriteAppHandle(Application.MainForm.Handle);
+  if (ParamCount>0) and (ParamStr(1)='-h') then Application.MainForm.WindowState:=wsMinimized;
+    Application.Run;
    end;
 end.
 

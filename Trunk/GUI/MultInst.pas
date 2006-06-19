@@ -44,12 +44,12 @@ begin
 { передаем фокус приложению }
     if IsIconic(Application.Handle) then
     begin
-      main.FMain.tray.ShowMainForm;
-      Application.MainForm.WindowState := wsNormal;
-      ShowWindow(Application.Mainform.Handle, SW_SHOWNORMAL);
+ //     main.FMain.tray.ShowMainForm;
+ //     Application.MainForm.WindowState := wsNormal;
+  //    ShowWindow(Application.Mainform.Handle, SW_SHOWNORMAL);
     end;
-    SetForegroundWindow(Application.MainForm.Handle);
-   // SetActiveWindow(Application.MainForm.Handle);
+ //   SetForegroundWindow(Application.MainForm.Handle);
+  //  SetActiveWindow(Application.MainForm.Handle);
   end
     { В противном случае посылаем сообщение предыдущему окну }
   else
@@ -85,7 +85,7 @@ var
 begin
   { Не показываем основную форму }
 
-  Application.ShowMainForm := False;
+ // Application.ShowMainForm := False;
   { Посылаем другому приложению сообщение и информируем о необходимости }
   { перевести фокус на себя }
   BSMRecipients := BSM_APPLICATIONS;
@@ -102,9 +102,9 @@ begin
     { Объект Mutex еще не создан, означая, что еще не создано }
 
 { другое приложение. }
-    ShowWindow(Application.Handle, SW_ShowNormal);
-    Application.ShowMainForm := True;
-    DoFirstInstance;
+  // ShowWindow(Application.Handle, SW_ShowNormal);
+   Application.ShowMainForm := True;
+   DoFirstInstance;
     result := True;
   end
   else
@@ -119,8 +119,8 @@ initialization
 
     //UniqueAppStr := Application.Exexname;
     MessageID := RegisterWindowMessage(PChar(GetCurrentUserSid));
-   // ShowWindow(Application.Handle, SW_Hide);
-    Application.ShowMainForm := FALSE;
+ //   ShowWindow(Application.Handle, SW_Hide);
+ //   Application.ShowMainForm := FALSE;
   end;
 
 finalization

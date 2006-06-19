@@ -29,7 +29,6 @@ type
     procedure btCancelClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure leValueKeyPress(Sender: TObject; var Key: Char);
-    procedure FormCreate(Sender: TObject);
   private
     FFilterManager:TFilterManager;
     FFiltersTable: TADOQuery;
@@ -37,6 +36,7 @@ type
     FEditorMode:TEditorMode;
     FSignList: TSignalDescriptorsList;
     FElementId:integer;
+    FShowed:boolean;
     { Private declarations }
   public
     constructor Create(SNConverter:TSNIndexConverter;FilterManager:TFilterManager;
@@ -65,6 +65,7 @@ constructor TFCustomEditor.Create(SNConverter:TSNIndexConverter;
 var
  i:integer;
 begin
+  FShowed:=False;
   inherited Create(nil);
   FSignList:=SignList;
   for i:=0 to FSignList.Count-1 do
@@ -107,6 +108,7 @@ begin
    end;
 }
  inherited Show;
+ FShowed:=True;
 end;
 
 procedure TFCustomEditor.Show(ElementId:Integer;ElementValue:String;
@@ -210,11 +212,6 @@ begin
    JvBal.ActivateHint(leValue,_('В данное поле можно вводить только английские символы и цифры'),_('Внимание !'),1500);
    Beep;
   end;
-end;
-
-procedure TFCustomEditor.FormCreate(Sender: TObject);
-begin
- TranslateComponent(self);
 end;
 
 end.

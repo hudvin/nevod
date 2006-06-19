@@ -110,7 +110,7 @@ begin
  Reg := TRegistry.Create;
  try
   Reg.RootKey := HKEY_CURRENT_USER;
-  Key := '\Software\Nevilon\Nevod AntiSpam';
+  Key := '\Software\Nevilon Software\Nevod AntiSpam';
   if Reg.OpenKey(Key, True) then
    begin
     Reg.WriteInteger('Handle',Handle);
@@ -130,7 +130,7 @@ begin
  key:=TRegistry.Create;
  try
    key.RootKey:=HKEY_CURRENT_USER;
-   key.OpenKey('\Software\Nevilon\Nevod AntiSpam',True);
+   key.OpenKey('\Software\Nevilon Software\Nevod AntiSpam',True);
    key.WriteString('AppPath',AppPath);
    key.CloseKey;
  finally
@@ -145,7 +145,7 @@ begin
  key:=TRegistry.Create;
  try
   key.RootKey:=HKEY_CURRENT_USER;
-  key.OpenKey('\Software\Nevilon\Nevod AntiSpam',True);
+  key.OpenKey('\Software\Nevilon Software\Nevod AntiSpam',True);
   Result:=key.ReadString('AppPath');
   key.CloseKey;
  finally
@@ -162,7 +162,7 @@ begin
  Reg:= TRegistry.Create;
  try
   Reg.RootKey := HKEY_CURRENT_USER;
-  Key := '\Software\Nevilon\Nevod AntiSpam';
+  Key := '\Software\Nevilon Software\Nevod AntiSpam';
   if Reg.OpenKeyReadOnly(Key) then
    begin
     if Reg.ValueExists('Handle') then
@@ -200,6 +200,10 @@ begin
   CoUninitialize;
 end;
 
+function TestDBConnnection
+begin
+
+end;
 
 exports GetAppDataPath,DBPassword,DatabaseCompact,GetTempFile,WriteAppHandle,
          GetConnectionString,WriteAppPath,GetAppPath,GetAppHandle,IsNormal;

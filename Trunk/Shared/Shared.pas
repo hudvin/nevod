@@ -27,7 +27,7 @@ const
   WM_UpdateFilters=WM_USER+4;
   WM_ShowCEditor=WM_USER+5;
   WM_ShowRegistrationForm=WM_USER+6;
-
+  WM_ActivateWindow=WM_USER+9;
 
   WM_DestroyRulesEditor=WM_USER+7;
   WM_DestroyAccountEditor=WM_USER+8;
@@ -311,6 +311,7 @@ function GetAppDataPath:String;stdcall;external 'Shared.DLL';
 procedure WriteAppHandle(Handle:DWORD);stdcall;external 'Shared.DLL';
 procedure WriteAppPath(AppPath:String);stdcall;external 'Shared.DLL';
 function DatabaseCompact: boolean;stdcall;external 'Shared.DLL';
+function GetAppHandle():DWORD;stdcall;external 'Shared.DLL';
 
 function BindPort(Port:integer): Boolean;
 function IsConnected():Boolean;
@@ -340,6 +341,8 @@ function GetFileSize(FileName: String): Integer;
 
 function ShowMessageBox(Handle:HWND;MessageText:String;Caption:String;
     uType:Cardinal): Integer;
+
+procedure KillProgram(handle:HWND);
 
 implementation
 
@@ -891,6 +894,18 @@ function ShowMessageBox(Handle:HWND;MessageText:String;Caption:String;
     uType:Cardinal): Integer;
 begin
   Result:=MessageBox(Handle,PChar(MessageText),PChar(Caption),uType);
+end;
+
+procedure KillProgram(handle:HWND);
+const
+  PROCESS_TERMINATE = $0001;
+var
+  ProcessHandle : THandle;
+  ProcessID: Integer;
+begin
+  GetWindowThreadProcessID(Handle, @ProcessID);
+  ProcessHandle := OpenProcess(PROCESS_TERMINATE, FALSE, ProcessId);
+  TerminateProcess(ProcessHandle,4);
 end;
 
 

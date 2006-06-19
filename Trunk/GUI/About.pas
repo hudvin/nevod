@@ -15,7 +15,6 @@ type
     leMail: TJvLinkLabel;
     leOS: TLabel;
     leCompName: TLabel;
-    leTimeRunning: TLabel;
     leCurrentUser: TLabel;
     btClose: TButton;
     leLicenseUsername: TLabel;
@@ -62,7 +61,7 @@ begin
  leOS.Caption:=_('Операционная система : ')+cInfo.OS.ProductName;
  leCompName.Caption:=_('Имя компьютера : ')+cInfo.Identification.LocalComputerName;
  leCurrentUser.Caption:=_('Имя текущего пользователя : ')+cInfo.Identification.LocalUserName;
- leTimeRunning.Caption:= _('Время работы : ')+TimeToStr(cInfo.Misc.TimeRunning);
+ //leTimeRunning.Caption:= _('Время работы : ')+TimeToStr(cInfo.Misc.TimeRunning);
  leVersion.Caption:=_('Версия: ')+FileVersion(Application.ExeName);
  GetRegistrationInformation(UserKey,UserName);
  if (UserKey <> nil) AND (StrLen(UserKey) > 0) then

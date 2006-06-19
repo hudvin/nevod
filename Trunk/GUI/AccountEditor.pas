@@ -5,7 +5,8 @@ interface
 uses  ADOdb,DB,  Shared,gnugettext,
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, cxControls, cxPC, AccountManager,
-  cxContainer, cxEdit, cxGroupBox, JvComponent, JvBalloonHint;
+  cxContainer, cxEdit, cxGroupBox, JvComponent, JvBalloonHint,
+  JvComponentBase;
 
 type
   TFAccountEditor = class(TForm)
