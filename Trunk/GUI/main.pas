@@ -605,6 +605,7 @@ var
   Len:integer;
   buf:String;
 begin
+try
   SendMessage(PrevHWnd, WM_DRAWCLIPBOARD, 0, 0);
   if Clipboard.HasFormat(CF_TEXT) then
   begin
@@ -645,6 +646,8 @@ begin
     GlobalUnlock(H);
   end;
   Msg.Result := 0;
+except
+end;
 end;
 
 procedure TFMain.UMActivate(var msg: TMessage);
@@ -682,7 +685,8 @@ begin
    adCon.ConnectionString:=GetConnectionString;
    WriteAppPath(PChar(Application.ExeName));
    //WriteAppHandle(Handle);
-
+   AccountManager:=TAccountManager.Create(adAccounts);
+   SProvider:=TSettings.Create(adCon);
    POP3Server:=TPOPServer.Create(adCon,AccountManager);
 
    TmAppl:=False;
@@ -709,8 +713,7 @@ begin
       end;
 
 
-   AccountManager:=TAccountManager.Create(adAccounts);
-   SProvider:=TSettings.Create(adCon);
+
 
    SNConverter:=TSNIndexConverter.Create;
    SignList:=TSignalDescriptorsList.Create;

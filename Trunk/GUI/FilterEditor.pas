@@ -100,13 +100,13 @@ begin
    begin
     cCBFilter.ItemIndex:=FSNConverter.FindIndex(Res.FilterType);
     if Res.FilterType in[ftBlackWord,ftWhiteWord] then cCBLocation.Enabled:=True;
-   end;
-{  else
+   end
+  else
    begin
      cCBLocation.Enabled:=False;
     cCBFilter.ItemIndex:=FSNConverter.FindIndex(ftWhiteSender);
    end;
-}
+
  inherited Show;
  FShowed:=True;
 end;
